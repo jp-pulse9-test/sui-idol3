@@ -442,6 +442,18 @@ export const PhotoCard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
+      {/* 상단 고정 지갑 버튼 */}
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          onClick={() => navigate('/collection')}
+          variant="secondary"
+          size="sm"
+          className="bg-card/80 backdrop-blur-sm border-border hover:bg-card shadow-lg"
+        >
+          👛 보관함
+        </Button>
+      </div>
+      
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold gradient-text">내가 픽한 프로필카드</h1>
