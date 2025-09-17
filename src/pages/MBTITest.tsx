@@ -17,66 +17,66 @@ interface Question {
 const questions: Question[] = [
   {
     id: 1,
-    question: "새로운 사람들과 만날 때 당신은?",
+    question: "아이돌의 어떤 모습에 가장 반하나요?",
     options: [
-      { text: "적극적으로 말을 걸고 친해지려고 한다", type: 'E' },
-      { text: "먼저 상대방을 관찰하고 조심스럽게 접근한다", type: 'I' }
+      { text: "무대 위에서 팬들과 소통하며 밝게 웃는 모습", type: 'E' },
+      { text: "혼자 조용히 연습하거나 생각에 잠긴 모습", type: 'I' }
     ]
   },
   {
     id: 2,
-    question: "정보를 받아들일 때 당신은?",
+    question: "아이돌의 매력을 어떻게 발견하나요?",
     options: [
-      { text: "구체적이고 현실적인 정보를 선호한다", type: 'S' },
-      { text: "가능성과 잠재력에 더 관심이 있다", type: 'N' }
+      { text: "실제 무대나 방송에서 보이는 확실한 실력과 비주얼", type: 'S' },
+      { text: "숨겨진 재능이나 앞으로의 가능성을 상상하며", type: 'N' }
     ]
   },
   {
     id: 3,
-    question: "결정을 내릴 때 당신은?",
+    question: "아이돌을 좋아하게 되는 결정적 순간은?",
     options: [
-      { text: "논리적이고 객관적인 분석을 중시한다", type: 'T' },
-      { text: "사람들의 감정과 가치를 우선 고려한다", type: 'F' }
+      { text: "완벽한 실력과 프로다운 모습을 보았을 때", type: 'T' },
+      { text: "진심 어린 감정 표현이나 인간적인 모습을 보았을 때", type: 'F' }
     ]
   },
   {
     id: 4,
-    question: "일상생활에서 당신은?",
+    question: "덕질 스타일은?",
     options: [
-      { text: "계획을 세우고 체계적으로 진행한다", type: 'J' },
-      { text: "상황에 따라 유연하게 적응한다", type: 'P' }
+      { text: "콘서트 날짜 체크, 굿즈 구매 등 계획적으로 덕질", type: 'J' },
+      { text: "그때그때 기분에 따라 자유롭게 덕질", type: 'P' }
     ]
   },
   {
     id: 5,
-    question: "스트레스를 받을 때 당신은?",
+    question: "아이돌이 힘들어 보일 때 어떻게 하고 싶나요?",
     options: [
-      { text: "사람들과 함께 있으면서 해소한다", type: 'E' },
-      { text: "혼자만의 시간을 가지며 해소한다", type: 'I' }
+      { text: "팬미팅이나 콘서트에서 큰 소리로 응원하며 힘을 주고 싶다", type: 'E' },
+      { text: "마음속으로 조용히 응원하며 지켜보고 싶다", type: 'I' }
     ]
   },
   {
     id: 6,
-    question: "학습할 때 당신은?",
+    question: "아이돌의 어떤 콘텐츠를 선호하나요?",
     options: [
-      { text: "단계적이고 체계적인 방법을 선호한다", type: 'S' },
-      { text: "전체적인 흐름과 개념을 먼저 파악한다", type: 'N' }
+      { text: "정해진 포맷의 예능이나 음악방송 같은 안정적인 콘텐츠", type: 'S' },
+      { text: "예상치 못한 라이브나 즉흥적인 브이로그 같은 새로운 콘텐츠", type: 'N' }
     ]
   },
   {
     id: 7,
-    question: "갈등 상황에서 당신은?",
+    question: "아이돌과 관련된 논란이 있을 때?",
     options: [
-      { text: "사실과 논리를 바탕으로 해결한다", type: 'T' },
-      { text: "관계와 감정을 고려하여 해결한다", type: 'F' }
+      { text: "팩트를 확인하고 객관적으로 판단한다", type: 'T' },
+      { text: "아이돌의 마음과 상황을 먼저 헤아려본다", type: 'F' }
     ]
   },
   {
     id: 8,
-    question: "여행을 갈 때 당신은?",
+    question: "입덕 후 팬 활동은?",
     options: [
-      { text: "미리 상세한 계획을 세운다", type: 'J' },
-      { text: "그때그때 상황에 맞춰 결정한다", type: 'P' }
+      { text: "팬클럽 가입, 정기 구독 등 체계적으로 활동", type: 'J' },
+      { text: "그때그때 하고 싶은 활동만 자유롭게", type: 'P' }
     ]
   }
 ];
@@ -105,7 +105,7 @@ export const MBTITest = () => {
         (types.T > types.F ? 'T' : 'F') +
         (types.J > types.P ? 'J' : 'P');
 
-      toast.success(`당신의 MBTI는 ${mbtiResult}입니다!`);
+      toast.success(`당신의 입덕 타입은 ${mbtiResult}입니다!`);
       localStorage.setItem('mbtiResult', mbtiResult);
       navigate('/worldcup');
     }
@@ -117,8 +117,8 @@ export const MBTITest = () => {
     <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">MBTI 성격 테스트</h1>
-          <p className="text-muted-foreground">나만의 이상형을 찾기 위한 첫 단계</p>
+          <h1 className="text-4xl font-bold gradient-text">아이돌 입덕 MBTI</h1>
+          <p className="text-muted-foreground">당신이 반하는 아이돌 모먼트를 찾아보세요</p>
           <Progress value={progress} className="w-full h-2" />
           <p className="text-sm text-muted-foreground">
             {currentQuestion + 1} / {questions.length}
