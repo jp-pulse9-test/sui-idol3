@@ -256,13 +256,13 @@ export const PhotoCard = () => {
           <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-center">미리보기</h3>
-              <div className="flex justify-center">
-                <canvas 
-                  ref={canvasRef}
-                  className="border border-border rounded-lg shadow-glow-primary"
-                  style={{ maxWidth: '100%', height: 'auto' }}
-                />
-              </div>
+               <div className="flex justify-center">
+                 <canvas 
+                   ref={canvasRef}
+                   className="border border-border rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_theme(colors.primary),0_0_40px_theme(colors.primary),0_0_80px_theme(colors.primary)] hover:scale-105 cursor-pointer"
+                   style={{ maxWidth: '100%', height: 'auto' }}
+                 />
+               </div>
             </div>
           </Card>
 
