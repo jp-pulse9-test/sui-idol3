@@ -27,6 +27,16 @@ interface IdealType {
     talent: number;
     popularity: number;
   };
+  potentialStats: {
+    vocal: number;
+    dance: number;
+    visual: number;
+    charisma: number;
+    charm: number;
+    leadership: number;
+    talent: number;
+    popularity: number;
+  };
 }
 
 export const FinalPick = () => {
@@ -58,7 +68,8 @@ export const FinalPick = () => {
         realImage: maleIdol1,
         personality: "카리스마틱", 
         description: "무대 위의 강렬한 존재감",
-        stats: { vocal: 95, dance: 88, visual: 90, charisma: 98, charm: 75, leadership: 92, talent: 89, popularity: 94 }
+        stats: { vocal: 75, dance: 68, visual: 70, charisma: 78, charm: 55, leadership: 72, talent: 69, popularity: 64 },
+        potentialStats: { vocal: 95, dance: 88, visual: 90, charisma: 98, charm: 75, leadership: 92, talent: 89, popularity: 94 }
       },
       { 
         id: 2, 
@@ -67,7 +78,8 @@ export const FinalPick = () => {
         realImage: maleIdol2,
         personality: "밝고 긍정적", 
         description: "햇살 같은 따뜻한 미소",
-        stats: { vocal: 85, dance: 92, visual: 88, charisma: 80, charm: 95, leadership: 88, talent: 86, popularity: 90 }
+        stats: { vocal: 65, dance: 72, visual: 68, charisma: 60, charm: 75, leadership: 68, talent: 66, popularity: 70 },
+        potentialStats: { vocal: 85, dance: 92, visual: 88, charisma: 80, charm: 95, leadership: 88, talent: 86, popularity: 90 }
       },
       { 
         id: 3, 
@@ -76,7 +88,8 @@ export const FinalPick = () => {
         realImage: maleIdol1,
         personality: "신비로운", 
         description: "깊이 있는 감성과 예술혼",
-        stats: { vocal: 90, dance: 78, visual: 95, charisma: 85, charm: 88, leadership: 75, talent: 94, popularity: 82 }
+        stats: { vocal: 70, dance: 58, visual: 75, charisma: 65, charm: 68, leadership: 55, talent: 74, popularity: 62 },
+        potentialStats: { vocal: 90, dance: 78, visual: 95, charisma: 85, charm: 88, leadership: 75, talent: 94, popularity: 82 }
       },
       { 
         id: 4, 
@@ -85,7 +98,8 @@ export const FinalPick = () => {
         realImage: maleIdol2,
         personality: "에너지틱", 
         description: "끝없는 열정과 활력",
-        stats: { vocal: 80, dance: 96, visual: 83, charisma: 90, charm: 92, leadership: 85, talent: 88, popularity: 89 }
+        stats: { vocal: 60, dance: 76, visual: 63, charisma: 70, charm: 72, leadership: 65, talent: 68, popularity: 69 },
+        potentialStats: { vocal: 80, dance: 96, visual: 83, charisma: 90, charm: 92, leadership: 85, talent: 88, popularity: 89 }
       }
     ];
 
@@ -97,7 +111,8 @@ export const FinalPick = () => {
         realImage: femaleIdol1,
         personality: "사랑스러운", 
         description: "순수하고 귀여운 매력",
-        stats: { vocal: 88, dance: 85, visual: 92, charisma: 78, charm: 96, leadership: 70, talent: 84, popularity: 91 }
+        stats: { vocal: 68, dance: 65, visual: 72, charisma: 58, charm: 76, leadership: 50, talent: 64, popularity: 71 },
+        potentialStats: { vocal: 88, dance: 85, visual: 92, charisma: 78, charm: 96, leadership: 70, talent: 84, popularity: 91 }
       },
       { 
         id: 2, 
@@ -106,7 +121,8 @@ export const FinalPick = () => {
         realImage: femaleIdol2,
         personality: "우아한", 
         description: "고급스럽고 세련된 분위기",
-        stats: { vocal: 93, dance: 80, visual: 96, charisma: 88, charm: 85, leadership: 90, talent: 89, popularity: 87 }
+        stats: { vocal: 73, dance: 60, visual: 76, charisma: 68, charm: 65, leadership: 70, talent: 69, popularity: 67 },
+        potentialStats: { vocal: 93, dance: 80, visual: 96, charisma: 88, charm: 85, leadership: 90, talent: 89, popularity: 87 }
       },
       { 
         id: 3, 
@@ -115,7 +131,8 @@ export const FinalPick = () => {
         realImage: femaleIdol1,
         personality: "상큼한", 
         description: "밝고 발랄한 에너지",
-        stats: { vocal: 82, dance: 94, visual: 86, charisma: 85, charm: 90, leadership: 88, talent: 87, popularity: 93 }
+        stats: { vocal: 62, dance: 74, visual: 66, charisma: 65, charm: 70, leadership: 68, talent: 67, popularity: 73 },
+        potentialStats: { vocal: 82, dance: 94, visual: 86, charisma: 85, charm: 90, leadership: 88, talent: 87, popularity: 93 }
       },
       { 
         id: 4, 
@@ -124,7 +141,8 @@ export const FinalPick = () => {
         realImage: femaleIdol2,
         personality: "신비로운", 
         description: "몽환적이고 매혹적인 아우라",
-        stats: { vocal: 91, dance: 83, visual: 94, charisma: 92, charm: 88, leadership: 75, talent: 93, popularity: 85 }
+        stats: { vocal: 71, dance: 63, visual: 74, charisma: 72, charm: 68, leadership: 55, talent: 73, popularity: 65 },
+        potentialStats: { vocal: 91, dance: 83, visual: 94, charisma: 92, charm: 88, leadership: 75, talent: 93, popularity: 85 }
       }
     ];
 
@@ -184,30 +202,48 @@ export const FinalPick = () => {
                   <p className="text-sm text-muted-foreground">{idealType.description}</p>
                 </div>
 
-                {/* 8각형 레이더 차트 */}
+                {/* 이중 8각형 레이더 차트 */}
                 <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-center">캐릭터 스탯</h4>
+                  <h4 className="text-sm font-medium text-center">연습생 성장 스탯</h4>
+                  <div className="text-xs text-center text-muted-foreground mb-2">
+                    <span className="inline-block w-3 h-3 bg-primary rounded-full mr-1"></span>현재 실력
+                    <span className="inline-block w-3 h-3 bg-primary/40 rounded-full ml-3 mr-1"></span>성장 잠재력
+                  </div>
                   <div className="h-40 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <RadarChart data={[
-                        { subject: '보컬', value: idealType.stats.vocal, fullMark: 100 },
-                        { subject: '댄스', value: idealType.stats.dance, fullMark: 100 },
-                        { subject: '비주얼', value: idealType.stats.visual, fullMark: 100 },
-                        { subject: '카리스마', value: idealType.stats.charisma, fullMark: 100 },
-                        { subject: '매력', value: idealType.stats.charm, fullMark: 100 },
-                        { subject: '리더십', value: idealType.stats.leadership, fullMark: 100 },
-                        { subject: '재능', value: idealType.stats.talent, fullMark: 100 },
-                        { subject: '인기', value: idealType.stats.popularity, fullMark: 100 }
+                        { subject: '보컬', current: idealType.stats.vocal, potential: idealType.potentialStats.vocal, fullMark: 100 },
+                        { subject: '댄스', current: idealType.stats.dance, potential: idealType.potentialStats.dance, fullMark: 100 },
+                        { subject: '비주얼', current: idealType.stats.visual, potential: idealType.potentialStats.visual, fullMark: 100 },
+                        { subject: '카리스마', current: idealType.stats.charisma, potential: idealType.potentialStats.charisma, fullMark: 100 },
+                        { subject: '매력', current: idealType.stats.charm, potential: idealType.potentialStats.charm, fullMark: 100 },
+                        { subject: '리더십', current: idealType.stats.leadership, potential: idealType.potentialStats.leadership, fullMark: 100 },
+                        { subject: '재능', current: idealType.stats.talent, potential: idealType.potentialStats.talent, fullMark: 100 },
+                        { subject: '인기', current: idealType.stats.popularity, potential: idealType.potentialStats.popularity, fullMark: 100 }
                       ]}>
                         <PolarGrid stroke="hsl(var(--border))" />
                         <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                         <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+                        
+                        {/* 잠재 스탯 (뒤쪽, 연한 색) */}
                         <Radar 
-                          name="스탯" 
-                          dataKey="value" 
+                          name="잠재력" 
+                          dataKey="potential" 
                           stroke="hsl(var(--primary))" 
                           fill="hsl(var(--primary))" 
-                          fillOpacity={0.2}
+                          fillOpacity={0.1}
+                          strokeOpacity={0.4}
+                          strokeWidth={1}
+                          strokeDasharray="5 5"
+                        />
+                        
+                        {/* 현재 스탯 (앞쪽, 진한 색) */}
+                        <Radar 
+                          name="현재 실력" 
+                          dataKey="current" 
+                          stroke="hsl(var(--primary))" 
+                          fill="hsl(var(--primary))" 
+                          fillOpacity={0.3}
                           strokeWidth={2}
                         />
                       </RadarChart>
