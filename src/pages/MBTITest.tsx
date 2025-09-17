@@ -84,6 +84,7 @@ const questions: Question[] = [
 export const MBTITest = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
+  const [selectedGender, setSelectedGender] = useState<'boy' | 'girl' | null>(null);
   const navigate = useNavigate();
 
   const handleAnswer = (type: string) => {
@@ -119,33 +120,67 @@ export const MBTITest = () => {
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold gradient-text">아이돌 입덕 성향 분석</h1>
           <p className="text-muted-foreground">당신이 반하는 아이돌 모먼트를 찾아보세요</p>
-          <Progress value={progress} className="w-full h-2" />
-          <p className="text-sm text-muted-foreground">
-            {currentQuestion + 1} / {questions.length}
-          </p>
+          
+          {!selectedGender ? (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">당신의 이상형을 선택하세요</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card 
+                  className="p-8 bg-card/80 backdrop-blur-sm border-border cursor-pointer hover:border-primary/50 transition-all duration-300 card-hover"
+                  onClick={() => setSelectedGender('boy')}
+                >
+                  <div className="text-center space-y-4">
+                    <div className="text-6xl">👨‍🎤</div>
+                    <h3 className="text-xl font-bold">당신의 소년 고르기</h3>
+                    <p className="text-muted-foreground">소년 아이돌 중에서 이상형 찾기</p>
+                  </div>
+                </Card>
+                
+                <Card 
+                  className="p-8 bg-card/80 backdrop-blur-sm border-border cursor-pointer hover:border-primary/50 transition-all duration-300 card-hover"
+                  onClick={() => setSelectedGender('girl')}
+                >
+                  <div className="text-center space-y-4">
+                    <div className="text-6xl">👩‍🎤</div>
+                    <h3 className="text-xl font-bold">당신의 소녀 고르기</h3>
+                    <p className="text-muted-foreground">소녀 아이돌 중에서 이상형 찾기</p>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Progress value={progress} className="w-full h-2" />
+              <p className="text-sm text-muted-foreground">
+                {currentQuestion + 1} / {questions.length}
+              </p>
+            </>
+          )}
         </div>
 
-        <Card className="p-8 bg-card/80 backdrop-blur-sm border-border">
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-center mb-8">
-              {questions[currentQuestion].question}
-            </h2>
-            
-            <div className="space-y-4">
-              {questions[currentQuestion].options.map((option, index) => (
-                <Button
-                  key={index}
-                  onClick={() => handleAnswer(option.type)}
-                  variant="outline"
-                  size="lg"
-                  className="w-full p-6 text-left justify-start hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
-                >
-                  {option.text}
-                </Button>
-              ))}
+        {selectedGender && (
+          <Card className="p-8 bg-card/80 backdrop-blur-sm border-border">
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-center mb-8">
+                {questions[currentQuestion].question}
+              </h2>
+              
+              <div className="space-y-4">
+                {questions[currentQuestion].options.map((option, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => handleAnswer(option.type)}
+                    variant="outline"
+                    size="lg"
+                    className="w-full p-6 text-left justify-start hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
+                  >
+                    {option.text}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         <div className="text-center">
           <Button

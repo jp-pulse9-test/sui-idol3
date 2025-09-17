@@ -76,11 +76,11 @@ const Index = () => {
             {/* 시즌 정보 */}
             <div className="mt-8 p-4 bg-gradient-primary/10 rounded-lg border border-primary/30">
               <div className="text-center space-y-2">
-                <h3 className="text-lg font-bold text-primary">SUI IDOL3 CHALLENGE</h3>
+                <h3 className="text-lg font-bold text-primary">AI심쿵챌린지 2025</h3>
                 <p className="text-3xl font-black text-foreground">101</p>
                 <p className="text-sm text-muted-foreground">SEASON 1</p>
                 <p className="text-xs text-muted-foreground">
-                  101명의 소년, 101명의 소녀와 함께하는 특별한 만남
+                  당신의 이상형을 찾아가는 특별한 여정
                 </p>
               </div>
             </div>
