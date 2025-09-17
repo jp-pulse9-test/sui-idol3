@@ -16,6 +16,16 @@ interface IdealType {
   personality: string;
   description: string;
   compatibility: number;
+  stats: {
+    vocal: number;
+    dance: number;
+    visual: number;
+    charisma: number;
+    charm: number;
+    leadership: number;
+    talent: number;
+    popularity: number;
+  };
 }
 
 export const FinalPick = () => {
@@ -46,7 +56,8 @@ export const FinalPick = () => {
         image: "🎤", 
         realImage: maleIdol1,
         personality: "카리스마틱", 
-        description: "무대 위의 강렬한 존재감" 
+        description: "무대 위의 강렬한 존재감",
+        stats: { vocal: 95, dance: 88, visual: 90, charisma: 98, charm: 75, leadership: 92, talent: 89, popularity: 94 }
       },
       { 
         id: 2, 
@@ -54,7 +65,8 @@ export const FinalPick = () => {
         image: "🌟", 
         realImage: maleIdol2,
         personality: "밝고 긍정적", 
-        description: "햇살 같은 따뜻한 미소" 
+        description: "햇살 같은 따뜻한 미소",
+        stats: { vocal: 85, dance: 92, visual: 88, charisma: 80, charm: 95, leadership: 88, talent: 86, popularity: 90 }
       },
       { 
         id: 3, 
@@ -62,7 +74,8 @@ export const FinalPick = () => {
         image: "🎭", 
         realImage: maleIdol1,
         personality: "신비로운", 
-        description: "깊이 있는 감성과 예술혼" 
+        description: "깊이 있는 감성과 예술혼",
+        stats: { vocal: 90, dance: 78, visual: 95, charisma: 85, charm: 88, leadership: 75, talent: 94, popularity: 82 }
       },
       { 
         id: 4, 
@@ -70,7 +83,8 @@ export const FinalPick = () => {
         image: "⚡", 
         realImage: maleIdol2,
         personality: "에너지틱", 
-        description: "끝없는 열정과 활력" 
+        description: "끝없는 열정과 활력",
+        stats: { vocal: 80, dance: 96, visual: 83, charisma: 90, charm: 92, leadership: 85, talent: 88, popularity: 89 }
       }
     ];
 
@@ -81,7 +95,8 @@ export const FinalPick = () => {
         image: "🎀", 
         realImage: femaleIdol1,
         personality: "사랑스러운", 
-        description: "순수하고 귀여운 매력" 
+        description: "순수하고 귀여운 매력",
+        stats: { vocal: 88, dance: 85, visual: 92, charisma: 78, charm: 96, leadership: 70, talent: 84, popularity: 91 }
       },
       { 
         id: 2, 
@@ -89,7 +104,8 @@ export const FinalPick = () => {
         image: "💫", 
         realImage: femaleIdol2,
         personality: "우아한", 
-        description: "고급스럽고 세련된 분위기" 
+        description: "고급스럽고 세련된 분위기",
+        stats: { vocal: 93, dance: 80, visual: 96, charisma: 88, charm: 85, leadership: 90, talent: 89, popularity: 87 }
       },
       { 
         id: 3, 
@@ -97,7 +113,8 @@ export const FinalPick = () => {
         image: "🌸", 
         realImage: femaleIdol1,
         personality: "상큼한", 
-        description: "밝고 발랄한 에너지" 
+        description: "밝고 발랄한 에너지",
+        stats: { vocal: 82, dance: 94, visual: 86, charisma: 85, charm: 90, leadership: 88, talent: 87, popularity: 93 }
       },
       { 
         id: 4, 
@@ -105,7 +122,8 @@ export const FinalPick = () => {
         image: "🌙", 
         realImage: femaleIdol2,
         personality: "신비로운", 
-        description: "몽환적이고 매혹적인 아우라" 
+        description: "몽환적이고 매혹적인 아우라",
+        stats: { vocal: 91, dance: 83, visual: 94, charisma: 92, charm: 88, leadership: 75, talent: 93, popularity: 85 }
       }
     ];
 
@@ -163,6 +181,36 @@ export const FinalPick = () => {
                   <h3 className="text-xl font-bold">{idealType.name}</h3>
                   <p className="text-sm text-primary font-medium">{idealType.personality}</p>
                   <p className="text-sm text-muted-foreground">{idealType.description}</p>
+                </div>
+
+                {/* 8가지 스탯 레이더 차트 */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium text-center">능력치</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {Object.entries(idealType.stats).map(([stat, value]) => (
+                      <div key={stat} className="space-y-1">
+                        <div className="flex justify-between items-center">
+                          <span className="capitalize text-muted-foreground">
+                            {stat === 'vocal' ? '보컬' : 
+                             stat === 'dance' ? '댄스' :
+                             stat === 'visual' ? '비주얼' :
+                             stat === 'charisma' ? '카리스마' :
+                             stat === 'charm' ? '매력' :
+                             stat === 'leadership' ? '리더십' :
+                             stat === 'talent' ? '재능' :
+                             stat === 'popularity' ? '인기' : stat}
+                          </span>
+                          <span className="font-bold text-primary">{value}</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-1">
+                          <div 
+                            className="bg-gradient-primary h-1 rounded-full transition-all duration-500"
+                            style={{ width: `${value}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="space-y-2">
