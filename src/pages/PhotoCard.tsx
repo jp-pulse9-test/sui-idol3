@@ -21,9 +21,12 @@ interface IdealType {
 export const PhotoCard = () => {
   const [idealType, setIdealType] = useState<IdealType | null>(null);
   const [customText, setCustomText] = useState("");
-  const [borderColor, setBorderColor] = useState("#FFFFFF"); // 흰색으로 기본값 변경
+  const [borderColor, setBorderColor] = useState("#FFFFFF");
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [instagramPrompt, setInstagramPrompt] = useState("");
+  const [aiInstagramImage, setAiInstagramImage] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
 
@@ -38,179 +41,128 @@ export const PhotoCard = () => {
     try {
       const parsedFinalPick = JSON.parse(storedFinalPick);
       setIdealType(parsedFinalPick);
-      setCustomText("MY DESTINY CARD");
+      // 성향별 은유적 문구 설정
+      const personalityPoems = {
+        "창의적이고 열정적": "🌟 별빛처럼 반짝이는\n창조의 불꽃을 지닌 영혼",
+        "활발하고 사교적": "🌞 태양처럼 밝은 미소로\n모든 이를 환하게 비추는 존재",
+        "차분하고 신중한": "🌙 달빛처럼 고요한 깊이 속에\n지혜가 흐르는 마음",
+        "논리적이고 분석적": "💎 다이아몬드처럼 예리한 통찰로\n진리를 바라보는 눈",
+        "감성적이고 따뜻한": "🌸 벚꽃처럼 부드러운 감성으로\n세상을 포용하는 마음"
+      };
+      setCustomText(personalityPoems[parsedFinalPick.personality] || "✨ 특별한 영혼의\n아름다운 여정");
     } catch (error) {
       toast.error("데이터를 불러올 수 없습니다.");
       navigate('/');
     }
   }, [navigate]);
 
-  const generateAIImage = async () => {
-    if (!idealType) return;
+  const generateInstagramImage = async () => {
+    if (!idealType || !instagramPrompt.trim()) {
+      toast.error("인스타그램 주제를 입력해주세요!");
+      return;
+    }
     
     setIsGenerating(true);
     try {
-      // 선택된 아이돌의 실제 이미지를 기반으로 프롬프트 생성
-      const basePrompt = `Create a beautiful K-pop style portrait inspired by the selected idol ${idealType.name} with ${idealType.personality} personality.`;
-      const stylePrompt = "Professional idol photo, Korean pop star aesthetic, studio lighting, high quality, detailed face, expressive eyes, trendy hairstyle, fashionable outfit, vibrant colors, soft lighting, portrait photography";
-      const prompt = `${basePrompt} ${stylePrompt}`;
+      // 인스타그램 스타일 이미지 생성
+      const prompt = `Create an Instagram-style photo of ${idealType.name} (${idealType.personality} personality) in this scenario: ${instagramPrompt}. High quality, trendy, aesthetic, professional photography, Instagram-worthy composition, vibrant colors, good lighting`;
       
-      // Gemini API 호출 (텍스트 기반 설명 생성)
-      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Generate a detailed visual description for creating an AI image: ${prompt}. Focus on facial features, styling, colors, and mood that would represent a ${idealType.personality} K-pop idol.`
-            }]
-          }]
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('이미지 생성에 실패했습니다.');
-      }
-      
-      const data = await response.json();
-      
-      // 실제 아이돌 이미지를 기반으로 한 스타일화된 이미지 생성
       const canvas = document.createElement('canvas');
-      canvas.width = 400;
-      canvas.height = 500;
+      canvas.width = 320;
+      canvas.height = 480;
       const ctx = canvas.getContext('2d');
       
       if (ctx) {
-        // 원본 아이돌 이미지 로드
+        // 인스타그램 스타일 배경
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, '#ff9a9e');
+        gradient.addColorStop(0.3, '#fecfef');
+        gradient.addColorStop(0.6, '#fecfef');
+        gradient.addColorStop(1, '#ff9a9e');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 오버레이
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 인스타그램 스타일 프레임
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+        
+        // 아이돌 이미지 (중앙)
         if (idealType.realImage) {
           const img = new Image();
           img.onload = () => {
-            // 배경 그라데이션
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(0.5, '#764ba2');
-            gradient.addColorStop(1, '#f093fb');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // 원본 이미지를 필터와 함께 그리기 (stylized effect)
-            ctx.globalAlpha = 0.8;
-            const imgSize = 300;
+            const imgSize = 200;
             const imgX = (canvas.width - imgSize) / 2;
-            const imgY = 50;
+            const imgY = 80;
             
-            // 이미지에 artistic filter 효과
-            ctx.filter = 'blur(1px) brightness(1.2) contrast(1.1) saturate(1.3)';
+            // 원형 이미지
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI * 2);
+            ctx.clip();
             ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
-            ctx.filter = 'none';
-            ctx.globalAlpha = 1;
+            ctx.restore();
             
-            // 오버레이 효과
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.fillRect(imgX, imgY, imgSize, imgSize);
-            
-            // AI Generated 워터마크
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 18px Inter, sans-serif';
+            // 인스타그램 스타일 텍스트
+            ctx.font = 'bold 24px Inter, sans-serif';
             ctx.textAlign = 'center';
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
             ctx.lineWidth = 2;
-            ctx.strokeText('AI Enhanced Portrait', canvas.width / 2, 30);
-            ctx.fillText('AI Enhanced Portrait', canvas.width / 2, 30);
-            
-            // 아이돌 이름
-            ctx.font = 'bold 32px Inter, sans-serif';
             ctx.strokeText(idealType.name, canvas.width / 2, imgY + imgSize + 40);
             ctx.fillText(idealType.name, canvas.width / 2, imgY + imgSize + 40);
             
-            // 성격 설명
-            ctx.font = 'italic 18px Inter, sans-serif';
-            ctx.fillStyle = borderColor;
-            ctx.fillText(`"${idealType.personality}"`, canvas.width / 2, imgY + imgSize + 70);
+            // 주제 텍스트
+            ctx.font = '18px Inter, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            const words = instagramPrompt.split(' ');
+            let line = '';
+            let y = imgY + imgSize + 80;
             
-            // 장식 요소들
-            ctx.fillStyle = borderColor;
-            for (let i = 0; i < 15; i++) {
-              ctx.beginPath();
-              ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 2 + 1, 0, Math.PI * 2);
-              ctx.fill();
+            for (let n = 0; n < words.length; n++) {
+              const testLine = line + words[n] + ' ';
+              const metrics = ctx.measureText(testLine);
+              if (metrics.width > canvas.width - 60 && n > 0) {
+                ctx.strokeText(line, canvas.width / 2, y);
+                ctx.fillText(line, canvas.width / 2, y);
+                line = words[n] + ' ';
+                y += 25;
+              } else {
+                line = testLine;
+              }
             }
+            ctx.strokeText(line, canvas.width / 2, y);
+            ctx.fillText(line, canvas.width / 2, y);
             
-            setGeneratedImage(canvas.toDataURL());
-            toast.success("AI enhanced 이미지가 생성되었습니다!");
+            setAiInstagramImage(canvas.toDataURL());
+            toast.success("인스타그램 스타일 이미지가 생성되었습니다!");
           };
           img.crossOrigin = "anonymous";
           img.src = idealType.realImage;
         } else {
-          // fallback to original method
-          generateFallbackImage(ctx, canvas);
+          // fallback
+          ctx.font = 'bold 60px serif';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+          ctx.lineWidth = 3;
+          ctx.strokeText(idealType.image, canvas.width / 2, canvas.height / 2);
+          ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2);
+          
+          setAiInstagramImage(canvas.toDataURL());
+          toast.success("인스타그램 스타일 이미지가 생성되었습니다!");
         }
       }
     } catch (error) {
-      console.error('AI 이미지 생성 오류:', error);
-      // fallback 이미지 생성
-      const canvas = document.createElement('canvas');
-      canvas.width = 400;
-      canvas.height = 500;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        generateFallbackImage(ctx, canvas);
-      }
-      toast.success("스타일화된 이미지가 생성되었습니다!");
+      console.error('인스타그램 이미지 생성 오류:', error);
+      toast.error("이미지 생성에 실패했습니다.");
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const generateFallbackImage = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
-    // K-pop 스타일 그라데이션 배경
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#ff6b6b');
-    gradient.addColorStop(0.3, '#4ecdc4');
-    gradient.addColorStop(0.6, '#45b7d1');
-    gradient.addColorStop(1, '#f9ca24');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 오버레이 효과
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // AI Generated 워터마크
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 20px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.strokeText('AI Generated K-pop Idol', canvas.width / 2, 50);
-    ctx.fillText('AI Generated K-pop Idol', canvas.width / 2, 50);
-    
-    // 아이돌 이름 (큰 텍스트)
-    ctx.font = 'bold 48px Inter, sans-serif';
-    ctx.strokeText(idealType.name, canvas.width / 2, canvas.height / 2);
-    ctx.fillText(idealType.name, canvas.width / 2, canvas.height / 2);
-    
-    // 성격 설명
-    ctx.font = 'bold 24px Inter, sans-serif';
-    ctx.strokeText(idealType.personality, canvas.width / 2, canvas.height / 2 + 60);
-    ctx.fillText(idealType.personality, canvas.width / 2, canvas.height / 2 + 60);
-    
-    // 아이돌 이모티콘 (중앙)
-    ctx.font = 'bold 120px serif';
-    ctx.strokeText(idealType.image, canvas.width / 2, canvas.height / 2 - 40);
-    ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2 - 40);
-    
-    // 장식 요소들
-    ctx.fillStyle = borderColor;
-    for (let i = 0; i < 20; i++) {
-      ctx.beginPath();
-      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3 + 1, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    
-    setGeneratedImage(canvas.toDataURL());
   };
 
   const generatePhotoCard = () => {
@@ -220,11 +172,21 @@ export const PhotoCard = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 모던한 프로필 카드 비율
+    // 카드 크기
     canvas.width = 320;
     canvas.height = 480;
 
-    // 모던한 그라데이션 배경
+    if (isFlipped && aiInstagramImage) {
+      // 뒷면: AI 생성 인스타그램 이미지 전체 표시
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = aiInstagramImage;
+      return;
+    }
+
+    // 앞면: 모던한 그라데이션 배경
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, '#0f172a');
     gradient.addColorStop(0.5, '#1e293b');
@@ -291,51 +253,21 @@ export const PhotoCard = () => {
         ctx.fillStyle = borderColor;
         ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
 
-        // AI 생성 이미지가 있으면 표시
-        if (generatedImage) {
-          const aiImg = new Image();
-          aiImg.onload = () => {
-            const aiImgWidth = 200;
-            const aiImgHeight = 150;
-            const aiImgX = (canvas.width - aiImgWidth) / 2;
-            const aiImgY = tagY + 50;
-            
-            // AI 이미지 배경
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.fillRect(aiImgX - 5, aiImgY - 5, aiImgWidth + 10, aiImgHeight + 10);
-            
-            // AI 이미지
-            ctx.drawImage(aiImg, aiImgX, aiImgY, aiImgWidth, aiImgHeight);
-            
-            // AI 이미지 테두리
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = 1;
-            ctx.strokeRect(aiImgX, aiImgY, aiImgWidth, aiImgHeight);
-          };
-          aiImg.src = generatedImage;
-        }
-
-        // 커스텀 텍스트 (하단)
-        ctx.font = 'bold 16px Inter, sans-serif';
+        // 은유적 시 문구 (하단 중앙)
+        ctx.font = 'italic 18px Inter, sans-serif';
         ctx.fillStyle = '#ffffff';
-        const words = customText.split(' ');
-        let line = '';
-        let y = canvas.height - 100;
+        ctx.textAlign = 'center';
+        const lines = customText.split('\n');
+        let y = canvas.height - 120;
         
-        for (let n = 0; n < words.length; n++) {
-          const testLine = line + words[n] + ' ';
-          const metrics = ctx.measureText(testLine);
-          const testWidth = metrics.width;
-          
-          if (testWidth > canvas.width - 80 && n > 0) {
-            ctx.fillText(line, canvas.width / 2, y);
-            line = words[n] + ' ';
-            y += 25;
-          } else {
-            line = testLine;
+        lines.forEach((line, index) => {
+          if (line.trim()) {
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.strokeText(line, canvas.width / 2, y + (index * 25));
+            ctx.fillText(line, canvas.width / 2, y + (index * 25));
           }
-        }
-        ctx.fillText(line, canvas.width / 2, y);
+        });
         
         // 하단 장식선
         ctx.strokeStyle = borderColor;
@@ -395,27 +327,21 @@ export const PhotoCard = () => {
       ctx.fillStyle = borderColor;
       ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
 
-      // 커스텀 텍스트
-      ctx.font = 'bold 16px Inter, sans-serif';
+      // 은유적 시 문구 (하단 중앙)
+      ctx.font = 'italic 18px Inter, sans-serif';
       ctx.fillStyle = '#ffffff';
-      const words = customText.split(' ');
-      let line = '';
-      let y = canvas.height - 100;
+      ctx.textAlign = 'center';
+      const lines = customText.split('\n');
+      let y = canvas.height - 120;
       
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-        
-        if (testWidth > canvas.width - 80 && n > 0) {
-          ctx.fillText(line, canvas.width / 2, y);
-          line = words[n] + ' ';
-          y += 25;
-        } else {
-          line = testLine;
+      lines.forEach((line, index) => {
+        if (line.trim()) {
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.lineWidth = 1;
+          ctx.strokeText(line, canvas.width / 2, y + (index * 25));
+          ctx.fillText(line, canvas.width / 2, y + (index * 25));
         }
-      }
-      ctx.fillText(line, canvas.width / 2, y);
+      });
       
       // 하단 장식선
       ctx.strokeStyle = borderColor;
@@ -457,7 +383,7 @@ export const PhotoCard = () => {
     if (idealType) {
       generatePhotoCard();
     }
-  }, [idealType, customText, borderColor, generatedImage]);
+  }, [idealType, customText, borderColor, generatedImage, isFlipped, aiInstagramImage]);
 
   if (!idealType) {
     return (
@@ -484,11 +410,27 @@ export const PhotoCard = () => {
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-center">미리보기</h3>
                <div className="flex justify-center">
-                 <canvas 
-                   ref={canvasRef}
-                   className="border border-border rounded-lg transition-all duration-500 shadow-[0_0_10px_hsl(195_100%_60%/0.3),0_0_20px_hsl(195_100%_60%/0.2)] hover:shadow-[0_0_20px_hsl(195_100%_60%),0_0_40px_hsl(195_100%_60%),0_0_80px_hsl(195_100%_60%)] hover:scale-105 cursor-pointer"
-                   style={{ maxWidth: '100%', height: 'auto' }}
-                 />
+                 <div 
+                   className="relative perspective-1000"
+                   style={{ transformStyle: 'preserve-3d' }}
+                 >
+                   <canvas 
+                     ref={canvasRef}
+                     onClick={() => aiInstagramImage && setIsFlipped(!isFlipped)}
+                     className={`border border-border rounded-lg transition-all duration-700 shadow-[0_0_10px_hsl(195_100%_60%/0.3),0_0_20px_hsl(195_100%_60%/0.2)] hover:shadow-[0_0_20px_hsl(195_100%_60%),0_0_40px_hsl(195_100%_60%),0_0_80px_hsl(195_100%_60%)] hover:scale-105 ${aiInstagramImage ? 'cursor-pointer' : ''}`}
+                     style={{ 
+                       maxWidth: '100%', 
+                       height: 'auto',
+                       transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                       transformStyle: 'preserve-3d'
+                     }}
+                   />
+                   {aiInstagramImage && (
+                     <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                       클릭하여 뒤집기
+                     </div>
+                   )}
+                 </div>
                </div>
             </div>
           </Card>
@@ -500,14 +442,14 @@ export const PhotoCard = () => {
               
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="customText" className="text-sm font-medium">
-                    프로필카드 문구
+                  <Label htmlFor="instagramPrompt" className="text-sm font-medium">
+                    인스타그램 컨셉 (뒷면 이미지)
                   </Label>
                   <Input
-                    id="customText"
-                    value={customText}
-                    onChange={(e) => setCustomText(e.target.value)}
-                    placeholder="프로필카드에 들어갈 특별한 문구를 입력하세요"
+                    id="instagramPrompt"
+                    value={instagramPrompt}
+                    onChange={(e) => setInstagramPrompt(e.target.value)}
+                    placeholder="예: 카페에서 커피 마시는 모습, 콘서트 무대 위에서, 공원에서 산책"
                     className="mt-1"
                   />
                 </div>
@@ -559,13 +501,13 @@ export const PhotoCard = () => {
 
               <div className="space-y-3">
                 <Button
-                  onClick={generateAIImage}
+                  onClick={generateInstagramImage}
                   variant="premium"
                   size="lg"
                   className="w-full"
-                  disabled={isGenerating}
+                  disabled={isGenerating || !instagramPrompt.trim()}
                 >
-                  {isGenerating ? "AI 이미지 생성중..." : "🤖 AI Enhanced 생성"}
+                  {isGenerating ? "인스타 이미지 생성중..." : "📸 인스타그램 컨셉 생성"}
                 </Button>
                 
                 <Button
