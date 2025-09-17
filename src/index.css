@@ -145,12 +145,12 @@
   }
 
   .neon-text {
-    color: hsl(var(--primary));
+    color: hsl(var(--neon-purple));
     text-shadow: 
-      0 0 5px hsl(var(--primary)),
-      0 0 10px hsl(var(--primary)),
-      0 0 20px hsl(var(--primary)),
-      0 0 40px hsl(var(--primary));
+      0 0 5px hsl(var(--neon-purple)),
+      0 0 10px hsl(var(--neon-purple)),
+      0 0 20px hsl(var(--neon-purple)),
+      0 0 40px hsl(var(--neon-purple));
   }
 
   .animate-neon-flicker {
@@ -173,10 +173,10 @@
   @keyframes neon-flicker {
     0%, 18%, 22%, 25%, 53%, 57%, 100% {
       text-shadow: 
-        0 0 5px hsl(195 100% 60%),
-        0 0 10px hsl(195 100% 60%),
-        0 0 20px hsl(195 100% 60%),
-        0 0 40px hsl(195 100% 60%);
+        0 0 5px hsl(280 100% 60%),
+        0 0 10px hsl(280 100% 60%),
+        0 0 20px hsl(280 100% 60%),
+        0 0 40px hsl(280 100% 60%);
     }
     20%, 24%, 55% {
       text-shadow: none;

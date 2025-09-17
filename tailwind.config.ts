@@ -64,6 +64,7 @@ export default {
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
         dancing: ['Dancing Script', 'cursive'],
+        blacksword: ['Blacksword', 'serif'],
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',

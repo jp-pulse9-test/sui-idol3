@@ -45,7 +45,7 @@ const Index = () => {
         <section className="min-h-screen flex items-center justify-center">
           <div className="text-center space-y-8 bg-card/80 backdrop-blur-sm p-12 rounded-2xl border border-border shadow-glow-primary">
             <div className="space-y-6">
-              <h1 className="text-6xl md:text-8xl font-black neon-text animate-neon-flicker font-dancing">
+              <h1 className="text-6xl md:text-8xl font-black neon-text animate-neon-flicker font-blacksword">
                 Sui:AIDOL³
               </h1>
               <div className="space-y-2">
