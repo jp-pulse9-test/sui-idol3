@@ -42,12 +42,11 @@ export const PhotoCard = () => {
       const parsedFinalPick = JSON.parse(storedFinalPick);
       setIdealType(parsedFinalPick);
       
-      // 사용자 MBTI 결과 가져오기
-      const mbtiResult = localStorage.getItem('mbtiResult');
-      const mbtiData = mbtiResult ? JSON.parse(mbtiResult) : null;
+      // 사용자 MBTI 결과 가져오기 (문자열)
+      const mbtiType = localStorage.getItem('mbtiResult');
       
       // 사용자 성향 분석 - 왜 이 아이돌을 선택했는지 해석
-      const getPersonalityAnalysis = (personality: string, mbti: any) => {
+      const getPersonalityAnalysis = (personality: string, mbtiType: string | null) => {
         const analyses = {
           "카리스마틱": {
             default: "⚡ 당신은 강렬한 카리스마와 리더십에 끌리는 사람입니다.\n무대 위의 강렬한 존재감과 확신에 찬 모습에 매료되며,\n함께 있으면 더 강해질 수 있는 파트너를 원하는 마음이 드러났어요.",
@@ -86,14 +85,14 @@ export const PhotoCard = () => {
         const personalityAnalysis = analyses[personality];
         if (!personalityAnalysis) return "✨ 당신만의 특별한 취향과 감성이\n이 선택에 고스란히 담겨있습니다.";
         
-        if (mbti && personalityAnalysis[mbti.type]) {
-          return personalityAnalysis[mbti.type];
+        if (mbtiType && personalityAnalysis[mbtiType]) {
+          return personalityAnalysis[mbtiType];
         }
         
         return personalityAnalysis.default;
-      };
+      }; 
       
-      setCustomText(getPersonalityAnalysis(parsedFinalPick.personality, mbtiData));
+      setCustomText(getPersonalityAnalysis(parsedFinalPick.personality, mbtiType));
     } catch (error) {
       toast.error("데이터를 불러올 수 없습니다.");
       navigate('/');

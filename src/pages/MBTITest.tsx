@@ -153,6 +153,8 @@ export const MBTITest = () => {
         description: generateDescription(mbtiResult)
       };
 
+      // 결과 저장 (문자열 MBTI + 상세 프로필)
+      localStorage.setItem('mbtiResult', mbtiResult);
       localStorage.setItem('personalityProfile', JSON.stringify(personalityProfile));
       toast.success(`당신의 입덕 타입은 ${mbtiResult}입니다!`);
       navigate('/appearance');
