@@ -43,7 +43,7 @@ const Index = () => {
       <div className="relative z-10 mx-auto max-w-4xl px-4">
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/10 shadow-2xl animate-float">
+          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
             <div className="space-y-8">
               <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
                 Sui:AIdol³
@@ -62,9 +62,9 @@ const Index = () => {
             <div className="flex flex-col gap-6 items-center">
               <Button
                 onClick={() => navigate('/mbti')}
-                variant="neon"
+                variant="default"
                 size="xl"
-                className="btn-modern min-w-80 text-2xl py-6"
+                className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 ⚡ 입덕 성향 분석 시작 ⚡
               </Button>
@@ -74,7 +74,7 @@ const Index = () => {
             </div>
             
             {/* 시즌 정보 */}
-            <div className="mt-12 p-8 glass rounded-2xl border border-primary/20 glow-primary">
+            <div className="mt-12 p-8 glass rounded-2xl border border-white/10 shadow-lg">
               <div className="text-center space-y-4">
                 <h3 className="text-2xl font-bold gradient-text">AI심쿵챌린지 2025</h3>
                 <p className="text-5xl font-black text-foreground">101</p>
