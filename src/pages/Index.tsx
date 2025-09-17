@@ -45,7 +45,7 @@ const Index = () => {
         <section className="min-h-screen flex items-center justify-center">
           <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/10 shadow-2xl animate-float">
             <div className="space-y-8">
-              <h1 className="text-7xl md:text-9xl font-black neon-text animate-neon-flicker font-blacksword tracking-tight">
+              <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
                 Sui:AIdol³
               </h1>
               <div className="space-y-4">
@@ -64,7 +64,7 @@ const Index = () => {
                 onClick={() => navigate('/mbti')}
                 variant="neon"
                 size="xl"
-                className="btn-modern min-w-80 text-2xl py-6 animate-glow"
+                className="btn-modern min-w-80 text-2xl py-6"
               >
                 ⚡ 입덕 성향 분석 시작 ⚡
               </Button>
