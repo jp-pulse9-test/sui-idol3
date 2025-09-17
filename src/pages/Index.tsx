@@ -53,8 +53,8 @@ const Index = () => {
                   가상아이돌 이상형 찾기
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  아이돌 입덕 성향 분석을 통해 당신이 반하는 모먼트를 찾고,<br />
-                  이상형 월드컵으로 최종 선택한 후 나만의 포토카드를 만들어보세요!
+                  당신의 성향과 맞는 최애 아이돌을 찾고, 아이돌의 일상속 숨은 모습을 수집해보세요.<br />
+                  당신의 관심으로 아이돌이 성장합니다.
                 </p>
               </div>
             </div>
@@ -66,7 +66,7 @@ const Index = () => {
                 size="xl"
                 className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                ⚡ 입덕 성향 분석 시작 ⚡
+                최애 찾으러 가기
               </Button>
               <p className="text-lg text-muted-foreground">
                 8개 질문으로 당신의 입덕 성향을 분석해보세요
@@ -76,7 +76,7 @@ const Index = () => {
             {/* 시즌 정보 */}
             <div className="mt-12 p-8 glass rounded-2xl border border-white/10 shadow-lg">
               <div className="text-center space-y-4">
-                <h3 className="text-2xl font-bold gradient-text">AI심쿵챌린지 2025</h3>
+                <h3 className="text-2xl font-bold gradient-text">2025 AI심쿵챌린지</h3>
                 <p className="text-5xl font-black text-foreground">101</p>
                 <p className="text-lg text-muted-foreground">SEASON 1</p>
                 <p className="text-base text-muted-foreground">
