@@ -295,16 +295,16 @@ export const PhotoCard = () => {
         ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
 
         // 은유적 시 문구 (하단 중앙)
-        ctx.font = 'italic 16px Inter, sans-serif';
+        ctx.font = 'italic 14px Inter, sans-serif';
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         const lines = customText.split('\n');
-        let y = canvas.height - 100;
+        let y = canvas.height - 80; // 더 여유있게 위치 조정
         
         lines.forEach((line, index) => {
           if (line.trim()) {
             // 줄바꿈 간격 조정
-            const lineY = y + (index * 22);
+            const lineY = y + (index * 18); // 줄간격 더 좁게
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
             ctx.lineWidth = 1;
             ctx.strokeText(line, canvas.width / 2, lineY);
@@ -312,12 +312,12 @@ export const PhotoCard = () => {
           }
         });
         
-        // 하단 장식선
+        // 하단 장식선 (텍스트 아래로 위치 조정)
         ctx.strokeStyle = borderColor;
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(50, canvas.height - 50);
-        ctx.lineTo(canvas.width - 50, canvas.height - 50);
+        ctx.moveTo(50, canvas.height - 20);
+        ctx.lineTo(canvas.width - 50, canvas.height - 20);
         ctx.stroke();
       };
       img.crossOrigin = "anonymous";
@@ -371,15 +371,15 @@ export const PhotoCard = () => {
       ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
 
       // 은유적 시 문구 (하단 중앙) - fallback용
-      ctx.font = 'italic 16px Inter, sans-serif';
+      ctx.font = 'italic 14px Inter, sans-serif';
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
       const lines = customText.split('\n');
-      let y = canvas.height - 100;
+      let y = canvas.height - 80;
       
       lines.forEach((line, index) => {
         if (line.trim()) {
-          const lineY = y + (index * 22);
+          const lineY = y + (index * 18);
           ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
           ctx.lineWidth = 1;
           ctx.strokeText(line, canvas.width / 2, lineY);
@@ -387,12 +387,12 @@ export const PhotoCard = () => {
         }
       });
       
-      // 하단 장식선
+      // 하단 장식선 (fallback용)
       ctx.strokeStyle = borderColor;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(50, canvas.height - 50);
-      ctx.lineTo(canvas.width - 50, canvas.height - 50);
+      ctx.moveTo(50, canvas.height - 20);
+      ctx.lineTo(canvas.width - 50, canvas.height - 20);
       ctx.stroke();
     }
   };
