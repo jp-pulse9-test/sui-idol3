@@ -43,43 +43,43 @@ const Index = () => {
       <div className="relative z-10 mx-auto max-w-4xl px-4">
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-8 bg-card/80 backdrop-blur-sm p-12 rounded-2xl border border-border shadow-glow-primary">
-            <div className="space-y-6">
-              <h1 className="text-6xl md:text-8xl font-black neon-text animate-neon-flicker font-blacksword">
+          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/10 shadow-2xl animate-float">
+            <div className="space-y-8">
+              <h1 className="text-7xl md:text-9xl font-black neon-text animate-neon-flicker font-blacksword tracking-tight">
                 Sui:AIdol³
               </h1>
-              <div className="space-y-2">
-                <h2 className="text-2xl md:text-3xl font-bold text-primary">
+              <div className="space-y-4">
+                <h2 className="text-3xl md:text-4xl font-bold gradient-text">
                   가상아이돌 이상형 찾기
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   아이돌 입덕 성향 분석을 통해 당신이 반하는 모먼트를 찾고,<br />
                   이상형 월드컵으로 최종 선택한 후 나만의 포토카드를 만들어보세요!
                 </p>
               </div>
             </div>
             
-            <div className="flex flex-col gap-4 items-center">
+            <div className="flex flex-col gap-6 items-center">
               <Button
                 onClick={() => navigate('/mbti')}
                 variant="neon"
                 size="xl"
-                className="min-w-64 text-xl py-4 animate-glow"
+                className="btn-modern min-w-80 text-2xl py-6 animate-glow"
               >
                 ⚡ 입덕 성향 분석 시작 ⚡
               </Button>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-lg text-muted-foreground">
                 8개 질문으로 당신의 입덕 성향을 분석해보세요
               </p>
             </div>
             
             {/* 시즌 정보 */}
-            <div className="mt-8 p-4 bg-gradient-primary/10 rounded-lg border border-primary/30">
-              <div className="text-center space-y-2">
-                <h3 className="text-lg font-bold text-primary">AI심쿵챌린지 2025</h3>
-                <p className="text-3xl font-black text-foreground">101</p>
-                <p className="text-sm text-muted-foreground">SEASON 1</p>
-                <p className="text-xs text-muted-foreground">
+            <div className="mt-12 p-8 glass rounded-2xl border border-primary/20 glow-primary">
+              <div className="text-center space-y-4">
+                <h3 className="text-2xl font-bold gradient-text">AI심쿵챌린지 2025</h3>
+                <p className="text-5xl font-black text-foreground">101</p>
+                <p className="text-lg text-muted-foreground">SEASON 1</p>
+                <p className="text-base text-muted-foreground">
                   당신의 이상형을 찾아가는 특별한 여정
                 </p>
               </div>
