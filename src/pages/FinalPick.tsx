@@ -68,8 +68,8 @@ export const FinalPick = () => {
         realImage: maleIdol1,
         personality: "카리스마틱", 
         description: "무대 위의 강렬한 존재감",
-        stats: { vocal: 75, dance: 68, visual: 70, charisma: 78, charm: 55, leadership: 72, talent: 69, popularity: 64 },
-        potentialStats: { vocal: 95, dance: 88, visual: 90, charisma: 98, charm: 75, leadership: 92, talent: 89, popularity: 94 }
+        stats: { vocal: 70, dance: 60, visual: 65, charisma: 85, charm: 50, leadership: 90, talent: 75, popularity: 55 },
+        potentialStats: { vocal: 88, dance: 80, visual: 85, charisma: 98, charm: 70, leadership: 95, talent: 90, popularity: 85 }
       },
       { 
         id: 2, 
@@ -78,8 +78,8 @@ export const FinalPick = () => {
         realImage: maleIdol2,
         personality: "밝고 긍정적", 
         description: "햇살 같은 따뜻한 미소",
-        stats: { vocal: 65, dance: 72, visual: 68, charisma: 60, charm: 75, leadership: 68, talent: 66, popularity: 70 },
-        potentialStats: { vocal: 85, dance: 92, visual: 88, charisma: 80, charm: 95, leadership: 88, talent: 86, popularity: 90 }
+        stats: { vocal: 65, dance: 70, visual: 60, charisma: 55, charm: 85, leadership: 65, talent: 60, popularity: 80 },
+        potentialStats: { vocal: 80, dance: 85, visual: 78, charisma: 75, charm: 95, leadership: 82, talent: 78, popularity: 92 }
       },
       { 
         id: 3, 
@@ -88,8 +88,8 @@ export const FinalPick = () => {
         realImage: maleIdol1,
         personality: "신비로운", 
         description: "깊이 있는 감성과 예술혼",
-        stats: { vocal: 70, dance: 58, visual: 75, charisma: 65, charm: 68, leadership: 55, talent: 74, popularity: 62 },
-        potentialStats: { vocal: 90, dance: 78, visual: 95, charisma: 85, charm: 88, leadership: 75, talent: 94, popularity: 82 }
+        stats: { vocal: 80, dance: 45, visual: 90, charisma: 70, charm: 75, leadership: 40, talent: 85, popularity: 50 },
+        potentialStats: { vocal: 95, dance: 65, visual: 98, charisma: 88, charm: 90, leadership: 60, talent: 96, popularity: 75 }
       },
       { 
         id: 4, 
@@ -98,8 +98,8 @@ export const FinalPick = () => {
         realImage: maleIdol2,
         personality: "에너지틱", 
         description: "끝없는 열정과 활력",
-        stats: { vocal: 60, dance: 76, visual: 63, charisma: 70, charm: 72, leadership: 65, talent: 68, popularity: 69 },
-        potentialStats: { vocal: 80, dance: 96, visual: 83, charisma: 90, charm: 92, leadership: 85, talent: 88, popularity: 89 }
+        stats: { vocal: 50, dance: 90, visual: 55, charisma: 75, charm: 70, leadership: 60, talent: 65, popularity: 75 },
+        potentialStats: { vocal: 70, dance: 98, visual: 75, charisma: 90, charm: 88, leadership: 80, talent: 82, popularity: 90 }
       }
     ];
 
@@ -111,8 +111,8 @@ export const FinalPick = () => {
         realImage: femaleIdol1,
         personality: "사랑스러운", 
         description: "순수하고 귀여운 매력",
-        stats: { vocal: 68, dance: 65, visual: 72, charisma: 58, charm: 76, leadership: 50, talent: 64, popularity: 71 },
-        potentialStats: { vocal: 88, dance: 85, visual: 92, charisma: 78, charm: 96, leadership: 70, talent: 84, popularity: 91 }
+        stats: { vocal: 60, dance: 65, visual: 85, charisma: 50, charm: 90, leadership: 45, talent: 55, popularity: 80 },
+        potentialStats: { vocal: 78, dance: 82, visual: 95, charisma: 70, charm: 98, leadership: 65, talent: 75, popularity: 92 }
       },
       { 
         id: 2, 
@@ -121,8 +121,8 @@ export const FinalPick = () => {
         realImage: femaleIdol2,
         personality: "우아한", 
         description: "고급스럽고 세련된 분위기",
-        stats: { vocal: 73, dance: 60, visual: 76, charisma: 68, charm: 65, leadership: 70, talent: 69, popularity: 67 },
-        potentialStats: { vocal: 93, dance: 80, visual: 96, charisma: 88, charm: 85, leadership: 90, talent: 89, popularity: 87 }
+        stats: { vocal: 85, dance: 55, visual: 80, charisma: 75, charm: 70, leadership: 80, talent: 80, popularity: 60 },
+        potentialStats: { vocal: 96, dance: 75, visual: 92, charisma: 90, charm: 85, leadership: 95, talent: 92, popularity: 80 }
       },
       { 
         id: 3, 
@@ -131,8 +131,8 @@ export const FinalPick = () => {
         realImage: femaleIdol1,
         personality: "상큼한", 
         description: "밝고 발랄한 에너지",
-        stats: { vocal: 62, dance: 74, visual: 66, charisma: 65, charm: 70, leadership: 68, talent: 67, popularity: 73 },
-        potentialStats: { vocal: 82, dance: 94, visual: 86, charisma: 85, charm: 90, leadership: 88, talent: 87, popularity: 93 }
+        stats: { vocal: 55, dance: 85, visual: 70, charisma: 65, charm: 80, leadership: 70, talent: 60, popularity: 85 },
+        potentialStats: { vocal: 75, dance: 95, visual: 85, charisma: 82, charm: 92, leadership: 85, talent: 78, popularity: 96 }
       },
       { 
         id: 4, 
@@ -141,8 +141,8 @@ export const FinalPick = () => {
         realImage: femaleIdol2,
         personality: "신비로운", 
         description: "몽환적이고 매혹적인 아우라",
-        stats: { vocal: 71, dance: 63, visual: 74, charisma: 72, charm: 68, leadership: 55, talent: 73, popularity: 65 },
-        potentialStats: { vocal: 91, dance: 83, visual: 94, charisma: 92, charm: 88, leadership: 75, talent: 93, popularity: 85 }
+        stats: { vocal: 75, dance: 50, visual: 95, charisma: 85, charm: 65, leadership: 45, talent: 80, popularity: 55 },
+        potentialStats: { vocal: 90, dance: 70, visual: 98, charisma: 96, charm: 82, leadership: 65, talent: 94, popularity: 78 }
       }
     ];
 
