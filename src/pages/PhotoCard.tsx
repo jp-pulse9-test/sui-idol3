@@ -259,7 +259,7 @@ export const PhotoCard = () => {
                <div className="flex justify-center">
                  <canvas 
                    ref={canvasRef}
-                   className="border border-border rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_theme(colors.primary),0_0_40px_theme(colors.primary),0_0_80px_theme(colors.primary)] hover:scale-105 cursor-pointer"
+                   className="border border-border rounded-lg transition-all duration-500 hover:shadow-[0_0_20px_hsl(195_100%_60%),0_0_40px_hsl(195_100%_60%),0_0_80px_hsl(195_100%_60%)] hover:scale-105 cursor-pointer"
                    style={{ maxWidth: '100%', height: 'auto' }}
                  />
                </div>
