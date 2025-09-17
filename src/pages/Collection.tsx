@@ -1,19 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
+interface SavedCard {
+  id: number;
+  name: string;
+  image: string;
+  personality: string;
+  customText: string;
+  borderColor: string;
+  createdAt: string;
+}
+
 const Collection = () => {
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [collection, setCollection] = useState<any[]>([]);
+  const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
   const navigate = useNavigate();
 
-  const connectWallet = () => {
-    // 실제 월렛 연결 로직은 Web3 백엔드가 필요합니다
-    toast.info("월렛 연결 기능은 Supabase 연동 후 구현됩니다");
-    setIsWalletConnected(true);
+  useEffect(() => {
+    const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+    setSavedCards(cards);
+  }, []);
+
+  const deleteCard = (id: number) => {
+    const updatedCards = savedCards.filter(card => card.id !== id);
+    setSavedCards(updatedCards);
+    localStorage.setItem('savedCards', JSON.stringify(updatedCards));
+    toast.success("프로필카드가 삭제되었습니다!");
+  };
+
+  const downloadCard = (card: SavedCard) => {
+    const link = document.createElement('a');
+    link.download = `${card.name}-profile-card.png`;
+    link.href = card.image;
+    link.click();
+    toast.success("프로필카드가 다운로드되었습니다!");
   };
 
   return (
@@ -21,82 +44,108 @@ const Collection = () => {
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">My Collection</h1>
-          <p className="text-muted-foreground">나만의 포토카드 컬렉션을 관리하세요</p>
+          <h1 className="text-4xl font-bold gradient-text">내 프로필카드 보관함</h1>
+          <p className="text-muted-foreground">생성한 프로필카드들을 모아서 관리하세요</p>
+          <Badge variant="secondary" className="px-4 py-2">
+            총 {savedCards.length}개의 카드
+          </Badge>
         </div>
 
-        {/* Wallet Connection */}
-        <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold">월렛 연결</h3>
-              <p className="text-muted-foreground">
-                {isWalletConnected 
-                  ? "월렛이 연결되었습니다" 
-                  : "포토카드를 수집하려면 월렛을 연결하세요"
-                }
-              </p>
-            </div>
-            {!isWalletConnected ? (
-              <Button onClick={connectWallet} variant="neon" size="lg">
-                월렛 연결
-              </Button>
-            ) : (
-              <Badge variant="secondary" className="px-4 py-2">
-                연결됨
-              </Badge>
-            )}
-          </div>
-        </Card>
-
         {/* Collection Grid */}
-        {isWalletConnected ? (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">내 포토카드</h2>
-            {collection.length === 0 ? (
-              <Card className="p-12 text-center bg-card/60 backdrop-blur-sm border-border">
-                <div className="space-y-4">
-                  <div className="text-6xl">📱</div>
-                  <h3 className="text-xl font-bold">컬렉션이 비어있습니다</h3>
-                  <p className="text-muted-foreground">
-                    첫 번째 포토카드를 만들어보세요!
-                  </p>
-                  <Button 
-                    onClick={() => navigate('/mbti')}
-                    variant="hero"
-                    size="lg"
-                  >
-                    포토카드 만들기
-                  </Button>
-                </div>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {/* 포토카드들이 여기에 표시됩니다 */}
+        <div className="space-y-6">
+          {savedCards.length === 0 ? (
+            <Card className="p-12 text-center bg-card/60 backdrop-blur-sm border-border">
+              <div className="space-y-4">
+                <div className="text-6xl">📱</div>
+                <h3 className="text-xl font-bold">보관함이 비어있습니다</h3>
+                <p className="text-muted-foreground">
+                  첫 번째 프로필카드를 만들어보세요!
+                </p>
+                <Button 
+                  onClick={() => navigate('/gender-select')}
+                  variant="premium"
+                  size="lg"
+                >
+                  프로필카드 만들기
+                </Button>
               </div>
-            )}
-          </div>
-        ) : (
-          <Card className="p-12 text-center bg-card/60 backdrop-blur-sm border-border">
-            <div className="space-y-4">
-              <div className="text-6xl">🔒</div>
-              <h3 className="text-xl font-bold">월렛을 연결해주세요</h3>
-              <p className="text-muted-foreground">
-                포토카드 컬렉션을 보려면 월렛 연결이 필요합니다
-              </p>
+            </Card>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {savedCards.map((card) => (
+                <Card key={card.id} className="p-6 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 transition-all duration-300">
+                  <div className="space-y-4">
+                    {/* 카드 이미지 */}
+                    <div className="relative group">
+                      <img 
+                        src={card.image} 
+                        alt={`${card.name} 프로필카드`}
+                        className="w-full h-auto rounded-lg shadow-lg"
+                      />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => downloadCard(card)}
+                            variant="outline"
+                            size="sm"
+                            className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
+                          >
+                            📥
+                          </Button>
+                          <Button
+                            onClick={() => deleteCard(card.id)}
+                            variant="outline"
+                            size="sm"
+                            className="bg-red-500/20 backdrop-blur-sm border-red-300/30 text-white hover:bg-red-500/30"
+                          >
+                            🗑️
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* 카드 정보 */}
+                    <div className="space-y-2">
+                      <h3 className="font-bold text-lg">{card.name}</h3>
+                      <p className="text-sm text-primary">{card.personality}</p>
+                      <p className="text-xs text-muted-foreground">"{card.customText}"</p>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-4 h-4 rounded-full border" 
+                          style={{ backgroundColor: card.borderColor }}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(card.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
-          </Card>
-        )}
+          )}
+        </div>
 
-        {/* Back Button */}
-        <div className="text-center">
+        {/* Action Buttons */}
+        <div className="text-center space-y-4">
           <Button
-            onClick={() => navigate('/')}
-            variant="ghost"
-            className="text-muted-foreground hover:text-foreground"
+            onClick={() => navigate('/gender-select')}
+            variant="premium"
+            size="lg"
+            className="min-w-48"
           >
-            홈으로 돌아가기
+            ✨ 새 프로필카드 만들기
           </Button>
+          
+          <div>
+            <Button
+              onClick={() => navigate('/')}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              홈으로 돌아가기
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -287,11 +287,25 @@ export const PhotoCard = () => {
     if (!canvas) return;
 
     const link = document.createElement('a');
-    link.download = `${idealType?.name || 'ideal-type'}-photocard.png`;
+    link.download = `${idealType?.name || 'my-pick'}-profile-card.png`;
     link.href = canvas.toDataURL();
     link.click();
     
-    toast.success("포토카드가 다운로드되었습니다!");
+    // 컬렉션에 추가
+    const savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+    const newCard = {
+      id: Date.now(),
+      name: idealType?.name || 'Unknown',
+      image: canvas.toDataURL(),
+      personality: idealType?.personality || '',
+      customText: customText,
+      borderColor: borderColor,
+      createdAt: new Date().toISOString()
+    };
+    savedCards.push(newCard);
+    localStorage.setItem('savedCards', JSON.stringify(savedCards));
+    
+    toast.success("프로필카드가 저장되었습니다!");
   };
 
   useEffect(() => {
@@ -315,8 +329,8 @@ export const PhotoCard = () => {
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">운명의 타로카드</h1>
-          <p className="text-muted-foreground">당신의 이상형 {idealType.name}의 신비로운 타로카드를 만들어보세요</p>
+          <h1 className="text-4xl font-bold gradient-text">내가 픽한 프로필카드</h1>
+          <p className="text-muted-foreground">당신의 이상형 {idealType.name}의 프로필카드를 커스터마이징하세요</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -342,20 +356,20 @@ export const PhotoCard = () => {
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="customText" className="text-sm font-medium">
-                    타로카드 문구
+                    프로필카드 문구
                   </Label>
                   <Input
                     id="customText"
                     value={customText}
                     onChange={(e) => setCustomText(e.target.value)}
-                    placeholder="타로카드에 들어갈 신비로운 문구를 입력하세요"
+                    placeholder="프로필카드에 들어갈 특별한 문구를 입력하세요"
                     className="mt-1"
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="borderColor" className="text-sm font-medium">
-                    신비로운 테두리 색상
+                    테두리 색상
                   </Label>
                   <div className="mt-1 flex gap-2">
                     <input
@@ -415,7 +429,16 @@ export const PhotoCard = () => {
                   size="lg"
                   className="w-full"
                 >
-                  타로카드 다운로드
+                  프로필카드 저장
+                </Button>
+                
+                <Button
+                  onClick={() => navigate('/collection')}
+                  variant="secondary"
+                  size="lg"
+                  className="w-full"
+                >
+                  📁 내 보관함 보기
                 </Button>
                 
                 <Button
@@ -423,7 +446,7 @@ export const PhotoCard = () => {
                     localStorage.clear();
                     navigate('/');
                   }}
-                  variant="secondary"
+                  variant="ghost"
                   size="lg"
                   className="w-full"
                 >
