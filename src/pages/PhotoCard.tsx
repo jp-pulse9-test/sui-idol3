@@ -37,7 +37,7 @@ export const PhotoCard = () => {
     try {
       const parsedIdealType = JSON.parse(storedIdealType);
       setIdealType(parsedIdealType);
-      setCustomText(`My Ideal Type: ${parsedIdealType.name}`);
+      setCustomText(`MY IDEAL TYPE ${parsedIdealType.name}`);
     } catch (error) {
       toast.error("데이터를 불러올 수 없습니다.");
       navigate('/');
