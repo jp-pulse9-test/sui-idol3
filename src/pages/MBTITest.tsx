@@ -4,6 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import extrovertStage from "@/assets/extrovert-stage.jpg";
+import introvertPractice from "@/assets/introvert-practice.jpg";
+import sensingPerformance from "@/assets/sensing-performance.jpg";
+import intuitiveCreative from "@/assets/intuitive-creative.jpg";
 
 interface Question {
   id: number;
@@ -11,6 +15,8 @@ interface Question {
   options: {
     text: string;
     type: 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P';
+    image?: string;
+    emoji: string;
   }[];
 }
 
@@ -19,64 +25,84 @@ const questions: Question[] = [
     id: 1,
     question: "아이돌의 어떤 모습에 가장 반하나요?",
     options: [
-      { text: "무대 위에서 팬들과 소통하며 밝게 웃는 모습", type: 'E' },
-      { text: "혼자 조용히 연습하거나 생각에 잠긴 모습", type: 'I' }
+      { 
+        text: "무대 위에서 팬들과 소통하며 밝게 웃는 모습", 
+        type: 'E',
+        image: extrovertStage,
+        emoji: "🎤"
+      },
+      { 
+        text: "혼자 조용히 연습하거나 생각에 잠긴 모습", 
+        type: 'I',
+        image: introvertPractice,
+        emoji: "🎯"
+      }
     ]
   },
   {
     id: 2,
     question: "아이돌의 매력을 어떻게 발견하나요?",
     options: [
-      { text: "실제 무대나 방송에서 보이는 확실한 실력과 비주얼", type: 'S' },
-      { text: "숨겨진 재능이나 앞으로의 가능성을 상상하며", type: 'N' }
+      { 
+        text: "실제 무대나 방송에서 보이는 확실한 실력과 비주얼", 
+        type: 'S',
+        image: sensingPerformance,
+        emoji: "⭐"
+      },
+      { 
+        text: "숨겨진 재능이나 앞으로의 가능성을 상상하며", 
+        type: 'N',
+        image: intuitiveCreative,
+        emoji: "✨"
+      }
     ]
   },
   {
     id: 3,
     question: "아이돌을 좋아하게 되는 결정적 순간은?",
     options: [
-      { text: "완벽한 실력과 프로다운 모습을 보았을 때", type: 'T' },
-      { text: "진심 어린 감정 표현이나 인간적인 모습을 보았을 때", type: 'F' }
+      { text: "완벽한 실력과 프로다운 모습을 보았을 때", type: 'T', emoji: "🏆" },
+      { text: "진심 어린 감정 표현이나 인간적인 모습을 보았을 때", type: 'F', emoji: "💖" }
     ]
   },
   {
     id: 4,
     question: "덕질 스타일은?",
     options: [
-      { text: "콘서트 날짜 체크, 굿즈 구매 등 계획적으로 덕질", type: 'J' },
-      { text: "그때그때 기분에 따라 자유롭게 덕질", type: 'P' }
+      { text: "콘서트 날짜 체크, 굿즈 구매 등 계획적으로 덕질", type: 'J', emoji: "📅" },
+      { text: "그때그때 기분에 따라 자유롭게 덕질", type: 'P', emoji: "🎲" }
     ]
   },
   {
     id: 5,
     question: "아이돌이 힘들어 보일 때 어떻게 하고 싶나요?",
     options: [
-      { text: "팬미팅이나 콘서트에서 큰 소리로 응원하며 힘을 주고 싶다", type: 'E' },
-      { text: "마음속으로 조용히 응원하며 지켜보고 싶다", type: 'I' }
+      { text: "팬미팅이나 콘서트에서 큰 소리로 응원하며 힘을 주고 싶다", type: 'E', emoji: "📢" },
+      { text: "마음속으로 조용히 응원하며 지켜보고 싶다", type: 'I', emoji: "🤍" }
     ]
   },
   {
     id: 6,
     question: "아이돌의 어떤 콘텐츠를 선호하나요?",
     options: [
-      { text: "정해진 포맷의 예능이나 음악방송 같은 안정적인 콘텐츠", type: 'S' },
-      { text: "예상치 못한 라이브나 즉흥적인 브이로그 같은 새로운 콘텐츠", type: 'N' }
+      { text: "정해진 포맷의 예능이나 음악방송 같은 안정적인 콘텐츠", type: 'S', emoji: "📺" },
+      { text: "예상치 못한 라이브나 즉흥적인 브이로그 같은 새로운 콘텐츠", type: 'N', emoji: "🎬" }
     ]
   },
   {
     id: 7,
     question: "아이돌과 관련된 논란이 있을 때?",
     options: [
-      { text: "팩트를 확인하고 객관적으로 판단한다", type: 'T' },
-      { text: "아이돌의 마음과 상황을 먼저 헤아려본다", type: 'F' }
+      { text: "팩트를 확인하고 객관적으로 판단한다", type: 'T', emoji: "🔍" },
+      { text: "아이돌의 마음과 상황을 먼저 헤아려본다", type: 'F', emoji: "💭" }
     ]
   },
   {
     id: 8,
     question: "입덕 후 팬 활동은?",
     options: [
-      { text: "팬클럽 가입, 정기 구독 등 체계적으로 활동", type: 'J' },
-      { text: "그때그때 하고 싶은 활동만 자유롭게", type: 'P' }
+      { text: "팬클럽 가입, 정기 구독 등 체계적으로 활동", type: 'J', emoji: "📋" },
+      { text: "그때그때 하고 싶은 활동만 자유롭게", type: 'P', emoji: "🌈" }
     ]
   }
 ];
@@ -204,9 +230,24 @@ export const MBTITest = () => {
                   onClick={() => handleAnswer(option.type)}
                   variant="outline"
                   size="lg"
-                  className="h-auto p-6 text-left justify-start hover:bg-primary/10"
+                  className="h-auto p-0 text-left justify-start hover:bg-primary/10 overflow-hidden"
                 >
-                  <span className="text-lg">{option.text}</span>
+                  <div className="flex items-center gap-4 w-full p-6">
+                    {option.image ? (
+                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <img 
+                          src={option.image} 
+                          alt={option.text}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <span className="text-2xl">{option.emoji}</span>
+                      </div>
+                    )}
+                    <span className="text-lg flex-1">{option.text}</span>
+                  </div>
                 </Button>
               ))}
             </div>

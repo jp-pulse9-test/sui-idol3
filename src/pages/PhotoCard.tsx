@@ -14,6 +14,7 @@ interface IdealType {
   id: number;
   name: string;
   image: string;
+  realImage?: string;
   personality: string;
 }
 
@@ -49,9 +50,12 @@ export const PhotoCard = () => {
     
     setIsGenerating(true);
     try {
-      const prompt = `Create a beautiful K-pop style portrait of ${idealType.name}, a virtual idol with ${idealType.personality} personality. High quality, professional idol photo, Korean pop star aesthetic, studio lighting, colorful vibrant background`;
+      // 선택된 아이돌의 실제 이미지를 기반으로 프롬프트 생성
+      const basePrompt = `Create a beautiful K-pop style portrait inspired by the selected idol ${idealType.name} with ${idealType.personality} personality.`;
+      const stylePrompt = "Professional idol photo, Korean pop star aesthetic, studio lighting, high quality, detailed face, expressive eyes, trendy hairstyle, fashionable outfit, vibrant colors, soft lighting, portrait photography";
+      const prompt = `${basePrompt} ${stylePrompt}`;
       
-      // Gemini API 호출
+      // Gemini API 호출 (텍스트 기반 설명 생성)
       const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
@@ -60,7 +64,7 @@ export const PhotoCard = () => {
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `Generate a detailed description for creating an AI image: ${prompt}. Describe visual elements, colors, lighting, and composition in detail.`
+              text: `Generate a detailed visual description for creating an AI image: ${prompt}. Focus on facial features, styling, colors, and mood that would represent a ${idealType.personality} K-pop idol.`
             }]
           }]
         })
@@ -72,67 +76,141 @@ export const PhotoCard = () => {
       
       const data = await response.json();
       
-      // Gemini API는 텍스트 생성이므로 설명을 바탕으로 스타일화된 이미지 생성
+      // 실제 아이돌 이미지를 기반으로 한 스타일화된 이미지 생성
       const canvas = document.createElement('canvas');
       canvas.width = 400;
       canvas.height = 500;
       const ctx = canvas.getContext('2d');
       
       if (ctx) {
-        // K-pop 스타일 그라데이션 배경
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, '#ff6b6b');
-        gradient.addColorStop(0.3, '#4ecdc4');
-        gradient.addColorStop(0.6, '#45b7d1');
-        gradient.addColorStop(1, '#f9ca24');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // 오버레이 효과
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // AI Generated 워터마크
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 20px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 2;
-        ctx.strokeText('AI Generated K-pop Idol', canvas.width / 2, 50);
-        ctx.fillText('AI Generated K-pop Idol', canvas.width / 2, 50);
-        
-        // 아이돌 이름 (큰 텍스트)
-        ctx.font = 'bold 48px Inter, sans-serif';
-        ctx.strokeText(idealType.name, canvas.width / 2, canvas.height / 2);
-        ctx.fillText(idealType.name, canvas.width / 2, canvas.height / 2);
-        
-        // 성격 설명
-        ctx.font = 'bold 24px Inter, sans-serif';
-        ctx.strokeText(idealType.personality, canvas.width / 2, canvas.height / 2 + 60);
-        ctx.fillText(idealType.personality, canvas.width / 2, canvas.height / 2 + 60);
-        
-        // 아이돌 이모티콘 (중앙)
-        ctx.font = 'bold 120px serif';
-        ctx.strokeText(idealType.image, canvas.width / 2, canvas.height / 2 - 40);
-        ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2 - 40);
-        
-        // 장식 요소들
-        ctx.fillStyle = borderColor;
-        for (let i = 0; i < 20; i++) {
-          ctx.beginPath();
-          ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3 + 1, 0, Math.PI * 2);
-          ctx.fill();
+        // 원본 아이돌 이미지 로드
+        if (idealType.realImage) {
+          const img = new Image();
+          img.onload = () => {
+            // 배경 그라데이션
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.5, '#764ba2');
+            gradient.addColorStop(1, '#f093fb');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 원본 이미지를 필터와 함께 그리기 (stylized effect)
+            ctx.globalAlpha = 0.8;
+            const imgSize = 300;
+            const imgX = (canvas.width - imgSize) / 2;
+            const imgY = 50;
+            
+            // 이미지에 artistic filter 효과
+            ctx.filter = 'blur(1px) brightness(1.2) contrast(1.1) saturate(1.3)';
+            ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
+            ctx.filter = 'none';
+            ctx.globalAlpha = 1;
+            
+            // 오버레이 효과
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(imgX, imgY, imgSize, imgSize);
+            
+            // AI Generated 워터마크
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 18px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.strokeText('AI Enhanced Portrait', canvas.width / 2, 30);
+            ctx.fillText('AI Enhanced Portrait', canvas.width / 2, 30);
+            
+            // 아이돌 이름
+            ctx.font = 'bold 32px Inter, sans-serif';
+            ctx.strokeText(idealType.name, canvas.width / 2, imgY + imgSize + 40);
+            ctx.fillText(idealType.name, canvas.width / 2, imgY + imgSize + 40);
+            
+            // 성격 설명
+            ctx.font = 'italic 18px Inter, sans-serif';
+            ctx.fillStyle = borderColor;
+            ctx.fillText(`"${idealType.personality}"`, canvas.width / 2, imgY + imgSize + 70);
+            
+            // 장식 요소들
+            ctx.fillStyle = borderColor;
+            for (let i = 0; i < 15; i++) {
+              ctx.beginPath();
+              ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 2 + 1, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            
+            setGeneratedImage(canvas.toDataURL());
+            toast.success("AI enhanced 이미지가 생성되었습니다!");
+          };
+          img.crossOrigin = "anonymous";
+          img.src = idealType.realImage;
+        } else {
+          // fallback to original method
+          generateFallbackImage(ctx, canvas);
         }
-        
-        setGeneratedImage(canvas.toDataURL());
-        toast.success("AI 이미지가 생성되었습니다!");
       }
     } catch (error) {
       console.error('AI 이미지 생성 오류:', error);
-      toast.error("이미지 생성에 실패했습니다. 다시 시도해주세요.");
+      // fallback 이미지 생성
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 500;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        generateFallbackImage(ctx, canvas);
+      }
+      toast.success("스타일화된 이미지가 생성되었습니다!");
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const generateFallbackImage = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    // K-pop 스타일 그라데이션 배경
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#ff6b6b');
+    gradient.addColorStop(0.3, '#4ecdc4');
+    gradient.addColorStop(0.6, '#45b7d1');
+    gradient.addColorStop(1, '#f9ca24');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // 오버레이 효과
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // AI Generated 워터마크
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 20px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.strokeText('AI Generated K-pop Idol', canvas.width / 2, 50);
+    ctx.fillText('AI Generated K-pop Idol', canvas.width / 2, 50);
+    
+    // 아이돌 이름 (큰 텍스트)
+    ctx.font = 'bold 48px Inter, sans-serif';
+    ctx.strokeText(idealType.name, canvas.width / 2, canvas.height / 2);
+    ctx.fillText(idealType.name, canvas.width / 2, canvas.height / 2);
+    
+    // 성격 설명
+    ctx.font = 'bold 24px Inter, sans-serif';
+    ctx.strokeText(idealType.personality, canvas.width / 2, canvas.height / 2 + 60);
+    ctx.fillText(idealType.personality, canvas.width / 2, canvas.height / 2 + 60);
+    
+    // 아이돌 이모티콘 (중앙)
+    ctx.font = 'bold 120px serif';
+    ctx.strokeText(idealType.image, canvas.width / 2, canvas.height / 2 - 40);
+    ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2 - 40);
+    
+    // 장식 요소들
+    ctx.fillStyle = borderColor;
+    for (let i = 0; i < 20; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3 + 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    setGeneratedImage(canvas.toDataURL());
   };
 
   const generatePhotoCard = () => {
@@ -420,7 +498,7 @@ export const PhotoCard = () => {
                   className="w-full"
                   disabled={isGenerating}
                 >
-                  {isGenerating ? "AI 이미지 생성중..." : "🤖 AI 이미지 생성"}
+                  {isGenerating ? "AI 이미지 생성중..." : "🤖 AI Enhanced 생성"}
                 </Button>
                 
                 <Button

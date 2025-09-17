@@ -3,11 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import femaleIdol1 from "@/assets/female-idol-1.jpg";
+import femaleIdol2 from "@/assets/female-idol-2.jpg";
+import maleIdol1 from "@/assets/male-idol-1.jpg";
+import maleIdol2 from "@/assets/male-idol-2.jpg";
 
 interface IdealType {
   id: number;
   name: string;
   image: string;
+  realImage: string;
   personality: string;
   description: string;
   compatibility: number;
@@ -35,17 +40,73 @@ export const FinalPick = () => {
 
   const generateIdealTypes = (gender: string, personality: any, appearance: any) => {
     const maleIdols = [
-      { id: 1, name: "지훈", image: "🎤", personality: "카리스마틱", description: "무대 위의 강렬한 존재감" },
-      { id: 2, name: "민우", image: "🌟", personality: "밝고 긍정적", description: "햇살 같은 따뜻한 미소" },
-      { id: 3, name: "현수", image: "🎭", personality: "신비로운", description: "깊이 있는 감성과 예술혼" },
-      { id: 4, name: "태영", image: "⚡", personality: "에너지틱", description: "끝없는 열정과 활력" }
+      { 
+        id: 1, 
+        name: "지훈", 
+        image: "🎤", 
+        realImage: maleIdol1,
+        personality: "카리스마틱", 
+        description: "무대 위의 강렬한 존재감" 
+      },
+      { 
+        id: 2, 
+        name: "민우", 
+        image: "🌟", 
+        realImage: maleIdol2,
+        personality: "밝고 긍정적", 
+        description: "햇살 같은 따뜻한 미소" 
+      },
+      { 
+        id: 3, 
+        name: "현수", 
+        image: "🎭", 
+        realImage: maleIdol1,
+        personality: "신비로운", 
+        description: "깊이 있는 감성과 예술혼" 
+      },
+      { 
+        id: 4, 
+        name: "태영", 
+        image: "⚡", 
+        realImage: maleIdol2,
+        personality: "에너지틱", 
+        description: "끝없는 열정과 활력" 
+      }
     ];
 
     const femaleIdols = [
-      { id: 1, name: "소희", image: "🎀", personality: "사랑스러운", description: "순수하고 귀여운 매력" },
-      { id: 2, name: "예린", image: "💫", personality: "우아한", description: "고급스럽고 세련된 분위기" },
-      { id: 3, name: "지안", image: "🌸", personality: "상큼한", description: "밝고 발랄한 에너지" },
-      { id: 4, name: "하은", image: "🌙", personality: "신비로운", description: "몽환적이고 매혹적인 아우라" }
+      { 
+        id: 1, 
+        name: "소희", 
+        image: "🎀", 
+        realImage: femaleIdol1,
+        personality: "사랑스러운", 
+        description: "순수하고 귀여운 매력" 
+      },
+      { 
+        id: 2, 
+        name: "예린", 
+        image: "💫", 
+        realImage: femaleIdol2,
+        personality: "우아한", 
+        description: "고급스럽고 세련된 분위기" 
+      },
+      { 
+        id: 3, 
+        name: "지안", 
+        image: "🌸", 
+        realImage: femaleIdol1,
+        personality: "상큼한", 
+        description: "밝고 발랄한 에너지" 
+      },
+      { 
+        id: 4, 
+        name: "하은", 
+        image: "🌙", 
+        realImage: femaleIdol2,
+        personality: "신비로운", 
+        description: "몽환적이고 매혹적인 아우라" 
+      }
     ];
 
     const candidates = gender === 'male' ? maleIdols : femaleIdols;
@@ -85,7 +146,18 @@ export const FinalPick = () => {
               onClick={() => handleSelect(idealType)}
             >
               <div className="text-center space-y-4">
-                <div className="text-6xl">{idealType.image}</div>
+                <div className="relative">
+                  <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-primary/20">
+                    <img 
+                      src={idealType.realImage} 
+                      alt={idealType.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 text-2xl bg-background rounded-full p-1 border border-border">
+                    {idealType.image}
+                  </div>
+                </div>
                 
                 <div className="space-y-2">
                   <h3 className="text-xl font-bold">{idealType.name}</h3>
