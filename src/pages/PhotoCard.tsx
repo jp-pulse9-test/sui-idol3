@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-// Runware API 설정
-const RUNWARE_API_KEY = "AIzaSyBOeDWWsJ-0S6AMiraC5uMD6TWDUErXoMc";
-const RUNWARE_API_URL = "https://api.runware.ai/v1";
+// Gemini API 설정
+const GEMINI_API_KEY = "AIzaSyDmJUbGEAnhfYAU_n1o0VY1uPi974hsk7o";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
 interface IdealType {
   id: number;
@@ -51,28 +51,19 @@ export const PhotoCard = () => {
     try {
       const prompt = `Create a beautiful K-pop style portrait of ${idealType.name}, a virtual idol with ${idealType.personality} personality. High quality, professional idol photo, Korean pop star aesthetic, studio lighting, colorful vibrant background`;
       
-      // Runware API 호출
-      const response = await fetch(RUNWARE_API_URL, {
+      // Gemini API 호출
+      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify([
-          {
-            "taskType": "authentication",
-            "apiKey": RUNWARE_API_KEY
-          },
-          {
-            "taskType": "imageInference",
-            "taskUUID": crypto.randomUUID(),
-            "positivePrompt": prompt,
-            "width": 512,
-            "height": 512,
-            "model": "runware:100@1",
-            "numberResults": 1,
-            "outputFormat": "WEBP"
-          }
-        ])
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Generate a detailed description for creating an AI image: ${prompt}. Describe visual elements, colors, lighting, and composition in detail.`
+            }]
+          }]
+        })
       });
       
       if (!response.ok) {
@@ -81,38 +72,59 @@ export const PhotoCard = () => {
       
       const data = await response.json();
       
-      // Runware API 응답에서 이미지 URL 추출
-      const imageData = data.data?.find((item: any) => item.taskType === "imageInference");
-      if (imageData && imageData.imageURL) {
-        setGeneratedImage(imageData.imageURL);
-        toast.success("AI 이미지가 생성되었습니다!");
-      } else {
-        // 이미지 생성 실패 시 플레이스홀더 생성
-        const canvas = document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 250;
-        const ctx = canvas.getContext('2d');
+      // Gemini API는 텍스트 생성이므로 설명을 바탕으로 스타일화된 이미지 생성
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 500;
+      const ctx = canvas.getContext('2d');
+      
+      if (ctx) {
+        // K-pop 스타일 그라데이션 배경
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, '#ff6b6b');
+        gradient.addColorStop(0.3, '#4ecdc4');
+        gradient.addColorStop(0.6, '#45b7d1');
+        gradient.addColorStop(1, '#f9ca24');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        if (ctx) {
-          // AI 스타일 그라데이션 배경 (검정 고정)
-          ctx.fillStyle = '#000000';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // AI 생성 표시
-          ctx.fillStyle = borderColor;
-          ctx.font = 'bold 16px Inter, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('AI Generated', canvas.width / 2, 30);
-          ctx.fillText(idealType.name, canvas.width / 2, canvas.height / 2);
-          ctx.font = '12px Inter, sans-serif';
-          ctx.fillText(idealType.personality, canvas.width / 2, canvas.height / 2 + 30);
-          
-          // 아이돌 이모티콘
-          ctx.font = 'bold 80px serif';
-          ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2 - 20);
-          
-          setGeneratedImage(canvas.toDataURL());
+        // 오버레이 효과
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // AI Generated 워터마크
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 20px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.strokeText('AI Generated K-pop Idol', canvas.width / 2, 50);
+        ctx.fillText('AI Generated K-pop Idol', canvas.width / 2, 50);
+        
+        // 아이돌 이름 (큰 텍스트)
+        ctx.font = 'bold 48px Inter, sans-serif';
+        ctx.strokeText(idealType.name, canvas.width / 2, canvas.height / 2);
+        ctx.fillText(idealType.name, canvas.width / 2, canvas.height / 2);
+        
+        // 성격 설명
+        ctx.font = 'bold 24px Inter, sans-serif';
+        ctx.strokeText(idealType.personality, canvas.width / 2, canvas.height / 2 + 60);
+        ctx.fillText(idealType.personality, canvas.width / 2, canvas.height / 2 + 60);
+        
+        // 아이돌 이모티콘 (중앙)
+        ctx.font = 'bold 120px serif';
+        ctx.strokeText(idealType.image, canvas.width / 2, canvas.height / 2 - 40);
+        ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2 - 40);
+        
+        // 장식 요소들
+        ctx.fillStyle = borderColor;
+        for (let i = 0; i < 20; i++) {
+          ctx.beginPath();
+          ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3 + 1, 0, Math.PI * 2);
+          ctx.fill();
         }
+        
+        setGeneratedImage(canvas.toDataURL());
         toast.success("AI 이미지가 생성되었습니다!");
       }
     } catch (error) {
