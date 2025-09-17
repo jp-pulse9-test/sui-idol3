@@ -20,7 +20,7 @@ interface IdealType {
 export const PhotoCard = () => {
   const [idealType, setIdealType] = useState<IdealType | null>(null);
   const [customText, setCustomText] = useState("");
-  const [bgColor, setBgColor] = useState("#FF1493");
+  const [borderColor, setBorderColor] = useState("#00BFFF"); // 네온 블루로 기본값 변경
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -80,15 +80,12 @@ export const PhotoCard = () => {
       const ctx = canvas.getContext('2d');
       
       if (ctx) {
-        // AI 스타일 그라데이션 배경
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, bgColor);
-        gradient.addColorStop(1, '#000000');
-        ctx.fillStyle = gradient;
+        // AI 스타일 그라데이션 배경 (검정 고정)
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // AI 생성 표시
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = borderColor;
         ctx.font = 'bold 16px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('AI Generated', canvas.width / 2, 30);
@@ -123,16 +120,12 @@ export const PhotoCard = () => {
     canvas.width = 300;
     canvas.height = 400;
 
-    // Background gradient
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, bgColor);
-    gradient.addColorStop(1, bgColor + '80');
-    
-    ctx.fillStyle = gradient;
+    // 검정 배경 (고정)
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Border
-    ctx.strokeStyle = '#ffffff';
+    // 선택한 색상의 테두리
+    ctx.strokeStyle = borderColor;
     ctx.lineWidth = 4;
     ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
 
@@ -151,7 +144,7 @@ export const PhotoCard = () => {
         // 이름과 텍스트는 이미지 아래에 배치
         ctx.font = 'bold 24px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = borderColor;
         ctx.fillText(idealType.name, canvas.width / 2, imgY + imgHeight + 30);
 
         ctx.font = '16px Inter, sans-serif';
@@ -183,22 +176,22 @@ export const PhotoCard = () => {
       // 기존 이모티콘 방식
       ctx.font = 'bold 120px serif';
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = borderColor;
       ctx.fillText(idealType.image, canvas.width / 2, 180);
 
       // Name
       ctx.font = 'bold 24px Inter, sans-serif';
-      ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = borderColor;
       ctx.fillText(idealType.name, canvas.width / 2, 230);
 
       // Personality
       ctx.font = '16px Inter, sans-serif';
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = borderColor;
       ctx.fillText(idealType.personality, canvas.width / 2, 260);
 
       // Custom text
       ctx.font = 'bold 14px Inter, sans-serif';
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = borderColor;
       const words = customText.split(' ');
       let line = '';
       let y = 320;
@@ -243,7 +236,7 @@ export const PhotoCard = () => {
     if (idealType) {
       generatePhotoCard();
     }
-  }, [idealType, customText, bgColor, generatedImage]);
+  }, [idealType, customText, borderColor, generatedImage]);
 
   if (!idealType) {
     return (
@@ -299,21 +292,21 @@ export const PhotoCard = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="bgColor" className="text-sm font-medium">
-                    배경 색상
+                  <Label htmlFor="borderColor" className="text-sm font-medium">
+                    선 색상
                   </Label>
                   <div className="mt-1 flex gap-2">
                     <input
-                      id="bgColor"
+                      id="borderColor"
                       type="color"
-                      value={bgColor}
-                      onChange={(e) => setBgColor(e.target.value)}
+                      value={borderColor}
+                      onChange={(e) => setBorderColor(e.target.value)}
                       className="w-12 h-10 rounded border border-border"
                     />
                     <Input
-                      value={bgColor}
-                      onChange={(e) => setBgColor(e.target.value)}
-                      placeholder="#FF1493"
+                      value={borderColor}
+                      onChange={(e) => setBorderColor(e.target.value)}
+                      placeholder="#00BFFF"
                       className="flex-1"
                     />
                   </div>
@@ -321,23 +314,23 @@ export const PhotoCard = () => {
 
                 <div className="grid grid-cols-4 gap-2">
                   <Button
-                    onClick={() => setBgColor("#FF1493")}
-                    className="h-10 bg-[#FF1493] hover:bg-[#FF1493]/80"
-                    size="sm"
-                  />
-                  <Button
-                    onClick={() => setBgColor("#8A2BE2")}
-                    className="h-10 bg-[#8A2BE2] hover:bg-[#8A2BE2]/80"
-                    size="sm"
-                  />
-                  <Button
-                    onClick={() => setBgColor("#00BFFF")}
+                    onClick={() => setBorderColor("#00BFFF")}
                     className="h-10 bg-[#00BFFF] hover:bg-[#00BFFF]/80"
                     size="sm"
                   />
                   <Button
-                    onClick={() => setBgColor("#FF6B35")}
-                    className="h-10 bg-[#FF6B35] hover:bg-[#FF6B35]/80"
+                    onClick={() => setBorderColor("#FF1493")}
+                    className="h-10 bg-[#FF1493] hover:bg-[#FF1493]/80"
+                    size="sm"
+                  />
+                  <Button
+                    onClick={() => setBorderColor("#8A2BE2")}
+                    className="h-10 bg-[#8A2BE2] hover:bg-[#8A2BE2]/80"
+                    size="sm"
+                  />
+                  <Button
+                    onClick={() => setBorderColor("#00FF7F")}
+                    className="h-10 bg-[#00FF7F] hover:bg-[#00FF7F]/80"
                     size="sm"
                   />
                 </div>
