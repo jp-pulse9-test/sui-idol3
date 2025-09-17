@@ -124,9 +124,9 @@ export const PhotoCard = () => {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 선택한 색상의 테두리
+    // 선택한 색상의 섬세한 테두리
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 1;
     ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
 
     // AI 생성 이미지가 있으면 사용, 없으면 이모티콘 사용
@@ -144,7 +144,7 @@ export const PhotoCard = () => {
         // 이름과 텍스트는 이미지 아래에 배치
         ctx.font = 'bold 24px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillStyle = borderColor;
+        ctx.fillStyle = '#ffffff';
         ctx.fillText(idealType.name, canvas.width / 2, imgY + imgHeight + 30);
 
         ctx.font = '16px Inter, sans-serif';
@@ -176,22 +176,22 @@ export const PhotoCard = () => {
       // 기존 이모티콘 방식
       ctx.font = 'bold 120px serif';
       ctx.textAlign = 'center';
-        ctx.fillStyle = borderColor;
+        ctx.fillStyle = '#ffffff';
       ctx.fillText(idealType.image, canvas.width / 2, 180);
 
       // Name
       ctx.font = 'bold 24px Inter, sans-serif';
-        ctx.fillStyle = borderColor;
+        ctx.fillStyle = '#ffffff';
       ctx.fillText(idealType.name, canvas.width / 2, 230);
 
       // Personality
       ctx.font = '16px Inter, sans-serif';
-      ctx.fillStyle = borderColor;
+      ctx.fillStyle = '#ffffff';
       ctx.fillText(idealType.personality, canvas.width / 2, 260);
 
       // Custom text
       ctx.font = 'bold 14px Inter, sans-serif';
-      ctx.fillStyle = borderColor;
+      ctx.fillStyle = '#ffffff';
       const words = customText.split(' ');
       let line = '';
       let y = 320;
@@ -212,12 +212,6 @@ export const PhotoCard = () => {
       ctx.fillText(line, canvas.width / 2, y);
     }
 
-    // Decorative elements
-    ctx.font = '20px serif';
-    ctx.fillText('✨', 50, 60);
-    ctx.fillText('💖', canvas.width - 50, 60);
-    ctx.fillText('⭐', 50, canvas.height - 50);
-    ctx.fillText('💫', canvas.width - 50, canvas.height - 50);
   };
 
   const downloadPhotoCard = () => {
