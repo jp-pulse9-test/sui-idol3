@@ -108,7 +108,7 @@ export const MBTITest = () => {
 
       toast.success(`당신의 입덕 타입은 ${mbtiResult}입니다!`);
       localStorage.setItem('mbtiResult', mbtiResult);
-      navigate('/worldcup');
+      navigate('/appearance');
     }
   };
 

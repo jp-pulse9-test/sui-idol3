@@ -61,7 +61,7 @@ const Index = () => {
             
             <div className="flex flex-col gap-6 items-center">
               <Button
-                onClick={() => navigate('/mbti')}
+                onClick={() => navigate('/gender-select')}
                 variant="default"
                 size="xl"
                 className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
@@ -102,7 +102,7 @@ const Index = () => {
                 title="CREATE"
                 description="입덕 성향 분석과 이상형 월드컵을 통해 나만의 완벽한 아이돌을 생성하고 포토카드를 제작하세요."
                 icon={mbtiIcon}
-                onClick={() => navigate('/mbti')}
+                onClick={() => navigate('/gender-select')}
                 gradient="bg-gradient-to-br from-primary/20 to-accent/20"
               />
               
@@ -174,7 +174,7 @@ const Index = () => {
             </div>
             
             <Button
-              onClick={() => navigate('/mbti')}
+              onClick={() => navigate('/gender-select')}
               variant="premium"
               size="xl"
               className="min-w-64 text-xl py-4"

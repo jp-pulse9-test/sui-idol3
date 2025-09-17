@@ -20,24 +20,24 @@ interface IdealType {
 export const PhotoCard = () => {
   const [idealType, setIdealType] = useState<IdealType | null>(null);
   const [customText, setCustomText] = useState("");
-  const [borderColor, setBorderColor] = useState("#00BFFF"); // 네온 블루로 기본값 변경
+  const [borderColor, setBorderColor] = useState("#FFD700"); // 금색으로 기본값 변경
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedIdealType = localStorage.getItem('idealType');
-    if (!storedIdealType) {
-      toast.error("먼저 이상형 월드컵을 완료해주세요!");
-      navigate('/worldcup');
+    const storedFinalPick = localStorage.getItem('finalPick');
+    if (!storedFinalPick) {
+      toast.error("먼저 최종 픽을 선택해주세요!");
+      navigate('/final-pick');
       return;
     }
     
     try {
-      const parsedIdealType = JSON.parse(storedIdealType);
-      setIdealType(parsedIdealType);
-      setCustomText("MY IDEAL TYPE");
+      const parsedFinalPick = JSON.parse(storedFinalPick);
+      setIdealType(parsedFinalPick);
+      setCustomText("MY DESTINY CARD");
     } catch (error) {
       toast.error("데이터를 불러올 수 없습니다.");
       navigate('/');
@@ -142,52 +142,77 @@ export const PhotoCard = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size
+    // 타로카드 비율 (세로가 더 김)
     canvas.width = 300;
-    canvas.height = 400;
+    canvas.height = 480;
 
-    // 검정 배경 (고정)
-    ctx.fillStyle = '#000000';
+    // 타로카드 스타일 배경 (신비로운 그라데이션)
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#1a1a2e');
+    gradient.addColorStop(0.3, '#16213e');
+    gradient.addColorStop(0.7, '#0f3460');
+    gradient.addColorStop(1, '#533a7b');
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 선택한 색상의 섬세한 테두리
+    // 타로카드 테두리 (금색 장식)
     ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 3;
+    ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+    
+    // 안쪽 테두리
     ctx.lineWidth = 1;
-    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+    ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+
+    // 상단 장식 요소들
+    ctx.fillStyle = borderColor;
+    ctx.font = 'bold 16px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✦ ✧ ✦', canvas.width / 2, 50);
 
     // AI 생성 이미지가 있으면 사용, 없으면 이모티콘 사용
     if (generatedImage) {
       const img = new Image();
       img.onload = () => {
-        // 이미지를 카드 중앙에 적절한 크기로 그리기
-        const imgWidth = 180;
-        const imgHeight = 150;
+        // 타로카드 중앙 이미지 영역
+        const imgWidth = 200;
+        const imgHeight = 160;
         const imgX = (canvas.width - imgWidth) / 2;
-        const imgY = 40;
+        const imgY = 80;
+        
+        // 이미지 배경 (둥근 프레임)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillRect(imgX - 10, imgY - 10, imgWidth + 20, imgHeight + 20);
         
         ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
         
-        // 이름과 텍스트는 이미지 아래에 배치
-        ctx.font = 'bold 24px Inter, sans-serif';
+        // 이름 (타로카드 하단)
+        ctx.font = 'bold 28px serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#ffffff';
-        ctx.fillText(idealType.name, canvas.width / 2, imgY + imgHeight + 30);
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.strokeText(idealType.name, canvas.width / 2, imgY + imgHeight + 50);
+        ctx.fillText(idealType.name, canvas.width / 2, imgY + imgHeight + 50);
 
-        ctx.font = '16px Inter, sans-serif';
-        ctx.fillText(idealType.personality, canvas.width / 2, imgY + imgHeight + 55);
+        // 성격 설명
+        ctx.font = 'italic 16px serif';
+        ctx.fillStyle = borderColor;
+        ctx.fillText(`"${idealType.personality}"`, canvas.width / 2, imgY + imgHeight + 80);
 
-        // 커스텀 텍스트
-        ctx.font = 'bold 14px Inter, sans-serif';
+        // 커스텀 텍스트 (하단)
+        ctx.font = 'bold 14px serif';
+        ctx.fillStyle = '#ffffff';
         const words = customText.split(' ');
         let line = '';
-        let y = imgY + imgHeight + 85;
+        let y = imgY + imgHeight + 110;
         
         for (let n = 0; n < words.length; n++) {
           const testLine = line + words[n] + ' ';
           const metrics = ctx.measureText(testLine);
           const testWidth = metrics.width;
           
-          if (testWidth > canvas.width - 40 && n > 0) {
+          if (testWidth > canvas.width - 60 && n > 0) {
             ctx.fillText(line, canvas.width / 2, y);
             line = words[n] + ' ';
             y += 20;
@@ -196,38 +221,51 @@ export const PhotoCard = () => {
           }
         }
         ctx.fillText(line, canvas.width / 2, y);
+        
+        // 하단 장식
+        ctx.fillStyle = borderColor;
+        ctx.font = 'bold 16px serif';
+        ctx.fillText('✦ ✧ ✦', canvas.width / 2, canvas.height - 30);
       };
       img.src = generatedImage;
     } else {
-      // 기존 이모티콘 방식
-      ctx.font = 'bold 120px serif';
+      // 기존 이모티콘 방식 (타로카드 스타일)
+      
+      // 중앙 아이돌 이모티콘 (더 크게)
+      ctx.font = 'bold 140px serif';
       ctx.textAlign = 'center';
-        ctx.fillStyle = '#ffffff';
-      ctx.fillText(idealType.image, canvas.width / 2, 180);
-
-      // Name
-      ctx.font = 'bold 24px Inter, sans-serif';
-        ctx.fillStyle = '#ffffff';
-      ctx.fillText(idealType.name, canvas.width / 2, 230);
-
-      // Personality
-      ctx.font = '16px Inter, sans-serif';
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(idealType.personality, canvas.width / 2, 260);
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.lineWidth = 3;
+      ctx.strokeText(idealType.image, canvas.width / 2, 200);
+      ctx.fillText(idealType.image, canvas.width / 2, 200);
 
-      // Custom text
-      ctx.font = 'bold 14px Inter, sans-serif';
+      // 이름 (타로카드 하단)
+      ctx.font = 'bold 28px serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.strokeText(idealType.name, canvas.width / 2, 270);
+      ctx.fillText(idealType.name, canvas.width / 2, 270);
+
+      // 성격 설명
+      ctx.font = 'italic 16px serif';
+      ctx.fillStyle = borderColor;
+      ctx.fillText(`"${idealType.personality}"`, canvas.width / 2, 300);
+
+      // 커스텀 텍스트
+      ctx.font = 'bold 14px serif';
       ctx.fillStyle = '#ffffff';
       const words = customText.split(' ');
       let line = '';
-      let y = 320;
+      let y = 340;
       
       for (let n = 0; n < words.length; n++) {
         const testLine = line + words[n] + ' ';
         const metrics = ctx.measureText(testLine);
         const testWidth = metrics.width;
         
-        if (testWidth > canvas.width - 40 && n > 0) {
+        if (testWidth > canvas.width - 60 && n > 0) {
           ctx.fillText(line, canvas.width / 2, y);
           line = words[n] + ' ';
           y += 20;
@@ -236,8 +274,12 @@ export const PhotoCard = () => {
         }
       }
       ctx.fillText(line, canvas.width / 2, y);
+      
+      // 하단 장식
+      ctx.fillStyle = borderColor;
+      ctx.font = 'bold 16px serif';
+      ctx.fillText('✦ ✧ ✦', canvas.width / 2, canvas.height - 30);
     }
-
   };
 
   const downloadPhotoCard = () => {
@@ -273,8 +315,8 @@ export const PhotoCard = () => {
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">나만의 포토카드 만들기</h1>
-          <p className="text-muted-foreground">당신의 이상형 {idealType.name}의 포토카드를 커스터마이징하세요</p>
+          <h1 className="text-4xl font-bold gradient-text">운명의 타로카드</h1>
+          <p className="text-muted-foreground">당신의 이상형 {idealType.name}의 신비로운 타로카드를 만들어보세요</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -300,20 +342,20 @@ export const PhotoCard = () => {
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="customText" className="text-sm font-medium">
-                    포토카드 텍스트
+                    타로카드 문구
                   </Label>
                   <Input
                     id="customText"
                     value={customText}
                     onChange={(e) => setCustomText(e.target.value)}
-                    placeholder="포토카드에 들어갈 텍스트를 입력하세요"
+                    placeholder="타로카드에 들어갈 신비로운 문구를 입력하세요"
                     className="mt-1"
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="borderColor" className="text-sm font-medium">
-                    선 색상
+                    신비로운 테두리 색상
                   </Label>
                   <div className="mt-1 flex gap-2">
                     <input
@@ -334,13 +376,13 @@ export const PhotoCard = () => {
 
                 <div className="grid grid-cols-4 gap-2">
                   <Button
-                    onClick={() => setBorderColor("#00BFFF")}
-                    className="h-10 bg-[#00BFFF] hover:bg-[#00BFFF]/80"
+                    onClick={() => setBorderColor("#FFD700")}
+                    className="h-10 bg-[#FFD700] hover:bg-[#FFD700]/80"
                     size="sm"
                   />
                   <Button
-                    onClick={() => setBorderColor("#FF1493")}
-                    className="h-10 bg-[#FF1493] hover:bg-[#FF1493]/80"
+                    onClick={() => setBorderColor("#C0C0C0")}
+                    className="h-10 bg-[#C0C0C0] hover:bg-[#C0C0C0]/80"
                     size="sm"
                   />
                   <Button
@@ -349,8 +391,8 @@ export const PhotoCard = () => {
                     size="sm"
                   />
                   <Button
-                    onClick={() => setBorderColor("#00FF7F")}
-                    className="h-10 bg-[#00FF7F] hover:bg-[#00FF7F]/80"
+                    onClick={() => setBorderColor("#00CED1")}
+                    className="h-10 bg-[#00CED1] hover:bg-[#00CED1]/80"
                     size="sm"
                   />
                 </div>
@@ -373,7 +415,7 @@ export const PhotoCard = () => {
                   size="lg"
                   className="w-full"
                 >
-                  포토카드 다운로드
+                  타로카드 다운로드
                 </Button>
                 
                 <Button
