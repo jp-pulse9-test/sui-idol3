@@ -78,7 +78,7 @@ const Index = () => {
               <div className="text-center space-y-4">
                 <h3 className="text-2xl font-bold gradient-text">2025 AI심쿵챌린지</h3>
                 <p className="text-5xl font-black text-foreground">101</p>
-                <p className="text-lg text-muted-foreground">SEASON 1</p>
+                <p className="text-lg text-muted-foreground">SEASON 1, 당신의 픽으로 만든 새로운 아이돌</p>
                 <p className="text-base text-muted-foreground">
                   당신의 이상형을 찾아가는 특별한 여정
                 </p>
@@ -169,7 +169,7 @@ const Index = () => {
                 지금 바로 시작해보세요!
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
-                몇 분만 투자하면 당신만의 완벽한 가상아이돌 이상형을 찾을 수 있습니다.
+                몇 번의 선택으로, 당신만의 가상아이돌을 찾으세요.
               </p>
             </div>
             
