@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-// 나노바나나 API 설정
-const NANOBANA_API_KEY = "AIzaSyBOeDWWsJ-0S6AMiraC5uMD6TWDUErXoMc";
-const NANOBANA_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent";
+// Runware API 설정
+const RUNWARE_API_KEY = "AIzaSyBOeDWWsJ-0S6AMiraC5uMD6TWDUErXoMc";
+const RUNWARE_API_URL = "https://api.runware.ai/v1";
 
 interface IdealType {
   id: number;
@@ -51,19 +51,28 @@ export const PhotoCard = () => {
     try {
       const prompt = `Create a beautiful K-pop style portrait of ${idealType.name}, a virtual idol with ${idealType.personality} personality. High quality, professional idol photo, Korean pop star aesthetic, studio lighting, colorful vibrant background`;
       
-      // 나노바나나 API 호출 (Gemini Pro Vision 대신 실제 이미지 생성 API 사용)
-      const response = await fetch(`${NANOBANA_API_URL}?key=${NANOBANA_API_KEY}`, {
+      // Runware API 호출
+      const response = await fetch(RUNWARE_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Generate an image: ${prompt}`
-            }]
-          }]
-        })
+        body: JSON.stringify([
+          {
+            "taskType": "authentication",
+            "apiKey": RUNWARE_API_KEY
+          },
+          {
+            "taskType": "imageInference",
+            "taskUUID": crypto.randomUUID(),
+            "positivePrompt": prompt,
+            "width": 512,
+            "height": 512,
+            "model": "runware:100@1",
+            "numberResults": 1,
+            "outputFormat": "WEBP"
+          }
+        ])
       });
       
       if (!response.ok) {
@@ -72,35 +81,40 @@ export const PhotoCard = () => {
       
       const data = await response.json();
       
-      // 실제 구현에서는 이미지 URL을 받아와 setGeneratedImage에 설정
-      // 현재는 데모용으로 플레이스홀더 이미지 생성
-      const canvas = document.createElement('canvas');
-      canvas.width = 200;
-      canvas.height = 250;
-      const ctx = canvas.getContext('2d');
-      
-      if (ctx) {
-        // AI 스타일 그라데이션 배경 (검정 고정)
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Runware API 응답에서 이미지 URL 추출
+      const imageData = data.data?.find((item: any) => item.taskType === "imageInference");
+      if (imageData && imageData.imageURL) {
+        setGeneratedImage(imageData.imageURL);
+        toast.success("AI 이미지가 생성되었습니다!");
+      } else {
+        // 이미지 생성 실패 시 플레이스홀더 생성
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 250;
+        const ctx = canvas.getContext('2d');
         
-        // AI 생성 표시
-        ctx.fillStyle = borderColor;
-        ctx.font = 'bold 16px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('AI Generated', canvas.width / 2, 30);
-        ctx.fillText(idealType.name, canvas.width / 2, canvas.height / 2);
-        ctx.font = '12px Inter, sans-serif';
-        ctx.fillText(idealType.personality, canvas.width / 2, canvas.height / 2 + 30);
-        
-        // 아이돌 이모티콘
-        ctx.font = 'bold 80px serif';
-        ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2 - 20);
-        
-        setGeneratedImage(canvas.toDataURL());
+        if (ctx) {
+          // AI 스타일 그라데이션 배경 (검정 고정)
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // AI 생성 표시
+          ctx.fillStyle = borderColor;
+          ctx.font = 'bold 16px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('AI Generated', canvas.width / 2, 30);
+          ctx.fillText(idealType.name, canvas.width / 2, canvas.height / 2);
+          ctx.font = '12px Inter, sans-serif';
+          ctx.fillText(idealType.personality, canvas.width / 2, canvas.height / 2 + 30);
+          
+          // 아이돌 이모티콘
+          ctx.font = 'bold 80px serif';
+          ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2 - 20);
+          
+          setGeneratedImage(canvas.toDataURL());
+        }
+        toast.success("AI 이미지가 생성되었습니다!");
       }
-      
-      toast.success("AI 이미지가 생성되었습니다!");
     } catch (error) {
       console.error('AI 이미지 생성 오류:', error);
       toast.error("이미지 생성에 실패했습니다. 다시 시도해주세요.");
