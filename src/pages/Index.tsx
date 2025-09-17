@@ -187,7 +187,7 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-4 gap-8">
               <FeatureCard
                 title="CREATE"
                 description="입덕 성향 분석과 이상형 월드컵을 통해 나만의 완벽한 아이돌을 생성하고 포토카드를 제작하세요."
@@ -195,6 +195,15 @@ const Index = () => {
                 onClick={() => isWalletConnected ? navigate('/gender-select') : toast.error("먼저 지갑을 연결해주세요!")}
                 gradient="bg-gradient-to-br from-primary/20 to-accent/20"
               />
+              
+              <FeatureCard
+                title="GALLERY"
+                description="202명의 다양한 아이돌들을 한눈에 보고 검색하며 커뮤니티에 참여하세요."
+                icon={photocardIcon}
+                onClick={() => navigate('/gallery')}
+                gradient="bg-gradient-to-br from-purple/20 to-pink/20"
+              />
+              
               
               <FeatureCard
                 title="COLLECT"
