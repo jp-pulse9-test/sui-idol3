@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import MBTITest from "./pages/MBTITest";
 import WorldCup from "./pages/WorldCup";
 import PhotoCard from "./pages/PhotoCard";
+import Collection from "./pages/Collection";
+import Growth from "./pages/Growth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +24,8 @@ const App = () => (
           <Route path="/mbti" element={<MBTITest />} />
           <Route path="/worldcup" element={<WorldCup />} />
           <Route path="/photocard" element={<PhotoCard />} />
+          <Route path="/collection" element={<Collection />} />
+          <Route path="/growth" element={<Growth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

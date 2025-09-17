@@ -46,7 +46,7 @@ const Index = () => {
           <div className="text-center space-y-8 bg-card/80 backdrop-blur-sm p-12 rounded-2xl border border-border shadow-glow-primary">
             <div className="space-y-6">
               <h1 className="text-6xl md:text-8xl font-black neon-text animate-neon-flicker font-dancing">
-                SUI IDOL3
+                Sui:Idol³
               </h1>
               <div className="space-y-2">
                 <h2 className="text-2xl md:text-3xl font-bold text-primary">
@@ -91,33 +91,72 @@ const Index = () => {
         <section className="py-20">
           <div className="space-y-12">
             <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-              <h2 className="text-4xl font-bold gradient-text">서비스 특징</h2>
+              <h2 className="text-4xl font-bold gradient-text">3단계 유저 경험</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                과학적인 입덕 분석부터 개성 넘치는 포토카드 제작까지
+                Create → Collect → Grow: 나만의 아이돌 여정을 시작하세요
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
-                title="입덕 성향 분석"
-                description="아이돌에게 반하는 8가지 모먼트 분석을 통해 당신의 입덕 성향을 정확히 파악하세요."
+                title="CREATE"
+                description="입덕 성향 분석과 이상형 월드컵을 통해 나만의 완벽한 아이돌을 생성하고 포토카드를 제작하세요."
                 icon={mbtiIcon}
                 onClick={() => navigate('/mbti')}
+                gradient="bg-gradient-to-br from-primary/20 to-accent/20"
               />
               
               <FeatureCard
-                title="이상형 월드컵"
-                description="입덕 성향 분석 결과를 바탕으로 선별된 202명의 가상아이돌과 함께하는 월드컵을 즐겨보세요."
-                icon={tournamentIcon}
-                onClick={() => navigate('/mbti')}
-              />
-              
-              <FeatureCard
-                title="포토카드 제작"
-                description="최종 선택한 이상형으로 나만의 특별한 네온 스타일 포토카드를 만들고 친구들과 공유해보세요."
+                title="COLLECT"
+                description="다양한 포토카드를 수집하고 월렛에 연결하여 나만의 디지털 컬렉션을 구축하세요."
                 icon={photocardIcon}
-                onClick={() => navigate('/mbti')}
+                onClick={() => navigate('/collection')}
+                gradient="bg-gradient-to-br from-accent/20 to-secondary/20"
               />
+              
+              <FeatureCard
+                title="GROW"
+                description="커뮤니티와 함께 컬렉션을 성장시키고 특별한 보상과 이벤트에 참여하세요."
+                icon={tournamentIcon}
+                onClick={() => navigate('/growth')}
+                gradient="bg-gradient-to-br from-secondary/20 to-primary/20"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Process Section */}
+        <section className="py-20">
+          <div className="space-y-12">
+            <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
+              <div className="space-y-4">
+                <h2 className="text-4xl font-bold neon-text">
+                  3단계로 완성하는 아이돌 여정
+                </h2>
+                <div className="grid md:grid-cols-3 gap-8 mt-8">
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-primary flex items-center justify-center text-3xl font-bold text-white shadow-lg glow-primary">
+                      1
+                    </div>
+                    <h3 className="text-xl font-bold text-primary">CREATE</h3>
+                    <p className="text-foreground">성향 분석 → 월드컵 → 포토카드 생성</p>
+                  </div>
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-secondary flex items-center justify-center text-3xl font-bold text-white shadow-lg glow-secondary">
+                      2
+                    </div>
+                    <h3 className="text-xl font-bold text-accent">COLLECT</h3>
+                    <p className="text-foreground">월렛 연결 → 마이 박스 → 컬렉션 관리</p>
+                  </div>
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-accent flex items-center justify-center text-3xl font-bold text-white shadow-lg glow-accent">
+                      3
+                    </div>
+                    <h3 className="text-xl font-bold text-secondary">GROW</h3>
+                    <p className="text-foreground">커뮤니티 → 트레이딩 → 특별 이벤트</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -148,7 +187,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
           <p className="text-muted-foreground">
-            © 2024 SUI IDOL3. Made with 💖 by Lovable
+            © 2024 Sui:Idol³. Made with 💖 by Lovable
           </p>
         </footer>
       </div>
