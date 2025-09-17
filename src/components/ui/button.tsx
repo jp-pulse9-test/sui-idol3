@@ -21,6 +21,7 @@ const buttonVariants = cva(
         hero: "bg-gradient-primary text-white font-bold shadow-glow-primary hover:scale-105 transform transition-all",
         neon: "bg-accent text-accent-foreground shadow-glow-accent hover:bg-accent/90 animate-glow",
         gradient: "bg-gradient-secondary text-white font-bold hover:scale-105 transform transition-all shadow-glow-secondary",
+        premium: "bg-gradient-to-r from-accent via-primary to-primary-glow text-white hover:shadow-glow-accent transition-all duration-300 font-semibold",
       },
       size: {
         default: "h-11 px-6 py-3",
