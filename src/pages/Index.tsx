@@ -130,26 +130,26 @@ const Index = () => {
           <div className="space-y-12">
             <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
               <div className="space-y-4">
-                <h2 className="text-4xl font-bold neon-text">
+                <h2 className="text-4xl font-bold gradient-text">
                   3단계로 완성하는 아이돌 여정
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8 mt-8">
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-primary flex items-center justify-center text-3xl font-bold text-white shadow-lg glow-primary">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-primary flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       1
                     </div>
                     <h3 className="text-xl font-bold text-primary">CREATE</h3>
                     <p className="text-foreground">성향 분석 → 월드컵 → 포토카드 생성</p>
                   </div>
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-secondary flex items-center justify-center text-3xl font-bold text-white shadow-lg glow-secondary">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-secondary flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       2
                     </div>
                     <h3 className="text-xl font-bold text-accent">COLLECT</h3>
                     <p className="text-foreground">월렛 연결 → 마이 박스 → 컬렉션 관리</p>
                   </div>
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-accent flex items-center justify-center text-3xl font-bold text-white shadow-lg glow-accent">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-accent flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       3
                     </div>
                     <h3 className="text-xl font-bold text-secondary">GROW</h3>
@@ -165,7 +165,7 @@ const Index = () => {
         <section className="py-20">
           <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
             <div className="space-y-4">
-              <h2 className="text-4xl font-bold neon-text">
+              <h2 className="text-4xl font-bold gradient-text">
                 지금 바로 시작해보세요!
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
