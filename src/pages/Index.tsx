@@ -5,51 +5,24 @@ import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
 
-// 가상 아이돌 이모지 배열
-const idolEmojis = [
-  "👨‍🎤", "👩‍🎤", "🎭", "⭐", "💫", "✨", "🌟", "💖", "💙", "💜", 
-  "🎵", "🎶", "🎤", "🎸", "🥁", "🎹", "🎺", "🎷", "🪕", "🎻",
-  "👑", "💎", "🌹", "🔥", "⚡", "🌈", "🦄", "🌙", "☄️", "🌠"
-];
+import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
 
 // 배경 아이돌 그리드 컴포넌트
 const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
-  const gridItems = Array.from({ length: 120 }, (_, i) => {
-    const randomEmoji = idolEmojis[Math.floor(Math.random() * idolEmojis.length)];
-    const isSpecial = Math.random() > 0.8; // 20% 확률로 특별한 스타일
-    
-    return (
-      <div
-        key={`${side}-${i}`}
-        className={`
-          relative w-12 h-12 flex items-center justify-center text-lg
-          transition-all duration-300 hover:scale-110 cursor-pointer
-          ${isSpecial 
-            ? 'bg-gradient-primary text-white shadow-glow-primary rounded-lg' 
-            : 'bg-card/30 backdrop-blur-sm border border-border/30 rounded-md'
-          }
-          ${Math.random() > 0.5 ? 'animate-pulse' : ''}
-        `}
-        style={{
-          animationDelay: `${Math.random() * 2}s`,
-          animationDuration: `${2 + Math.random() * 2}s`
-        }}
-      >
-        {randomEmoji}
-        {isSpecial && (
-          <div className="absolute inset-0 bg-gradient-primary opacity-20 rounded-lg animate-pulse"></div>
-        )}
-      </div>
-    );
-  });
-
   return (
     <div className={`
       fixed top-0 ${side === 'left' ? 'left-0' : 'right-0'} h-full w-64
-      grid grid-cols-6 gap-1 p-4 overflow-hidden
-      ${side === 'left' ? 'opacity-70' : 'opacity-70'}
+      overflow-hidden opacity-30
     `}>
-      {gridItems}
+      <div 
+        className="w-full h-full bg-cover bg-center bg-repeat-y animate-pulse"
+        style={{ 
+          backgroundImage: `url(${idolFacesGrid})`,
+          backgroundSize: 'cover',
+          filter: 'blur(1px) brightness(0.8)'
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/50 to-transparent"></div>
     </div>
   );
 };
@@ -77,7 +50,7 @@ const Index = () => {
                   가상아이돌 이상형 찾기
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                  아이돌 입덕 MBTI 분석을 통해 당신이 반하는 모먼트를 찾고,<br />
+                  아이돌 입덕 성향 분석을 통해 당신이 반하는 모먼트를 찾고,<br />
                   이상형 월드컵으로 최종 선택한 후 나만의 포토카드를 만들어보세요!
                 </p>
               </div>
@@ -90,10 +63,10 @@ const Index = () => {
                 size="xl"
                 className="min-w-64 text-xl py-4 animate-glow"
               >
-                ⚡ 입덕 MBTI 시작 ⚡
+                ⚡ 입덕 성향 분석 시작 ⚡
               </Button>
               <p className="text-sm text-muted-foreground">
-                8개 질문으로 당신의 입덕 타입을 알아보세요
+                8개 질문으로 당신의 입덕 성향을 분석해보세요
               </p>
             </div>
             
@@ -123,15 +96,15 @@ const Index = () => {
 
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
-                title="입덕 MBTI 분석"
-                description="아이돌에게 반하는 8가지 모먼트 분석을 통해 당신의 입덕 타입을 정확히 파악하세요."
+                title="입덕 성향 분석"
+                description="아이돌에게 반하는 8가지 모먼트 분석을 통해 당신의 입덕 성향을 정확히 파악하세요."
                 icon={mbtiIcon}
                 onClick={() => navigate('/mbti')}
               />
               
               <FeatureCard
                 title="이상형 월드컵"
-                description="입덕 MBTI 결과를 바탕으로 선별된 202명의 가상아이돌과 함께하는 월드컵을 즐겨보세요."
+                description="입덕 성향 분석 결과를 바탕으로 선별된 202명의 가상아이돌과 함께하는 월드컵을 즐겨보세요."
                 icon={tournamentIcon}
                 onClick={() => navigate('/mbti')}
               />

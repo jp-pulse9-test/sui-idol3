@@ -117,7 +117,7 @@ export const MBTITest = () => {
     <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">아이돌 입덕 MBTI</h1>
+          <h1 className="text-4xl font-bold gradient-text">아이돌 입덕 성향 분석</h1>
           <p className="text-muted-foreground">당신이 반하는 아이돌 모먼트를 찾아보세요</p>
           <Progress value={progress} className="w-full h-2" />
           <p className="text-sm text-muted-foreground">
