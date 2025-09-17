@@ -41,15 +41,52 @@ export const PhotoCard = () => {
     try {
       const parsedFinalPick = JSON.parse(storedFinalPick);
       setIdealType(parsedFinalPick);
-      // 성향별 은유적 문구 설정
-      const personalityPoems = {
-        "창의적이고 열정적": "🌟 별빛처럼 반짝이는\n창조의 불꽃을 지닌 영혼",
-        "활발하고 사교적": "🌞 태양처럼 밝은 미소로\n모든 이를 환하게 비추는 존재",
-        "차분하고 신중한": "🌙 달빛처럼 고요한 깊이 속에\n지혜가 흐르는 마음",
-        "논리적이고 분석적": "💎 다이아몬드처럼 예리한 통찰로\n진리를 바라보는 눈",
-        "감성적이고 따뜻한": "🌸 벚꽃처럼 부드러운 감성으로\n세상을 포용하는 마음"
+      
+      // 사용자 MBTI 결과 가져오기
+      const mbtiResult = localStorage.getItem('mbtiResult');
+      const mbtiData = mbtiResult ? JSON.parse(mbtiResult) : null;
+      
+      // 사용자 성향 분석 - 왜 이 아이돌을 선택했는지 해석
+      const getPersonalityAnalysis = (personality: string, mbti: any) => {
+        const analyses = {
+          "창의적이고 열정적": {
+            default: "🎨 당신은 예술적 감성과 창의적 에너지에 끌리는 사람입니다.\n상대방의 독창성과 열정적인 모습에서 영감을 받으며,\n함께 꿈을 키워나갈 동반자를 원하는 마음이 투영되었네요.",
+            ENFP: "🌟 같은 직관형으로서 무한한 가능성과 창의적 에너지에 공감하며,\n서로의 열정을 이해하고 응원해줄 수 있는 영혼의 동반자를 찾는 당신의 마음이 드러났습니다.",
+            INFP: "🎭 내면의 예술적 감성과 이상주의적 성향이 반영되어,\n창조적 에너지로 가득한 상대방에게서 자신의 숨겨진 모습을 발견하고자 하는 욕구가 나타났네요."
+          },
+          "활발하고 사교적": {
+            default: "☀️ 당신은 밝고 긍정적인 에너지를 추구하는 사람입니다.\n상대방의 사교적이고 외향적인 매력에 이끌리며,\n함께 있으면 더 밝아질 수 있는 관계를 원하는 마음이 드러났어요.",
+            ESFP: "🎪 같은 외향형으로서 활발한 에너지와 사람들과의 소통을 중시하는 성향이 일치하여,\n자연스럽게 끌렸을 것 같습니다. 함께 즐거운 순간들을 만들어갈 파트너를 원하시는군요.",
+            ISFP: "🌸 평소 조용한 성향과는 다른 활발한 매력에 끌리는 것은,\n상대방을 통해 자신의 숨겨진 사교적 면모를 발견하고 싶은 마음의 표현이에요."
+          },
+          "차분하고 신중한": {
+            default: "🌙 당신은 안정감과 깊이 있는 관계를 중시하는 사람입니다.\n상대방의 신중하고 사려깊은 모습에서 신뢰감을 느끼며,\n마음 깊은 곳까지 이해해줄 수 있는 사람을 원하는 것 같아요.",
+            ISTJ: "📚 같은 신중한 성향으로서 계획성과 안정성을 중시하는 마음이 일치하여,\n서로를 깊이 이해하고 의지할 수 있는 든든한 관계를 원하시는군요.",
+            INFJ: "🔮 직관적이면서도 차분한 성향이 조화를 이루어,\n겉으로는 조용해 보이지만 내면의 깊은 철학과 지혜를 공유할 수 있는 상대를 찾으시는 것 같아요."
+          },
+          "논리적이고 분석적": {
+            default: "🧠 당신은 지적인 대화와 깊이 있는 소통을 추구하는 사람입니다.\n상대방의 분석적이고 합리적인 사고방식에 매력을 느끼며,\n서로의 생각을 깊이 나눌 수 있는 지적 동반자를 원하시는군요.",
+            INTJ: "🏗️ 같은 분석형으로서 체계적이고 논리적인 사고를 중시하는 성향이 반영되어,\n서로의 아이디어와 비전을 공유하며 함께 성장할 수 있는 파트너를 원하시는 것 같아요.",
+            ENTP: "💡 창의적 사고와 논리적 분석의 조화를 추구하는 당신의 성향이 드러나,\n지적 호기심을 자극하고 새로운 관점을 제시해줄 수 있는 상대를 찾으시는군요."
+          },
+          "감성적이고 따뜻한": {
+            default: "💕 당신은 따뜻한 마음과 깊은 공감능력을 가진 사람입니다.\n상대방의 섬세하고 배려심 깊은 모습에 마음이 움직였으며,\n서로의 감정을 깊이 이해하고 위로해줄 수 있는 관계를 원하시는군요.",
+            ISFJ: "🤗 같은 감정형으로서 타인을 배려하고 따뜻하게 보살피는 성향이 일치하여,\n서로를 아끼고 보듬어줄 수 있는 포근한 관계를 추구하시는 것 같아요.",
+            ENFJ: "🌻 사람들을 이끌고 따뜻하게 품어주는 리더십과 감성이 조화되어,\n상대방과 함께 더 나은 세상을 만들어가고 싶은 마음이 투영되었네요."
+          }
+        };
+        
+        const personalityAnalysis = analyses[personality];
+        if (!personalityAnalysis) return "✨ 당신만의 특별한 취향과 감성이\n이 선택에 고스란히 담겨있습니다.";
+        
+        if (mbti && personalityAnalysis[mbti.type]) {
+          return personalityAnalysis[mbti.type];
+        }
+        
+        return personalityAnalysis.default;
       };
-      setCustomText(personalityPoems[parsedFinalPick.personality] || "✨ 특별한 영혼의\n아름다운 여정");
+      
+      setCustomText(getPersonalityAnalysis(parsedFinalPick.personality, mbtiData));
     } catch (error) {
       toast.error("데이터를 불러올 수 없습니다.");
       navigate('/');
