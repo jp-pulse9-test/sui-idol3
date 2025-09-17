@@ -21,7 +21,7 @@ interface IdealType {
 export const PhotoCard = () => {
   const [idealType, setIdealType] = useState<IdealType | null>(null);
   const [customText, setCustomText] = useState("");
-  const [borderColor, setBorderColor] = useState("#FFD700"); // 금색으로 기본값 변경
+  const [borderColor, setBorderColor] = useState("#FFFFFF"); // 흰색으로 기본값 변경
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -220,143 +220,210 @@ export const PhotoCard = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 타로카드 비율 (세로가 더 김)
-    canvas.width = 300;
+    // 모던한 프로필 카드 비율
+    canvas.width = 320;
     canvas.height = 480;
 
-    // 타로카드 스타일 배경 (신비로운 그라데이션)
+    // 모던한 그라데이션 배경
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#1a1a2e');
-    gradient.addColorStop(0.3, '#16213e');
-    gradient.addColorStop(0.7, '#0f3460');
-    gradient.addColorStop(1, '#533a7b');
+    gradient.addColorStop(0, '#0f172a');
+    gradient.addColorStop(0.5, '#1e293b');
+    gradient.addColorStop(1, '#334155');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 타로카드 테두리 (금색 장식)
+    // 모던한 테두리
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
     
-    // 안쪽 테두리
-    ctx.lineWidth = 1;
-    ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+    // 내부 카드 영역
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.fillRect(30, 30, canvas.width - 60, canvas.height - 60);
 
-    // 상단 장식 요소들
-    ctx.fillStyle = borderColor;
-    ctx.font = 'bold 16px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('✦ ✧ ✦', canvas.width / 2, 50);
-
-    // AI 생성 이미지가 있으면 사용, 없으면 이모티콘 사용
-    if (generatedImage) {
+    // 선택한 아이돌의 실제 이미지가 있으면 사용
+    if (idealType.realImage) {
       const img = new Image();
       img.onload = () => {
-        // 타로카드 중앙 이미지 영역
-        const imgWidth = 200;
-        const imgHeight = 160;
-        const imgX = (canvas.width - imgWidth) / 2;
-        const imgY = 80;
+        // 작은 원형 프로필 사진
+        const profileSize = 80;
+        const profileX = (canvas.width - profileSize) / 2;
+        const profileY = 60;
         
-        // 이미지 배경 (둥근 프레임)
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.fillRect(imgX - 10, imgY - 10, imgWidth + 20, imgHeight + 20);
+        // 원형 클리핑 마스크
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
+        ctx.clip();
         
-        ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+        // 프로필 이미지 그리기
+        ctx.drawImage(img, profileX, profileY, profileSize, profileSize);
+        ctx.restore();
         
-        // 이름 (타로카드 하단)
-        ctx.font = 'bold 28px serif';
+        // 프로필 테두리
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // 아이돌 이름 (프로필 아래)
+        ctx.font = 'bold 28px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.strokeText(idealType.name, canvas.width / 2, imgY + imgHeight + 50);
-        ctx.fillText(idealType.name, canvas.width / 2, imgY + imgHeight + 50);
+        ctx.fillText(idealType.name, canvas.width / 2, profileY + profileSize + 40);
 
-        // 성격 설명
-        ctx.font = 'italic 16px serif';
+        // 성격 설명 (작은 태그 스타일)
+        ctx.font = '16px Inter, sans-serif';
         ctx.fillStyle = borderColor;
-        ctx.fillText(`"${idealType.personality}"`, canvas.width / 2, imgY + imgHeight + 80);
+        const tagWidth = ctx.measureText(idealType.personality).width + 20;
+        const tagX = (canvas.width - tagWidth) / 2;
+        const tagY = profileY + profileSize + 60;
+        
+        // 태그 배경
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillRect(tagX, tagY, tagWidth, 30);
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tagX, tagY, tagWidth, 30);
+        
+        // 태그 텍스트
+        ctx.fillStyle = borderColor;
+        ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
+
+        // AI 생성 이미지가 있으면 표시
+        if (generatedImage) {
+          const aiImg = new Image();
+          aiImg.onload = () => {
+            const aiImgWidth = 200;
+            const aiImgHeight = 150;
+            const aiImgX = (canvas.width - aiImgWidth) / 2;
+            const aiImgY = tagY + 50;
+            
+            // AI 이미지 배경
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.fillRect(aiImgX - 5, aiImgY - 5, aiImgWidth + 10, aiImgHeight + 10);
+            
+            // AI 이미지
+            ctx.drawImage(aiImg, aiImgX, aiImgY, aiImgWidth, aiImgHeight);
+            
+            // AI 이미지 테두리
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(aiImgX, aiImgY, aiImgWidth, aiImgHeight);
+          };
+          aiImg.src = generatedImage;
+        }
 
         // 커스텀 텍스트 (하단)
-        ctx.font = 'bold 14px serif';
+        ctx.font = 'bold 16px Inter, sans-serif';
         ctx.fillStyle = '#ffffff';
         const words = customText.split(' ');
         let line = '';
-        let y = imgY + imgHeight + 110;
+        let y = canvas.height - 100;
         
         for (let n = 0; n < words.length; n++) {
           const testLine = line + words[n] + ' ';
           const metrics = ctx.measureText(testLine);
           const testWidth = metrics.width;
           
-          if (testWidth > canvas.width - 60 && n > 0) {
+          if (testWidth > canvas.width - 80 && n > 0) {
             ctx.fillText(line, canvas.width / 2, y);
             line = words[n] + ' ';
-            y += 20;
+            y += 25;
           } else {
             line = testLine;
           }
         }
         ctx.fillText(line, canvas.width / 2, y);
         
-        // 하단 장식
-        ctx.fillStyle = borderColor;
-        ctx.font = 'bold 16px serif';
-        ctx.fillText('✦ ✧ ✦', canvas.width / 2, canvas.height - 30);
+        // 하단 장식선
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(50, canvas.height - 50);
+        ctx.lineTo(canvas.width - 50, canvas.height - 50);
+        ctx.stroke();
       };
-      img.src = generatedImage;
+      img.crossOrigin = "anonymous";
+      img.src = idealType.realImage;
     } else {
-      // 기존 이모티콘 방식 (타로카드 스타일)
+      // 실제 이미지가 없을 때 fallback
+      // 작은 원형 이모티콘
+      const profileSize = 80;
+      const profileX = (canvas.width - profileSize) / 2;
+      const profileY = 60;
       
-      // 중앙 아이돌 이모티콘 (더 크게)
-      ctx.font = 'bold 140px serif';
+      // 원형 배경
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.beginPath();
+      ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // 이모티콘
+      ctx.font = 'bold 40px serif';
       ctx.textAlign = 'center';
       ctx.fillStyle = '#ffffff';
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.fillText(idealType.image, profileX + profileSize/2, profileY + profileSize/2 + 15);
+      
+      // 프로필 테두리
+      ctx.strokeStyle = borderColor;
       ctx.lineWidth = 3;
-      ctx.strokeText(idealType.image, canvas.width / 2, 200);
-      ctx.fillText(idealType.image, canvas.width / 2, 200);
-
-      // 이름 (타로카드 하단)
-      ctx.font = 'bold 28px serif';
+      ctx.beginPath();
+      ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      // 나머지 요소들도 동일하게 그리기
+      // 아이돌 이름
+      ctx.font = 'bold 28px Inter, sans-serif';
       ctx.fillStyle = '#ffffff';
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.lineWidth = 2;
-      ctx.strokeText(idealType.name, canvas.width / 2, 270);
-      ctx.fillText(idealType.name, canvas.width / 2, 270);
+      ctx.fillText(idealType.name, canvas.width / 2, profileY + profileSize + 40);
 
-      // 성격 설명
-      ctx.font = 'italic 16px serif';
+      // 성격 태그
+      ctx.font = '16px Inter, sans-serif';
       ctx.fillStyle = borderColor;
-      ctx.fillText(`"${idealType.personality}"`, canvas.width / 2, 300);
+      const tagWidth = ctx.measureText(idealType.personality).width + 20;
+      const tagX = (canvas.width - tagWidth) / 2;
+      const tagY = profileY + profileSize + 60;
+      
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.fillRect(tagX, tagY, tagWidth, 30);
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(tagX, tagY, tagWidth, 30);
+      
+      ctx.fillStyle = borderColor;
+      ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
 
       // 커스텀 텍스트
-      ctx.font = 'bold 14px serif';
+      ctx.font = 'bold 16px Inter, sans-serif';
       ctx.fillStyle = '#ffffff';
       const words = customText.split(' ');
       let line = '';
-      let y = 340;
+      let y = canvas.height - 100;
       
       for (let n = 0; n < words.length; n++) {
         const testLine = line + words[n] + ' ';
         const metrics = ctx.measureText(testLine);
         const testWidth = metrics.width;
         
-        if (testWidth > canvas.width - 60 && n > 0) {
+        if (testWidth > canvas.width - 80 && n > 0) {
           ctx.fillText(line, canvas.width / 2, y);
           line = words[n] + ' ';
-          y += 20;
+          y += 25;
         } else {
           line = testLine;
         }
       }
       ctx.fillText(line, canvas.width / 2, y);
       
-      // 하단 장식
-      ctx.fillStyle = borderColor;
-      ctx.font = 'bold 16px serif';
-      ctx.fillText('✦ ✧ ✦', canvas.width / 2, canvas.height - 30);
+      // 하단 장식선
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(50, canvas.height - 50);
+      ctx.lineTo(canvas.width - 50, canvas.height - 50);
+      ctx.stroke();
     }
   };
 
@@ -468,13 +535,13 @@ export const PhotoCard = () => {
 
                 <div className="grid grid-cols-4 gap-2">
                   <Button
-                    onClick={() => setBorderColor("#FFD700")}
-                    className="h-10 bg-[#FFD700] hover:bg-[#FFD700]/80"
+                    onClick={() => setBorderColor("#FFFFFF")}
+                    className="h-10 bg-[#FFFFFF] hover:bg-[#FFFFFF]/80 border border-border"
                     size="sm"
                   />
                   <Button
-                    onClick={() => setBorderColor("#C0C0C0")}
-                    className="h-10 bg-[#C0C0C0] hover:bg-[#C0C0C0]/80"
+                    onClick={() => setBorderColor("#00D4FF")}
+                    className="h-10 bg-[#00D4FF] hover:bg-[#00D4FF]/80"
                     size="sm"
                   />
                   <Button
@@ -483,8 +550,8 @@ export const PhotoCard = () => {
                     size="sm"
                   />
                   <Button
-                    onClick={() => setBorderColor("#00CED1")}
-                    className="h-10 bg-[#00CED1] hover:bg-[#00CED1]/80"
+                    onClick={() => setBorderColor("#00FF88")}
+                    className="h-10 bg-[#00FF88] hover:bg-[#00FF88]/80"
                     size="sm"
                   />
                 </div>
