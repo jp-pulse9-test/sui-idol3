@@ -33,6 +33,10 @@
     --accent: 260 100% 70%;
     --accent-foreground: 220 15% 8%;
     --accent-glow: 260 100% 85%;
+    
+    /* Neon purple for additional effects */
+    --neon-purple: 280 100% 60%;
+    --neon-purple-glow: 280 100% 75%;
 
     /* Muted tones */
     --muted: 220 15% 18%;
@@ -58,6 +62,7 @@
     --glow-primary: 0 0 20px hsl(195 100% 60% / 0.5), 0 0 40px hsl(195 100% 60% / 0.3), 0 0 80px hsl(195 100% 60% / 0.1);
     --glow-secondary: 0 0 20px hsl(180 100% 65% / 0.5), 0 0 40px hsl(180 100% 65% / 0.3), 0 0 80px hsl(180 100% 65% / 0.1);
     --glow-accent: 0 0 20px hsl(260 100% 70% / 0.5), 0 0 40px hsl(260 100% 70% / 0.3), 0 0 80px hsl(260 100% 70% / 0.1);
+    --glow-neon-purple: 0 0 20px hsl(280 100% 60% / 0.6), 0 0 40px hsl(280 100% 60% / 0.4), 0 0 80px hsl(280 100% 60% / 0.2);
 
     /* Smooth neon animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -125,6 +130,10 @@
   
   .glow-accent {
     box-shadow: var(--glow-accent);
+  }
+  
+  .glow-neon-purple {
+    box-shadow: var(--glow-neon-purple);
   }
 
   .gradient-text {

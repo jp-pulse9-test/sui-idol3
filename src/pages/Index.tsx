@@ -6,9 +6,12 @@ import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
+import maleIdolFaces from "@/assets/male-idol-faces.jpg";
 
 // 배경 아이돌 그리드 컴포넌트
 const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
+  const backgroundImage = side === 'left' ? maleIdolFaces : idolFacesGrid;
+  
   return (
     <div className={`
       fixed top-0 ${side === 'left' ? 'left-0' : 'right-0'} h-full w-64
@@ -17,12 +20,12 @@ const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
       <div 
         className="w-full h-full bg-cover bg-center bg-repeat-y animate-pulse"
         style={{ 
-          backgroundImage: `url(${idolFacesGrid})`,
+          backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           filter: 'blur(1px) brightness(0.8)'
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/50 to-transparent"></div>
+      <div className={`absolute inset-0 ${side === 'left' ? 'bg-gradient-to-r from-purple-900/50 to-transparent' : 'bg-gradient-to-l from-background/50 to-transparent'}`}></div>
     </div>
   );
 };
@@ -43,7 +46,7 @@ const Index = () => {
           <div className="text-center space-y-8 bg-card/80 backdrop-blur-sm p-12 rounded-2xl border border-border shadow-glow-primary">
             <div className="space-y-6">
               <h1 className="text-6xl md:text-8xl font-black neon-text animate-neon-flicker font-dancing">
-                AI.DOL
+                SUI IDOL3
               </h1>
               <div className="space-y-2">
                 <h2 className="text-2xl md:text-3xl font-bold text-primary">
@@ -73,7 +76,7 @@ const Index = () => {
             {/* 시즌 정보 */}
             <div className="mt-8 p-4 bg-gradient-primary/10 rounded-lg border border-primary/30">
               <div className="text-center space-y-2">
-                <h3 className="text-lg font-bold text-primary">AI.DOL CHALLENGE</h3>
+                <h3 className="text-lg font-bold text-primary">SUI IDOL3 CHALLENGE</h3>
                 <p className="text-3xl font-black text-foreground">101</p>
                 <p className="text-sm text-muted-foreground">SEASON 1</p>
                 <p className="text-xs text-muted-foreground">
@@ -145,7 +148,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
           <p className="text-muted-foreground">
-            © 2024 AI.DOL. Made with 💖 by Lovable
+            © 2024 SUI IDOL3. Made with 💖 by Lovable
           </p>
         </footer>
       </div>
