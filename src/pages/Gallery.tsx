@@ -6,6 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Heart, Search, Filter, Users, Star } from "lucide-react";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+
+// K-POP 아이돌 이미지들
+import femaleIdol1 from "@/assets/female-idol-1.jpg";
+import femaleIdol2 from "@/assets/female-idol-2.jpg";
+import maleIdol1 from "@/assets/male-idol-1.jpg";
+import maleIdol2 from "@/assets/male-idol-2.jpg";
 
 interface Idol {
   id: number;
@@ -23,7 +30,20 @@ interface Idol {
   tags: string[];
   debut: number;
   agency: string;
+  stats: {
+    vocal: number;
+    dance: number;
+    rap: number;
+    visual: number;
+    performance: number;
+    charisma: number;
+    variety: number;
+    leadership: number;
+  };
 }
+
+// 아이돌 이미지 배열
+const idolImages = [femaleIdol1, femaleIdol2, maleIdol1, maleIdol2];
 
 // 202명의 아이돌 데이터 생성
 const generateIdols = (): Idol[] => {
@@ -66,7 +86,7 @@ const generateIdols = (): Idol[] => {
     bloodType: bloodTypes[Math.floor(Math.random() * bloodTypes.length)],
     mbtiType: mbtiTypes[Math.floor(Math.random() * mbtiTypes.length)],
     personality: personalities[Math.floor(Math.random() * personalities.length)],
-    image: `https://picsum.photos/300/400?random=${i + 1}`,
+    image: idolImages[Math.floor(Math.random() * idolImages.length)],
     likes: Math.floor(Math.random() * 10000),
     isLiked: false,
     tags: [
@@ -74,7 +94,17 @@ const generateIdols = (): Idol[] => {
       personalities[Math.floor(Math.random() * personalities.length)]
     ],
     debut: 2010 + Math.floor(Math.random() * 15),
-    agency: agencies[Math.floor(Math.random() * agencies.length)]
+    agency: agencies[Math.floor(Math.random() * agencies.length)],
+    stats: {
+      vocal: 60 + Math.floor(Math.random() * 40),
+      dance: 60 + Math.floor(Math.random() * 40),
+      rap: 40 + Math.floor(Math.random() * 60),
+      visual: 70 + Math.floor(Math.random() * 30),
+      performance: 50 + Math.floor(Math.random() * 50),
+      charisma: 50 + Math.floor(Math.random() * 50),
+      variety: 40 + Math.floor(Math.random() * 60),
+      leadership: 40 + Math.floor(Math.random() * 60)
+    }
   }));
 };
 
@@ -86,6 +116,7 @@ export const Gallery = () => {
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedPersonality, setSelectedPersonality] = useState("");
   const [sortBy, setSortBy] = useState("name");
+  const [selectedIdol, setSelectedIdol] = useState<Idol | null>(null);
 
   useEffect(() => {
     const generatedIdols = generateIdols();
@@ -128,6 +159,18 @@ export const Gallery = () => {
 
   const uniqueGroups = [...new Set(idols.map(idol => idol.group))].sort();
   const uniquePersonalities = [...new Set(idols.map(idol => idol.personality))].sort();
+
+  // 스탯 데이터 변환 함수
+  const transformStatsData = (stats: Idol['stats']) => [
+    { stat: '보컬', value: stats.vocal, fullMark: 100 },
+    { stat: '댄스', value: stats.dance, fullMark: 100 },
+    { stat: '랩', value: stats.rap, fullMark: 100 },
+    { stat: '비주얼', value: stats.visual, fullMark: 100 },
+    { stat: '퍼포먼스', value: stats.performance, fullMark: 100 },
+    { stat: '카리스마', value: stats.charisma, fullMark: 100 },
+    { stat: '예능감', value: stats.variety, fullMark: 100 },
+    { stat: '리더십', value: stats.leadership, fullMark: 100 },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-background">
@@ -206,6 +249,7 @@ export const Gallery = () => {
             <Card 
               key={idol.id}
               className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-card/80 backdrop-blur-sm border-border overflow-hidden"
+              onClick={() => setSelectedIdol(idol)}
             >
               <div className="relative">
                 {/* 아이돌 이미지 */}
@@ -267,6 +311,33 @@ export const Gallery = () => {
                   <div>데뷔: {idol.debut}년</div>
                   <div>{idol.agency} • {idol.height}cm</div>
                 </div>
+
+                {/* 8각 스탯 다이어그램 */}
+                <div className="h-24 mt-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={transformStatsData(idol.stats)}>
+                      <PolarGrid stroke="hsl(var(--border))" />
+                      <PolarAngleAxis 
+                        dataKey="stat" 
+                        tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
+                      />
+                      <PolarRadiusAxis 
+                        angle={90} 
+                        domain={[0, 100]} 
+                        tick={false}
+                        axisLine={false}
+                      />
+                      <Radar
+                        name="Stats"
+                        dataKey="value"
+                        stroke="hsl(var(--primary))"
+                        fill="hsl(var(--primary))"
+                        fillOpacity={0.2}
+                        strokeWidth={2}
+                      />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </Card>
           ))}
@@ -280,6 +351,108 @@ export const Gallery = () => {
           </div>
         )}
       </div>
+
+      {/* 상세 모달 */}
+      {selectedIdol && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          onClick={() => setSelectedIdol(null)}
+        >
+          <Card 
+            className="w-full max-w-2xl bg-background p-6 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* 프로필 이미지 */}
+              <div className="flex-shrink-0">
+                <img 
+                  src={selectedIdol.image} 
+                  alt={selectedIdol.name}
+                  className="w-64 h-80 object-cover rounded-lg"
+                />
+              </div>
+
+              {/* 상세 정보 */}
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold gradient-text">{selectedIdol.name}</h2>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setSelectedIdol(null)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    ✕
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">그룹:</span>
+                    <div className="font-medium">{selectedIdol.group}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">포지션:</span>
+                    <div className="font-medium">{selectedIdol.position}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">MBTI:</span>
+                    <div className="font-medium">{selectedIdol.mbtiType}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">성향:</span>
+                    <div className="font-medium">{selectedIdol.personality}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">데뷔:</span>
+                    <div className="font-medium">{selectedIdol.debut}년</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">소속사:</span>
+                    <div className="font-medium">{selectedIdol.agency}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">키:</span>
+                    <div className="font-medium">{selectedIdol.height}cm</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">혈액형:</span>
+                    <div className="font-medium">{selectedIdol.bloodType}형</div>
+                  </div>
+                </div>
+
+                {/* 8각 스탯 차트 */}
+                <div className="mt-6">
+                  <h3 className="text-lg font-bold mb-4">능력치</h3>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart data={transformStatsData(selectedIdol.stats)}>
+                        <PolarGrid stroke="hsl(var(--border))" />
+                        <PolarAngleAxis 
+                          dataKey="stat" 
+                          tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }}
+                        />
+                        <PolarRadiusAxis 
+                          angle={90} 
+                          domain={[0, 100]} 
+                          tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                        />
+                        <Radar
+                          name="능력치"
+                          dataKey="value"
+                          stroke="hsl(var(--primary))"
+                          fill="hsl(var(--primary))"
+                          fillOpacity={0.3}
+                          strokeWidth={3}
+                        />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
