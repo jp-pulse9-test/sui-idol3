@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,6 +7,15 @@ import { toast } from "sonner";
 export const GenderSelect = () => {
   const navigate = useNavigate();
   const [selectedGender, setSelectedGender] = useState<'male' | 'female' | null>(null);
+
+  useEffect(() => {
+    const walletAddress = localStorage.getItem('walletAddress');
+    if (!walletAddress) {
+      toast.error("먼저 지갑을 연결해주세요!");
+      navigate('/');
+      return;
+    }
+  }, [navigate]);
 
   const handleGenderSelect = (gender: 'male' | 'female') => {
     setSelectedGender(gender);

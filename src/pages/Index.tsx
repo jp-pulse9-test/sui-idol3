@@ -1,6 +1,9 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "@/components/FeatureCard";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -32,6 +35,44 @@ const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
 
 const Index = () => {
   const navigate = useNavigate();
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string>("");
+
+  useEffect(() => {
+    const savedWallet = localStorage.getItem('walletAddress');
+    if (savedWallet) {
+      setIsWalletConnected(true);
+      setWalletAddress(savedWallet);
+    }
+  }, []);
+
+  const connectWallet = async () => {
+    try {
+      // 실제 구현에서는 MetaMask 등의 지갑 연결
+      const mockAddress = "0x" + Math.random().toString(16).substring(2, 42);
+      setWalletAddress(mockAddress);
+      setIsWalletConnected(true);
+      localStorage.setItem('walletAddress', mockAddress);
+      toast.success("지갑이 연결되었습니다!");
+    } catch (error) {
+      toast.error("지갑 연결에 실패했습니다.");
+    }
+  };
+
+  const disconnectWallet = () => {
+    setIsWalletConnected(false);
+    setWalletAddress("");
+    localStorage.removeItem('walletAddress');
+    toast.success("지갑 연결이 해제되었습니다.");
+  };
+
+  const handleStartJourney = () => {
+    if (!isWalletConnected) {
+      toast.error("먼저 지갑을 연결해주세요!");
+      return;
+    }
+    navigate('/gender-select');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-hidden">
@@ -41,6 +82,37 @@ const Index = () => {
       
       {/* 메인 콘텐츠 */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
+        {/* 상단 지갑 연결 영역 */}
+        <div className="fixed top-4 right-4 z-20">
+          {!isWalletConnected ? (
+            <Button
+              onClick={connectWallet}
+              variant="premium"
+              size="lg"
+              className="shadow-lg"
+            >
+              🔗 지갑으로 참여
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2 bg-card/80 backdrop-blur-sm p-3 rounded-lg border border-border">
+              <Badge variant="secondary" className="px-3 py-1">
+                🟢 연결됨
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
+              </span>
+              <Button
+                onClick={disconnectWallet}
+                variant="ghost"
+                size="sm"
+                className="h-auto p-1"
+              >
+                ✕
+              </Button>
+            </div>
+          )}
+        </div>
+
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center">
           <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
@@ -60,17 +132,35 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col gap-6 items-center">
-              <Button
-                onClick={() => navigate('/gender-select')}
-                variant="default"
-                size="xl"
-                className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                최애 찾으러 가기
-              </Button>
-              <p className="text-lg text-muted-foreground">
-                8개 질문으로 당신의 입덕 성향을 분석해보세요
-              </p>
+              {!isWalletConnected ? (
+                <>
+                  <Button
+                    onClick={connectWallet}
+                    variant="premium"
+                    size="xl"
+                    className="min-w-80 text-2xl py-6"
+                  >
+                    🔗 지갑 연결하고 시작하기
+                  </Button>
+                  <p className="text-lg text-muted-foreground">
+                    웹3 지갑을 연결하여 나만의 아이돌 여정을 시작하세요
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onClick={handleStartJourney}
+                    variant="default"
+                    size="xl"
+                    className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    최애 찾으러 가기
+                  </Button>
+                  <p className="text-lg text-muted-foreground">
+                    8개 질문으로 당신의 입덕 성향을 분석해보세요
+                  </p>
+                </>
+              )}
             </div>
             
             {/* 시즌 정보 */}
@@ -102,7 +192,7 @@ const Index = () => {
                 title="CREATE"
                 description="입덕 성향 분석과 이상형 월드컵을 통해 나만의 완벽한 아이돌을 생성하고 포토카드를 제작하세요."
                 icon={mbtiIcon}
-                onClick={() => navigate('/gender-select')}
+                onClick={() => isWalletConnected ? navigate('/gender-select') : toast.error("먼저 지갑을 연결해주세요!")}
                 gradient="bg-gradient-to-br from-primary/20 to-accent/20"
               />
               
@@ -174,7 +264,7 @@ const Index = () => {
             </div>
             
             <Button
-              onClick={() => navigate('/gender-select')}
+              onClick={() => isWalletConnected ? navigate('/gender-select') : toast.error("먼저 지갑을 연결해주세요!")}
               variant="premium"
               size="xl"
               className="min-w-64 text-xl py-4"

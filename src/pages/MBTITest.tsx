@@ -87,6 +87,13 @@ export const MBTITest = () => {
   const [answers, setAnswers] = useState<string[]>([]);
 
   useEffect(() => {
+    const walletAddress = localStorage.getItem('walletAddress');
+    if (!walletAddress) {
+      toast.error("먼저 지갑을 연결해주세요!");
+      navigate('/');
+      return;
+    }
+    
     const selectedGender = localStorage.getItem('selectedGender');
     if (!selectedGender) {
       toast.error("먼저 성별을 선택해주세요!");

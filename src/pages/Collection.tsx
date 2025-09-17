@@ -17,12 +17,21 @@ interface SavedCard {
 
 const Collection = () => {
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
+  const [walletAddress, setWalletAddress] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
+    const wallet = localStorage.getItem('walletAddress');
+    if (!wallet) {
+      toast.error("먼저 지갑을 연결해주세요!");
+      navigate('/');
+      return;
+    }
+    
+    setWalletAddress(wallet);
     const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
     setSavedCards(cards);
-  }, []);
+  }, [navigate]);
 
   const deleteCard = (id: number) => {
     const updatedCards = savedCards.filter(card => card.id !== id);
@@ -46,9 +55,14 @@ const Collection = () => {
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold gradient-text">내 프로필카드 보관함</h1>
           <p className="text-muted-foreground">생성한 프로필카드들을 모아서 관리하세요</p>
-          <Badge variant="secondary" className="px-4 py-2">
-            총 {savedCards.length}개의 카드
-          </Badge>
+          <div className="flex items-center justify-center gap-4">
+            <Badge variant="secondary" className="px-4 py-2">
+              총 {savedCards.length}개의 카드
+            </Badge>
+            <Badge variant="outline" className="px-4 py-2">
+              🔗 {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
+            </Badge>
+          </div>
         </div>
 
         {/* Collection Grid */}
