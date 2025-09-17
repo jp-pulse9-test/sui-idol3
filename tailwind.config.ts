@@ -63,6 +63,7 @@ export default {
       },
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
+        dancing: ['Dancing Script', 'cursive'],
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',

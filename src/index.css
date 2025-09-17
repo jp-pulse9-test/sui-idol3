@@ -2,99 +2,99 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Dancing+Script:wght@400;500;600;700&display=swap');
 
-/* Pastel dreamy design system with soft pink and sky blue colors */
+/* Electric neon blue design system inspired by neon signs */
 
 @layer base {
   :root {
-    /* Soft light theme background */
-    --background: 340 50% 98%;
-    --foreground: 240 20% 25%;
+    /* Dark neon theme background */
+    --background: 220 15% 8%;
+    --foreground: 210 100% 95%;
 
-    /* Card surfaces with soft white */
-    --card: 0 0% 100%;
-    --card-foreground: 240 20% 25%;
+    /* Card surfaces with dark glass effect */
+    --card: 220 25% 12%;
+    --card-foreground: 210 100% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 20% 25%;
+    --popover: 220 25% 12%;
+    --popover-foreground: 210 100% 95%;
 
-    /* Soft pastel pink primary */
-    --primary: 340 70% 85%;
-    --primary-foreground: 340 40% 40%;
-    --primary-glow: 340 70% 90%;
+    /* Electric blue primary - main neon color */
+    --primary: 195 100% 60%;
+    --primary-foreground: 220 15% 8%;
+    --primary-glow: 195 100% 75%;
 
-    /* Soft pastel purple secondary */
-    --secondary: 260 60% 88%;
-    --secondary-foreground: 260 40% 45%;
-    --secondary-glow: 260 60% 92%;
+    /* Cyan secondary for depth */
+    --secondary: 180 100% 65%;
+    --secondary-foreground: 220 15% 8%;
+    --secondary-glow: 180 100% 80%;
 
-    /* Soft sky blue accent */
-    --accent: 195 65% 85%;
-    --accent-foreground: 195 50% 40%;
-    --accent-glow: 195 65% 90%;
+    /* Purple accent for contrast */
+    --accent: 260 100% 70%;
+    --accent-foreground: 220 15% 8%;
+    --accent-glow: 260 100% 85%;
 
     /* Muted tones */
-    --muted: 340 20% 95%;
-    --muted-foreground: 240 15% 55%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 210 20% 70%;
 
     /* Interactive states */
-    --destructive: 0 70% 75%;
-    --destructive-foreground: 0 40% 40%;
+    --destructive: 0 100% 65%;
+    --destructive-foreground: 220 15% 8%;
 
-    --border: 340 30% 90%;
-    --input: 340 30% 92%;
-    --ring: 340 70% 85%;
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 195 100% 60%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Soft gradients for dreamy backgrounds */
-    --gradient-primary: linear-gradient(135deg, hsl(340 70% 85%), hsl(260 60% 88%));
-    --gradient-secondary: linear-gradient(135deg, hsl(260 60% 88%), hsl(195 65% 85%));
-    --gradient-accent: linear-gradient(135deg, hsl(195 65% 85%), hsl(340 70% 85%));
-    --gradient-background: linear-gradient(180deg, hsl(340 50% 98%), hsl(320 40% 96%));
+    /* Neon gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(195 100% 60%), hsl(180 100% 65%));
+    --gradient-secondary: linear-gradient(135deg, hsl(180 100% 65%), hsl(260 100% 70%));
+    --gradient-accent: linear-gradient(135deg, hsl(260 100% 70%), hsl(195 100% 60%));
+    --gradient-background: linear-gradient(180deg, hsl(220 15% 8%), hsl(220 25% 12%));
 
-    /* Soft glow effects */
-    --glow-primary: 0 8px 25px hsl(340 70% 85% / 0.3);
-    --glow-secondary: 0 8px 25px hsl(260 60% 88% / 0.3);
-    --glow-accent: 0 8px 25px hsl(195 65% 85% / 0.3);
+    /* Strong neon glow effects */
+    --glow-primary: 0 0 20px hsl(195 100% 60% / 0.5), 0 0 40px hsl(195 100% 60% / 0.3), 0 0 80px hsl(195 100% 60% / 0.1);
+    --glow-secondary: 0 0 20px hsl(180 100% 65% / 0.5), 0 0 40px hsl(180 100% 65% / 0.3), 0 0 80px hsl(180 100% 65% / 0.1);
+    --glow-accent: 0 0 20px hsl(260 100% 70% / 0.5), 0 0 40px hsl(260 100% 70% / 0.3), 0 0 80px hsl(260 100% 70% / 0.1);
 
-    /* Smooth animations */
+    /* Smooth neon animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    /* Sidebar (if needed) */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 20% 25%;
-    --sidebar-primary: 340 70% 85%;
-    --sidebar-primary-foreground: 340 40% 40%;
-    --sidebar-accent: 340 30% 95%;
-    --sidebar-accent-foreground: 240 20% 25%;
-    --sidebar-border: 340 30% 90%;
-    --sidebar-ring: 340 70% 85%;
+    /* Sidebar */
+    --sidebar-background: 220 25% 12%;
+    --sidebar-foreground: 210 100% 95%;
+    --sidebar-primary: 195 100% 60%;
+    --sidebar-primary-foreground: 220 15% 8%;
+    --sidebar-accent: 220 20% 20%;
+    --sidebar-accent-foreground: 210 100% 95%;
+    --sidebar-border: 220 20% 20%;
+    --sidebar-ring: 195 100% 60%;
   }
 
-  .dark {
-    /* Keep dark mode for contrast if needed */
-    --background: 240 10% 8%;
-    --foreground: 0 0% 98%;
-    --card: 240 15% 12%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 15% 12%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 340 70% 75%;
+  .light {
+    /* Light mode with neon accents */
+    --background: 210 50% 98%;
+    --foreground: 220 15% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+    --primary: 195 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 260 60% 75%;
+    --secondary: 180 100% 55%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 240 8% 20%;
-    --muted-foreground: 240 5% 70%;
-    --accent: 195 65% 75%;
-    --accent-foreground: 240 10% 8%;
-    --destructive: 0 70% 65%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 12% 18%;
-    --input: 240 12% 18%;
-    --ring: 340 70% 75%;
+    --muted: 210 20% 95%;
+    --muted-foreground: 220 15% 45%;
+    --accent: 260 100% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 100% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 30% 85%;
+    --input: 210 30% 90%;
+    --ring: 195 100% 50%;
   }
 }
 
@@ -105,7 +105,7 @@
 
   body {
     @apply bg-background text-foreground font-inter;
-    background: linear-gradient(180deg, hsl(var(--background)), hsl(320 40% 96%));
+    background: linear-gradient(180deg, hsl(var(--background)), hsl(220 25% 12%));
     min-height: 100vh;
   }
 
@@ -132,6 +132,20 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    filter: drop-shadow(0 0 10px hsl(195 100% 60% / 0.5));
+  }
+
+  .neon-text {
+    color: hsl(var(--primary));
+    text-shadow: 
+      0 0 5px hsl(var(--primary)),
+      0 0 10px hsl(var(--primary)),
+      0 0 20px hsl(var(--primary)),
+      0 0 40px hsl(var(--primary));
+  }
+
+  .animate-neon-flicker {
+    animation: neon-flicker 3s linear infinite;
   }
 
   .animate-glow {
@@ -140,10 +154,23 @@
 
   @keyframes glow {
     from {
-      box-shadow: 0 4px 15px hsl(340 70% 85% / 0.2);
+      box-shadow: 0 0 10px hsl(195 100% 60% / 0.3), 0 0 20px hsl(195 100% 60% / 0.2);
     }
     to {
-      box-shadow: 0 8px 25px hsl(340 70% 85% / 0.4), 0 12px 35px hsl(340 70% 85% / 0.2);
+      box-shadow: 0 0 20px hsl(195 100% 60% / 0.5), 0 0 40px hsl(195 100% 60% / 0.3), 0 0 80px hsl(195 100% 60% / 0.1);
+    }
+  }
+
+  @keyframes neon-flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+      text-shadow: 
+        0 0 5px hsl(195 100% 60%),
+        0 0 10px hsl(195 100% 60%),
+        0 0 20px hsl(195 100% 60%),
+        0 0 40px hsl(195 100% 60%);
+    }
+    20%, 24%, 55% {
+      text-shadow: none;
     }
   }
 
