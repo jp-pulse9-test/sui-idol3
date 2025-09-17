@@ -46,7 +46,7 @@ const Index = () => {
           <div className="text-center space-y-8 bg-card/80 backdrop-blur-sm p-12 rounded-2xl border border-border shadow-glow-primary">
             <div className="space-y-6">
               <h1 className="text-6xl md:text-8xl font-black neon-text animate-neon-flicker font-dancing">
-                Sui:Idol³
+                Sui:AIDOL³
               </h1>
               <div className="space-y-2">
                 <h2 className="text-2xl md:text-3xl font-bold text-primary">
@@ -187,7 +187,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
           <p className="text-muted-foreground">
-            © 2024 Sui:Idol³. Made with 💖 by Lovable
+            © 2024 Sui:AIDOL³. Made with 💖 by Lovable
           </p>
         </footer>
       </div>
