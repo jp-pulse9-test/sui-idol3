@@ -211,7 +211,7 @@ export const MBTITest = () => {
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">내면 성향 분석</h1>
+          <h1 className="text-4xl font-bold gradient-text">1. 내면 성향 분석</h1>
           <p className="text-muted-foreground">당신이 반하는 아이돌 모먼트를 찾아보세요</p>
           <Progress value={progress} className="w-full" />
           <p className="text-sm text-muted-foreground">

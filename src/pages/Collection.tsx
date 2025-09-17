@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { MessageCircle, Download, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import ChatModal from "@/components/ChatModal";
 
 interface SavedCard {
   id: number;
@@ -18,6 +20,8 @@ interface SavedCard {
 const Collection = () => {
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
   const [walletAddress, setWalletAddress] = useState<string>("");
+  const [selectedCharacter, setSelectedCharacter] = useState<any>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,12 +52,22 @@ const Collection = () => {
     toast.success("프로필카드가 다운로드되었습니다!");
   };
 
+  const openChat = (card: SavedCard) => {
+    setSelectedCharacter({
+      id: card.id,
+      name: card.name,
+      image: card.image,
+      personality: card.personality
+    });
+    setIsChatOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">내 프로필카드 보관함</h1>
+          <h1 className="text-4xl font-bold gradient-text">캐릭터 프로필 보관함</h1>
           <p className="text-muted-foreground">생성한 프로필카드들을 모아서 관리하세요</p>
           <div className="flex items-center justify-center gap-4">
             <Badge variant="secondary" className="px-4 py-2">
@@ -73,14 +87,14 @@ const Collection = () => {
                 <div className="text-6xl">📱</div>
                 <h3 className="text-xl font-bold">보관함이 비어있습니다</h3>
                 <p className="text-muted-foreground">
-                  첫 번째 프로필카드를 만들어보세요!
+                  첫 번째 캐릭터 프로필을 만들어보세요!
                 </p>
                 <Button 
                   onClick={() => navigate('/gender-select')}
-                  variant="premium"
+                  variant="default"
                   size="lg"
                 >
-                  프로필카드 만들기
+                  캐릭터 프로필 만들기
                 </Button>
               </div>
             </Card>
@@ -99,20 +113,37 @@ const Collection = () => {
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
                         <div className="flex gap-2">
                           <Button
-                            onClick={() => downloadCard(card)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openChat(card);
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="bg-blue-500/20 backdrop-blur-sm border-blue-300/30 text-white hover:bg-blue-500/30"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadCard(card);
+                            }}
                             variant="outline"
                             size="sm"
                             className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
                           >
-                            📥
+                            <Download className="w-4 h-4" />
                           </Button>
                           <Button
-                            onClick={() => deleteCard(card.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteCard(card.id);
+                            }}
                             variant="outline"
                             size="sm"
                             className="bg-red-500/20 backdrop-blur-sm border-red-300/30 text-white hover:bg-red-500/30"
                           >
-                            🗑️
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>
@@ -144,11 +175,11 @@ const Collection = () => {
         <div className="text-center space-y-4">
           <Button
             onClick={() => navigate('/gender-select')}
-            variant="premium"
+            variant="default"
             size="lg"
             className="min-w-48"
           >
-            ✨ 새 프로필카드 만들기
+            ✨ 새 캐릭터 프로필 만들기
           </Button>
           
           <div>
@@ -161,6 +192,18 @@ const Collection = () => {
             </Button>
           </div>
         </div>
+
+        {/* 채팅 모달 */}
+        {selectedCharacter && (
+          <ChatModal
+            character={selectedCharacter}
+            isOpen={isChatOpen}
+            onClose={() => {
+              setIsChatOpen(false);
+              setSelectedCharacter(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );

@@ -456,7 +456,7 @@ export const PhotoCard = () => {
       
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">내가 픽한 프로필카드</h1>
+          <h1 className="text-4xl font-bold gradient-text">내가 픽한 캐릭터</h1>
           <p className="text-muted-foreground">당신의 이상형 {idealType.name}의 프로필카드를 커스터마이징하세요</p>
         </div>
 
@@ -464,25 +464,57 @@ export const PhotoCard = () => {
           {/* Preview */}
           <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-center">미리보기</h3>
+              <h3 className="text-xl font-bold text-center">캐릭터 프로필 미리보기</h3>
                <div className="flex justify-center">
                  <div 
                    className="relative perspective-1000"
                    style={{ transformStyle: 'preserve-3d' }}
                  >
-                   <canvas 
-                     ref={canvasRef}
-                     onClick={() => aiInstagramImage && setIsFlipped(!isFlipped)}
-                     className={`border border-border rounded-lg transition-all duration-700 shadow-[0_0_10px_hsl(195_100%_60%/0.3),0_0_20px_hsl(195_100%_60%/0.2)] hover:shadow-[0_0_20px_hsl(195_100%_60%),0_0_40px_hsl(195_100%_60%),0_0_80px_hsl(195_100%_60%)] hover:scale-105 ${aiInstagramImage ? 'cursor-pointer' : ''}`}
+                    <canvas 
+                      ref={canvasRef}
+                      onClick={generateInstagramImage}
+                      onMouseEnter={() => {
+                        const overlay = document.getElementById('card-overlay');
+                        if (overlay) overlay.style.display = 'flex';
+                      }}
+                      onMouseLeave={() => {
+                        const overlay = document.getElementById('card-overlay');
+                        if (overlay) overlay.style.display = 'none';
+                      }}
+                      className="border border-border rounded-lg transition-all duration-700 shadow-[0_0_10px_hsl(195_100%_60%/0.3),0_0_20px_hsl(195_100%_60%/0.2)] hover:shadow-[0_0_20px_hsl(195_100%_60%),0_0_40px_hsl(195_100%_60%),0_0_80px_hsl(195_100%_60%)] hover:scale-105 cursor-pointer"
                      style={{ 
                        maxWidth: '100%', 
                        height: 'auto',
                        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
                        transformStyle: 'preserve-3d'
-                     }}
-                   />
-                   {aiInstagramImage && (
-                     <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                      }}
+                    />
+                    
+                    {/* 호버 오버레이 */}
+                    <div 
+                      id="card-overlay"
+                      className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-center p-4 opacity-0 hover:opacity-100 transition-opacity duration-300"
+                      style={{ display: 'none' }}
+                    >
+                      <div>
+                        <div className="text-lg font-bold mb-2">{idealType?.name}의 비하인드 포토생성</div>
+                        <div className="text-sm">클릭하여 생성하기</div>
+                      </div>
+                    </div>
+                    
+                    {/* 프로그레스 바 */}
+                    {isGenerating && (
+                      <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white rounded-lg">
+                        <div className="text-lg font-bold mb-4">비하인드 포토 생성 중...</div>
+                        <div className="w-3/4 bg-gray-200 rounded-full h-2">
+                          <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                        </div>
+                        <div className="text-sm mt-2">잠시만 기다려주세요</div>
+                      </div>
+                    )}
+                    
+                    {aiInstagramImage && (
+                      <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
                        클릭하여 뒤집기
                      </div>
                    )}

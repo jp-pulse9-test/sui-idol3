@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import femaleIdol1 from "@/assets/female-idol-1.jpg";
 import femaleIdol2 from "@/assets/female-idol-2.jpg";
 import maleIdol1 from "@/assets/male-idol-1.jpg";
@@ -150,7 +151,7 @@ export const FinalPick = () => {
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">최종 픽 선택</h1>
+          <h1 className="text-4xl font-bold gradient-text">3. 최종 픽 선택</h1>
           <p className="text-muted-foreground">
             당신의 성향에 맞는 이상형들입니다. 마음에 드는 아이돌을 선택해보세요!
           </p>
@@ -183,33 +184,34 @@ export const FinalPick = () => {
                   <p className="text-sm text-muted-foreground">{idealType.description}</p>
                 </div>
 
-                {/* 8가지 스탯 레이더 차트 */}
+                {/* 8각형 레이더 차트 */}
                 <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-center">능력치</h4>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    {Object.entries(idealType.stats).map(([stat, value]) => (
-                      <div key={stat} className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <span className="capitalize text-muted-foreground">
-                            {stat === 'vocal' ? '보컬' : 
-                             stat === 'dance' ? '댄스' :
-                             stat === 'visual' ? '비주얼' :
-                             stat === 'charisma' ? '카리스마' :
-                             stat === 'charm' ? '매력' :
-                             stat === 'leadership' ? '리더십' :
-                             stat === 'talent' ? '재능' :
-                             stat === 'popularity' ? '인기' : stat}
-                          </span>
-                          <span className="font-bold text-primary">{value}</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-1">
-                          <div 
-                            className="bg-gradient-primary h-1 rounded-full transition-all duration-500"
-                            style={{ width: `${value}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+                  <h4 className="text-sm font-medium text-center">캐릭터 스탯</h4>
+                  <div className="h-40 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart data={[
+                        { subject: '보컬', value: idealType.stats.vocal, fullMark: 100 },
+                        { subject: '댄스', value: idealType.stats.dance, fullMark: 100 },
+                        { subject: '비주얼', value: idealType.stats.visual, fullMark: 100 },
+                        { subject: '카리스마', value: idealType.stats.charisma, fullMark: 100 },
+                        { subject: '매력', value: idealType.stats.charm, fullMark: 100 },
+                        { subject: '리더십', value: idealType.stats.leadership, fullMark: 100 },
+                        { subject: '재능', value: idealType.stats.talent, fullMark: 100 },
+                        { subject: '인기', value: idealType.stats.popularity, fullMark: 100 }
+                      ]}>
+                        <PolarGrid stroke="hsl(var(--border))" />
+                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
+                        <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+                        <Radar 
+                          name="스탯" 
+                          dataKey="value" 
+                          stroke="hsl(var(--primary))" 
+                          fill="hsl(var(--primary))" 
+                          fillOpacity={0.2}
+                          strokeWidth={2}
+                        />
+                      </RadarChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
 

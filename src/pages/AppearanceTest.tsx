@@ -128,7 +128,7 @@ export const AppearanceTest = () => {
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">외모 취향 분석</h1>
+          <h1 className="text-4xl font-bold gradient-text">2. 외형 성향 분석</h1>
           <p className="text-muted-foreground">
             질문 {currentQuestion + 1} / {questions.length}
           </p>
