@@ -416,7 +416,15 @@ export const PhotoCard = () => {
                           className="w-full h-auto rounded-lg shadow-lg cursor-pointer hover:scale-105 transition-transform"
                           onClick={() => setSelectedImageIndex(index)}
                         />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                          <Button 
+                            onClick={() => setSelectedImageIndex(index)}
+                            size="sm"
+                            variant="default"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                          >
+                            선택
+                          </Button>
                           <Button
                             onClick={(e) => {
                               e.stopPropagation();
