@@ -113,112 +113,48 @@ export const PhotoCard = () => {
     const newImages: string[] = [];
     
     try {
-      // 4가지 다른 비하인드 컨셉
+      // 4가지 다른 k-pop 아이돌 일상 컨셉
       const behindScenes = [
-        "연습실에서 춤 연습 중인 자연스러운 모습",
-        "촬영장에서 쉬는 시간의 편안한 미소", 
-        "무대 뒤에서 준비하는 집중된 표정",
-        "일상복 차림으로 스튜디오에서 녹음하는 모습"
+        `Korean ${idealType.name} K-pop idol in a dance practice room, natural candid moment, wearing casual practice clothes, relaxed and focused expression, professional photography, no text, full frame composition`,
+        `Korean ${idealType.name} K-pop idol behind the scenes at music video set, casual outfit, genuine smile, taking a break between shoots, professional lighting, no text, full frame composition`,
+        `Korean ${idealType.name} K-pop idol preparing backstage before performance, concentrated expression, applying makeup or fixing hair, casual behind-the-scenes moment, no text, full frame composition`,
+        `Korean ${idealType.name} K-pop idol in recording studio wearing comfortable clothes, headphones around neck, natural everyday moment, professional photography, no text, full frame composition`
       ];
       
+      // 각 이미지를 AI로 생성
       for (let i = 0; i < 4; i++) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 320;
-        canvas.height = 480;
-        const ctx = canvas.getContext('2d');
-        
-        if (ctx) {
-          // 각기 다른 배경 색상
-          const backgrounds = [
-            ['#FF6B6B', '#4ECDC4'], // 산호색-민트색
-            ['#A8E6CF', '#FFD93D'], // 연두색-노란색  
-            ['#B8A9C9', '#F7DC6F'], // 라벤더-연노랑
-            ['#85C1E9', '#F8C471']  // 하늘색-주황색
-          ];
+        try {
+          const response = await fetch('/api/generate-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              prompt: behindScenes[i],
+              width: 320,
+              height: 480,
+              model: 'flux.schnell'
+            }),
+          });
           
-          const [color1, color2] = backgrounds[i];
-          const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-          gradient.addColorStop(0, color1);
-          gradient.addColorStop(1, color2);
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // 반투명 오버레이
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // 비하인드 프레임
-          ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 6;
-          ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
-          
-          // 캐릭터 이미지 (중앙)
-          if (idealType.realImage) {
-            const img = new Image();
-            img.onload = () => {
-              const imgSize = 180;
-              const imgX = (canvas.width - imgSize) / 2;
-              const imgY = 80;
-              
-              // 원형 이미지
-              ctx.save();
-              ctx.beginPath();
-              ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI * 2);
-              ctx.clip();
-              ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
-              ctx.restore();
-              
-              // 비하인드 텍스트 스타일
-              ctx.font = 'bold 20px Inter, sans-serif';
-              ctx.textAlign = 'center';
-              ctx.fillStyle = '#ffffff';
-              ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-              ctx.lineWidth = 2;
-              ctx.strokeText(idealType.name, canvas.width / 2, imgY + imgSize + 30);
-              ctx.fillText(idealType.name, canvas.width / 2, imgY + imgSize + 30);
-              
-              // 비하인드 라벨
-              ctx.font = '14px Inter, sans-serif';
-              ctx.fillStyle = '#ffffff';
-              ctx.strokeText(`Behind Scene ${i + 1}`, canvas.width / 2, imgY + imgSize + 55);
-              ctx.fillText(`Behind Scene ${i + 1}`, canvas.width / 2, imgY + imgSize + 55);
-              
-              // 비하인드 설명 (여러 줄)
-              ctx.font = '12px Inter, sans-serif';
-              const description = behindScenes[i];
-              const words = description.split(' ');
-              let line = '';
-              let y = imgY + imgSize + 80;
-              
-              for (let n = 0; n < words.length; n++) {
-                const testLine = line + words[n] + ' ';
-                const metrics = ctx.measureText(testLine);
-                const testWidth = metrics.width;
-                
-                if (testWidth > canvas.width - 40 && n > 0) {
-                  ctx.strokeText(line, canvas.width / 2, y);
-                  ctx.fillText(line, canvas.width / 2, y);
-                  line = words[n] + ' ';
-                  y += 18;
-                } else {
-                  line = testLine;
-                }
-              }
-              ctx.strokeText(line, canvas.width / 2, y);
-              ctx.fillText(line, canvas.width / 2, y);
-              
-              newImages.push(canvas.toDataURL());
-              if (newImages.length === 4) {
-                setGeneratedImages(newImages);
-                toast.success(`${idealType.name}의 비하인드 포토 4장이 생성되었습니다!`);
-                setIsGenerating(false);
-              }
-            };
-            img.crossOrigin = "anonymous";
-            img.src = idealType.realImage;
+          if (response.ok) {
+            const blob = await response.blob();
+            const imageUrl = URL.createObjectURL(blob);
+            newImages.push(imageUrl);
+          } else {
+            throw new Error('이미지 생성 실패');
           }
+        } catch (error) {
+          console.error(`이미지 ${i + 1} 생성 실패:`, error);
+          // 실패한 경우 기본 이미지 사용
+          newImages.push(idealType.realImage || '');
         }
       }
+      
+      setGeneratedImages(newImages);
+      toast.success(`${idealType.name}의 비하인드 포토 4장이 생성되었습니다!`);
+      setIsGenerating(false);
+      
     } catch (error) {
       console.error('비하인드 포토 생성 오류:', error);
       toast.error("비하인드 포토 생성에 실패했습니다.");
