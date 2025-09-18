@@ -118,15 +118,15 @@ const Index = () => {
           <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
             <div className="space-y-8">
               <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
-                Sui:AIdol³
+                Sui:Idol³
               </h1>
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold gradient-text">
-                  가상아이돌 이상형 찾기
+                  Web3 팬덤 MVP
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  당신의 성향과 맞는 최애 아이돌을 찾고, 아이돌의 일상속 숨은 모습을 수집해보세요.<br />
-                  당신의 관심으로 아이돌이 성장합니다.
+                  AI 아이돌을 고르고(Pick), 일상 스토리를 클리어해 포토카드 NFT를 비밀 금고(Vault)에 모으며,<br />
+                  데뷔 에피소드로 Rookie 뱃지(SBT)를 받아 성장(Rise)을 체감하는 Web3 팬덤 경험
                 </p>
               </div>
             </div>
@@ -154,10 +154,10 @@ const Index = () => {
                     size="xl"
                     className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    AI 아이돌 고르러 가기
+                    🎮 AI 아이돌 픽하기
                   </Button>
                   <p className="text-lg text-muted-foreground">
-                    8개 질문으로 당신의 입덕 성향을 분석해보세요
+                    성향 분석 후 101명 중 당신의 운명적 아이돌을 선택하세요
                   </p>
                 </>
               )}
@@ -189,26 +189,26 @@ const Index = () => {
 
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
-                title="PICK"
-                description="101명 중 당신만의 AI 아이돌을 선택하세요."
+                title="🎯 PICK"
+                description="성향 분석 후 101명 중 운명적 AI 아이돌 선택. 각 아이돌은 고유한 페르소나와 기억을 가진 대화형 에이전트입니다."
                 icon={mbtiIcon}
                 onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
               />
               
               <FeatureCard
-                title="VAULT"
-                description="픽한 아이돌들과 포토카드를 안전하게 보관하고 관리하세요."
+                title="🗃️ VAULT"
+                description="일상 스토리 텍스트 게임을 클리어하며 획득한 포토카드 NFT를 비밀 금고에 안전하게 보관합니다."
                 icon={photocardIcon}
                 onClick={() => navigate('/collection')}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
               />
               
               <FeatureCard
-                title="RISE"
-                description="아이돌과 함께 성장하며 특별한 추억과 스토리를 만들어가세요."
+                title="📈 RISE"
+                description="데뷔 에피소드를 완료하면 Rookie 뱃지(SBT)를 획득하며, 아이돌과 함께 성장하는 과정을 체감합니다."
                 icon={tournamentIcon}
-                onClick={() => navigate('/progress')}
+                onClick={() => navigate('/growth')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
               />
             </div>
@@ -277,7 +277,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
           <p className="text-muted-foreground">
-            © 2024 Sui:AIdol³. Made with 💖 by Lovable
+            © 2024 Sui:Idol³. Web3 팬덤 플랫폼 · Made with 💖 by Lovable
           </p>
         </footer>
       </div>
