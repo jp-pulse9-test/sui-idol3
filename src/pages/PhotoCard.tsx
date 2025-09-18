@@ -347,7 +347,7 @@ export const PhotoCard = () => {
           onClick={() => navigate('/collection')}
           variant="secondary"
           size="sm"
-          className="bg-card/80 backdrop-blur-sm border-border hover:bg-card shadow-lg"
+          className="bg-card/80 backdrop-blur-sm border-border hover:bg-card shadow-lg text-white"
         >
           👛 보관함
         </Button>
