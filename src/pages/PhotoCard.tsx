@@ -1,14 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
-// Gemini API 설정
-const GEMINI_API_KEY = "AIzaSyDmJUbGEAnhfYAU_n1o0VY1uPi974hsk7o";
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
 interface IdealType {
   id: number;
@@ -22,11 +16,9 @@ export const PhotoCard = () => {
   const [idealType, setIdealType] = useState<IdealType | null>(null);
   const [customText, setCustomText] = useState("");
   const [borderColor, setBorderColor] = useState("#FFFFFF");
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [instagramPrompt, setInstagramPrompt] = useState("");
-  const [aiInstagramImage, setAiInstagramImage] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
 
@@ -42,10 +34,22 @@ export const PhotoCard = () => {
       const parsedFinalPick = JSON.parse(storedFinalPick);
       setIdealType(parsedFinalPick);
       
-      // 사용자 MBTI 결과 가져오기 (문자열)
+      // 성향별 테두리 색상 자동 설정
+      const personalityColors: { [key: string]: string } = {
+        "카리스마틱": "#FF4444", // 강렬한 빨강
+        "밝고 긍정적": "#FFD700", // 밝은 금색
+        "신비로운": "#9B59B6", // 신비로운 보라
+        "에너지틱": "#FF8C00", // 활력적인 주황
+        "사랑스러운": "#FF69B4", // 귀여운 핑크
+        "우아한": "#E6E6FA", // 우아한 라벤더
+        "상큼한": "#32CD32", // 상큼한 초록
+      };
+      setBorderColor(personalityColors[parsedFinalPick.personality] || "#FFFFFF");
+      
+      // 사용자 MBTI 결과 가져오기
       const mbtiType = localStorage.getItem('mbtiResult');
       
-      // 사용자 성향 분석 - 왜 이 아이돌을 선택했는지 해석
+      // 개인화된 텍스트 생성
       const getPersonalityAnalysis = (personality: string, mbtiType: string | null) => {
         const analyses = {
           "카리스마틱": {
@@ -99,109 +103,125 @@ export const PhotoCard = () => {
     }
   }, [navigate]);
 
-  const generateInstagramImage = async () => {
+  const generateBehindPhotos = async () => {
     if (!idealType) {
-      toast.error("아이돌 정보를 불러올 수 없습니다!");
+      toast.error("캐릭터 정보를 불러올 수 없습니다!");
       return;
     }
     
     setIsGenerating(true);
+    const newImages: string[] = [];
+    
     try {
-      // 비하인드 포토 컨셉으로 변경
+      // 4가지 다른 비하인드 컨셉
       const behindScenes = [
-        "촬영장에서 휴식 중인 자연스러운 모습",
-        "연습실에서 열심히 연습하는 모습", 
-        "스튜디오에서 녹음하는 집중된 모습",
-        "무대 뒤에서 준비하는 진지한 모습",
-        "일상복 차림으로 편안하게 웃는 모습"
+        "연습실에서 춤 연습 중인 자연스러운 모습",
+        "촬영장에서 쉬는 시간의 편안한 미소", 
+        "무대 뒤에서 준비하는 집중된 표정",
+        "일상복 차림으로 스튜디오에서 녹음하는 모습"
       ];
-      const randomBehind = behindScenes[Math.floor(Math.random() * behindScenes.length)];
       
-      const prompt = `Behind-the-scenes photo of ${idealType.name}: ${randomBehind}. Candid, natural, authentic moment, professional photography, soft lighting`;
-      
-      const canvas = document.createElement('canvas');
-      canvas.width = 320;
-      canvas.height = 480;
-      const ctx = canvas.getContext('2d');
-      
-      if (ctx) {
-        // 인스타그램 스타일 배경
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, '#ff9a9e');
-        gradient.addColorStop(0.3, '#fecfef');
-        gradient.addColorStop(0.6, '#fecfef');
-        gradient.addColorStop(1, '#ff9a9e');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < 4; i++) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 320;
+        canvas.height = 480;
+        const ctx = canvas.getContext('2d');
         
-        // 오버레이
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // 인스타그램 스타일 프레임
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 8;
-        ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
-        
-        // 아이돌 이미지 (중앙)
-        if (idealType.realImage) {
-          const img = new Image();
-          img.onload = () => {
-            const imgSize = 200;
-            const imgX = (canvas.width - imgSize) / 2;
-            const imgY = 80;
-            
-            // 원형 이미지
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI * 2);
-            ctx.clip();
-            ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
-            ctx.restore();
-            
-            // 비하인드 포토 스타일 텍스트
-            ctx.font = 'bold 24px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.strokeText(idealType.name, canvas.width / 2, imgY + imgSize + 40);
-            ctx.fillText(idealType.name, canvas.width / 2, imgY + imgSize + 40);
-            
-            // 비하인드 라벨
-            ctx.font = '18px Inter, sans-serif';
-            ctx.fillStyle = '#ffffff';
-            ctx.strokeText("Behind The Scenes", canvas.width / 2, imgY + imgSize + 70);
-            ctx.fillText("Behind The Scenes", canvas.width / 2, imgY + imgSize + 70);
-            
-            // 비하인드 설명
-            ctx.font = '16px Inter, sans-serif';
-            ctx.strokeText(randomBehind, canvas.width / 2, imgY + imgSize + 100);
-            ctx.fillText(randomBehind, canvas.width / 2, imgY + imgSize + 100);
-            
-            setAiInstagramImage(canvas.toDataURL());
-            toast.success(`${idealType.name}의 비하인드 포토가 생성되었습니다!`);
-          };
-          img.crossOrigin = "anonymous";
-          img.src = idealType.realImage;
-        } else {
-          // fallback
-          ctx.font = 'bold 60px serif';
-          ctx.textAlign = 'center';
-          ctx.fillStyle = '#ffffff';
-          ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-          ctx.lineWidth = 3;
-          ctx.strokeText(idealType.image, canvas.width / 2, canvas.height / 2);
-          ctx.fillText(idealType.image, canvas.width / 2, canvas.height / 2);
+        if (ctx) {
+          // 각기 다른 배경 색상
+          const backgrounds = [
+            ['#FF6B6B', '#4ECDC4'], // 산호색-민트색
+            ['#A8E6CF', '#FFD93D'], // 연두색-노란색  
+            ['#B8A9C9', '#F7DC6F'], // 라벤더-연노랑
+            ['#85C1E9', '#F8C471']  // 하늘색-주황색
+          ];
           
-          setAiInstagramImage(canvas.toDataURL());
-          toast.success(`${idealType.name}의 비하인드 포토가 생성되었습니다!`);
+          const [color1, color2] = backgrounds[i];
+          const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+          gradient.addColorStop(0, color1);
+          gradient.addColorStop(1, color2);
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // 반투명 오버레이
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // 비하인드 프레임
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 6;
+          ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+          
+          // 캐릭터 이미지 (중앙)
+          if (idealType.realImage) {
+            const img = new Image();
+            img.onload = () => {
+              const imgSize = 180;
+              const imgX = (canvas.width - imgSize) / 2;
+              const imgY = 80;
+              
+              // 원형 이미지
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI * 2);
+              ctx.clip();
+              ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
+              ctx.restore();
+              
+              // 비하인드 텍스트 스타일
+              ctx.font = 'bold 20px Inter, sans-serif';
+              ctx.textAlign = 'center';
+              ctx.fillStyle = '#ffffff';
+              ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+              ctx.lineWidth = 2;
+              ctx.strokeText(idealType.name, canvas.width / 2, imgY + imgSize + 30);
+              ctx.fillText(idealType.name, canvas.width / 2, imgY + imgSize + 30);
+              
+              // 비하인드 라벨
+              ctx.font = '14px Inter, sans-serif';
+              ctx.fillStyle = '#ffffff';
+              ctx.strokeText(`Behind Scene ${i + 1}`, canvas.width / 2, imgY + imgSize + 55);
+              ctx.fillText(`Behind Scene ${i + 1}`, canvas.width / 2, imgY + imgSize + 55);
+              
+              // 비하인드 설명 (여러 줄)
+              ctx.font = '12px Inter, sans-serif';
+              const description = behindScenes[i];
+              const words = description.split(' ');
+              let line = '';
+              let y = imgY + imgSize + 80;
+              
+              for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                const testWidth = metrics.width;
+                
+                if (testWidth > canvas.width - 40 && n > 0) {
+                  ctx.strokeText(line, canvas.width / 2, y);
+                  ctx.fillText(line, canvas.width / 2, y);
+                  line = words[n] + ' ';
+                  y += 18;
+                } else {
+                  line = testLine;
+                }
+              }
+              ctx.strokeText(line, canvas.width / 2, y);
+              ctx.fillText(line, canvas.width / 2, y);
+              
+              newImages.push(canvas.toDataURL());
+              if (newImages.length === 4) {
+                setGeneratedImages(newImages);
+                toast.success(`${idealType.name}의 비하인드 포토 4장이 생성되었습니다!`);
+                setIsGenerating(false);
+              }
+            };
+            img.crossOrigin = "anonymous";
+            img.src = idealType.realImage;
+          }
         }
       }
     } catch (error) {
       console.error('비하인드 포토 생성 오류:', error);
       toast.error("비하인드 포토 생성에 실패했습니다.");
-    } finally {
       setIsGenerating(false);
     }
   };
@@ -217,17 +237,7 @@ export const PhotoCard = () => {
     canvas.width = 320;
     canvas.height = 480;
 
-    if (isFlipped && aiInstagramImage) {
-      // 뒷면: AI 생성 인스타그램 이미지 전체 표시
-      const img = new Image();
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      };
-      img.src = aiInstagramImage;
-      return;
-    }
-
-    // 앞면: 모던한 그라데이션 배경
+    // 모던한 그라데이션 배경
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, '#0f172a');
     gradient.addColorStop(0.5, '#1e293b');
@@ -235,20 +245,20 @@ export const PhotoCard = () => {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 모던한 테두리
+    // 성향별 테두리
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
     
     // 내부 카드 영역
     ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.fillRect(30, 30, canvas.width - 60, canvas.height - 60);
 
-    // 선택한 아이돌의 실제 이미지가 있으면 사용
+    // 캐릭터 이미지
     if (idealType.realImage) {
       const img = new Image();
       img.onload = () => {
-        // 작은 원형 프로필 사진
+        // 원형 프로필 사진
         const profileSize = 80;
         const profileX = (canvas.width - profileSize) / 2;
         const profileY = 60;
@@ -270,13 +280,13 @@ export const PhotoCard = () => {
         ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
         ctx.stroke();
         
-        // 아이돌 이름 (프로필 아래)
+        // 캐릭터 이름
         ctx.font = 'bold 28px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#ffffff';
         ctx.fillText(idealType.name, canvas.width / 2, profileY + profileSize + 40);
 
-        // 성격 설명 (작은 태그 스타일)
+        // 성격 태그
         ctx.font = '16px Inter, sans-serif';
         ctx.fillStyle = borderColor;
         const tagWidth = ctx.measureText(idealType.personality).width + 20;
@@ -294,16 +304,15 @@ export const PhotoCard = () => {
         ctx.fillStyle = borderColor;
         ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
 
-        // 은유적 시 문구 (하단 중앙) - 3줄
+        // 개인화된 텍스트
         ctx.font = 'italic 12px Inter, sans-serif';
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         const lines = customText.split('\n');
-        let y = canvas.height - 70; // 3줄을 위한 더 위쪽 시작
+        let y = canvas.height - 70;
         
         lines.forEach((line, index) => {
           if (line.trim()) {
-            // 줄바꿈 간격 조정 (3줄을 위해 더 좁게)
             const lineY = y + (index * 16);
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
             ctx.lineWidth = 1;
@@ -312,7 +321,7 @@ export const PhotoCard = () => {
           }
         });
         
-        // 하단 장식선 (텍스트 아래로 위치 조정)
+        // 하단 장식선
         ctx.strokeStyle = borderColor;
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -322,78 +331,6 @@ export const PhotoCard = () => {
       };
       img.crossOrigin = "anonymous";
       img.src = idealType.realImage;
-    } else {
-      // 실제 이미지가 없을 때 fallback
-      // 작은 원형 이모티콘
-      const profileSize = 80;
-      const profileX = (canvas.width - profileSize) / 2;
-      const profileY = 60;
-      
-      // 원형 배경
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.beginPath();
-      ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // 이모티콘
-      ctx.font = 'bold 40px serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(idealType.image, profileX + profileSize/2, profileY + profileSize/2 + 15);
-      
-      // 프로필 테두리
-      ctx.strokeStyle = borderColor;
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
-      ctx.stroke();
-      
-      // 나머지 요소들도 동일하게 그리기
-      // 아이돌 이름
-      ctx.font = 'bold 28px Inter, sans-serif';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(idealType.name, canvas.width / 2, profileY + profileSize + 40);
-
-      // 성격 태그
-      ctx.font = '16px Inter, sans-serif';
-      ctx.fillStyle = borderColor;
-      const tagWidth = ctx.measureText(idealType.personality).width + 20;
-      const tagX = (canvas.width - tagWidth) / 2;
-      const tagY = profileY + profileSize + 60;
-      
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.fillRect(tagX, tagY, tagWidth, 30);
-      ctx.strokeStyle = borderColor;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(tagX, tagY, tagWidth, 30);
-      
-      ctx.fillStyle = borderColor;
-      ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
-
-      // 은유적 시 문구 (하단 중앙) - fallback용 3줄
-      ctx.font = 'italic 12px Inter, sans-serif';
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'center';
-      const lines = customText.split('\n');
-      let y = canvas.height - 70;
-      
-      lines.forEach((line, index) => {
-        if (line.trim()) {
-          const lineY = y + (index * 16);
-          ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-          ctx.lineWidth = 1;
-          ctx.strokeText(line, canvas.width / 2, lineY);
-          ctx.fillText(line, canvas.width / 2, lineY);
-        }
-      });
-      
-      // 하단 장식선 (fallback용)
-      ctx.strokeStyle = borderColor;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(50, canvas.height - 20);
-      ctx.lineTo(canvas.width - 50, canvas.height - 20);
-      ctx.stroke();
     }
   };
 
@@ -420,21 +357,31 @@ export const PhotoCard = () => {
     savedCards.push(newCard);
     localStorage.setItem('savedCards', JSON.stringify(savedCards));
     
-    toast.success("프로필카드가 저장되었습니다!");
+    toast.success("캐릭터 프로필이 저장되었습니다!");
+  };
+
+  const downloadBehindPhoto = (index: number) => {
+    if (generatedImages[index]) {
+      const link = document.createElement('a');
+      link.download = `${idealType?.name}-behind-scene-${index + 1}.png`;
+      link.href = generatedImages[index];
+      link.click();
+      toast.success("비하인드 포토가 다운로드되었습니다!");
+    }
   };
 
   useEffect(() => {
     if (idealType) {
       generatePhotoCard();
     }
-  }, [idealType, customText, borderColor, generatedImage, isFlipped, aiInstagramImage]);
+  }, [idealType, customText, borderColor]);
 
   if (!idealType) {
     return (
       <div className="min-h-screen bg-gradient-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
-          <p className="text-muted-foreground">포토카드를 생성중...</p>
+          <p className="text-muted-foreground">캐릭터 프로필 생성중...</p>
         </div>
       </div>
     );
@@ -442,7 +389,7 @@ export const PhotoCard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
-      {/* 상단 고정 지갑 버튼 */}
+      {/* 상단 네비게이션 */}
       <div className="fixed top-4 right-4 z-50">
         <Button
           onClick={() => navigate('/collection')}
@@ -454,188 +401,135 @@ export const PhotoCard = () => {
         </Button>
       </div>
       
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* 헤더 */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold gradient-text">내가 픽한 캐릭터</h1>
-          <p className="text-muted-foreground">당신의 이상형 {idealType.name}의 프로필카드를 커스터마이징하세요</p>
+          <p className="text-muted-foreground">
+            {idealType.name}의 비하인드 포토를 생성하고 캐릭터 프로필을 만들어보세요
+          </p>
+          <div className="flex items-center justify-center gap-2">
+            <div 
+              className="w-4 h-4 rounded-full border-2 border-white"
+              style={{ backgroundColor: borderColor }}
+            />
+            <span className="text-sm text-muted-foreground">
+              {idealType.personality} 테마 색상 자동 적용됨
+            </span>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Preview */}
-          <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-center">캐릭터 프로필 미리보기</h3>
-               <div className="flex justify-center">
-                 <div 
-                   className="relative perspective-1000"
-                   style={{ transformStyle: 'preserve-3d' }}
-                 >
-                    <canvas 
-                      ref={canvasRef}
-                      onClick={generateInstagramImage}
-                      onMouseEnter={() => {
-                        const overlay = document.getElementById('card-overlay');
-                        if (overlay) overlay.style.display = 'flex';
-                      }}
-                      onMouseLeave={() => {
-                        const overlay = document.getElementById('card-overlay');
-                        if (overlay) overlay.style.display = 'none';
-                      }}
-                      className="border border-border rounded-lg transition-all duration-700 shadow-[0_0_10px_hsl(195_100%_60%/0.3),0_0_20px_hsl(195_100%_60%/0.2)] hover:shadow-[0_0_20px_hsl(195_100%_60%),0_0_40px_hsl(195_100%_60%),0_0_80px_hsl(195_100%_60%)] hover:scale-105 cursor-pointer"
-                     style={{ 
-                       maxWidth: '100%', 
-                       height: 'auto',
-                       transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                       transformStyle: 'preserve-3d'
-                      }}
-                    />
-                    
-                    {/* 호버 오버레이 */}
-                    <div 
-                      id="card-overlay"
-                      className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-center p-4 opacity-0 hover:opacity-100 transition-opacity duration-300"
-                      style={{ display: 'none' }}
-                    >
-                      <div>
-                        <div className="text-lg font-bold mb-2">{idealType?.name}의 비하인드 포토생성</div>
-                        <div className="text-sm">클릭하여 생성하기</div>
-                      </div>
-                    </div>
-                    
-                    {/* 프로그레스 바 */}
-                    {isGenerating && (
-                      <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white rounded-lg">
-                        <div className="text-lg font-bold mb-4">비하인드 포토 생성 중...</div>
-                        <div className="w-3/4 bg-gray-200 rounded-full h-2">
-                          <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
-                        </div>
-                        <div className="text-sm mt-2">잠시만 기다려주세요</div>
-                      </div>
-                    )}
-                    
-                    {aiInstagramImage && (
-                      <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                       클릭하여 뒤집기
-                     </div>
-                   )}
-                 </div>
-               </div>
-            </div>
-          </Card>
-
-          {/* Customization */}
+          {/* 비하인드 포토 생성 영역 */}
           <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
             <div className="space-y-6">
-              <h3 className="text-xl font-bold text-center">커스터마이징</h3>
+              <div className="text-center space-y-4">
+                <h2 className="text-2xl font-bold">🎬 비하인드 포토 생성</h2>
+                <p className="text-muted-foreground">
+                  {idealType.name}의 특별한 비하인드 순간들을 만들어보세요
+                </p>
+              </div>
+
+              {/* 생성 버튼 */}
+              <div className="text-center">
+                <Button
+                  onClick={generateBehindPhotos}
+                  disabled={isGenerating}
+                  size="lg"
+                  className="w-full max-w-sm"
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                      비하인드 포토 생성 중...
+                    </>
+                  ) : (
+                    <>
+                      ✨ 비하인드 포토 4장 생성하기
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* 생성된 비하인드 포토들 */}
+              {generatedImages.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-bold text-center">생성된 비하인드 포토</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {generatedImages.map((image, index) => (
+                      <div key={index} className="relative group">
+                        <img 
+                          src={image} 
+                          alt={`Behind Scene ${index + 1}`}
+                          className="w-full h-auto rounded-lg shadow-lg cursor-pointer hover:scale-105 transition-transform"
+                          onClick={() => setSelectedImageIndex(index)}
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadBehindPhoto(index);
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
+                          >
+                            📥 저장
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* 캐릭터 프로필 카드 */}
+          <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-center">📇 캐릭터 프로필 카드</h2>
               
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="instagramPrompt" className="text-sm font-medium">
-                    {idealType.name}의 비하인드 포토 보기
-                  </Label>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    촬영 현장이나 일상의 숨겨진 모습을 확인해보세요
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="borderColor" className="text-sm font-medium">
-                    테두리 색상
-                  </Label>
-                  <div className="mt-1 flex gap-2">
-                    <input
-                      id="borderColor"
-                      type="color"
-                      value={borderColor}
-                      onChange={(e) => setBorderColor(e.target.value)}
-                      className="w-12 h-10 rounded border border-border"
-                    />
-                    <Input
-                      value={borderColor}
-                      onChange={(e) => setBorderColor(e.target.value)}
-                      placeholder="#00BFFF"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-4 gap-2">
-                  <Button
-                    onClick={() => setBorderColor("#FFFFFF")}
-                    className="h-10 bg-[#FFFFFF] hover:bg-[#FFFFFF]/80 border border-border"
-                    size="sm"
-                  />
-                  <Button
-                    onClick={() => setBorderColor("#00D4FF")}
-                    className="h-10 bg-[#00D4FF] hover:bg-[#00D4FF]/80"
-                    size="sm"
-                  />
-                  <Button
-                    onClick={() => setBorderColor("#8A2BE2")}
-                    className="h-10 bg-[#8A2BE2] hover:bg-[#8A2BE2]/80"
-                    size="sm"
-                  />
-                  <Button
-                    onClick={() => setBorderColor("#00FF88")}
-                    className="h-10 bg-[#00FF88] hover:bg-[#00FF88]/80"
-                    size="sm"
+              <div className="flex justify-center">
+                <div className="relative">
+                  <canvas 
+                    ref={canvasRef}
+                    className="border border-border rounded-lg shadow-lg hover:scale-105 transition-transform"
+                    style={{ maxWidth: '100%', height: 'auto' }}
                   />
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Button
-                  onClick={generateInstagramImage}
-                  variant="premium"
-                  size="lg"
-                  className="w-full"
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? "비하인드 포토 생성중..." : `📸 ${idealType.name}의 비하인드 포토 보기`}
-                </Button>
+              <div className="space-y-4">
+                <div className="text-center">
+                  <Button
+                    onClick={downloadPhotoCard}
+                    size="lg"
+                    className="w-full max-w-sm"
+                  >
+                    💾 프로필 카드 저장하기
+                  </Button>
+                </div>
                 
-                <Button
-                  onClick={downloadPhotoCard}
-                  variant="hero"
-                  size="lg"
-                  className="w-full"
-                >
-                  프로필카드 저장
-                </Button>
-                
-                <Button
-                  onClick={() => navigate('/collection')}
-                  variant="secondary"
-                  size="lg"
-                  className="w-full"
-                >
-                  📁 내 보관함 보기
-                </Button>
-                
-                <Button
-                  onClick={() => {
-                    localStorage.clear();
-                    navigate('/');
-                  }}
-                  variant="ghost"
-                  size="lg"
-                  className="w-full"
-                >
-                  처음부터 다시 시작
-                </Button>
+                <div className="text-center space-y-2">
+                  <Button
+                    onClick={() => navigate('/final-pick')}
+                    variant="ghost"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    다른 캐릭터 선택하기
+                  </Button>
+                  <Button
+                    onClick={() => navigate('/collection')}
+                    variant="outline"
+                    className="ml-4"
+                  >
+                    보관함으로 이동
+                  </Button>
+                </div>
               </div>
             </div>
           </Card>
-        </div>
-
-        <div className="text-center">
-          <Button
-            onClick={() => navigate('/')}
-            variant="ghost"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            홈으로 돌아가기
-          </Button>
         </div>
       </div>
     </div>
