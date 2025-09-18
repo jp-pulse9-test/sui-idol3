@@ -247,4 +247,5 @@ const ChatModal = ({ character, isOpen, onClose }: ChatModalProps) => {
   );
 };
 
+export { ChatModal };
 export default ChatModal;
