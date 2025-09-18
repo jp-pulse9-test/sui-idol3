@@ -192,6 +192,8 @@ const ChatModalEnhanced = ({ character, isOpen, onClose }: ChatModalEnhancedProp
       case 'beast': return '신비로운 수인들이 사는 환상적인 세계';
       case 'apocalypse': return '종말 이후 희망을 전하는 세계';
       case 'fantasy': return '마법과 모험이 가득한 판타지 세계';
+      case 'historical': return '궁중의 예의와 전통이 살아있는 조선시대 아이돌 궁궐';
+      case 'regression': return '시간을 되돌려 운명을 바꾸려는 회귀 아이돌 세계';
       default: return '현대적인 아이돌 세계';
     }
   };

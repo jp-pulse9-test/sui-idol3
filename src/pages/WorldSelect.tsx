@@ -53,6 +53,20 @@ const WorldSelect = () => {
       description: '마법과 모험이 가득한 판타지 세계의 아이돌들',
       emoji: '🔮',
       gradient: 'from-purple-500/20 to-indigo-500/20'
+    },
+    {
+      id: 'historical',
+      title: '역사물',
+      description: '"어흠, 이리 오너라. 궁중의 예를 갖추어 노래하겠느냐?"',
+      emoji: '👑',
+      gradient: 'from-amber-500/20 to-yellow-600/20'
+    },
+    {
+      id: 'regression',
+      title: '회귀물',
+      description: '"이번엔... 다시 돌아왔구나. 운명을 바꿔보겠어."',
+      emoji: '⏰',
+      gradient: 'from-cyan-500/20 to-teal-600/20'
     }
   ];
 
@@ -79,7 +93,7 @@ const WorldSelect = () => {
         </div>
 
         {/* World Selection */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           {worldOptions.map((option) => (
             <Card
               key={option.id}
