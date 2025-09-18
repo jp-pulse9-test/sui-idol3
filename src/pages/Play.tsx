@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ChatModal } from "@/components/ChatModal";
+import ChatModal from "@/components/ChatModal";
 import StoryGameModal from "@/components/StoryGameModal";
 
 interface StoryChoice {
@@ -257,6 +257,7 @@ const Play = () => {
           isOpen={showChat}
           onClose={() => setShowChat(false)}
           character={{
+            id: selectedIdol.id || 1,
             name: selectedIdol.name,
             image: selectedIdol.image,
             personality: selectedIdol.personality
