@@ -36,65 +36,31 @@ export const PhotoCard = () => {
       
       // 성향별 테두리 색상 자동 설정
       const personalityColors: { [key: string]: string } = {
-        "카리스마틱": "#FF4444", // 강렬한 빨강
-        "밝고 긍정적": "#FFD700", // 밝은 금색
-        "신비로운": "#9B59B6", // 신비로운 보라
-        "에너지틱": "#FF8C00", // 활력적인 주황
-        "사랑스러운": "#FF69B4", // 귀여운 핑크
-        "우아한": "#E6E6FA", // 우아한 라벤더
-        "상큼한": "#32CD32", // 상큼한 초록
+        "카리스마틱": "#FF4444",
+        "밝고 긍정적": "#FFD700",
+        "신비로운": "#9B59B6",
+        "에너지틱": "#FF8C00",
+        "사랑스러운": "#FF69B4",
+        "우아한": "#E6E6FA",
+        "상큼한": "#32CD32",
       };
       setBorderColor(personalityColors[parsedFinalPick.personality] || "#FFFFFF");
       
       // 사용자 MBTI 결과 가져오기
       const mbtiType = localStorage.getItem('mbtiResult');
       
-      // 개인화된 텍스트 생성
-      const getPersonalityAnalysis = (personality: string, mbtiType: string | null) => {
-        const analyses = {
-          "카리스마틱": {
-            default: "⚡ 강렬한 카리스마와 리더십에 끌리는 당신,\n확신에 찬 모습에서 안정감을 느끼며\n함께 성장할 든든한 파트너를 원해요.",
-            ENTJ: "👑 같은 리더형으로서 강한 카리스마에 공감하며,\n서로를 인정하고 함께 발전하는\n완벽한 파워 커플을 꿈꿉니다.",
-            ESTJ: "🏆 체계적이고 결단력 있는 성향이 일치하여,\n서로의 리더십을 존중하고 신뢰하는\n든든한 관계를 원하시는군요."
-          },
-          "밝고 긍정적": {
-            default: "☀️ 밝고 긍정적인 에너지를 추구하는 당신,\n함께 있으면 세상이 더 밝아지는\n따뜻한 관계를 꿈꿔요.",
-            ESFP: "🎪 같은 외향형으로서 활발한 에너지에 끌리며,\n함께 즐거운 순간들을 만들어갈\n완벽한 파트너를 원하시는군요.",
-            ENFP: "🌟 무한한 가능성과 긍정적 에너지에 공감하며,\n서로의 열정을 이해하고 응원하는\n영혼의 동반자를 찾고 있어요."
-          },
-          "신비로운": {
-            default: "🌙 깊이 있고 신비로운 매력에 끌리는 당신,\n내면의 깊은 세계를 공유할 수 있는\n특별한 관계를 원해요.",
-            INFJ: "🔮 같은 직관형으로서 신비로운 성향에 공감하며,\n서로의 숨겨진 면을 이해하고 공유하는\n운명적 만남을 찾고 있어요.",
-            INFP: "🎭 내면의 예술적 감성이 반영되어,\n창조적 에너지를 가진 상대방에게서\n자신의 숨겨진 모습을 발견하고 싶어해요."
-          },
-          "에너지틱": {
-            default: "🔥 끝없는 열정과 활력에 끌리는 당신,\n함께 있으면 무엇이든 할 수 있는\n역동적인 관계를 원해요.",
-            ESTP: "🎯 같은 활동적인 성향으로 에너지에 끌리며,\n함께 모험을 즐기고 활발한 삶을 사는\n완벽한 동반자를 찾고 있어요.",
-            ESFP: "🎉 밝고 활발한 에너지가 일치하여,\n함께 즐거운 순간들을 만들고\n활기찬 관계를 원하시는군요."
-          },
-          "사랑스러운": {
-            default: "💕 순수하고 사랑스러운 매력에 끌리는 당신,\n서로를 소중히 여기고 보호하는\n달콤한 관계를 꿈꿔요.",
-            ISFP: "🌸 섬세하고 따뜻한 성향이 반영되어,\n상대방의 순수한 매력을 통해\n자신의 온화한 면을 표현하고 싶어해요."
-          },
-          "우아한": {
-            default: "✨ 세련되고 우아한 매력에 끌리는 당신,\n서로의 품위를 인정하고 존중하는\n고급스러운 관계를 추구해요.",
-            ISFJ: "🤍 배려심 깊고 품격 있는 성향이 일치하여,\n서로를 아끼고 존중하는\n클래식하고 우아한 관계를 원해요."
-          },
-          "상큼한": {
-            default: "🌸 밝고 발랄한 에너지에 끌리는 당신,\n함께 있으면 젊어지는 느낌과\n새로운 활력을 얻는 관계를 원해요.",
-            ENFP: "🌺 같은 활발한 성향으로 상큼한 에너지에 공감하며,\n서로를 밝게 만들어줄 수 있는\n완벽한 파트너를 찾고 있어요."
-          }
+      const getPersonalityAnalysis = (personality: string, mbti: string | null) => {
+        const analysisMap: { [key: string]: string } = {
+          "카리스마틱": `강렬한 매력의 ${mbti || 'UNKNOWN'} 타입! 무대를 지배하는 존재감이 매력적입니다.`,
+          "밝고 긍정적": `에너지 넘치는 ${mbti || 'UNKNOWN'} 타입! 밝은 미소로 모든 이의 마음을 사로잡습니다.`,
+          "신비로운": `신비롭고 깊은 ${mbti || 'UNKNOWN'} 타입! 예측할 수 없는 매력이 돋보입니다.`,
+          "에너지틱": `활력 가득한 ${mbti || 'UNKNOWN'} 타입! 끝없는 에너지로 모든걸 해낼 수 있습니다.`,
+          "사랑스러운": `사랑스러운 ${mbti || 'UNKNOWN'} 타입! 순수한 매력으로 모든 이를 행복하게 만듭니다.`,
+          "우아한": `우아하고 품격있는 ${mbti || 'UNKNOWN'} 타입! 고급스러운 매력이 인상적입니다.`,
+          "상큼한": `상큼하고 발랄한 ${mbti || 'UNKNOWN'} 타입! 청춘의 활기로 가득찬 매력을 가졌습니다.`
         };
-        
-        const personalityAnalysis = analyses[personality];
-        if (!personalityAnalysis) return "✨ 당신만의 특별한 취향과 감성이\n이 선택에 고스란히 담겨있습니다.";
-        
-        if (mbtiType && personalityAnalysis[mbtiType]) {
-          return personalityAnalysis[mbtiType];
-        }
-        
-        return personalityAnalysis.default;
-      }; 
+        return analysisMap[personality] || `특별한 ${mbti || 'UNKNOWN'} 타입! 독특하고 매력적인 개성을 가지고 있습니다.`;
+      };
       
       setCustomText(getPersonalityAnalysis(parsedFinalPick.personality, mbtiType));
     } catch (error) {
@@ -103,69 +69,22 @@ export const PhotoCard = () => {
     }
   }, [navigate]);
 
-  const generateBehindPhotos = async () => {
+  const generateBehindPhotos = () => {
     if (!idealType) {
       toast.error("캐릭터 정보를 불러올 수 없습니다!");
       return;
     }
     
     setIsGenerating(true);
-    const newImages: string[] = [];
     
     try {
-      // 4가지 다른 k-pop 아이돌 일상 컨셉
-      const behindScenes = [
-        `Korean ${idealType.name} K-pop idol in a dance practice room, natural candid moment, wearing casual practice clothes, relaxed and focused expression, professional photography, no text, full frame composition`,
-        `Korean ${idealType.name} K-pop idol behind the scenes at music video set, casual outfit, genuine smile, taking a break between shoots, professional lighting, no text, full frame composition`,
-        `Korean ${idealType.name} K-pop idol preparing backstage before performance, concentrated expression, applying makeup or fixing hair, casual behind-the-scenes moment, no text, full frame composition`,
-        `Korean ${idealType.name} K-pop idol in recording studio wearing comfortable clothes, headphones around neck, natural everyday moment, professional photography, no text, full frame composition`
+      // 기본 이미지들로 비하인드 포토 생성 (임시)
+      const newImages = [
+        idealType.realImage || idealType.image,
+        idealType.realImage || idealType.image,
+        idealType.realImage || idealType.image,
+        idealType.realImage || idealType.image
       ];
-      
-      // 각 이미지를 Gemini 2.5 Flash Image로 생성
-      for (let i = 0; i < 4; i++) {
-        try {
-          const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${process.env.GEMINI_API_KEY || 'your-gemini-api-key'}`
-            },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{
-                  text: `Generate image: ${behindScenes[i]}`
-                }]
-              }],
-              generationConfig: {
-                temperature: 0.8,
-                topK: 40,
-                topP: 0.95,
-                maxOutputTokens: 1024,
-              }
-            }),
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            // Gemini API 응답에서 이미지 URL 추출
-            const imageData = result.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (imageData) {
-              // Base64 이미지 데이터를 Blob으로 변환
-              const blob = new Blob([atob(imageData)], { type: 'image/png' });
-              const imageUrl = URL.createObjectURL(blob);
-              newImages.push(imageUrl);
-            } else {
-              throw new Error('이미지 데이터 없음');
-            }
-          } else {
-            throw new Error('이미지 생성 실패');
-          }
-        } catch (error) {
-          console.error(`이미지 ${i + 1} 생성 실패:`, error);
-          // 실패한 경우 기본 이미지 사용
-          newImages.push(idealType.realImage || '');
-        }
-      }
       
       setGeneratedImages(newImages);
       toast.success(`${idealType.name}의 비하인드 포토 4장이 생성되었습니다!`);
@@ -207,7 +126,7 @@ export const PhotoCard = () => {
     ctx.fillRect(30, 30, canvas.width - 60, canvas.height - 60);
 
     // 캐릭터 이미지
-    if (idealType.realImage) {
+    if (idealType.realImage || idealType.image) {
       const img = new Image();
       img.onload = () => {
         // 원형 프로필 사진
@@ -220,81 +139,63 @@ export const PhotoCard = () => {
         ctx.beginPath();
         ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
         ctx.clip();
-        
-        // 프로필 이미지 그리기
         ctx.drawImage(img, profileX, profileY, profileSize, profileSize);
         ctx.restore();
-        
-        // 프로필 테두리
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
-        ctx.stroke();
-        
-        // 캐릭터 이름
-        ctx.font = 'bold 28px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText(idealType.name, canvas.width / 2, profileY + profileSize + 40);
 
-        // 성격 태그
-        ctx.font = '16px Inter, sans-serif';
-        ctx.fillStyle = borderColor;
-        const tagWidth = ctx.measureText(idealType.personality).width + 20;
-        const tagX = (canvas.width - tagWidth) / 2;
-        const tagY = profileY + profileSize + 60;
-        
-        // 태그 배경
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.fillRect(tagX, tagY, tagWidth, 30);
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(tagX, tagY, tagWidth, 30);
-        
-        // 태그 텍스트
-        ctx.fillStyle = borderColor;
-        ctx.fillText(idealType.personality, canvas.width / 2, tagY + 20);
-
-        // 개인화된 텍스트
-        ctx.font = 'italic 12px Inter, sans-serif';
-        ctx.fillStyle = '#ffffff';
+        // 이름
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 24px Arial, sans-serif';
         ctx.textAlign = 'center';
-        const lines = customText.split('\n');
-        let y = canvas.height - 70;
+        ctx.fillText(idealType.name, canvas.width / 2, 180);
+
+        // 성격
+        ctx.fillStyle = borderColor;
+        ctx.font = '16px Arial, sans-serif';
+        ctx.fillText(idealType.personality, canvas.width / 2, 210);
+
+        // 사용자 메시지 (여러줄 처리)
+        ctx.fillStyle = '#E2E8F0';
+        ctx.font = '14px Arial, sans-serif';
+        ctx.textAlign = 'left';
         
-        lines.forEach((line, index) => {
-          if (line.trim()) {
-            const lineY = y + (index * 16);
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.lineWidth = 1;
-            ctx.strokeText(line, canvas.width / 2, lineY);
-            ctx.fillText(line, canvas.width / 2, lineY);
+        const maxWidth = canvas.width - 60;
+        const lineHeight = 20;
+        const words = customText.split(' ');
+        let line = '';
+        let y = 250;
+
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          const metrics = ctx.measureText(testLine);
+          const testWidth = metrics.width;
+          if (testWidth > maxWidth && n > 0) {
+            ctx.fillText(line, 40, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+          } else {
+            line = testLine;
           }
-        });
-        
-        // 하단 장식선
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(50, canvas.height - 20);
-        ctx.lineTo(canvas.width - 50, canvas.height - 20);
-        ctx.stroke();
+        }
+        ctx.fillText(line, 40, y);
+
+        // 푸터
+        ctx.fillStyle = '#64748B';
+        ctx.font = '12px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('AI Idol Profile Card', canvas.width / 2, canvas.height - 40);
+        ctx.fillText(new Date().toLocaleDateString(), canvas.width / 2, canvas.height - 20);
       };
-      img.crossOrigin = "anonymous";
-      img.src = idealType.realImage;
+      img.src = idealType.realImage || idealType.image;
     }
   };
 
-  const downloadPhotoCard = () => {
+  const saveToCollection = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      toast.error("프로필카드를 먼저 생성해주세요!");
+      return;
+    }
 
-    const link = document.createElement('a');
-    link.download = `${idealType?.name || 'my-pick'}-profile-card.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-    
     // 컬렉션에 추가
     const savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
     const newCard = {
@@ -309,7 +210,19 @@ export const PhotoCard = () => {
     savedCards.push(newCard);
     localStorage.setItem('savedCards', JSON.stringify(savedCards));
     
-    toast.success("캐릭터 프로필이 저장되었습니다!");
+    toast.success("캐릭터가 보관함에 저장되었습니다!");
+  };
+
+  const downloadPhotoCard = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const link = document.createElement('a');
+    link.download = `${idealType?.name || 'my-pick'}-profile-card.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+    
+    toast.success("프로필카드가 다운로드되었습니다!");
   };
 
   const downloadBehindPhoto = (index: number) => {
@@ -322,6 +235,7 @@ export const PhotoCard = () => {
     }
   };
 
+  // 자동으로 카드 생성
   useEffect(() => {
     if (idealType) {
       generatePhotoCard();
@@ -396,14 +310,12 @@ export const PhotoCard = () => {
                       비하인드 포토 생성 중...
                     </>
                   ) : (
-                    <>
-                      ✨ 비하인드 포토 4장 생성하기
-                    </>
+                    '📸 비하인드 포토 4장 생성'
                   )}
                 </Button>
               </div>
 
-              {/* 생성된 비하인드 포토들 */}
+              {/* 생성된 이미지들 */}
               {generatedImages.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-bold text-center">생성된 비하인드 포토</h3>
@@ -412,18 +324,17 @@ export const PhotoCard = () => {
                       <div key={index} className="relative group">
                         <img 
                           src={image} 
-                          alt={`Behind Scene ${index + 1}`}
-                          className="w-full h-auto rounded-lg shadow-lg cursor-pointer hover:scale-105 transition-transform"
-                          onClick={() => setSelectedImageIndex(index)}
+                          alt={`Behind photo ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg border border-border"
                         />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
-                          <Button 
-                            onClick={() => setSelectedImageIndex(index)}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
+                          <Button
+                            onClick={() => downloadBehindPhoto(index)}
+                            variant="outline"
                             size="sm"
-                            variant="default"
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                            className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
                           >
-                            선택
+                            다운로드
                           </Button>
                         </div>
                       </div>
@@ -434,7 +345,7 @@ export const PhotoCard = () => {
             </div>
           </Card>
 
-          {/* 캐릭터 프로필 카드 */}
+          {/* 프로필 카드 영역 */}
           <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-center">📇 캐릭터 프로필 카드</h2>
@@ -450,7 +361,21 @@ export const PhotoCard = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="text-center">
+                <div className="text-center space-x-2">
+                  <Button
+                    onClick={saveToCollection}
+                    variant="default"
+                    size="lg"
+                  >
+                    📥 보관함에 저장
+                  </Button>
+                  <Button
+                    onClick={downloadPhotoCard}
+                    variant="outline"
+                    size="lg"
+                  >
+                    💾 다운로드
+                  </Button>
                 </div>
                 
                 <div className="text-center space-y-2">
