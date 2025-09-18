@@ -6,15 +6,16 @@ import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Download, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import ChatModal from "@/components/ChatModal";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SavedCard {
-  id: number;
+  id: string;
   name: string;
   image: string;
   personality: string;
-  customText: string;
-  borderColor: string;
-  createdAt: string;
+  custom_text: string;
+  border_color: string;
+  created_at: string;
 }
 
 const Collection = () => {
@@ -22,26 +23,52 @@ const Collection = () => {
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [selectedCharacter, setSelectedCharacter] = useState<any>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const wallet = localStorage.getItem('walletAddress');
-    if (!wallet) {
-      toast.error("먼저 지갑을 연결해주세요!");
-      navigate('/');
-      return;
-    }
-    
-    setWalletAddress(wallet);
-    const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
-    setSavedCards(cards);
+    const fetchCards = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("로그인이 필요합니다!");
+        navigate('/');
+        return;
+      }
+      
+      setWalletAddress(user.email || user.id);
+      
+      const { data: cards, error } = await supabase
+        .from('character_profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching cards:', error);
+        toast.error("캐릭터 카드를 불러오는데 실패했습니다.");
+      } else {
+        setSavedCards(cards || []);
+      }
+      
+      setLoading(false);
+    };
+
+    fetchCards();
   }, [navigate]);
 
-  const deleteCard = (id: number) => {
-    const updatedCards = savedCards.filter(card => card.id !== id);
-    setSavedCards(updatedCards);
-    localStorage.setItem('savedCards', JSON.stringify(updatedCards));
-    toast.success("프로필카드가 삭제되었습니다!");
+  const deleteCard = async (id: string) => {
+    const { error } = await supabase
+      .from('character_profiles')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting card:', error);
+      toast.error("프로필카드 삭제에 실패했습니다.");
+    } else {
+      setSavedCards(savedCards.filter(card => card.id !== id));
+      toast.success("프로필카드가 삭제되었습니다!");
+    }
   };
 
   const downloadCard = (card: SavedCard) => {
@@ -81,7 +108,14 @@ const Collection = () => {
 
         {/* Collection Grid */}
         <div className="space-y-6">
-          {savedCards.length === 0 ? (
+          {loading ? (
+            <Card className="p-12 text-center bg-card/60 backdrop-blur-sm border-border">
+              <div className="space-y-4">
+                <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+                <p className="text-muted-foreground">캐릭터 카드를 불러오는 중...</p>
+              </div>
+            </Card>
+          ) : savedCards.length === 0 ? (
             <Card className="p-12 text-center bg-card/60 backdrop-blur-sm border-border">
               <div className="space-y-4">
                 <div className="text-6xl">📱</div>
@@ -153,14 +187,14 @@ const Collection = () => {
                     <div className="space-y-2">
                       <h3 className="font-bold text-lg">{card.name}</h3>
                       <p className="text-sm text-primary">{card.personality}</p>
-                      <p className="text-xs text-muted-foreground">"{card.customText}"</p>
+                      <p className="text-xs text-muted-foreground">"{card.custom_text}"</p>
                       <div className="flex items-center gap-2">
                         <div 
                           className="w-4 h-4 rounded-full border" 
-                          style={{ backgroundColor: card.borderColor }}
+                          style={{ backgroundColor: card.border_color }}
                         />
                         <span className="text-xs text-muted-foreground">
-                          {new Date(card.createdAt).toLocaleDateString()}
+                          {new Date(card.created_at).toLocaleDateString()}
                         </span>
                       </div>
                     </div>

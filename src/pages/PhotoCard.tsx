@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface IdealType {
   id: number;
@@ -241,28 +242,37 @@ export const PhotoCard = () => {
     }
   };
 
-  const saveToCollection = () => {
+  const saveToCollection = async () => {
     const canvas = canvasRef.current;
     if (!canvas) {
       toast.error("프로필카드를 먼저 생성해주세요!");
       return;
     }
 
-    // 컬렉션에 추가
-    const savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
-    const newCard = {
-      id: Date.now(),
-      name: idealType?.name || 'Unknown',
-      image: canvas.toDataURL(),
-      personality: idealType?.personality || '',
-      customText: customText,
-      borderColor: borderColor,
-      createdAt: new Date().toISOString()
-    };
-    savedCards.push(newCard);
-    localStorage.setItem('savedCards', JSON.stringify(savedCards));
+    const { data: { user } } = await supabase.auth.getUser();
     
-    toast.success("캐릭터가 보관함에 저장되었습니다!");
+    if (!user) {
+      toast.error("로그인이 필요합니다!");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('character_profiles')
+      .insert({
+        user_id: user.id,
+        name: idealType?.name || 'Unknown',
+        image: canvas.toDataURL(),
+        personality: idealType?.personality || '',
+        custom_text: customText,
+        border_color: borderColor
+      });
+
+    if (error) {
+      console.error('Error saving card:', error);
+      toast.error("캐릭터 저장에 실패했습니다.");
+    } else {
+      toast.success("캐릭터가 보관함에 저장되었습니다!");
+    }
   };
 
   const downloadPhotoCard = () => {
