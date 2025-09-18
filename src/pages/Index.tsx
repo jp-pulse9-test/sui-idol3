@@ -181,43 +181,35 @@ const Index = () => {
         <section className="py-20">
           <div className="space-y-12">
             <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-              <h2 className="text-4xl font-bold gradient-text">3단계 유저 경험</h2>
+              <h2 className="text-4xl font-bold gradient-text">Pick · Vault · Rise</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Create → Collect → Grow: 나만의 아이돌 여정을 시작하세요
+                선택하고, 보관하고, 성장하는 3단계 아이돌 경험
               </p>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
                 title="PICK"
-                description="성향 분석, 월드컵, 랜덤 뽑기 등 다양한 방법으로 나만의 AI 아이돌을 선택하세요."
+                description="성향 분석과 이상형 월드컵을 통해 101명 중 당신만의 AI 아이돌을 선택하세요."
                 icon={mbtiIcon}
                 onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
-                gradient="bg-gradient-to-br from-primary/20 to-accent/20"
+                gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
               />
               
               <FeatureCard
-                title="PLAY"
-                description="아이돌과 함께하는 일상 스토리를 경험하고 특별한 추억을 만들어보세요."
-                icon={photocardIcon}
-                onClick={() => navigate('/play')}
-                gradient="bg-gradient-to-br from-purple/20 to-pink/20"
-              />
-              
-              <FeatureCard
-                title="COLLECT"
-                description="다양한 포토카드를 수집하고 비밀 다이어리에 추억을 기록하세요."
+                title="VAULT"
+                description="픽한 아이돌들과 포토카드를 안전하게 보관하고 관리하세요."
                 icon={photocardIcon}
                 onClick={() => navigate('/collection')}
-                gradient="bg-gradient-to-br from-accent/20 to-secondary/20"
+                gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
               />
               
               <FeatureCard
-                title="PROGRESS"
-                description="팬 활동을 통해 아이돌을 성장시키고 새로운 콘텐츠를 잠금 해제하세요."
+                title="RISE"
+                description="아이돌과 함께 성장하며 특별한 추억과 스토리를 만들어가세요."
                 icon={tournamentIcon}
                 onClick={() => navigate('/progress')}
-                gradient="bg-gradient-to-br from-secondary/20 to-primary/20"
+                gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
               />
             </div>
           </div>
@@ -229,29 +221,29 @@ const Index = () => {
             <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
               <div className="space-y-4">
                 <h2 className="text-4xl font-bold gradient-text">
-                  3단계로 완성하는 아이돌 여정
+                  Pick · Vault · Rise 플로우
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8 mt-8">
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-primary flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      1
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+                      🎯
                     </div>
                     <h3 className="text-xl font-bold text-primary">PICK</h3>
-                    <p className="text-foreground">성향 분석 → 아이돌 선택 → 프로필 확인</p>
+                    <p className="text-foreground">성향 분석 → 이상형 월드컵 → 최종 선택</p>
                   </div>
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-secondary flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      2
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+                      🗃️
                     </div>
-                    <h3 className="text-xl font-bold text-accent">PLAY</h3>
-                    <p className="text-foreground">일상 스토리 → 대화 → 포토카드 수집</p>
+                    <h3 className="text-xl font-bold text-accent">VAULT</h3>
+                    <p className="text-foreground">프로필 카드 → 포토카드 → 안전한 보관</p>
                   </div>
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-accent flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      3
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+                      📈
                     </div>
-                    <h3 className="text-xl font-bold text-secondary">PROGRESS</h3>
-                    <p className="text-foreground">성장 단계 → 업적 달성 → 특별 콘텐츠</p>
+                    <h3 className="text-xl font-bold text-secondary">RISE</h3>
+                    <p className="text-foreground">함께 성장 → 추억 생성 → 특별한 스토리</p>
                   </div>
                 </div>
               </div>
