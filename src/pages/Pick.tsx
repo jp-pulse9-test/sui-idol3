@@ -25,14 +25,14 @@ const Pick = () => {
     {
       id: 'male',
       title: '소년 아이돌',
-      description: '101명의 소년 아이돌 중에서 이상형을 찾아보세요',
+      description: '성향 분석 후 101명의 소년 아이돌 중에서 이상형을 찾아보세요',
       emoji: '👦',
       gender: 'male'
     },
     {
       id: 'female',
       title: '소녀 아이돌',
-      description: '101명의 소녀 아이돌 중에서 이상형을 찾아보세요',
+      description: '성향 분석 후 101명의 소녀 아이돌 중에서 이상형을 찾아보세요',
       emoji: '👧',
       gender: 'female'
     }
@@ -43,7 +43,7 @@ const Pick = () => {
     localStorage.setItem('selectedGender', gender);
     toast.success(`${gender === 'male' ? '소년' : '소녀'} 아이돌을 선택했습니다!`);
     setTimeout(() => {
-      navigate('/worldcup');
+      navigate('/mbti');
     }, 1000);
   };
 
@@ -59,10 +59,10 @@ const Pick = () => {
         {/* Header */}
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl font-bold gradient-text">
-            이상형 월드컵
+            성향 분석 + 이상형 월드컵
           </h1>
           <p className="text-xl text-muted-foreground">
-            101명의 아이돌 중에서 당신의 이상형을 찾아보세요
+            성향 분석을 통해 101명 중 맞춤형 후보들로 이상형 월드컵을 진행해요
           </p>
         </div>
 
