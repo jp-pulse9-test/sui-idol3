@@ -57,14 +57,14 @@ const WorldSelect = () => {
     {
       id: 'historical',
       title: '역사물',
-      description: '"어흠, 이리 오너라. 궁중의 예를 갖추어 노래하겠느냐?"',
+      description: '궁중의 예의와 전통이 살아있는 조선시대 아이돌 이야기',
       emoji: '👑',
       gradient: 'from-amber-500/20 to-yellow-600/20'
     },
     {
       id: 'regression',
       title: '회귀물',
-      description: '"이번엔... 다시 돌아왔구나. 운명을 바꿔보겠어."',
+      description: '시간을 되돌려 운명을 바꾸려는 회귀 아이돌 세계',
       emoji: '⏰',
       gradient: 'from-cyan-500/20 to-teal-600/20'
     }
