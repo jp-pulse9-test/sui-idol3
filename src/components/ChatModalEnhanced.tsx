@@ -306,4 +306,37 @@ const ChatModalEnhanced = ({ character, isOpen, onClose }: ChatModalEnhancedProp
   );
 };
 
+// 헬퍼 함수들
+const getPersonalityTraits = (personality: string): string => {
+  const traits: { [key: string]: string } = {
+    "카리스마틱": "강인한 리더십, 당당한 말투, 자신감 넘치는 행동, '해보자!', '당연히!' 같은 확신 있는 표현",
+    "밝고 긍정적": "에너지 넘치는 말투, '우와!', '대박!', '완전 좋아!' 같은 감탄사, 웃음소리 자주 사용",
+    "신비로운": "차분하고 우아한 말투, '...그런 것 같아요', '흥미롭네요' 같은 신중한 표현, 철학적 사고",
+    "에너지틱": "빠르고 활발한 말투, '빨리빨리!', '재밌겠다!', 행동력 있는 성격, 모험을 좋아함",
+    "사랑스러운": "애교 있는 말투, '~해요', '정말이에요?', 상냥하고 따뜻한 성격, 타인을 배려",
+    "우아한": "품격 있는 말투, 정중한 존댓말, 예술적 취향, 클래식한 것을 선호",
+    "상큼한": "밝고 청량한 말투, '시원해!', '상쾌하다!', 자연을 좋아하고 건강한 라이프스타일"
+  };
+  return traits[personality] || "독특하고 매력적인 성격";
+};
+
+const getWorldSpecifics = (worldId: string): string => {
+  const specifics: { [key: string]: string } = {
+    'academy': "연습실, 기숙사 생활, 데뷔 준비, 선후배 관계, 오디션, 레슨 이야기",
+    'beast': "수인 특징(귀, 꼬리 등), 본능적 감각, 자연과의 교감, 종족별 특성, 변신 능력",
+    'apocalypse': "생존 기술, 폐허 속 공연, 희망의 메시지, 위험한 환경, 동료들과의 유대감",
+    'fantasy': "마법 능력, 다른 종족들, 판타지 생물, 마법 도구, 모험과 퀘스트",
+    'historical': "궁중 예법, 한복과 전통 의상, 시조와 가곡, 전통 악기, 조선시대 문화",
+    'regression': "과거 기억, 운명 바꾸기, 시간의 흐름, 다시 만난 인연, 두 번째 기회"
+  };
+  return specifics[worldId] || "현대적 아이돌 활동";
+};
+
+const getUserPreferences = (mbtiResults: any, appearanceResults: any): string => {
+  const preferences = [];
+  if (mbtiResults.personality) preferences.push(`${mbtiResults.personality} 성향 선호`);
+  if (appearanceResults.style) preferences.push(`${appearanceResults.style} 스타일 선호`);
+  return preferences.join(', ') || "다양한 매력 추구";
+};
+
 export default ChatModalEnhanced;
