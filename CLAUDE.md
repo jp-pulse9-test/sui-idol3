@@ -110,3 +110,41 @@ Vite is configured to:
 - Use gradient text with `gradient-text` class for emphasis
 - Implement smooth transitions with Tailwind's transition utilities
 - Keep component files focused and single-responsibility
+
+## AI Chat Integration (New Feature)
+
+### Backend Architecture
+- **Supabase Edge Functions**: TypeScript serverless functions for AI chat endpoints
+- **Gemini API**: Google's generative AI for character responses
+- **Database**: PostgreSQL for conversation history and user data
+
+### Key Components
+- **Chat Service**: `src/services/chat.js` - Frontend chat integration
+- **Edge Function**: `supabase/functions/chat/` - Gemini API handler
+- **Database Schema**: Conversations, messages, characters, rate limits
+
+### Environment Setup
+```bash
+# Supabase CLI commands
+supabase secrets set GEMINI_API_KEY=your-key  # Store API key
+supabase functions deploy chat                # Deploy chat function
+supabase db push                              # Apply migrations
+```
+
+### API Endpoints
+- `POST /functions/v1/chat/send` - Send message to AI character
+- `POST /functions/v1/chat/session` - Create new conversation
+- `GET /functions/v1/chat/conversations` - Get user's conversations
+- `GET /functions/v1/chat/characters` - Get available characters
+
+### Testing Commands
+```bash
+npm run test:contract  # Test API contracts
+npm run test:e2e      # End-to-end chat tests
+```
+
+### Recent Changes
+- Added Gemini AI character dialogue system
+- Implemented secure API key storage in Supabase Vault
+- Created conversation persistence with PostgreSQL
+- Added rate limiting and content moderation

@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.specify
+specs
+
+# Supabase
+.supabase
+.env.local
+.env
