@@ -255,7 +255,7 @@ export const PhotoCard = () => {
         .from('character_profiles')
         .insert([
           {
-            user_id: 'temp-user-id', // 임시 사용자 ID (인증 구현 후 auth.uid()로 변경)
+            user_id: crypto.randomUUID(), // 임시 UUID 생성 (인증 구현 후 auth.uid()로 변경)
             name: idealType?.name || 'Unknown',
             image: canvas.toDataURL(),
             personality: idealType?.personality || '',
