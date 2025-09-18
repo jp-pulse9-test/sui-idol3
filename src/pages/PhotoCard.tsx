@@ -425,17 +425,6 @@ export const PhotoCard = () => {
                           >
                             선택
                           </Button>
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              downloadBehindPhoto(index);
-                            }}
-                            variant="outline"
-                            size="sm"
-                            className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
-                          >
-                            📥 저장
-                          </Button>
                         </div>
                       </div>
                     ))}
@@ -462,13 +451,6 @@ export const PhotoCard = () => {
 
               <div className="space-y-4">
                 <div className="text-center">
-                  <Button
-                    onClick={downloadPhotoCard}
-                    size="lg"
-                    className="w-full max-w-sm"
-                  >
-                    💾 프로필 카드 저장하기
-                  </Button>
                 </div>
                 
                 <div className="text-center space-y-2">
