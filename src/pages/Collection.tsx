@@ -13,9 +13,9 @@ interface SavedCard {
   name: string;
   image: string;
   personality: string;
-  custom_text: string;
-  border_color: string;
-  created_at: string;
+  customText: string;
+  borderColor: string;
+  createdAt: string;
 }
 
 const Collection = () => {
@@ -27,47 +27,75 @@ const Collection = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCards = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast.error("로그인이 필요합니다!");
-        navigate('/');
-        return;
+    const loadCharacterProfiles = async () => {
+      try {
+        // 간단한 사용자 인증 체크 (임시)
+        const wallet = localStorage.getItem('walletAddress');
+        if (!wallet) {
+          toast.error("먼저 지갑을 연결해주세요!");
+          navigate('/');
+          return;
+        }
+        
+        setWalletAddress(wallet);
+        
+        // Supabase에서 캐릭터 프로필 가져오기
+        const { data, error } = await supabase
+          .from('character_profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('캐릭터 프로필 로딩 에러:', error);
+          // localStorage 백업 사용
+          const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+          setSavedCards(cards);
+        } else {
+          // Supabase 데이터를 SavedCard 형식으로 변환
+          const cards: SavedCard[] = data.map(profile => ({
+            id: profile.id,
+            name: profile.name,
+            image: profile.image,
+            personality: profile.personality,
+            customText: profile.custom_text,
+            borderColor: profile.border_color,
+            createdAt: profile.created_at
+          }));
+          setSavedCards(cards);
+        }
+      } catch (error) {
+        console.error('데이터 로딩 에러:', error);
+        toast.error("프로필을 불러오는 중 오류가 발생했습니다.");
+        // localStorage 백업 사용
+        const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+        setSavedCards(cards);
+      } finally {
+        setLoading(false);
       }
-      
-      setWalletAddress(user.email || user.id);
-      
-      const { data: cards, error } = await supabase
-        .from('character_profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error fetching cards:', error);
-        toast.error("캐릭터 카드를 불러오는데 실패했습니다.");
-      } else {
-        setSavedCards(cards || []);
-      }
-      
-      setLoading(false);
     };
 
-    fetchCards();
+    loadCharacterProfiles();
   }, [navigate]);
 
   const deleteCard = async (id: string) => {
-    const { error } = await supabase
-      .from('character_profiles')
-      .delete()
-      .eq('id', id);
-    
-    if (error) {
-      console.error('Error deleting card:', error);
-      toast.error("프로필카드 삭제에 실패했습니다.");
-    } else {
-      setSavedCards(savedCards.filter(card => card.id !== id));
+    try {
+      // Supabase에서 삭제
+      const { error } = await supabase
+        .from('character_profiles')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        throw error;
+      }
+
+      // 로컬 상태 업데이트
+      const updatedCards = savedCards.filter(card => card.id !== id);
+      setSavedCards(updatedCards);
       toast.success("프로필카드가 삭제되었습니다!");
+    } catch (error) {
+      console.error('삭제 에러:', error);
+      toast.error("프로필카드 삭제 중 오류가 발생했습니다.");
     }
   };
 
@@ -109,12 +137,10 @@ const Collection = () => {
         {/* Collection Grid */}
         <div className="space-y-6">
           {loading ? (
-            <Card className="p-12 text-center bg-card/60 backdrop-blur-sm border-border">
-              <div className="space-y-4">
-                <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
-                <p className="text-muted-foreground">캐릭터 카드를 불러오는 중...</p>
-              </div>
-            </Card>
+            <div className="text-center py-12">
+              <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-muted-foreground">프로필 카드를 불러오는 중...</p>
+            </div>
           ) : savedCards.length === 0 ? (
             <Card className="p-12 text-center bg-card/60 backdrop-blur-sm border-border">
               <div className="space-y-4">
@@ -187,14 +213,14 @@ const Collection = () => {
                     <div className="space-y-2">
                       <h3 className="font-bold text-lg">{card.name}</h3>
                       <p className="text-sm text-primary">{card.personality}</p>
-                      <p className="text-xs text-muted-foreground">"{card.custom_text}"</p>
+                      <p className="text-xs text-muted-foreground">"{card.customText}"</p>
                       <div className="flex items-center gap-2">
                         <div 
                           className="w-4 h-4 rounded-full border" 
-                          style={{ backgroundColor: card.border_color }}
+                          style={{ backgroundColor: card.borderColor }}
                         />
                         <span className="text-xs text-muted-foreground">
-                          {new Date(card.created_at).toLocaleDateString()}
+                          {new Date(card.createdAt).toLocaleDateString()}
                         </span>
                       </div>
                     </div>

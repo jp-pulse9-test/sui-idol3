@@ -249,29 +249,44 @@ export const PhotoCard = () => {
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      toast.error("로그인이 필요합니다!");
-      return;
-    }
+    try {
+      // Supabase에 캐릭터 프로필 저장
+      const { data, error } = await supabase
+        .from('character_profiles')
+        .insert([
+          {
+            user_id: 'temp-user-id', // 임시 사용자 ID (인증 구현 후 auth.uid()로 변경)
+            name: idealType?.name || 'Unknown',
+            image: canvas.toDataURL(),
+            personality: idealType?.personality || '',
+            custom_text: customText,
+            border_color: borderColor
+          }
+        ])
+        .select();
 
-    const { error } = await supabase
-      .from('character_profiles')
-      .insert({
-        user_id: user.id,
+      if (error) {
+        throw error;
+      }
+
+      // localStorage에도 백업 저장
+      const savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+      const newCard = {
+        id: data[0].id,
         name: idealType?.name || 'Unknown',
         image: canvas.toDataURL(),
         personality: idealType?.personality || '',
-        custom_text: customText,
-        border_color: borderColor
-      });
-
-    if (error) {
-      console.error('Error saving card:', error);
-      toast.error("캐릭터 저장에 실패했습니다.");
-    } else {
+        customText: customText,
+        borderColor: borderColor,
+        createdAt: new Date().toISOString()
+      };
+      savedCards.push(newCard);
+      localStorage.setItem('savedCards', JSON.stringify(savedCards));
+      
       toast.success("캐릭터가 보관함에 저장되었습니다!");
+    } catch (error) {
+      console.error('저장 에러:', error);
+      toast.error("캐릭터 저장 중 오류가 발생했습니다!");
     }
   };
 
