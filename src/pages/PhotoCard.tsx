@@ -109,107 +109,135 @@ export const PhotoCard = () => {
     canvas.width = 320;
     canvas.height = 480;
 
-    // 모던한 그라데이션 배경
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#0f172a');
-    gradient.addColorStop(0.5, '#1e293b');
-    gradient.addColorStop(1, '#334155');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // 선택된 비하인드 포토가 있으면 포토카드 스타일로 표시
+    if (generatedImages.length > 0 && selectedImageIndex >= 0) {
+      const imageSource = generatedImages[selectedImageIndex];
+      if (imageSource) {
+        const img = new Image();
+        img.onload = () => {
+          // 전체 카드에 이미지 꽉차게 표시 (포토카드 스타일)
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
+          // 하단에 반투명 오버레이와 이름만 표시
+          const overlayHeight = 80;
+          const gradient = ctx.createLinearGradient(0, canvas.height - overlayHeight, 0, canvas.height);
+          gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+          gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, canvas.height - overlayHeight, canvas.width, overlayHeight);
+          
+          // 이름
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = 'bold 20px Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(idealType.name, canvas.width / 2, canvas.height - 30);
+        };
+        img.src = imageSource;
+      }
+    } else {
+      // 기본 프로필 카드 스타일
+      // 모던한 그라데이션 배경
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, '#0f172a');
+      gradient.addColorStop(0.5, '#1e293b');
+      gradient.addColorStop(1, '#334155');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 성향별 테두리
-    ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-    
-    // 내부 카드 영역
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.fillRect(30, 30, canvas.width - 60, canvas.height - 60);
+      // 성향별 테두리
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+      
+      // 내부 카드 영역
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fillRect(30, 30, canvas.width - 60, canvas.height - 60);
 
-    // 캐릭터 이미지 (선택된 비하인드 포토 또는 기본 이미지)
-    const imageSource = generatedImages[selectedImageIndex] || idealType.realImage || idealType.image;
-    if (imageSource) {
-      const img = new Image();
-      img.onload = () => {
-        // 원형 프로필 사진
-        const profileSize = 80;
-        const profileX = (canvas.width - profileSize) / 2;
-        const profileY = 60;
-        
-        // 원형 클리핑 마스크
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
-        ctx.clip();
-        
-        // 이미지가 짤리지 않도록 contain 방식으로 그리기
-        const imgAspect = img.width / img.height;
-        const containerAspect = 1; // 원형이므로 1:1
-        
-        let drawWidth = profileSize;
-        let drawHeight = profileSize;
-        let offsetX = 0;
-        let offsetY = 0;
-        
-        if (imgAspect > containerAspect) {
-          // 이미지가 더 넓은 경우
-          drawWidth = profileSize;
-          drawHeight = profileSize / imgAspect;
-          offsetY = (profileSize - drawHeight) / 2;
-        } else {
-          // 이미지가 더 높은 경우
-          drawWidth = profileSize * imgAspect;
-          drawHeight = profileSize;
-          offsetX = (profileSize - drawWidth) / 2;
-        }
-        
-        ctx.drawImage(img, profileX + offsetX, profileY + offsetY, drawWidth, drawHeight);
-        ctx.restore();
-
-        // 이름
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 24px Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(idealType.name, canvas.width / 2, 180);
-
-        // 성격
-        ctx.fillStyle = borderColor;
-        ctx.font = '16px Arial, sans-serif';
-        ctx.fillText(idealType.personality, canvas.width / 2, 210);
-
-        // 사용자 메시지 (여러줄 처리)
-        ctx.fillStyle = '#E2E8F0';
-        ctx.font = '14px Arial, sans-serif';
-        ctx.textAlign = 'left';
-        
-        const maxWidth = canvas.width - 60;
-        const lineHeight = 20;
-        const words = customText.split(' ');
-        let line = '';
-        let y = 250;
-
-        for (let n = 0; n < words.length; n++) {
-          const testLine = line + words[n] + ' ';
-          const metrics = ctx.measureText(testLine);
-          const testWidth = metrics.width;
-          if (testWidth > maxWidth && n > 0) {
-            ctx.fillText(line, 40, y);
-            line = words[n] + ' ';
-            y += lineHeight;
+      // 캐릭터 이미지 (기본 프로필 이미지)
+      const imageSource = idealType.realImage || idealType.image;
+      if (imageSource) {
+        const img = new Image();
+        img.onload = () => {
+          // 원형 프로필 사진
+          const profileSize = 80;
+          const profileX = (canvas.width - profileSize) / 2;
+          const profileY = 60;
+          
+          // 원형 클리핑 마스크
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
+          ctx.clip();
+          
+          // 이미지가 짤리지 않도록 contain 방식으로 그리기
+          const imgAspect = img.width / img.height;
+          const containerAspect = 1; // 원형이므로 1:1
+          
+          let drawWidth = profileSize;
+          let drawHeight = profileSize;
+          let offsetX = 0;
+          let offsetY = 0;
+          
+          if (imgAspect > containerAspect) {
+            // 이미지가 더 넓은 경우
+            drawWidth = profileSize;
+            drawHeight = profileSize / imgAspect;
+            offsetY = (profileSize - drawHeight) / 2;
           } else {
-            line = testLine;
+            // 이미지가 더 높은 경우
+            drawWidth = profileSize * imgAspect;
+            drawHeight = profileSize;
+            offsetX = (profileSize - drawWidth) / 2;
           }
-        }
-        ctx.fillText(line, 40, y);
+          
+          ctx.drawImage(img, profileX + offsetX, profileY + offsetY, drawWidth, drawHeight);
+          ctx.restore();
 
-        // 푸터
-        ctx.fillStyle = '#64748B';
-        ctx.font = '12px Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('AI Idol Profile Card', canvas.width / 2, canvas.height - 40);
-        ctx.fillText(new Date().toLocaleDateString(), canvas.width / 2, canvas.height - 20);
-      };
-      img.src = imageSource;
+          // 이름
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = 'bold 24px Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(idealType.name, canvas.width / 2, 180);
+
+          // 성격
+          ctx.fillStyle = borderColor;
+          ctx.font = '16px Arial, sans-serif';
+          ctx.fillText(idealType.personality, canvas.width / 2, 210);
+
+          // 사용자 메시지 (여러줄 처리)
+          ctx.fillStyle = '#E2E8F0';
+          ctx.font = '14px Arial, sans-serif';
+          ctx.textAlign = 'left';
+          
+          const maxWidth = canvas.width - 60;
+          const lineHeight = 20;
+          const words = customText.split(' ');
+          let line = '';
+          let y = 250;
+
+          for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = ctx.measureText(testLine);
+            const testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+              ctx.fillText(line, 40, y);
+              line = words[n] + ' ';
+              y += lineHeight;
+            } else {
+              line = testLine;
+            }
+          }
+          ctx.fillText(line, 40, y);
+
+          // 푸터
+          ctx.fillStyle = '#64748B';
+          ctx.font = '12px Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('AI Idol Profile Card', canvas.width / 2, canvas.height - 40);
+          ctx.fillText(new Date().toLocaleDateString(), canvas.width / 2, canvas.height - 20);
+        };
+        img.src = imageSource;
+      }
     }
   };
 
@@ -292,7 +320,7 @@ export const PhotoCard = () => {
           onClick={() => navigate('/collection')}
           variant="secondary"
           size="sm"
-          className="bg-card/80 backdrop-blur-sm border-border hover:bg-card shadow-lg text-white"
+          className="bg-card/80 backdrop-blur-sm border border-muted-foreground/30 hover:bg-card shadow-lg text-white"
         >
           👛 보관함
         </Button>
@@ -356,7 +384,7 @@ export const PhotoCard = () => {
                         <img 
                           src={image} 
                           alt={`Behind photo ${index + 1}`}
-                          className={`w-full h-40 object-contain rounded-lg border-2 transition-all duration-300 ${
+                          className={`w-full h-60 object-contain rounded-lg border-2 transition-all duration-300 ${
                             selectedImageIndex === index 
                               ? 'border-primary shadow-lg shadow-primary/50' 
                               : 'border-border hover:border-primary/50'
