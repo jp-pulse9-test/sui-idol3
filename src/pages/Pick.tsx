@@ -89,7 +89,7 @@ const Pick = () => {
                 <Button 
                   variant="hero"
                   size="lg"
-                  className="w-full btn-modern py-3 text-card-foreground hover:text-card-foreground"
+                  className="w-full btn-modern py-3 text-white hover:text-white"
                 >
                   선택하기
                 </Button>
