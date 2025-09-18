@@ -43,7 +43,7 @@ const Pick = () => {
     localStorage.setItem('selectedGender', gender);
     toast.success(`${gender === 'male' ? '소년' : '소녀'} 아이돌을 선택했습니다!`);
     setTimeout(() => {
-      navigate('/mbti');
+      navigate('/world-select');
     }, 1000);
   };
 
@@ -89,7 +89,7 @@ const Pick = () => {
                 <Button 
                   variant="hero"
                   size="lg"
-                  className="w-full btn-modern py-3"
+                  className="w-full btn-modern py-3 text-card-foreground hover:text-card-foreground"
                 >
                   선택하기
                 </Button>

@@ -8,9 +8,10 @@ import Pick from "./pages/Pick";
 import Play from "./pages/Play";
 import Progress from "./pages/Progress";
 import GenderSelect from "./pages/GenderSelect";
-import MBTITest from "./pages/MBTITest";
-import AppearanceTest from "./pages/AppearanceTest";
-import ResultAnalysis from "./pages/ResultAnalysis";
+import WorldSelect from "./pages/WorldSelect";
+import MBTITestEnhanced from "./pages/MBTITestEnhanced";
+import AppearanceTestEnhanced from "./pages/AppearanceTestEnhanced";
+import ResultAnalysisEnhanced from "./pages/ResultAnalysisEnhanced";
 import FinalPick from "./pages/FinalPick";
 import WorldCup from "./pages/WorldCup";
 import PhotoCard from "./pages/PhotoCard";
@@ -36,9 +37,10 @@ const App = () => (
           
           {/* 기존 세부 페이지들 */}
           <Route path="/gender-select" element={<GenderSelect />} />
-          <Route path="/mbti" element={<MBTITest />} />
-          <Route path="/appearance" element={<AppearanceTest />} />
-          <Route path="/result-analysis" element={<ResultAnalysis />} />
+          <Route path="/world-select" element={<WorldSelect />} />
+          <Route path="/mbti" element={<MBTITestEnhanced />} />
+          <Route path="/appearance" element={<AppearanceTestEnhanced />} />
+          <Route path="/result-analysis" element={<ResultAnalysisEnhanced />} />
           <Route path="/final-pick" element={<FinalPick />} />
           <Route path="/worldcup" element={<WorldCup />} />
           <Route path="/photocard" element={<PhotoCard />} />
