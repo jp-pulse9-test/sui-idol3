@@ -190,7 +190,7 @@ const Index = () => {
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
                 title="PICK"
-                description="성향 분석과 이상형 월드컵을 통해 101명 중 당신만의 AI 아이돌을 선택하세요."
+                description="101명 중 당신만의 AI 아이돌을 선택하세요."
                 icon={mbtiIcon}
                 onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
