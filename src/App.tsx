@@ -4,6 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Pick from "./pages/Pick";
+import Play from "./pages/Play";
+import Progress from "./pages/Progress";
 import GenderSelect from "./pages/GenderSelect";
 import MBTITest from "./pages/MBTITest";
 import AppearanceTest from "./pages/AppearanceTest";
@@ -26,6 +29,12 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          {/* 3단계 플로우 */}
+          <Route path="/pick" element={<Pick />} />
+          <Route path="/play" element={<Play />} />
+          <Route path="/progress" element={<Progress />} />
+          
+          {/* 기존 세부 페이지들 */}
           <Route path="/gender-select" element={<GenderSelect />} />
           <Route path="/mbti" element={<MBTITest />} />
           <Route path="/appearance" element={<AppearanceTest />} />

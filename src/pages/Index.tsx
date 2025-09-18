@@ -71,7 +71,7 @@ const Index = () => {
       toast.error("먼저 지갑을 연결해주세요!");
       return;
     }
-    navigate('/gender-select');
+    navigate('/pick');
   };
 
   return (
@@ -154,7 +154,7 @@ const Index = () => {
                     size="xl"
                     className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    최애 찾으러 가기
+                    AI 아이돌 고르러 가기
                   </Button>
                   <p className="text-lg text-muted-foreground">
                     8개 질문으로 당신의 입덕 성향을 분석해보세요
@@ -189,35 +189,34 @@ const Index = () => {
 
             <div className="grid md:grid-cols-4 gap-8">
               <FeatureCard
-                title="CREATE"
-                description="입덕 성향 분석과 이상형 월드컵을 통해 나만의 완벽한 아이돌을 생성하고 포토카드를 제작하세요."
+                title="PICK"
+                description="성향 분석, 월드컵, 랜덤 뽑기 등 다양한 방법으로 나만의 AI 아이돌을 선택하세요."
                 icon={mbtiIcon}
-                onClick={() => isWalletConnected ? navigate('/gender-select') : toast.error("먼저 지갑을 연결해주세요!")}
+                onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
                 gradient="bg-gradient-to-br from-primary/20 to-accent/20"
               />
               
               <FeatureCard
-                title="GALLERY"
-                description="202명의 다양한 아이돌들을 한눈에 보고 검색하며 커뮤니티에 참여하세요."
+                title="PLAY"
+                description="아이돌과 함께하는 일상 스토리를 경험하고 특별한 추억을 만들어보세요."
                 icon={photocardIcon}
-                onClick={() => navigate('/gallery')}
+                onClick={() => navigate('/play')}
                 gradient="bg-gradient-to-br from-purple/20 to-pink/20"
               />
               
-              
               <FeatureCard
                 title="COLLECT"
-                description="다양한 포토카드를 수집하고 월렛에 연결하여 나만의 디지털 컬렉션을 구축하세요."
+                description="다양한 포토카드를 수집하고 비밀 다이어리에 추억을 기록하세요."
                 icon={photocardIcon}
                 onClick={() => navigate('/collection')}
                 gradient="bg-gradient-to-br from-accent/20 to-secondary/20"
               />
               
               <FeatureCard
-                title="GROW"
-                description="커뮤니티와 함께 컬렉션을 성장시키고 특별한 보상과 이벤트에 참여하세요."
+                title="PROGRESS"
+                description="팬 활동을 통해 아이돌을 성장시키고 새로운 콘텐츠를 잠금 해제하세요."
                 icon={tournamentIcon}
-                onClick={() => navigate('/growth')}
+                onClick={() => navigate('/progress')}
                 gradient="bg-gradient-to-br from-secondary/20 to-primary/20"
               />
             </div>
@@ -237,22 +236,22 @@ const Index = () => {
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-primary flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       1
                     </div>
-                    <h3 className="text-xl font-bold text-primary">CREATE</h3>
-                    <p className="text-foreground">성향 분석 → 월드컵 → 포토카드 생성</p>
+                    <h3 className="text-xl font-bold text-primary">PICK</h3>
+                    <p className="text-foreground">성향 분석 → 아이돌 선택 → 프로필 확인</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-secondary flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       2
                     </div>
-                    <h3 className="text-xl font-bold text-accent">COLLECT</h3>
-                    <p className="text-foreground">월렛 연결 → 마이 박스 → 컬렉션 관리</p>
+                    <h3 className="text-xl font-bold text-accent">PLAY</h3>
+                    <p className="text-foreground">일상 스토리 → 대화 → 포토카드 수집</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-accent flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       3
                     </div>
-                    <h3 className="text-xl font-bold text-secondary">GROW</h3>
-                    <p className="text-foreground">커뮤니티 → 트레이딩 → 특별 이벤트</p>
+                    <h3 className="text-xl font-bold text-secondary">PROGRESS</h3>
+                    <p className="text-foreground">성장 단계 → 업적 달성 → 특별 콘텐츠</p>
                   </div>
                 </div>
               </div>
@@ -273,12 +272,12 @@ const Index = () => {
             </div>
             
             <Button
-              onClick={() => isWalletConnected ? navigate('/gender-select') : toast.error("먼저 지갑을 연결해주세요!")}
+              onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
               variant="premium"
               size="xl"
               className="min-w-64 text-xl py-4"
             >
-              🌟 입덕 여정 시작하기 🌟
+              🌟 AI 아이돌 여정 시작하기 🌟
             </Button>
           </div>
         </section>
