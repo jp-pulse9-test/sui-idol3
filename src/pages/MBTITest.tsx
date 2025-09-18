@@ -4,10 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import extrovertStage from "@/assets/extrovert-stage.jpg";
-import introvertPractice from "@/assets/introvert-practice.jpg";
-import sensingPerformance from "@/assets/sensing-performance.jpg";
-import intuitiveCreative from "@/assets/intuitive-creative.jpg";
 
 interface Question {
   id: number;
@@ -15,7 +11,6 @@ interface Question {
   options: {
     text: string;
     type: 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P';
-    image?: string;
     emoji: string;
   }[];
 }
@@ -28,13 +23,11 @@ const questions: Question[] = [
       { 
         text: "무대 위에서 팬들과 소통하며 밝게 웃는 모습", 
         type: 'E',
-        image: extrovertStage,
         emoji: "🎤"
       },
       { 
         text: "혼자 조용히 연습하거나 생각에 잠긴 모습", 
         type: 'I',
-        image: introvertPractice,
         emoji: "🎯"
       }
     ]
@@ -46,13 +39,11 @@ const questions: Question[] = [
       { 
         text: "실제 무대나 방송에서 보이는 확실한 실력과 비주얼", 
         type: 'S',
-        image: sensingPerformance,
         emoji: "⭐"
       },
       { 
         text: "숨겨진 재능이나 앞으로의 가능성을 상상하며", 
         type: 'N',
-        image: intuitiveCreative,
         emoji: "✨"
       }
     ]
@@ -235,19 +226,9 @@ export const MBTITest = () => {
                   className="h-auto p-0 text-left justify-start hover:bg-primary/10 overflow-hidden"
                 >
                   <div className="flex items-center gap-4 w-full p-6">
-                    {option.image ? (
-                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                        <img 
-                          src={option.image} 
-                          alt={option.text}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span className="text-2xl">{option.emoji}</span>
-                      </div>
-                    )}
+                    <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-2xl">{option.emoji}</span>
+                    </div>
                     <span className="text-lg flex-1">{option.text}</span>
                   </div>
                 </Button>
