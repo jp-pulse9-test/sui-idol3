@@ -249,16 +249,23 @@ export const PhotoCard = () => {
       return;
     }
 
+    if (!idealType) {
+      toast.error("캐릭터 정보가 없습니다!");
+      return;
+    }
+
     try {
+      toast.loading("캐릭터를 보관함에 저장 중...");
+      
       // Supabase에 캐릭터 프로필 저장
       const { data, error } = await supabase
         .from('character_profiles')
         .insert([
           {
             user_id: crypto.randomUUID(), // 임시 UUID 생성 (인증 구현 후 auth.uid()로 변경)
-            name: idealType?.name || 'Unknown',
+            name: idealType.name,
             image: canvas.toDataURL(),
-            personality: idealType?.personality || '',
+            personality: idealType.personality,
             custom_text: customText,
             border_color: borderColor
           }
@@ -266,16 +273,21 @@ export const PhotoCard = () => {
         .select();
 
       if (error) {
+        console.error('Supabase 저장 에러:', error);
         throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error('저장된 데이터를 받지 못했습니다.');
       }
 
       // localStorage에도 백업 저장
       const savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
       const newCard = {
         id: data[0].id,
-        name: idealType?.name || 'Unknown',
+        name: idealType.name,
         image: canvas.toDataURL(),
-        personality: idealType?.personality || '',
+        personality: idealType.personality,
         customText: customText,
         borderColor: borderColor,
         createdAt: new Date().toISOString()
@@ -283,10 +295,22 @@ export const PhotoCard = () => {
       savedCards.push(newCard);
       localStorage.setItem('savedCards', JSON.stringify(savedCards));
       
+      toast.dismiss();
       toast.success("캐릭터가 보관함에 저장되었습니다!");
     } catch (error) {
+      toast.dismiss();
       console.error('저장 에러:', error);
-      toast.error("캐릭터 저장 중 오류가 발생했습니다!");
+      
+      // 에러 유형별 메시지 제공
+      if (error.code === '22P02') {
+        toast.error("데이터 형식 오류가 발생했습니다. 다시 시도해주세요.");
+      } else if (error.code === '23505') {
+        toast.error("이미 저장된 캐릭터입니다.");
+      } else if (error.message?.includes('JWT')) {
+        toast.error("인증 오류가 발생했습니다. 페이지를 새로고침해주세요.");
+      } else {
+        toast.error("캐릭터 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+      }
     }
   };
 
