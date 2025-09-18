@@ -19,43 +19,32 @@ const Pick = () => {
     setIsWalletConnected(true);
   }, [navigate]);
 
-  const pickOptions = [
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
+
+  const genderOptions = [
     {
-      id: 'analysis',
-      title: '성향 분석으로 찾기',
-      description: 'MBTI와 외형 선호도를 분석해 최적의 아이돌을 추천받아요',
-      emoji: '🧠',
-      route: '/gender-select',
-      recommended: true
+      id: 'male',
+      title: '소년 아이돌',
+      description: '101명의 소년 아이돌 중에서 이상형을 찾아보세요',
+      emoji: '👦',
+      gender: 'male'
     },
     {
-      id: 'worldcup',
-      title: '이상형 월드컵',
-      description: '다양한 아이돌 중에서 직접 선택하며 취향을 발견해요',
-      emoji: '🏆',
-      route: '/worldcup',
-      recommended: false
-    },
-    {
-      id: 'random',
-      title: '랜덤 뽑기',
-      description: '운명적인 만남! 랜덤으로 아이돌을 선택해요',
-      emoji: '🎲',
-      route: '/random-pick',
-      recommended: false
-    },
-    {
-      id: 'custom',
-      title: '직접 생성하기',
-      description: '원하는 외형과 성격을 설정해 나만의 아이돌을 만들어요',
-      emoji: '✨',
-      route: '/custom-create',
-      recommended: false
+      id: 'female',
+      title: '소녀 아이돌',
+      description: '101명의 소녀 아이돌 중에서 이상형을 찾아보세요',
+      emoji: '👧',
+      gender: 'female'
     }
   ];
 
-  const handlePickSelect = (route: string) => {
-    navigate(route);
+  const handleGenderSelect = (gender: string) => {
+    setSelectedGender(gender);
+    localStorage.setItem('selectedGender', gender);
+    toast.success(`${gender === 'male' ? '소년' : '소녀'} 아이돌을 선택했습니다!`);
+    setTimeout(() => {
+      navigate('/worldcup');
+    }, 1000);
   };
 
   if (!isWalletConnected) {
@@ -70,26 +59,25 @@ const Pick = () => {
         {/* Header */}
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl font-bold gradient-text">
-            고르기 (Pick)
+            이상형 월드컵
           </h1>
           <p className="text-xl text-muted-foreground">
-            어떤 방식으로 AI 아이돌을 선택하시겠어요?
+            101명의 아이돌 중에서 당신의 이상형을 찾아보세요
           </p>
         </div>
 
-        {/* Pick Options */}
+        {/* Gender Selection */}
         <div className="grid md:grid-cols-2 gap-6">
-          {pickOptions.map((option) => (
+          {genderOptions.map((option) => (
             <Card
               key={option.id}
-              className="p-8 glass-dark border-white/10 card-hover group cursor-pointer relative overflow-hidden"
-              onClick={() => handlePickSelect(option.route)}
+              className={`p-8 glass-dark border-white/10 card-hover group cursor-pointer relative overflow-hidden transition-all duration-300 ${
+                selectedGender === option.gender 
+                  ? 'ring-2 ring-primary bg-primary/10' 
+                  : ''
+              }`}
+              onClick={() => handleGenderSelect(option.gender)}
             >
-              {option.recommended && (
-                <Badge className="absolute top-4 right-4 bg-gradient-primary text-white">
-                  추천
-                </Badge>
-              )}
               <div className="space-y-6">
                 <div className="text-center">
                   <div className="text-6xl mb-4">{option.emoji}</div>
