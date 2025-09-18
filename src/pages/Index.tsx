@@ -122,11 +122,11 @@ const Index = () => {
               </h1>
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold gradient-text">
-                  Web3 팬덤 MVP
+                  Web3 팬덤 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   AI 아이돌을 고르고(Pick), 일상 스토리를 클리어해 포토카드 NFT를 비밀 금고(Vault)에 모으며,<br />
-                  데뷔 에피소드로 Rookie 뱃지(SBT)를 받아 성장(Rise)을 체감하는 Web3 팬덤 경험
+                  데뷔 에피소드로 특별한 뱃지를 받아 성장(Rise)을 체감하는 Web3 팬덤 경험
                 </p>
               </div>
             </div>
@@ -206,7 +206,7 @@ const Index = () => {
               
               <FeatureCard
                 title="📈 RISE"
-                description="데뷔 에피소드를 완료하면 Rookie 뱃지(SBT)를 획득하며, 아이돌과 함께 성장하는 과정을 체감합니다."
+                description="데뷔 에피소드를 완료하면 특별한 뱃지를 획득하며, 아이돌과 함께 성장하는 과정을 체감합니다."
                 icon={tournamentIcon}
                 onClick={() => navigate('/growth')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"

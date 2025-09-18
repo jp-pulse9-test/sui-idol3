@@ -93,7 +93,7 @@ const StoryGameModal: React.FC<StoryGameModalProps> = ({ isOpen, onClose, scenar
     const nftNames: { [key: string]: string } = {
       'first_meeting_photocard': '첫 만남 기념 포토카드',
       'practice_behind_photocard': '연습실 비하인드 포토카드',
-      'debut_special_sbt': '데뷔 기념 Rookie 뱃지 (SBT)'
+      'debut_special_badge': '데뷔 기념 Rookie 뱃지'
     };
     return nftNames[nftId] || '특별한 포토카드';
   };

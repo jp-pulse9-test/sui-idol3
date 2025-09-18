@@ -136,12 +136,12 @@ const Play = () => {
             {
               id: 'celebrate_debut',
               text: '데뷔를 축하하기',
-              result: '데뷔 기념 특별 포토카드와 Rookie 뱃지(SBT)를 획득했습니다!',
-              nftReward: 'debut_special_sbt'
+              result: '데뷔 기념 특별 포토카드와 Rookie 뱃지를 획득했습니다!',
+              nftReward: 'debut_special_badge'
             }
           ],
           isEnding: true,
-          nftReward: 'debut_special_sbt'
+          nftReward: 'debut_special_badge'
         }
       ]
     }
