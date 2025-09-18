@@ -19,6 +19,7 @@ export const PhotoCard = () => {
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isCardFlipped, setIsCardFlipped] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
 
@@ -125,8 +126,9 @@ export const PhotoCard = () => {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.fillRect(30, 30, canvas.width - 60, canvas.height - 60);
 
-    // 캐릭터 이미지
-    if (idealType.realImage || idealType.image) {
+    // 캐릭터 이미지 (선택된 비하인드 포토 또는 기본 이미지)
+    const imageSource = generatedImages[selectedImageIndex] || idealType.realImage || idealType.image;
+    if (imageSource) {
       const img = new Image();
       img.onload = () => {
         // 원형 프로필 사진
@@ -139,7 +141,29 @@ export const PhotoCard = () => {
         ctx.beginPath();
         ctx.arc(profileX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, profileX, profileY, profileSize, profileSize);
+        
+        // 이미지가 짤리지 않도록 contain 방식으로 그리기
+        const imgAspect = img.width / img.height;
+        const containerAspect = 1; // 원형이므로 1:1
+        
+        let drawWidth = profileSize;
+        let drawHeight = profileSize;
+        let offsetX = 0;
+        let offsetY = 0;
+        
+        if (imgAspect > containerAspect) {
+          // 이미지가 더 넓은 경우
+          drawWidth = profileSize;
+          drawHeight = profileSize / imgAspect;
+          offsetY = (profileSize - drawHeight) / 2;
+        } else {
+          // 이미지가 더 높은 경우
+          drawWidth = profileSize * imgAspect;
+          drawHeight = profileSize;
+          offsetX = (profileSize - drawWidth) / 2;
+        }
+        
+        ctx.drawImage(img, profileX + offsetX, profileY + offsetY, drawWidth, drawHeight);
         ctx.restore();
 
         // 이름
@@ -185,7 +209,7 @@ export const PhotoCard = () => {
         ctx.fillText('AI Idol Profile Card', canvas.width / 2, canvas.height - 40);
         ctx.fillText(new Date().toLocaleDateString(), canvas.width / 2, canvas.height - 20);
       };
-      img.src = idealType.realImage || idealType.image;
+      img.src = imageSource;
     }
   };
 
@@ -225,13 +249,20 @@ export const PhotoCard = () => {
     toast.success("프로필카드가 다운로드되었습니다!");
   };
 
-  const downloadBehindPhoto = (index: number) => {
+  const selectBehindPhoto = (index: number) => {
     if (generatedImages[index]) {
-      const link = document.createElement('a');
-      link.download = `${idealType?.name}-behind-scene-${index + 1}.png`;
-      link.href = generatedImages[index];
-      link.click();
-      toast.success("비하인드 포토가 다운로드되었습니다!");
+      setSelectedImageIndex(index);
+      // 카드 뒤집기 애니메이션 시작
+      setIsCardFlipped(true);
+      
+      // 1초 후 이미지 변경하고 다시 뒤집기
+      setTimeout(() => {
+        // 새로운 이미지로 카드 재생성
+        generatePhotoCard();
+        setIsCardFlipped(false);
+      }, 600);
+      
+      toast.success(`비하인드 포토 ${index + 1}이 프로필에 적용되었습니다!`);
     }
   };
 
@@ -240,7 +271,7 @@ export const PhotoCard = () => {
     if (idealType) {
       generatePhotoCard();
     }
-  }, [idealType, customText, borderColor]);
+  }, [idealType, customText, borderColor, selectedImageIndex]);
 
   if (!idealType) {
     return (
@@ -321,20 +352,27 @@ export const PhotoCard = () => {
                   <h3 className="text-lg font-bold text-center">생성된 비하인드 포토</h3>
                   <div className="grid grid-cols-2 gap-4">
                     {generatedImages.map((image, index) => (
-                      <div key={index} className="relative group">
+                      <div key={index} className="relative group cursor-pointer" onClick={() => selectBehindPhoto(index)}>
                         <img 
                           src={image} 
                           alt={`Behind photo ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg border border-border"
+                          className={`w-full h-40 object-contain rounded-lg border-2 transition-all duration-300 ${
+                            selectedImageIndex === index 
+                              ? 'border-primary shadow-lg shadow-primary/50' 
+                              : 'border-border hover:border-primary/50'
+                          }`}
                         />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
                           <Button
-                            onClick={() => downloadBehindPhoto(index)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              selectBehindPhoto(index);
+                            }}
                             variant="outline"
                             size="sm"
                             className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
                           >
-                            다운로드
+                            {selectedImageIndex === index ? '✓ 선택됨' : '선택하기'}
                           </Button>
                         </div>
                       </div>
@@ -351,12 +389,17 @@ export const PhotoCard = () => {
               <h2 className="text-2xl font-bold text-center">📇 캐릭터 프로필 카드</h2>
               
               <div className="flex justify-center">
-                <div className="relative">
-                  <canvas 
-                    ref={canvasRef}
-                    className="border border-border rounded-lg shadow-lg hover:scale-105 transition-transform"
-                    style={{ maxWidth: '100%', height: 'auto' }}
-                  />
+                <div className="relative perspective-1000">
+                  {/* 카드 뒤 글로우 효과 */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-lg blur-xl scale-110 opacity-60"></div>
+                  
+                  <div className={`relative transition-transform duration-600 transform-style-preserve-3d ${isCardFlipped ? 'rotate-y-180' : ''}`}>
+                    <canvas 
+                      ref={canvasRef}
+                      className="border border-border rounded-lg shadow-2xl transition-all duration-300 hover:scale-105 relative z-10"
+                      style={{ maxWidth: '100%', height: 'auto' }}
+                    />
+                  </div>
                 </div>
               </div>
 

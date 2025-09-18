@@ -1,4 +1,19 @@
 @tailwind base;
+
+/* 3D 카드 애니메이션을 위한 CSS */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@tailwind utilities;
 @tailwind components;
 @tailwind utilities;
 
