@@ -125,8 +125,7 @@ const Index = () => {
                   Web3 팬덤 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  AI 아이돌을 고르고(Pick), 일상 스토리를 클리어해 포토카드 NFT를 비밀 금고(Vault)에 모으며,<br />
-                  데뷔 에피소드로 특별한 뱃지를 받아 성장(Rise)을 체감하는 Web3 팬덤 경험
+                  최애 아이돌을 고르고, 스토리 에피소드를 통해 최애와 나의 추억이 담긴 포토카드를 모아 데뷔와 성장(Rise)을 체감하는 특별한 경험.
                 </p>
               </div>
             </div>
@@ -154,10 +153,10 @@ const Index = () => {
                     size="xl"
                     className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    🎮 AI 아이돌 픽하기
+                    🎮 나의 아이돌 PICK 하러가기
                   </Button>
                   <p className="text-lg text-muted-foreground">
-                    성향 분석 후 101명 중 당신의 운명적 아이돌을 선택하세요
+                    당신의 성향을 분석하고 운명적 아이돌을 만나세요
                   </p>
                 </>
               )}
