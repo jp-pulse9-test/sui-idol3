@@ -121,26 +121,42 @@ export const PhotoCard = () => {
         `Korean ${idealType.name} K-pop idol in recording studio wearing comfortable clothes, headphones around neck, natural everyday moment, professional photography, no text, full frame composition`
       ];
       
-      // 각 이미지를 AI로 생성
+      // 각 이미지를 Gemini 2.5 Flash Image로 생성
       for (let i = 0; i < 4; i++) {
         try {
-          const response = await fetch('/api/generate-image', {
+          const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${process.env.GEMINI_API_KEY || 'your-gemini-api-key'}`
             },
             body: JSON.stringify({
-              prompt: behindScenes[i],
-              width: 320,
-              height: 480,
-              model: 'flux.schnell'
+              contents: [{
+                parts: [{
+                  text: `Generate image: ${behindScenes[i]}`
+                }]
+              }],
+              generationConfig: {
+                temperature: 0.8,
+                topK: 40,
+                topP: 0.95,
+                maxOutputTokens: 1024,
+              }
             }),
           });
           
           if (response.ok) {
-            const blob = await response.blob();
-            const imageUrl = URL.createObjectURL(blob);
-            newImages.push(imageUrl);
+            const result = await response.json();
+            // Gemini API 응답에서 이미지 URL 추출
+            const imageData = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (imageData) {
+              // Base64 이미지 데이터를 Blob으로 변환
+              const blob = new Blob([atob(imageData)], { type: 'image/png' });
+              const imageUrl = URL.createObjectURL(blob);
+              newImages.push(imageUrl);
+            } else {
+              throw new Error('이미지 데이터 없음');
+            }
           } else {
             throw new Error('이미지 생성 실패');
           }
