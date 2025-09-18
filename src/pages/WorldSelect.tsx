@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { GraduationCap, Dog } from "lucide-react";
 
 const WorldSelect = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const WorldSelect = () => {
       id: 'beast',
       title: '수인물', 
       description: '신비로운 수인 아이돌들의 환상적인 세계',
-      emoji: '🦊',
+      emoji: 'dog',
       gradient: 'from-orange-500/20 to-pink-500/20'
     },
     {
@@ -58,7 +59,7 @@ const WorldSelect = () => {
       id: 'historical',
       title: '역사물',
       description: '궁중의 예의와 전통이 살아있는 조선시대 아이돌 이야기',
-      emoji: '👑',
+      emoji: 'graduation-cap',
       gradient: 'from-amber-500/20 to-yellow-600/20'
     },
     {
@@ -77,6 +78,16 @@ const WorldSelect = () => {
     setTimeout(() => {
       navigate('/mbti');
     }, 1000);
+  };
+
+  const renderIcon = (emoji: string) => {
+    if (emoji === 'graduation-cap') {
+      return <GraduationCap size={64} className="text-amber-400" />;
+    }
+    if (emoji === 'dog') {
+      return <Dog size={64} className="text-orange-400" />;
+    }
+    return <div className="text-6xl">{emoji}</div>;
   };
 
   return (
@@ -106,7 +117,7 @@ const WorldSelect = () => {
             >
               <div className="space-y-6">
                 <div className="text-center">
-                  <div className="text-6xl mb-4">{option.emoji}</div>
+                  <div className="mb-4">{renderIcon(option.emoji)}</div>
                   <h3 className="text-2xl font-bold gradient-text">{option.title}</h3>
                 </div>
                 <p className="text-muted-foreground text-center leading-relaxed">
