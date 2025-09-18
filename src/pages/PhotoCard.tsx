@@ -71,7 +71,7 @@ export const PhotoCard = () => {
     }
   }, [navigate]);
 
-  const generateBehindPhotos = () => {
+  const generateBehindPhotos = async () => {
     if (!idealType) {
       toast.error("캐릭터 정보를 불러올 수 없습니다!");
       return;
@@ -80,21 +80,54 @@ export const PhotoCard = () => {
     setIsGenerating(true);
     
     try {
-      // 기본 이미지들로 비하인드 포토 생성 (임시)
-      const newImages = [
+      toast.info(`${idealType.name}의 비하인드 포토를 생성 중입니다...`);
+      
+      const { data, error } = await supabase.functions.invoke('generate-behind-photos', {
+        body: {
+          characterName: idealType.name,
+          personality: idealType.personality,
+          description: `A ${idealType.personality} K-pop idol character`
+        }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error(error.message);
+      }
+
+      if (!data.success || !data.images) {
+        throw new Error('이미지 생성에 실패했습니다.');
+      }
+
+      // 생성된 이미지들 중 유효한 것들만 필터링
+      const validImages = data.images.filter((img: string) => img && img.length > 0);
+      
+      if (validImages.length === 0) {
+        throw new Error('유효한 이미지가 생성되지 않았습니다.');
+      }
+
+      // 4장이 되도록 부족한 만큼 기본 이미지로 채우기
+      while (validImages.length < 4) {
+        validImages.push(idealType.realImage || idealType.image);
+      }
+      
+      setGeneratedImages(validImages);
+      toast.success(`${idealType.name}의 비하인드 포토 ${validImages.length}장이 생성되었습니다!`);
+      
+    } catch (error) {
+      console.error('비하인드 포토 생성 오류:', error);
+      toast.error(`비하인드 포토 생성에 실패했습니다: ${error.message}`);
+      
+      // 실패 시 기본 이미지들로 대체
+      const fallbackImages = [
         idealType.realImage || idealType.image,
         idealType.realImage || idealType.image,
         idealType.realImage || idealType.image,
         idealType.realImage || idealType.image
       ];
+      setGeneratedImages(fallbackImages);
       
-      setGeneratedImages(newImages);
-      toast.success(`${idealType.name}의 비하인드 포토 4장이 생성되었습니다!`);
-      setIsGenerating(false);
-      
-    } catch (error) {
-      console.error('비하인드 포토 생성 오류:', error);
-      toast.error("비하인드 포토 생성에 실패했습니다.");
+    } finally {
       setIsGenerating(false);
     }
   };
