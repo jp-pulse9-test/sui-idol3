@@ -9,7 +9,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
-import { DevTools } from "@/components/DevTools";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -48,7 +47,6 @@ const Index = () => {
     open: boolean;
     type: 'pick' | 'vault' | 'rise' | null;
   }>({ open: false, type: null });
-  const [devToolsOpen, setDevToolsOpen] = useState(false);
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
