@@ -43,10 +43,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // 실제 지갑 주소 사용
       const realWalletAddress = "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc";
       
-      console.log('실제 지갑 연결 시도:', realWalletAddress);
+      console.log('🔥 목업 지갑 연결 시도:', realWalletAddress);
       
-      // 새 사용자 생성 (기존 사용자 조회는 보안상 제한됨)
-      const { data: newUser, error } = await supabase
+      // 새 사용자 생성 시도 (기존 사용자 조회는 보안상 제한됨)
+      const { data: newUser, error: insertError } = await supabase
         .from('users')
         .insert([{ wallet_address: realWalletAddress }])
         .select()
@@ -54,27 +54,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       let userId: string;
 
-      if (error && error.code === '23505') {
-        // 중복 지갑 주소 - 이미 존재하는 사용자
-        // 로컬 스토리지에서 사용자 ID 생성 (보안을 위해 실제 DB 조회 없이)
-        userId = 'user_' + realWalletAddress.slice(-12);
-        console.log('기존 사용자 지갑 연결:', userId);
-      } else if (error) {
-        console.error('사용자 생성 오류:', error);
-        return { error };
+      if (insertError) {
+        console.log('Insert error details:', insertError);
+        
+        if (insertError.code === '23505') {
+          // 중복 지갑 주소 - 이미 존재하는 사용자
+          userId = 'user_' + realWalletAddress.slice(-12);
+          console.log('✅ 기존 사용자 지갑 연결:', userId);
+        } else {
+          console.error('❌ 사용자 생성 오류:', insertError);
+          return { error: insertError };
+        }
       } else {
         userId = newUser.id;
-        console.log('새 사용자 생성:', userId);
+        console.log('✅ 새 사용자 생성:', userId);
       }
 
       // 지갑 저장 및 사용자 설정
       secureStorage.setWalletAddress(realWalletAddress);
       setUser({ id: userId, wallet_address: realWalletAddress });
       
-      console.log('실제 지갑 연결 성공');
+      console.log('✅ 실제 지갑 연결 성공');
       return { error: null };
     } catch (error) {
-      console.error('지갑 연결 오류:', error);
+      console.error('❌ 지갑 연결 오류:', error);
       return { error };
     }
   };
