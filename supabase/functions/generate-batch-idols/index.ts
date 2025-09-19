@@ -112,12 +112,6 @@ serve(async (req) => {
         
         console.log(`Generating girl ${i + 1}/101: ${name}`)
         await updateProgress(i + 1, 'girls', name)
-      try {
-        const name = femaleNames[i % femaleNames.length] + (i >= femaleNames.length ? `${Math.floor(i / femaleNames.length) + 1}` : '')
-        const personality = personalities[Math.floor(Math.random() * personalities.length)]
-        const concept = concepts[Math.floor(Math.random() * concepts.length)]
-        
-        console.log(`Generating girl ${i + 1}/101: ${name}`)
         
         // Gemini로 성격과 페르소나 생성
         const personaResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${googleApiKey}`, {
