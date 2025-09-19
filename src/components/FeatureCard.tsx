@@ -7,9 +7,10 @@ interface FeatureCardProps {
   icon: string;
   onClick: () => void;
   gradient?: string;
+  buttonText?: string;
 }
 
-export const FeatureCard = ({ title, description, icon, onClick, gradient }: FeatureCardProps) => {
+export const FeatureCard = ({ title, description, icon, onClick, gradient, buttonText = "시작하기" }: FeatureCardProps) => {
   return (
     <Card className={`p-8 glass-dark border-white/10 card-hover group ${gradient || ''} relative overflow-hidden`}>
       <div className="flex flex-col items-center text-center space-y-6">
@@ -29,7 +30,7 @@ export const FeatureCard = ({ title, description, icon, onClick, gradient }: Fea
           size="lg"
           className="w-full btn-modern py-3"
         >
-          시작하기
+          {buttonText}
         </Button>
       </div>
     </Card>

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
+import PreviewModal from "@/components/PreviewModal";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -41,6 +42,10 @@ const Index = () => {
   const { user, signOut, loading } = useAuth();
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string>("");
+  const [previewModal, setPreviewModal] = useState<{
+    open: boolean;
+    type: 'pick' | 'vault' | 'rise' | null;
+  }>({ open: false, type: null });
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
@@ -121,6 +126,19 @@ const Index = () => {
     await signOut();
     disconnectWallet();
     toast.success("로그아웃되었습니다.");
+  };
+
+  const openPreview = (type: 'pick' | 'vault' | 'rise') => {
+    setPreviewModal({ open: true, type });
+  };
+
+  const closePreview = () => {
+    setPreviewModal({ open: false, type: null });
+  };
+
+  const handlePreviewStart = () => {
+    closePreview();
+    handleStartJourney();
   };
 
   return (
@@ -275,24 +293,27 @@ const Index = () => {
                 title="🎯 PICK"
                 description="성향 분석 후 101명 중 운명적 AI 아이돌 선택. 각 아이돌은 고유한 페르소나와 기억을 가진 대화형 에이전트입니다."
                 icon={mbtiIcon}
-                onClick={() => user && isWalletConnected ? navigate('/pick') : handleStartJourney()}
+                onClick={() => openPreview('pick')}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
+                buttonText="미리보기"
               />
               
               <FeatureCard
                 title="🗃️ VAULT"
                 description="일상 스토리 텍스트 게임을 클리어하며 획득한 포토카드 NFT를 비밀 금고에 안전하게 보관합니다."
                 icon={photocardIcon}
-                onClick={() => user && isWalletConnected ? navigate('/vault') : handleStartJourney()}
+                onClick={() => openPreview('vault')}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
+                buttonText="미리보기"
               />
               
               <FeatureCard
                 title="📈 RISE"
                 description="데뷔 에피소드를 완료하면 특별한 뱃지를 획득하며, 아이돌과 함께 성장하는 과정을 체감합니다."
                 icon={tournamentIcon}
-                onClick={() => user && isWalletConnected ? navigate('/rise') : handleStartJourney()}
+                onClick={() => openPreview('rise')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
+                buttonText="미리보기"
               />
             </div>
           </div>
@@ -356,6 +377,14 @@ const Index = () => {
             </Button>
           </div>
         </section>
+
+        {/* Preview Modal */}
+        <PreviewModal
+          open={previewModal.open}
+          onOpenChange={closePreview}
+          type={previewModal.type!}
+          onStartJourney={handlePreviewStart}
+        />
 
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
