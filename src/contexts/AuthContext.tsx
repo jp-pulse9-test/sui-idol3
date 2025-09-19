@@ -50,10 +50,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const connectWallet = async () => {
     try {
-      // Simulate Sui wallet connection (in real implementation, use Sui wallet adapter)
+      // 목업 지갑 주소 생성 (더 간단하게)
       const mockWalletAddress = "0x" + Math.random().toString(16).substring(2, 42);
       
-      // Check if user already exists
+      console.log('목업 지갑 연결 시도:', mockWalletAddress);
+      
+      // 사용자 생성 또는 조회
       const { data: existingUser } = await supabase
         .from('users')
         .select('*')
@@ -64,8 +66,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (existingUser) {
         userId = existingUser.id;
+        console.log('기존 사용자 발견:', userId);
       } else {
-        // Create new user
+        // 새 사용자 생성
         const { data: newUser, error } = await supabase
           .from('users')
           .insert([{ wallet_address: mockWalletAddress }])
@@ -73,17 +76,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .single();
 
         if (error) {
+          console.error('사용자 생성 오류:', error);
           return { error };
         }
         userId = newUser.id;
+        console.log('새 사용자 생성:', userId);
       }
 
-      // Save wallet and set user
+      // 지갑 저장 및 사용자 설정
       secureStorage.setWalletAddress(mockWalletAddress);
       setUser({ id: userId, wallet_address: mockWalletAddress });
       
+      console.log('목업 지갑 연결 성공');
       return { error: null };
     } catch (error) {
+      console.error('지갑 연결 오류:', error);
       return { error };
     }
   };

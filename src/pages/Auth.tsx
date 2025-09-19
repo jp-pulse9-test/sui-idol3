@@ -20,21 +20,36 @@ const Auth = () => {
 
   const handleWalletConnect = async () => {
     setLoading(true);
+    console.log('🔥 목업 지갑 연결 시도...');
     
-    const { error } = await connectWallet();
-    
-    if (error) {
+    try {
+      const { error } = await connectWallet();
+      
+      if (error) {
+        console.error('❌ 지갑 연결 실패:', error);
+        toast({
+          title: "지갑 연결 실패",
+          description: "지갑 연결 중 오류가 발생했습니다. 다시 시도해주세요.",
+          variant: "destructive",
+        });
+      } else {
+        console.log('✅ 목업 지갑 연결 성공!');
+        toast({
+          title: "🎉 환영합니다!",
+          description: "목업 Sui 지갑이 성공적으로 연결되었습니다.",
+        });
+        // 약간의 지연 후 메인 페이지로 이동
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('예상치 못한 오류:', error);
       toast({
-        title: "지갑 연결 실패",
-        description: "지갑 연결 중 오류가 발생했습니다. 다시 시도해주세요.",
+        title: "오류 발생",
+        description: "예상치 못한 오류가 발생했습니다.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "환영합니다!",
-        description: "Sui 지갑이 성공적으로 연결되었습니다.",
-      });
-      navigate('/');
     }
     
     setLoading(false);
@@ -101,11 +116,10 @@ const Auth = () => {
 
           {/* 지원 지갑 안내 */}
           <div className="text-center space-y-2">
-            <p className="text-sm text-muted-foreground">지원 지갑</p>
+            <p className="text-sm text-muted-foreground">목업 모드 (개발용)</p>
             <div className="flex justify-center gap-4 text-xs text-muted-foreground">
-              <span className="px-3 py-1 bg-muted rounded-full">Sui Wallet</span>
-              <span className="px-3 py-1 bg-muted rounded-full">Suiet Wallet</span>
-              <span className="px-3 py-1 bg-muted rounded-full">Ethos Wallet</span>
+              <span className="px-3 py-1 bg-muted rounded-full">Mock Wallet</span>
+              <span className="px-3 py-1 bg-muted rounded-full">Demo Mode</span>
             </div>
           </div>
         </CardContent>
