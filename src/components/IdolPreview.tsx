@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Crown, Heart, Star, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { applySuperAdminBenefits } from "@/utils/superAdminBenefits";
+import { isSuperAdmin } from "@/utils/adminWallets";
 
 interface IdolPreset {
   id: number;
@@ -25,16 +27,30 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
   const [votingProgress, setVotingProgress] = useState(0);
   const [isVoting, setIsVoting] = useState(false);
   const [hasSufficientCoins, setHasSufficientCoins] = useState(false);
+  const [currentSuiCoins, setCurrentSuiCoins] = useState(0);
 
   useEffect(() => {
+    // 수퍼어드민 특권 먼저 적용
+    const currentWallet = localStorage.getItem('walletAddress');
+    if (currentWallet && isSuperAdmin(currentWallet)) {
+      applySuperAdminBenefits();
+    }
+    
     // 수이 코인 잔액 체크 (0.15 코인 = 700원)
     const userCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
+    setCurrentSuiCoins(userCoins);
     setHasSufficientCoins(userCoins >= 0.15);
+    
+    console.log('🔍 IdolPreview 코인 체크:', { userCoins, hasSufficientCoins: userCoins >= 0.15 });
   }, []);
 
   const handleVoting = async () => {
-    if (!hasSufficientCoins) {
-      toast.error("수이 코인이 부족합니다. 0.15 코인(700원)이 필요합니다.");
+    // 실시간으로 코인 재확인
+    const latestCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
+    setCurrentSuiCoins(latestCoins);
+    
+    if (latestCoins < 0.15) {
+      toast.error(`수이 코인이 부족합니다. 0.15 코인(700원)이 필요합니다. 현재: ${latestCoins.toFixed(2)} SUI`);
       return;
     }
 
@@ -49,8 +65,8 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
     }
     
     // 코인 차감
-    const currentCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
-    localStorage.setItem('suiCoins', (currentCoins - 0.15).toFixed(2));
+    const finalCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
+    localStorage.setItem('suiCoins', (finalCoins - 0.15).toFixed(2));
     
     // 완료 후 확인
     setTimeout(() => {
@@ -136,13 +152,27 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
               <h3 className="text-2xl font-bold gradient-text">💝 최애 투표하기</h3>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 선택한 아이돌에게 투표하여 영구히 소유하세요. <br />
-                투표 비용: 0.15 SUI 코인 (700원)
+                투표 비용: 0.15 SUI 코인 (700원) | 현재 보유: {currentSuiCoins.toFixed(2)} SUI
               </p>
-              {!hasSufficientCoins && (
+              {currentSuiCoins < 0.15 && (
                 <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 max-w-md mx-auto">
                   <p className="text-destructive text-sm">
-                    ⚠️ 수이 코인이 부족합니다. 0.15 코인이 필요합니다.
+                    ⚠️ 수이 코인이 부족합니다. 0.15 코인이 필요합니다. <br />
+                    현재 보유: {currentSuiCoins.toFixed(2)} SUI
                   </p>
+                  <Button
+                    onClick={() => {
+                      applySuperAdminBenefits();
+                      const newCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
+                      setCurrentSuiCoins(newCoins);
+                      setHasSufficientCoins(newCoins >= 0.15);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 text-yellow-400 border-yellow-400"
+                  >
+                    👑 수퍼어드민 코인 지급
+                  </Button>
                 </div>
               )}
             </div>
@@ -156,7 +186,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
                 variant="default" 
                 size="lg"
                 className="btn-modern px-8"
-                disabled={!hasSufficientCoins}
+                disabled={currentSuiCoins < 0.15}
               >
                 💝 투표하기 (0.15 SUI)
               </Button>
