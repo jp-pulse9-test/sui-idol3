@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_keys: {
+        Row: {
+          api_key: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_wallet: string
+        }
+        Insert: {
+          api_key: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_wallet: string
+        }
+        Update: {
+          api_key?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_wallet?: string
+        }
+        Relationships: []
+      }
       chat_logs: {
         Row: {
           created_at: string | null
@@ -182,6 +206,33 @@ export type Database = {
           persona_prompt?: string
           personality?: string
           profile_image?: string
+        }
+        Relationships: []
+      }
+      idols202: {
+        Row: {
+          Category: string
+          Concept: string
+          created_at: string | null
+          Gender: string
+          id: number
+          Name: string
+        }
+        Insert: {
+          Category: string
+          Concept: string
+          created_at?: string | null
+          Gender: string
+          id?: number
+          Name: string
+        }
+        Update: {
+          Category?: string
+          Concept?: string
+          created_at?: string | null
+          Gender?: string
+          id?: number
+          Name?: string
         }
         Relationships: []
       }
@@ -356,7 +407,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_wallet: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
