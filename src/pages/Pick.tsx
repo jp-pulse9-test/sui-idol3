@@ -310,13 +310,6 @@ const Pick = () => {
           {/* Navigation */}
           <div className="flex justify-center space-x-4 pt-8">
             <Button
-              onClick={generateIdolPhotos}
-              size="lg"
-              className="bg-gradient-primary hover:opacity-90"
-            >
-              📸 아이돌 사진 생성하기
-            </Button>
-            <Button
               onClick={() => navigate('/')}
               variant="outline"
               size="lg"
