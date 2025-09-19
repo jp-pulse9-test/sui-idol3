@@ -7,7 +7,7 @@ import Index from "./pages/Index";
 import IdolPick from "./pages/IdolPick";
 import Vault from "./pages/Vault";
 import Collection from "./pages/Collection";
-import Pick from "./pages/Pick";
+import PickOld from "./pages/Pick";
 import Play from "./pages/Play";
 import Progress from "./pages/Progress";
 import GenderSelect from "./pages/GenderSelect";
@@ -37,7 +37,7 @@ const App = () => (
           <Route path="/collection" element={<Collection />} />
           
           {/* 기존 3단계 플로우 */}
-          <Route path="/pick-old" element={<Pick />} />
+          <Route path="/pick-old" element={<PickOld />} />
           <Route path="/play" element={<Play />} />
           <Route path="/progress" element={<Progress />} />
           
