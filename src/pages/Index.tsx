@@ -315,7 +315,8 @@ const Index = () => {
               </p>
               
               {/* 개발자 전용 데이터 생성 버튼 */}
-              <div className="mt-4">
+              <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <p className="text-sm text-yellow-300 mb-3">🚀 개발자 도구</p>
                 <Button
                   onClick={async () => {
                     try {
@@ -338,9 +339,9 @@ const Index = () => {
                   }}
                   variant="outline"
                   size="sm"
-                  className="text-xs opacity-50 hover:opacity-100"
+                  className="bg-yellow-500/20 border-yellow-500 text-yellow-200 hover:bg-yellow-500/30"
                 >
-                  🔧 개발자 전용: 아이돌 데이터 생성
+                  🔧 202명 아이돌 데이터 생성하기
                 </Button>
               </div>
             </div>
