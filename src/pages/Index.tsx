@@ -314,36 +314,37 @@ const Index = () => {
                 Pick은 체험, Vault부터 지갑 연결로 본격 시작!
               </p>
               
-              {/* 개발자 전용 데이터 생성 버튼 */}
-              <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <p className="text-sm text-yellow-300 mb-3">🚀 개발자 도구</p>
-                <Button
-                  onClick={async () => {
-                    try {
-                      const { supabase } = await import('@/integrations/supabase/client');
-                      const { toast } = await import('sonner');
-                      
-                      toast.info('202명의 아이돌 데이터 생성을 시작합니다...');
-                      
-                      const { data, error } = await supabase.functions.invoke('generate-preset-idols');
-                      
-                      if (error) {
+              {/* 슈퍼어드민 전용 개발자 도구 */}
+              {user?.wallet_address === "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc" && (
+                <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                  <p className="text-sm text-yellow-300 mb-3">🚀 개발자 도구</p>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        const { supabase } = await import('@/integrations/supabase/client');
+                        const { toast } = await import('sonner');
+                        
+                        toast.info('202명의 아이돌 데이터 생성을 시작합니다...');
+                        
+                        const { data, error } = await supabase.functions.invoke('generate-preset-idols');
+                        
+                        if (error) {
+                          toast.error('생성 실패: ' + error.message);
+                        } else {
+                          toast.success('아이돌 데이터 생성이 완료되었습니다!');
+                        }
+                      } catch (error) {
                         console.error('Error:', error);
-                        toast.error('데이터 생성에 실패했습니다.');
-                      } else {
-                        toast.success('아이돌 데이터 생성이 완료되었습니다!');
                       }
-                    } catch (error) {
-                      console.error('Error:', error);
-                    }
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="bg-yellow-500/20 border-yellow-500 text-yellow-200 hover:bg-yellow-500/30"
-                >
-                  🔧 202명 아이돌 데이터 생성하기
-                </Button>
-              </div>
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="bg-yellow-500/20 border-yellow-500 text-yellow-200 hover:bg-yellow-500/30"
+                  >
+                    🔧 202명 아이돌 데이터 생성하기
+                  </Button>
+                </div>
+              )}
             </div>
             
             <Button
