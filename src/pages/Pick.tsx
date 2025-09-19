@@ -7,6 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 
 interface IdolPreset {
   id: number;
@@ -17,7 +19,7 @@ interface IdolPreset {
   persona_prompt: string;
 }
 
-type GamePhase = 'loading' | 'gender' | 'preferences' | 'tournament-size' | 'worldcup' | 'result' | 'minting';
+type GamePhase = 'loading' | 'entry-selection' | 'quickstart-gender' | 'quickstart-animal' | 'quickstart-vibe' | 'advanced-preferences' | 'natural-language' | 'slider-mode' | 'tournament-size' | 'worldcup' | 'result' | 'minting';
 
 interface PreferenceData {
   gender: 'male' | 'female' | '';
@@ -25,6 +27,17 @@ interface PreferenceData {
   bodyTypes: string[];
   vibes: string[];
   talent: string;
+  cuteChicSlider: number;
+  slimAthleticSlider: number;
+}
+
+interface OneClickPreset {
+  id: string;
+  name: string;
+  animal: string;
+  vibe: string;
+  emoji: string;
+  description: string;
 }
 
 interface HybridBadge {
@@ -47,11 +60,17 @@ const Pick = () => {
     animalTypes: [],
     bodyTypes: [],
     vibes: [],
-    talent: ''
+    talent: '',
+    cuteChicSlider: 50,
+    slimAthleticSlider: 50
   });
   const [tournamentSize, setTournamentSize] = useState<16 | 32>(16);
   const [hybridBadge, setHybridBadge] = useState<HybridBadge | null>(null);
   const [mintingProgress, setMintingProgress] = useState(0);
+  const [naturalLanguageInput, setNaturalLanguageInput] = useState('');
+  const [quickStartAnimal, setQuickStartAnimal] = useState('');
+  const [quickStartVibe, setQuickStartVibe] = useState('');
+  const [doubleClickMode, setDoubleClickMode] = useState(false);
   const navigate = useNavigate();
 
   // Fetch idols from Supabase
@@ -130,9 +149,146 @@ const Pick = () => {
     { text: "프로듀싱", value: "producing", emoji: "🎹" }
   ];
 
-  const handleGenderSelect = (gender: 'male' | 'female') => {
+  const oneClickPresets: OneClickPreset[] = [
+    { id: 'fresh-puppy', name: '청량 강아지상', animal: 'puppy', vibe: 'fresh', emoji: '🌿🐶', description: '상큼하고 사랑스러운' },
+    { id: 'chic-fox', name: '시크 여우상', animal: 'fox', vibe: 'chic', emoji: '🖤🦊', description: '세련되고 매혹적인' },
+    { id: 'lovely-rabbit', name: '러블리 토끼상', animal: 'rabbit', vibe: 'lovely', emoji: '💕🐰', description: '사랑스럽고 귀여운' },
+    { id: 'charismatic-tiger', name: '카리스마 호랑이상', animal: 'tiger', vibe: 'charismatic', emoji: '⚡🐅', description: '강렬하고 카리스마틱한' },
+    { id: 'sporty-wolf', name: '스포티 늑대상', animal: 'wolf', vibe: 'fresh', emoji: '🏃🐺', description: '역동적이고 활기찬' },
+    { id: 'modern-cat', name: '모던 고양이상', animal: 'cat', vibe: 'chic', emoji: '😸🐱', description: '현대적이고 트렌디한' }
+  ];
+
+  // Save last preferences to localStorage
+  const saveLastPreferences = () => {
+    localStorage.setItem('lastPickPreferences', JSON.stringify(preference));
+  };
+
+  const loadLastPreferences = () => {
+    const saved = localStorage.getItem('lastPickPreferences');
+    if (saved) {
+      return JSON.parse(saved) as PreferenceData;
+    }
+    return null;
+  };
+
+  // Natural language parser
+  const parseNaturalLanguage = (input: string) => {
+    const lowerInput = input.toLowerCase();
+    const parsed: Partial<PreferenceData> = {};
+    
+    // Animal parsing
+    animalOptions.forEach(animal => {
+      if (lowerInput.includes(animal.text) || lowerInput.includes(animal.value)) {
+        parsed.animalTypes = [animal.value];
+      }
+    });
+    
+    // Body parsing
+    bodyOptions.forEach(body => {
+      if (lowerInput.includes(body.text) || lowerInput.includes(body.value)) {
+        parsed.bodyTypes = [body.value];
+      }
+    });
+    
+    // Vibe parsing
+    vibeOptions.forEach(vibe => {
+      if (lowerInput.includes(vibe.text) || lowerInput.includes(vibe.value)) {
+        parsed.vibes = [vibe.value];
+      }
+    });
+    
+    // Talent parsing
+    talentOptions.forEach(talent => {
+      if (lowerInput.includes(talent.text) || lowerInput.includes(talent.value)) {
+        parsed.talent = talent.value;
+      }
+    });
+    
+    return parsed;
+  };
+
+  const handleNaturalLanguageSubmit = () => {
+    const parsed = parseNaturalLanguage(naturalLanguageInput);
+    setPreference(prev => ({
+      ...prev,
+      ...parsed,
+      // Set defaults for missing values
+      animalTypes: parsed.animalTypes || ['puppy'],
+      bodyTypes: parsed.bodyTypes || ['balanced'],
+      vibes: parsed.vibes || ['fresh'],
+      talent: parsed.talent || 'balanced'
+    }));
+    startTournament(16);
+  };
+
+  const handleOneClickPreset = (preset: OneClickPreset) => {
+    setPreference(prev => ({
+      ...prev,
+      animalTypes: [preset.animal],
+      vibes: [preset.vibe],
+      bodyTypes: ['balanced'],
+      talent: 'balanced'
+    }));
+    startTournament(16);
+  };
+
+  const handleMagicPick = () => {
+    const randomAnimal = animalOptions[Math.floor(Math.random() * animalOptions.length)];
+    const randomVibe = vibeOptions[Math.floor(Math.random() * vibeOptions.length)];
+    
+    setPreference(prev => ({
+      ...prev,
+      animalTypes: [randomAnimal.value],
+      vibes: [randomVibe.value],
+      bodyTypes: ['balanced'],
+      talent: 'balanced'
+    }));
+    startTournament(16);
+  };
+
+  const handleQuickStartGender = (gender: 'male' | 'female') => {
     setPreference(prev => ({ ...prev, gender }));
-    setGamePhase('preferences');
+    setGamePhase('quickstart-animal');
+  };
+
+  const handleQuickStartAnimal = (animal: string) => {
+    setQuickStartAnimal(animal);
+    setGamePhase('quickstart-vibe');
+  };
+
+  const handleQuickStartVibe = (vibe: string) => {
+    setQuickStartVibe(vibe);
+    setPreference(prev => ({
+      ...prev,
+      animalTypes: [quickStartAnimal],
+      vibes: [vibe],
+      bodyTypes: ['balanced'],
+      talent: 'balanced'
+    }));
+    startTournament(16);
+  };
+
+  const handleSkipToWorldCup = () => {
+    setPreference(prev => ({
+      ...prev,
+      animalTypes: ['balanced'],
+      bodyTypes: ['balanced'],
+      vibes: ['balanced'],
+      talent: 'balanced'
+    }));
+    startTournament(16);
+  };
+
+  const startTournament = (size: 16 | 32) => {
+    saveLastPreferences();
+    const shuffled = [...idols].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, size);
+    
+    setBracket(selected);
+    setCurrentRound(selected);
+    setCurrentPair([selected[0], selected[1]]);
+    setTournamentSize(size);
+    setGamePhase('worldcup');
   };
 
   const handleMultiSelect = (category: 'animalTypes' | 'bodyTypes' | 'vibes', value: string) => {
@@ -169,15 +325,7 @@ const Pick = () => {
   };
 
   const handleTournamentSizeSelect = (size: 16 | 32) => {
-    setTournamentSize(size);
-    // Randomly select idols for tournament based on size
-    const shuffled = [...idols].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, size);
-    
-    setBracket(selected);
-    setCurrentRound(selected);
-    setCurrentPair([selected[0], selected[1]]);
-    setGamePhase('worldcup');
+    startTournament(size);
   };
 
   // Initialize game data
@@ -195,14 +343,7 @@ const Pick = () => {
       
       if (idolData.length > 0) {
         setIdols(idolData);
-        // Randomly select 16 idols for tournament
-        const shuffled = [...idolData].sort(() => Math.random() - 0.5);
-        const selected16 = shuffled.slice(0, 16);
-        
-        setBracket(selected16);
-        setCurrentRound(selected16);
-        setCurrentPair([selected16[0], selected16[1]]);
-        setGamePhase('gender');
+        setGamePhase('entry-selection');
       } else {
         toast.error('아이돌 데이터를 불러올 수 없습니다.');
       }
@@ -211,9 +352,23 @@ const Pick = () => {
     initializeGame();
   }, []);
 
-  // Handle idol selection
-  const selectIdol = (selectedIdol: IdolPreset) => {
+  // Enhanced idol selection with double-click support
+  const selectIdol = (selectedIdol: IdolPreset, isDoubleClick: boolean = false) => {
     if (!currentPair || !currentPair[0] || !currentPair[1]) return;
+
+    // Double click mode for quick selection
+    if (isDoubleClick && doubleClickMode) {
+      // Fast track through remaining matches
+      const remainingMatches = Math.floor(currentRound.length / 2) - getCurrentMatchNumber();
+      if (remainingMatches > 3) {
+        toast.info('빠른선택 모드로 자동 진행합니다');
+        // Simulate quick selections
+        setTimeout(() => {
+          finishTournamentQuickly(selectedIdol);
+        }, 500);
+        return;
+      }
+    }
 
     const currentIndex = currentRound.indexOf(currentPair[0]);
     if (currentIndex === -1) return;
@@ -257,6 +412,19 @@ const Pick = () => {
       }
       setCurrentRound(nextRound);
     }
+  };
+
+  const finishTournamentQuickly = (preferredIdol: IdolPreset) => {
+    // Simulate remaining matches with bias toward preferred idol
+    const badge: HybridBadge = {
+      animalTypes: preference.animalTypes,
+      bodyTypes: preference.bodyTypes,
+      vibes: preference.vibes,
+      talent: preference.talent
+    };
+    setHybridBadge(badge);
+    setFinalWinner(preferredIdol);
+    setGamePhase('result');
   };
 
   const handleConfirmPick = () => {
@@ -313,40 +481,140 @@ const Pick = () => {
     return Math.floor(currentIndex / 2) + 1;
   };
 
-  // Gender selection phase
-  if (gamePhase === 'gender') {
+  // Entry Selection Phase - Choose how to start
+  if (gamePhase === 'entry-selection') {
+    const lastPrefs = loadLastPreferences();
+    
     return (
       <div className="min-h-screen bg-gradient-background p-4">
-        <div className="max-w-4xl mx-auto space-y-8 pt-20">
+        <div className="max-w-6xl mx-auto space-y-8 pt-12">
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold gradient-text">
-              성별 선택
+              🎯 내 취향 아이돌 픽하기
             </h1>
-            <p className="text-muted-foreground">
-              선호하는 아이돌의 성별을 선택해주세요
+            <p className="text-muted-foreground text-lg">
+              140초 만에 완벽한 아이돌을 찾아보세요
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            <Button
-              onClick={() => handleGenderSelect('male')}
-              variant="outline"
-              size="lg"
-              className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
-            >
-              <span className="text-6xl">👨</span>
-              <span className="text-xl font-medium">남성 아이돌</span>
-            </Button>
-            
-            <Button
-              onClick={() => handleGenderSelect('female')}
-              variant="outline"
-              size="lg"
-              className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
-            >
-              <span className="text-6xl">👩</span>
-              <span className="text-xl font-medium">여성 아이돌</span>
-            </Button>
+          {/* Last Preferences Recommendation */}
+          {lastPrefs && (
+            <Card className="p-6 glass-dark border-white/10 max-w-2xl mx-auto">
+              <div className="text-center space-y-4">
+                <h3 className="text-lg font-bold gradient-text">🔄 지난번처럼 시작</h3>
+                <p className="text-sm text-muted-foreground">
+                  {lastPrefs.animalTypes.join(', ')} × {lastPrefs.vibes.join(', ')} 조합으로 시작하기
+                </p>
+                <Button
+                  onClick={() => {
+                    setPreference(lastPrefs);
+                    startTournament(16);
+                  }}
+                  className="bg-gradient-primary hover:opacity-90"
+                >
+                  지난 설정으로 시작
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {/* Main Entry Options Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* QuickStart-3 */}
+            <Card className="p-6 glass-dark border-white/10 card-hover cursor-pointer group"
+                  onClick={() => setGamePhase('quickstart-gender')}>
+              <div className="text-center space-y-4">
+                <div className="text-4xl">⚡</div>
+                <h3 className="text-xl font-bold gradient-text">3탭 퀵스타트</h3>
+                <p className="text-sm text-muted-foreground">
+                  성별 → 동물상 → 분위기만 선택하고 바로 16강 시작
+                </p>
+                <Badge variant="secondary" className="text-xs">~20초</Badge>
+              </div>
+            </Card>
+
+            {/* Skip All */}
+            <Card className="p-6 glass-dark border-white/10 card-hover cursor-pointer group"
+                  onClick={handleSkipToWorldCup}>
+              <div className="text-center space-y-4">
+                <div className="text-4xl">🚀</div>
+                <h3 className="text-xl font-bold gradient-text">지금 바로 시작</h3>
+                <p className="text-sm text-muted-foreground">
+                  속성 입력 없이 바로 월드컵 시작 (랜덤 구성)
+                </p>
+                <Badge variant="secondary" className="text-xs">0초</Badge>
+              </div>
+            </Card>
+
+            {/* Magic Pick */}
+            <Card className="p-6 glass-dark border-white/10 card-hover cursor-pointer group"
+                  onClick={handleMagicPick}>
+              <div className="text-center space-y-4">
+                <div className="text-4xl">🎲</div>
+                <h3 className="text-xl font-bold gradient-text">아무거나 추천</h3>
+                <p className="text-sm text-muted-foreground">
+                  인기 조합으로 자동 설정 후 월드컵 시작
+                </p>
+                <Badge variant="secondary" className="text-xs">즉시</Badge>
+              </div>
+            </Card>
+
+            {/* Natural Language */}
+            <Card className="p-6 glass-dark border-white/10 card-hover cursor-pointer group"
+                  onClick={() => setGamePhase('natural-language')}>
+              <div className="text-center space-y-4">
+                <div className="text-4xl">💬</div>
+                <h3 className="text-xl font-bold gradient-text">자연어 입력</h3>
+                <p className="text-sm text-muted-foreground">
+                  "강아지상, 키크고 춤 잘추는" 텍스트로 설정
+                </p>
+                <Badge variant="outline" className="text-xs">P1 기능</Badge>
+              </div>
+            </Card>
+
+            {/* 2-Axis Sliders */}
+            <Card className="p-6 glass-dark border-white/10 card-hover cursor-pointer group"
+                  onClick={() => setGamePhase('slider-mode')}>
+              <div className="text-center space-y-4">
+                <div className="text-4xl">🎚️</div>
+                <h3 className="text-xl font-bold gradient-text">2축 슬라이더</h3>
+                <p className="text-sm text-muted-foreground">
+                  Cute↔Chic, Slim↔Athletic 슬라이더로 간편 설정
+                </p>
+                <Badge variant="outline" className="text-xs">P1 기능</Badge>
+              </div>
+            </Card>
+
+            {/* Advanced Preferences */}
+            <Card className="p-6 glass-dark border-white/10 card-hover cursor-pointer group"
+                  onClick={() => setGamePhase('advanced-preferences')}>
+              <div className="text-center space-y-4">
+                <div className="text-4xl">⚙️</div>
+                <h3 className="text-xl font-bold gradient-text">상세 설정</h3>
+                <p className="text-sm text-muted-foreground">
+                  모든 속성을 직접 설정 (기존 방식)
+                </p>
+                <Badge variant="outline" className="text-xs">고급</Badge>
+              </div>
+            </Card>
+          </div>
+
+          {/* One-Click Presets */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-center gradient-text">원클릭 프리셋</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {oneClickPresets.map((preset) => (
+                <Card key={preset.id} 
+                      className="p-4 glass-dark border-white/10 card-hover cursor-pointer group text-center"
+                      onClick={() => handleOneClickPreset(preset)}>
+                  <div className="space-y-2">
+                    <div className="text-2xl">{preset.emoji}</div>
+                    <h4 className="text-sm font-bold">{preset.name}</h4>
+                    <p className="text-xs text-muted-foreground">{preset.description}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
 
           <div className="text-center">
@@ -363,8 +631,307 @@ const Pick = () => {
     );
   }
 
-  // Preferences phase
-  if (gamePhase === 'preferences') {
+  // QuickStart Gender Selection
+  if (gamePhase === 'quickstart-gender') {
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-20">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              1/3 성별 선택
+            </h1>
+            <p className="text-muted-foreground">
+              선호하는 아이돌의 성별을 선택해주세요
+            </p>
+            <Progress value={33} className="w-64 mx-auto h-2" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+            <Button
+              onClick={() => handleQuickStartGender('male')}
+              variant="outline"
+              size="lg"
+              className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+            >
+              <span className="text-6xl">👨</span>
+              <span className="text-xl font-medium">남성 아이돌</span>
+            </Button>
+            
+            <Button
+              onClick={() => handleQuickStartGender('female')}
+              variant="outline"
+              size="lg"
+              className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+            >
+              <span className="text-6xl">👩</span>
+              <span className="text-xl font-medium">여성 아이돌</span>
+            </Button>
+          </div>
+
+          <div className="text-center">
+            <Button
+              onClick={() => setGamePhase('entry-selection')}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              이전 단계
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // QuickStart Animal Selection
+  if (gamePhase === 'quickstart-animal') {
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-20">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              2/3 동물상 선택
+            </h1>
+            <p className="text-muted-foreground">
+              선호하는 동물상을 하나만 선택해주세요
+            </p>
+            <Progress value={66} className="w-64 mx-auto h-2" />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            {animalOptions.map((option) => (
+              <Button
+                key={option.value}
+                onClick={() => handleQuickStartAnimal(option.value)}
+                variant="outline"
+                size="lg"
+                className="h-24 flex flex-col items-center justify-center space-y-2 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+              >
+                <span className="text-3xl">{option.emoji}</span>
+                <span className="text-sm font-medium">{option.text}</span>
+              </Button>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button
+              onClick={() => setGamePhase('quickstart-gender')}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              이전 단계
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // QuickStart Vibe Selection
+  if (gamePhase === 'quickstart-vibe') {
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-20">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              3/3 분위기 선택
+            </h1>
+            <p className="text-muted-foreground">
+              선호하는 분위기를 하나만 선택해주세요
+            </p>
+            <Progress value={100} className="w-64 mx-auto h-2" />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+            {vibeOptions.map((option) => (
+              <Button
+                key={option.value}
+                onClick={() => handleQuickStartVibe(option.value)}
+                variant="outline"
+                size="lg"
+                className="h-28 flex flex-col items-center justify-center space-y-3 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+              >
+                <span className="text-4xl">{option.emoji}</span>
+                <span className="text-lg font-medium">{option.text}</span>
+              </Button>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button
+              onClick={() => setGamePhase('quickstart-animal')}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              이전 단계
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Natural Language Input Phase
+  if (gamePhase === 'natural-language') {
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-20">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              💬 자연어 한 줄 입력
+            </h1>
+            <p className="text-muted-foreground">
+              원하는 아이돌 스타일을 자유롭게 입력해주세요
+            </p>
+          </div>
+
+          <Card className="p-8 glass-dark border-white/10 max-w-2xl mx-auto">
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-foreground">
+                  예: "강아지상, 키 크고 춤 잘 추는 소년"
+                </label>
+                <Input
+                  value={naturalLanguageInput}
+                  onChange={(e) => setNaturalLanguageInput(e.target.value)}
+                  placeholder="원하는 스타일을 자유롭게 입력해주세요..."
+                  className="text-lg p-4 h-16"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && naturalLanguageInput.trim()) {
+                      handleNaturalLanguageSubmit();
+                    }
+                  }}
+                />
+              </div>
+              
+              <div className="text-center space-y-4">
+                <Button
+                  onClick={handleNaturalLanguageSubmit}
+                  disabled={!naturalLanguageInput.trim()}
+                  size="lg"
+                  className="min-w-48 text-lg py-3 bg-gradient-primary hover:opacity-90"
+                >
+                  16강 월드컵 시작
+                </Button>
+                
+                <div className="text-xs text-muted-foreground">
+                  인식되는 키워드: 강아지상, 고양이상, 여우상, 사슴상, 토끼상, 곰상, 늑대상, 호랑이상, 
+                  슬림, 피트, 애슬레틱, 볼륨, 키큰, 아담, 청량, 시크, 러블리, 카리스마, 보컬, 댄스, 랩, 프로듀싱
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <div className="text-center">
+            <Button
+              onClick={() => setGamePhase('entry-selection')}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              이전 단계
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2-Axis Slider Mode
+  if (gamePhase === 'slider-mode') {
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-20">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              🎚️ 2축 슬라이더 설정
+            </h1>
+            <p className="text-muted-foreground">
+              슬라이더로 간편하게 감성과 체형을 조절해주세요
+            </p>
+          </div>
+
+          <Card className="p-8 glass-dark border-white/10 max-w-2xl mx-auto">
+            <div className="space-y-8">
+              {/* Cute ↔ Chic Slider */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-medium">💕 Cute</span>
+                  <span className="text-lg font-medium">🖤 Chic</span>
+                </div>
+                <Slider
+                  value={[preference.cuteChicSlider]}
+                  onValueChange={(value) => setPreference(prev => ({ ...prev, cuteChicSlider: value[0] }))}
+                  max={100}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="text-center text-sm text-muted-foreground">
+                  {preference.cuteChicSlider < 30 ? '러블리한 스타일' : 
+                   preference.cuteChicSlider > 70 ? '시크한 스타일' : '균형잡힌 스타일'}
+                </div>
+              </div>
+
+              {/* Slim ↔ Athletic Slider */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-medium">🎋 Slim</span>
+                  <span className="text-lg font-medium">💪 Athletic</span>
+                </div>
+                <Slider
+                  value={[preference.slimAthleticSlider]}
+                  onValueChange={(value) => setPreference(prev => ({ ...prev, slimAthleticSlider: value[0] }))}
+                  max={100}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="text-center text-sm text-muted-foreground">
+                  {preference.slimAthleticSlider < 30 ? '슬림한 체형' : 
+                   preference.slimAthleticSlider > 70 ? '애슬레틱한 체형' : '균형잡힌 체형'}
+                </div>
+              </div>
+
+              <div className="text-center space-y-4">
+                <Button
+                  onClick={() => {
+                    // Convert slider values to preferences
+                    const vibes = preference.cuteChicSlider < 30 ? ['lovely'] : 
+                                 preference.cuteChicSlider > 70 ? ['chic'] : ['fresh'];
+                    const bodyTypes = preference.slimAthleticSlider < 30 ? ['slim'] : 
+                                     preference.slimAthleticSlider > 70 ? ['athletic'] : ['fit'];
+                    
+                    setPreference(prev => ({
+                      ...prev,
+                      vibes,
+                      bodyTypes,
+                      animalTypes: ['balanced'],
+                      talent: 'balanced'
+                    }));
+                    startTournament(16);
+                  }}
+                  size="lg"
+                  className="min-w-48 text-lg py-3 bg-gradient-primary hover:opacity-90"
+                >
+                  16강 월드컵 시작
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <div className="text-center">
+            <Button
+              onClick={() => setGamePhase('entry-selection')}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              이전 단계
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Advanced Preferences phase
+  if (gamePhase === 'advanced-preferences') {
     return (
       <div className="min-h-screen bg-gradient-background p-4">
         <div className="max-w-6xl mx-auto space-y-8 pt-12">
@@ -478,7 +1045,7 @@ const Pick = () => {
             
             <div className="text-center">
               <Button
-                onClick={() => setGamePhase('gender')}
+                onClick={() => setGamePhase('entry-selection')}
                 variant="ghost"
                 className="text-muted-foreground hover:text-foreground"
               >
@@ -531,7 +1098,7 @@ const Pick = () => {
 
           <div className="text-center">
             <Button
-              onClick={() => setGamePhase('preferences')}
+              onClick={() => setGamePhase('advanced-preferences')}
               variant="ghost"
               className="text-muted-foreground hover:text-foreground"
             >
@@ -786,6 +1353,7 @@ const Pick = () => {
                   key={idol.id}
                   className="p-6 glass-dark border-white/10 card-hover cursor-pointer group transition-all duration-300"
                   onClick={() => selectIdol(idol)}
+                  onDoubleClick={() => selectIdol(idol, true)}
                 >
                   <div className="space-y-6">
                     <div className="relative">
@@ -841,6 +1409,14 @@ const Pick = () => {
 
           {/* Navigation */}
           <div className="flex justify-center space-x-4 pt-8">
+            <Button
+              onClick={() => setDoubleClickMode(!doubleClickMode)}
+              variant={doubleClickMode ? "default" : "outline"}
+              size="lg"
+              className="bg-card/80 backdrop-blur-sm border-border hover:bg-card"
+            >
+              {doubleClickMode ? "⚡ 빠른선택 ON" : "빠른선택 모드"}
+            </Button>
             <Button
               onClick={() => navigate('/')}
               variant="outline"
