@@ -30,13 +30,25 @@ serve(async (req) => {
 
     console.log('Generating single idol with custom parameters:', { customName, customPersonality, customConcept })
     
-    // 한국 K-pop 스타일 이름들
+    // 더 다양하고 독특한 한국 K-pop 스타일 이름들
     const koreanNames = [
+      // 기존 인기 이름들
       "지민", "태형", "정국", "석진", "호석", "남준", "윤기",
       "민지", "하니", "다니엘", "해린", "혜인",
       "카리나", "윈터", "닝닝", "지젤",
       "사쿠라", "채원", "윤진", "카즈하", "은채",
-      "미연", "민니", "소연", "우기", "슈화"
+      "미연", "민니", "소연", "우기", "슈화",
+      
+      // 독특한 새로운 이름들
+      "아린", "세라", "루나", "비아", "나래", "하율", "수아", "예나",
+      "준서", "도윤", "하준", "시우", "예준", "민준", "서준", "지호",
+      "유진", "소희", "다은", "서연", "채린", "예린", "하은", "지우",
+      "태민", "민혁", "현진", "승민", "찬영", "도현", "재현", "성진",
+      "리아", "미아", "레이", "유나", "채영", "다현", "나연", "지효",
+      "승현", "진영", "우진", "동현", "상현", "준영", "민성", "지성",
+      "아연", "소민", "하린", "예슬", "채원", "서윤", "지아", "수빈",
+      "하람", "세빈", "나율", "온유", "별", "다솜", "가을", "보라",
+      "태양", "은결", "시온", "아름", "소망", "하늘", "바다", "꽃님"
     ]
 
     const personalities = [
@@ -55,9 +67,8 @@ serve(async (req) => {
     const finalPersonality = customPersonality || personalities[Math.floor(Math.random() * personalities.length)]
     const finalConcept = customConcept || concepts[Math.floor(Math.random() * concepts.length)]
     
-    // 유니크한 이름 생성
-    const timestamp = Date.now().toString().slice(-4)
-    const uniqueName = `${finalName}${timestamp}`
+    // 독특한 이름 그대로 사용 (숫자 없이)
+    const uniqueName = finalName
     
     console.log(`Generating idol: ${uniqueName} with ${finalPersonality} personality and ${finalConcept} concept`)
     
