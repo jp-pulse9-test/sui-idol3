@@ -24,9 +24,10 @@ interface IdolPreviewProps {
   selectedIdol: IdolPreset;
   onConfirm: () => void;
   onBack: () => void;
+  isMinting?: boolean;
 }
 
-const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
+const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: IdolPreviewProps) => {
   const [votingProgress, setVotingProgress] = useState(0);
   const [isVoting, setIsVoting] = useState(false);
   const [hasSufficientCoins, setHasSufficientCoins] = useState(false);
@@ -220,9 +221,9 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
                 variant="default" 
                 size="lg"
                 className="btn-modern px-8"
-                disabled={currentSuiCoins < 0.15}
+                disabled={currentSuiCoins < 0.15 || isMinting}
               >
-                💝 투표하기 (0.15 SUI)
+                {isMinting ? "🔄 민팅 중..." : "💝 투표하기 (0.15 SUI)"}
               </Button>
             </div>
           </div>
