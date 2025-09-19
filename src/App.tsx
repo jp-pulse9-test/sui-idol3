@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Pick from "./pages/Pick";
+import Vault from "./pages/Vault";
+import Rise from "./pages/Rise";
 import Play from "./pages/Play";
 import Progress from "./pages/Progress";
 import GenderSelect from "./pages/GenderSelect";
@@ -30,8 +32,12 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* 3단계 플로우 */}
+          {/* 새로운 3단계 플로우: Pick → Vault → Rise */}
           <Route path="/pick" element={<Pick />} />
+          <Route path="/vault" element={<Vault />} />
+          <Route path="/rise" element={<Rise />} />
+          
+          {/* 이전 플로우 (호환성) */}
           <Route path="/play" element={<Play />} />
           <Route path="/progress" element={<Progress />} />
           

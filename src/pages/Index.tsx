@@ -199,7 +199,7 @@ const Index = () => {
                 title="🗃️ VAULT"
                 description="일상 스토리 텍스트 게임을 클리어하며 획득한 포토카드 NFT를 비밀 금고에 안전하게 보관합니다."
                 icon={photocardIcon}
-                onClick={() => navigate('/collection')}
+                onClick={() => isWalletConnected ? navigate('/vault') : toast.error("먼저 지갑을 연결해주세요!")}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
               />
               
@@ -207,7 +207,7 @@ const Index = () => {
                 title="📈 RISE"
                 description="데뷔 에피소드를 완료하면 특별한 뱃지를 획득하며, 아이돌과 함께 성장하는 과정을 체감합니다."
                 icon={tournamentIcon}
-                onClick={() => navigate('/growth')}
+                onClick={() => isWalletConnected ? navigate('/rise') : toast.error("먼저 지갑을 연결해주세요!")}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
               />
             </div>
