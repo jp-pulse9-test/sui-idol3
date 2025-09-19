@@ -268,7 +268,7 @@ const Index = () => {
               size="xl"
               className="min-w-64 text-xl py-4"
             >
-              🌟 나와 최애의 비밀 여정 시작하기 🌟
+              🌟 AI 아이돌 여정 시작하기 🌟
             </Button>
           </div>
         </section>
