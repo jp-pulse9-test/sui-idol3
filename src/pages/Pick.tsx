@@ -17,7 +17,13 @@ interface IdolPreset {
   persona_prompt: string;
 }
 
-type GamePhase = 'loading' | 'worldcup' | 'result';
+type GamePhase = 'loading' | 'preference' | 'worldcup' | 'result';
+
+interface PreferenceData {
+  animalType: string;
+  bodyType: string;
+  concept: string;
+}
 
 const Pick = () => {
   const [gamePhase, setGamePhase] = useState<GamePhase>('loading');
@@ -27,6 +33,12 @@ const Pick = () => {
   const [currentRound, setCurrentRound] = useState<IdolPreset[]>([]);
   const [roundNumber, setRoundNumber] = useState(1);
   const [finalWinner, setFinalWinner] = useState<IdolPreset | null>(null);
+  const [preference, setPreference] = useState<PreferenceData>({
+    animalType: '',
+    bodyType: '',
+    concept: ''
+  });
+  const [currentQuestion, setCurrentQuestion] = useState(0);
   const navigate = useNavigate();
 
   // Fetch idols from Supabase
@@ -71,6 +83,57 @@ const Pick = () => {
     }
   };
 
+  const preferenceQuestions = [
+    {
+      id: 1,
+      question: "선호하는 동물상은?",
+      key: 'animalType' as keyof PreferenceData,
+      options: [
+        { text: "강아지상", value: "puppy", emoji: "🐶" },
+        { text: "고양이상", value: "cat", emoji: "🐱" },
+        { text: "토끼상", value: "rabbit", emoji: "🐰" },
+        { text: "여우상", value: "fox", emoji: "🦊" }
+      ]
+    },
+    {
+      id: 2,
+      question: "선호하는 체형은?",
+      key: 'bodyType' as keyof PreferenceData,
+      options: [
+        { text: "슬림한 체형", value: "slim", emoji: "🎋" },
+        { text: "탄탄한 근육질", value: "athletic", emoji: "💪" },
+        { text: "건강한 체형", value: "healthy", emoji: "🌟" },
+        { text: "키가 큰 편", value: "tall", emoji: "🗼" }
+      ]
+    },
+    {
+      id: 3,
+      question: "선호하는 컨셉은?",
+      key: 'concept' as keyof PreferenceData,
+      options: [
+        { text: "큐트한 매력", value: "cute", emoji: "🌸" },
+        { text: "섹시한 매력", value: "sexy", emoji: "🔥" },
+        { text: "우아한 매력", value: "elegant", emoji: "💎" },
+        { text: "카리스마틱", value: "charismatic", emoji: "⚡" }
+      ]
+    }
+  ];
+
+  const handlePreferenceAnswer = (value: string) => {
+    const currentQuestionData = preferenceQuestions[currentQuestion];
+    setPreference(prev => ({
+      ...prev,
+      [currentQuestionData.key]: value
+    }));
+
+    if (currentQuestion < preferenceQuestions.length - 1) {
+      setCurrentQuestion(prev => prev + 1);
+    } else {
+      // Preference survey complete, start tournament
+      setGamePhase('worldcup');
+    }
+  };
+
   // Initialize game data
   useEffect(() => {
     const initializeGame = async () => {
@@ -93,7 +156,7 @@ const Pick = () => {
         setBracket(selected16);
         setCurrentRound(selected16);
         setCurrentPair([selected16[0], selected16[1]]);
-        setGamePhase('worldcup');
+        setGamePhase('preference');
       } else {
         toast.error('아이돌 데이터를 불러올 수 없습니다.');
       }
@@ -180,6 +243,64 @@ const Pick = () => {
     const currentIndex = currentRound.indexOf(currentPair[0]);
     return Math.floor(currentIndex / 2) + 1;
   };
+
+  // Preference survey phase
+  if (gamePhase === 'preference') {
+    const currentQuestionData = preferenceQuestions[currentQuestion];
+    const progress = ((currentQuestion + 1) / preferenceQuestions.length) * 100;
+
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-20">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              선호도 조사
+            </h1>
+            <p className="text-muted-foreground">
+              맞춤형 아이돌 추천을 위해 간단한 질문에 답해주세요
+            </p>
+            <Progress value={progress} className="w-64 mx-auto h-2" />
+            <p className="text-sm text-muted-foreground">
+              {currentQuestion + 1} / {preferenceQuestions.length}
+            </p>
+          </div>
+
+          <Card className="p-8 glass-dark border-white/10 max-w-2xl mx-auto">
+            <div className="space-y-8">
+              <h2 className="text-2xl font-bold text-center text-foreground">
+                {currentQuestionData.question}
+              </h2>
+              
+              <div className="grid grid-cols-2 gap-4">
+                {currentQuestionData.options.map((option) => (
+                  <Button
+                    key={option.value}
+                    onClick={() => handlePreferenceAnswer(option.value)}
+                    variant="outline"
+                    size="lg"
+                    className="h-24 flex flex-col items-center justify-center space-y-2 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+                  >
+                    <span className="text-3xl">{option.emoji}</span>
+                    <span className="font-medium">{option.text}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          <div className="text-center">
+            <Button
+              onClick={() => navigate('/')}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              홈으로 돌아가기
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Loading phase
   if (gamePhase === 'loading') {
