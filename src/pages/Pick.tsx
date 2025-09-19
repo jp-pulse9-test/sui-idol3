@@ -539,7 +539,7 @@ const Pick = () => {
                   className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
                 >
                   <span className="text-6xl">👨</span>
-                  <span className="text-xl font-medium">남성 아이돌</span>
+                  <span className="text-xl font-medium">소년 아이돌</span>
                 </Button>
                 
                 <Button
@@ -549,7 +549,7 @@ const Pick = () => {
                   className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
                 >
                   <span className="text-6xl">👩</span>
-                  <span className="text-xl font-medium">여성 아이돌</span>
+                  <span className="text-xl font-medium">소녀 아이돌</span>
                 </Button>
               </div>
             </>
