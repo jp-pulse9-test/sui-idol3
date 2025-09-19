@@ -1,14 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { secureStorage } from '@/utils/secureStorage';
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: { id: string; wallet_address: string } | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signOut: () => Promise<void>;
+  connectWallet: () => Promise<{ error: any }>;
+  disconnectWallet: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,62 +20,84 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<{ id: string; wallet_address: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+    const checkWalletConnection = async () => {
+      const savedWallet = secureStorage.getWalletAddress();
+      if (savedWallet) {
+        try {
+          // Check if user exists in database
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('*')
+            .eq('wallet_address', savedWallet)
+            .maybeSingle();
+
+          if (existingUser) {
+            setUser({ id: existingUser.id, wallet_address: existingUser.wallet_address });
+          }
+        } catch (error) {
+          console.error('Error checking wallet connection:', error);
+        }
       }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
       setLoading(false);
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    checkWalletConnection();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl
+  const connectWallet = async () => {
+    try {
+      // Simulate Sui wallet connection (in real implementation, use Sui wallet adapter)
+      const mockWalletAddress = "0x" + Math.random().toString(16).substring(2, 42);
+      
+      // Check if user already exists
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('*')
+        .eq('wallet_address', mockWalletAddress)
+        .maybeSingle();
+
+      let userId: string;
+
+      if (existingUser) {
+        userId = existingUser.id;
+      } else {
+        // Create new user
+        const { data: newUser, error } = await supabase
+          .from('users')
+          .insert([{ wallet_address: mockWalletAddress }])
+          .select()
+          .single();
+
+        if (error) {
+          return { error };
+        }
+        userId = newUser.id;
       }
-    });
-    return { error };
+
+      // Save wallet and set user
+      secureStorage.setWalletAddress(mockWalletAddress);
+      setUser({ id: userId, wallet_address: mockWalletAddress });
+      
+      return { error: null };
+    } catch (error) {
+      return { error };
+    }
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const disconnectWallet = async () => {
+    secureStorage.removeWalletAddress();
+    setUser(null);
   };
 
   const value = {
     user,
-    session,
     loading,
-    signUp,
-    signIn,
-    signOut,
+    connectWallet,
+    disconnectWallet,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

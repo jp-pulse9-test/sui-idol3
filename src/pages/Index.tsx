@@ -39,7 +39,7 @@ const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, signOut, loading } = useAuth();
+  const { user, disconnectWallet, loading } = useAuth();
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [previewModal, setPreviewModal] = useState<{
@@ -55,76 +55,40 @@ const Index = () => {
     }
   }, []);
 
-  // Create user profile when authenticated
+  // Sync wallet state with auth context
   useEffect(() => {
-    const createUserProfile = async () => {
-      if (user && isWalletConnected) {
-        try {
-          // Check if user profile exists
-          const { data: existingUser } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          if (!existingUser) {
-            // Create user profile
-            const { error } = await supabase
-              .from('users')
-              .insert([{
-                id: user.id,
-                wallet_address: walletAddress
-              }]);
-
-            if (error) {
-              console.error('Error creating user profile:', error);
-            }
-          }
-        } catch (error) {
-          console.error('Error in createUserProfile:', error);
-        }
-      }
-    };
-
-    createUserProfile();
-  }, [user, isWalletConnected, walletAddress]);
+    if (user?.wallet_address) {
+      setIsWalletConnected(true);
+      setWalletAddress(user.wallet_address);
+    } else {
+      setIsWalletConnected(false);
+      setWalletAddress("");
+    }
+  }, [user]);
 
   const connectWallet = async () => {
-    try {
-      // 실제 구현에서는 MetaMask 등의 지갑 연결
-      const mockAddress = "0x" + Math.random().toString(16).substring(2, 42);
-      setWalletAddress(mockAddress);
-      setIsWalletConnected(true);
-      secureStorage.setWalletAddress(mockAddress);
-      toast.success("지갑이 연결되었습니다!");
-    } catch (error) {
-      toast.error("지갑 연결에 실패했습니다.");
-    }
+    navigate('/auth');
   };
 
-  const disconnectWallet = () => {
+  const disconnectWalletLocal = () => {
+    disconnectWallet();
     setIsWalletConnected(false);
     setWalletAddress("");
-    secureStorage.removeWalletAddress();
     toast.success("지갑 연결이 해제되었습니다.");
   };
 
   const handleStartJourney = () => {
     if (!user) {
-      toast.error("먼저 로그인해주세요!");
+      toast.error("먼저 Sui 지갑을 연결해주세요!");
       navigate('/auth');
-      return;
-    }
-    if (!isWalletConnected) {
-      toast.error("먼저 지갑을 연결해주세요!");
       return;
     }
     navigate('/pick');
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    disconnectWallet();
+    await disconnectWallet();
+    disconnectWalletLocal();
     toast.success("로그아웃되었습니다.");
   };
 
@@ -158,37 +122,26 @@ const Index = () => {
               size="lg"
               className="shadow-lg"
             >
-              🔐 로그인
+              🔐 Sui 지갑 연결
             </Button>
           ) : (
             <div className="flex items-center gap-2">
-              {!isWalletConnected ? (
+              <div className="flex items-center gap-2 bg-card/80 backdrop-blur-sm p-3 rounded-lg border border-border">
+                <Badge variant="secondary" className="px-3 py-1">
+                  🟢 연결됨
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
+                </span>
                 <Button
-                  onClick={connectWallet}
-                  variant="premium"
-                  size="lg"
-                  className="shadow-lg"
+                  onClick={disconnectWalletLocal}
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto p-1"
                 >
-                  🔗 지갑 연결
+                  ✕
                 </Button>
-              ) : (
-                <div className="flex items-center gap-2 bg-card/80 backdrop-blur-sm p-3 rounded-lg border border-border">
-                  <Badge variant="secondary" className="px-3 py-1">
-                    🟢 연결됨
-                  </Badge>
-                  <span className="text-sm text-muted-foreground">
-                    {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
-                  </span>
-                  <Button
-                    onClick={disconnectWallet}
-                    variant="ghost"
-                    size="sm"
-                    className="h-auto p-1"
-                  >
-                    ✕
-                  </Button>
-                </div>
-              )}
+              </div>
               <Button
                 onClick={handleSignOut}
                 variant="ghost"
@@ -227,24 +180,10 @@ const Index = () => {
                     size="xl"
                     className="min-w-80 text-2xl py-6"
                   >
-                    🔐 로그인하고 시작하기
+                    🔐 Sui 지갑 연결하고 시작하기
                   </Button>
                   <p className="text-lg text-muted-foreground">
-                    계정을 생성하고 나만의 아이돌 여정을 시작하세요
-                  </p>
-                </>
-              ) : !isWalletConnected ? (
-                <>
-                  <Button
-                    onClick={connectWallet}
-                    variant="premium"
-                    size="xl"
-                    className="min-w-80 text-2xl py-6"
-                  >
-                    🔗 지갑 연결하고 시작하기
-                  </Button>
-                  <p className="text-lg text-muted-foreground">
-                    웹3 지갑을 연결하여 나만의 아이돌 여정을 시작하세요
+                    Sui 지갑을 연결하고 나만의 아이돌 여정을 시작하세요
                   </p>
                 </>
               ) : (
@@ -368,7 +307,7 @@ const Index = () => {
             </div>
             
             <Button
-              onClick={() => user && isWalletConnected ? navigate('/pick') : handleStartJourney()}
+              onClick={() => user ? navigate('/pick') : handleStartJourney()}
               variant="premium"
               size="xl"
               className="min-w-64 text-xl py-4"
