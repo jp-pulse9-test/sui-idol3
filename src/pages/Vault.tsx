@@ -48,7 +48,31 @@ const Vault = () => {
   const [currentEpisode, setCurrentEpisode] = useState<StoryEpisode | null>(null);
   const [memoryCards, setMemoryCards] = useState<MemoryCard[]>([]);
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
+  // 상태 복원 및 초기화 훅은 조건문 이전에 호출되어야 합니다
+  useEffect(() => {
+    const savedWallet = localStorage.getItem('walletAddress');
+    const savedIdol = localStorage.getItem('selectedIdol');
+    
+    if (!savedWallet) {
+      toast.error("지갑을 먼저 연결해주세요!");
+      navigate('/');
+      return;
+    }
+    
+    if (!savedIdol) {
+      toast.error("먼저 아이돌을 선택해주세요!");
+      navigate('/pick');
+      return;
+    }
   
+    setWalletAddress(savedWallet);
+    setSelectedIdol(JSON.parse(savedIdol));
+    
+    // 로컬 스토리지에서 메모리카드 불러오기
+    const savedCards = JSON.parse(localStorage.getItem('memoryCards') || '[]');
+    setMemoryCards(savedCards);
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -105,29 +129,6 @@ const Vault = () => {
     }
   ];
 
-  useEffect(() => {
-    const savedWallet = localStorage.getItem('walletAddress');
-    const savedIdol = localStorage.getItem('selectedIdol');
-    
-    if (!savedWallet) {
-      toast.error("지갑을 먼저 연결해주세요!");
-      navigate('/');
-      return;
-    }
-    
-    if (!savedIdol) {
-      toast.error("먼저 아이돌을 선택해주세요!");
-      navigate('/pick');
-      return;
-    }
-
-    setWalletAddress(savedWallet);
-    setSelectedIdol(JSON.parse(savedIdol));
-    
-    // 로컬 스토리지에서 메모리카드 불러오기
-    const savedCards = JSON.parse(localStorage.getItem('memoryCards') || '[]');
-    setMemoryCards(savedCards);
-  }, [navigate]);
 
   const handleEpisodeStart = (episode: StoryEpisode) => {
     if (!episode.unlocked) {
