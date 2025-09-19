@@ -39,30 +39,9 @@ const Collection = () => {
         
         setWalletAddress(wallet);
         
-        // Supabase에서 캐릭터 프로필 가져오기
-        const { data, error } = await supabase
-          .from('character_profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error('캐릭터 프로필 로딩 에러:', error);
-          // localStorage 백업 사용
-          const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
-          setSavedCards(cards);
-        } else {
-          // Supabase 데이터를 SavedCard 형식으로 변환
-          const cards: SavedCard[] = data.map(profile => ({
-            id: profile.id,
-            name: profile.name,
-            image: profile.image,
-            personality: profile.personality,
-            customText: profile.custom_text,
-            borderColor: profile.border_color,
-            createdAt: profile.created_at
-          }));
-          setSavedCards(cards);
-        }
+        // localStorage에서 저장된 카드들 불러오기
+        const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+        setSavedCards(cards);
       } catch (error) {
         console.error('데이터 로딩 에러:', error);
         toast.error("프로필을 불러오는 중 오류가 발생했습니다.");
@@ -79,19 +58,10 @@ const Collection = () => {
 
   const deleteCard = async (id: string) => {
     try {
-      // Supabase에서 삭제
-      const { error } = await supabase
-        .from('character_profiles')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        throw error;
-      }
-
       // 로컬 상태 업데이트
       const updatedCards = savedCards.filter(card => card.id !== id);
       setSavedCards(updatedCards);
+      localStorage.setItem('savedCards', JSON.stringify(updatedCards));
       toast.success("프로필카드가 삭제되었습니다!");
     } catch (error) {
       console.error('삭제 에러:', error);
@@ -150,11 +120,11 @@ const Collection = () => {
                   첫 번째 캐릭터 프로필을 만들어보세요!
                 </p>
                 <Button 
-                  onClick={() => navigate('/gender-select')}
+                  onClick={() => navigate('/pick')}
                   variant="default"
                   size="lg"
                 >
-                  캐릭터 프로필 만들기
+                  아이돌 선택하러 가기
                 </Button>
               </div>
             </Card>
@@ -234,12 +204,12 @@ const Collection = () => {
         {/* Action Buttons */}
         <div className="text-center space-y-4">
           <Button
-            onClick={() => navigate('/gender-select')}
+            onClick={() => navigate('/pick')}
             variant="default"
             size="lg"
             className="min-w-48"
           >
-            ✨ 새 캐릭터 프로필 만들기
+            ✨ 새 아이돌 선택하기
           </Button>
           
           <div>

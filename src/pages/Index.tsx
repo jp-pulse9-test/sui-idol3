@@ -1,284 +1,162 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FeatureCard } from "@/components/FeatureCard";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import mbtiIcon from "@/assets/mbti-icon.jpg";
-import tournamentIcon from "@/assets/tournament-icon.jpg";
-import photocardIcon from "@/assets/photocard-icon.jpg";
-
-import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
-import maleIdolFaces from "@/assets/male-idol-faces.jpg";
-
-// 배경 아이돌 그리드 컴포넌트
-const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
-  const backgroundImage = side === 'left' ? maleIdolFaces : idolFacesGrid;
-  
-  return (
-    <div className={`
-      fixed top-0 ${side === 'left' ? 'left-0' : 'right-0'} h-full w-64
-      overflow-hidden opacity-30
-    `}>
-      <div 
-        className="w-full h-full bg-cover bg-center bg-repeat-y animate-pulse"
-        style={{ 
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          filter: 'blur(1px) brightness(0.8)'
-        }}
-      />
-      <div className={`absolute inset-0 ${side === 'left' ? 'bg-gradient-to-r from-purple-900/50 to-transparent' : 'bg-gradient-to-l from-background/50 to-transparent'}`}></div>
-    </div>
-  );
-};
+import { Wallet, Sparkles, Heart, Trophy, Gamepad2 } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string>("");
+  const [isConnecting, setIsConnecting] = useState(false);
 
-  useEffect(() => {
-    const savedWallet = localStorage.getItem('walletAddress');
-    if (savedWallet) {
-      setIsWalletConnected(true);
-      setWalletAddress(savedWallet);
-    }
-  }, []);
-
-  const connectWallet = async () => {
+  const handleConnect = async () => {
+    setIsConnecting(true);
+    
     try {
-      // 실제 구현에서는 MetaMask 등의 지갑 연결
-      const mockAddress = "0x" + Math.random().toString(16).substring(2, 42);
-      setWalletAddress(mockAddress);
-      setIsWalletConnected(true);
-      localStorage.setItem('walletAddress', mockAddress);
+      // 임시 지갑 주소 생성 (실제로는 지갑 연결 구현 필요)
+      const tempWalletAddress = `0x${Math.random().toString(16).substr(2, 40)}`;
+      localStorage.setItem('walletAddress', tempWalletAddress);
+      
       toast.success("지갑이 연결되었습니다!");
+      
+      setTimeout(() => {
+        navigate('/pick');
+      }, 1000);
+      
     } catch (error) {
       toast.error("지갑 연결에 실패했습니다.");
+    } finally {
+      setIsConnecting(false);
     }
-  };
-
-  const disconnectWallet = () => {
-    setIsWalletConnected(false);
-    setWalletAddress("");
-    localStorage.removeItem('walletAddress');
-    toast.success("지갑 연결이 해제되었습니다.");
-  };
-
-  const handleStartJourney = () => {
-    if (!isWalletConnected) {
-      toast.error("먼저 지갑을 연결해주세요!");
-      return;
-    }
-    navigate('/pick');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background relative overflow-hidden">
-      {/* 좌우 아이돌 그리드 배경 */}
-      <IdolGrid side="left" />
-      <IdolGrid side="right" />
-      
-      {/* 메인 콘텐츠 */}
-      <div className="relative z-10 mx-auto max-w-4xl px-4">
-        {/* 상단 지갑 연결 영역 */}
-        <div className="fixed top-4 right-4 z-20">
-          {!isWalletConnected ? (
-            <Button
-              onClick={connectWallet}
-              variant="premium"
-              size="lg"
-              className="shadow-lg"
-            >
-              🔗 지갑으로 참여
-            </Button>
-          ) : (
-            <div className="flex items-center gap-2 bg-card/80 backdrop-blur-sm p-3 rounded-lg border border-border">
-              <Badge variant="secondary" className="px-3 py-1">
-                🟢 연결됨
-              </Badge>
-              <span className="text-sm text-muted-foreground">
-                {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
-              </span>
-              <Button
-                onClick={disconnectWallet}
-                variant="ghost"
-                size="sm"
-                className="h-auto p-1"
-              >
-                ✕
-              </Button>
-            </div>
-          )}
-        </div>
+    <div className="min-h-screen bg-gradient-background">
+      {/* Hero Section */}
+      <div className="container mx-auto px-4 py-16 md:py-24">
+        <div className="text-center space-y-8 max-w-4xl mx-auto">
+          {/* Main Title */}
+          <div className="space-y-4">
+            <h1 className="text-5xl md:text-7xl font-black gradient-text leading-tight">
+              최애 아이돌을 고르고,<br />
+              추억을 모으세요
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+              최애 아이돌을 고르고, 스토리 에피소드를 통해 최애와 나의 추억이 담긴 포토카드를 모아 데뷔와 성장(Rise)을 체감하는 특별한 경험.
+            </p>
+          </div>
 
-        {/* Hero Section */}
-        <section className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
-            <div className="space-y-8">
-              <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
-                Sui:Idol³
-              </h1>
-              <div className="space-y-4">
-                <h2 className="text-3xl md:text-4xl font-bold gradient-text">
-                  Web3 팬덤 플랫폼
-                </h2>
-                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  최애 아이돌을 고르고, 스토리 에피소드를 통해 최애와 나의 추억이 담긴 포토카드를 모아 데뷔와 성장(Rise)을 체감하는 특별한 경험.
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex flex-col gap-6 items-center">
-              {!isWalletConnected ? (
+          {/* CTA 버튼 */}
+          <div className="space-y-4">
+            <Button
+              onClick={handleConnect}
+              disabled={isConnecting}
+              size="lg"
+              className="px-8 py-6 text-lg font-bold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-200"
+            >
+              {isConnecting ? (
                 <>
-                  <Button
-                    onClick={connectWallet}
-                    variant="premium"
-                    size="xl"
-                    className="min-w-80 text-2xl py-6"
-                  >
-                    🔗 지갑 연결하고 시작하기
-                  </Button>
-                  <p className="text-lg text-muted-foreground">
-                    웹3 지갑을 연결하여 나만의 아이돌 여정을 시작하세요
-                  </p>
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                  연결 중...
                 </>
               ) : (
                 <>
-                  <Button
-                    onClick={handleStartJourney}
-                    variant="default"
-                    size="xl"
-                    className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    🎮 나의 아이돌 PICK 하러가기
-                  </Button>
-                  <p className="text-lg text-muted-foreground">
-                    당신의 성향을 분석하고 운명적 아이돌을 만나세요
-                  </p>
+                  <Wallet className="w-5 h-5 mr-2" />
+                  나의 아이돌 PICK 하러가기
                 </>
               )}
-            </div>
-            
-            {/* 시즌 정보 */}
-            <div className="mt-12 p-8 glass rounded-2xl border border-white/10 shadow-lg">
-              <div className="text-center space-y-4">
-                <h3 className="text-2xl font-bold gradient-text">2025 AI심쿵챌린지</h3>
-                <p className="text-5xl font-black text-foreground">101</p>
-                <p className="text-lg text-muted-foreground">SEASON 1, 당신의 픽으로 탄생하는 K-POP 아이돌</p>
-                <p className="text-base text-muted-foreground">
-                  최애의 성장과 추억을 만드는 특별한 여정
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-20">
-          <div className="space-y-12">
-            <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-              <h2 className="text-4xl font-bold gradient-text">Pick · Vault · Rise</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                선택하고, 보관하고, 성장하는 3단계 아이돌 경험
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <FeatureCard
-                title="🎯 PICK"
-                description="성향 분석 후 101명 중 운명적 AI 아이돌 선택. 각 아이돌은 고유한 페르소나와 기억을 가진 대화형 에이전트입니다."
-                icon={mbtiIcon}
-                onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
-                gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
-              />
-              
-              <FeatureCard
-                title="🗃️ VAULT"
-                description="일상 스토리 텍스트 게임을 클리어하며 획득한 포토카드 NFT를 비밀 금고에 안전하게 보관합니다."
-                icon={photocardIcon}
-                onClick={() => navigate('/collection')}
-                gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
-              />
-              
-              <FeatureCard
-                title="📈 RISE"
-                description="데뷔 에피소드를 완료하면 특별한 뱃지를 획득하며, 아이돌과 함께 성장하는 과정을 체감합니다."
-                icon={tournamentIcon}
-                onClick={() => navigate('/growth')}
-                gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Process Section */}
-        <section className="py-20">
-          <div className="space-y-12">
-            <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
-              <div className="space-y-4">
-                <h2 className="text-4xl font-bold gradient-text">
-                  Pick · Vault · Rise 플로우
-                </h2>
-                <div className="grid md:grid-cols-3 gap-8 mt-8">
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      🎯
-                    </div>
-                    <h3 className="text-xl font-bold text-primary">PICK</h3>
-                    <p className="text-foreground">성향 분석 → 이상형 월드컵 → 최종 선택</p>
-                  </div>
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      🗃️
-                    </div>
-                    <h3 className="text-xl font-bold text-accent">VAULT</h3>
-                    <p className="text-foreground">프로필 카드 → 포토카드 → 안전한 보관</p>
-                  </div>
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      📈
-                    </div>
-                    <h3 className="text-xl font-bold text-secondary">RISE</h3>
-                    <p className="text-foreground">함께 성장 → 추억 생성 → 특별한 스토리</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20">
-          <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
-            <div className="space-y-4">
-              <h2 className="text-4xl font-bold gradient-text">
-                지금 바로 시작해보세요!
-              </h2>
-              <p className="text-xl text-foreground max-w-2xl mx-auto">
-                몇 번의 선택으로, 당신만의 가상아이돌을 찾으세요.
-              </p>
-            </div>
-            
-            <Button
-              onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
-              variant="premium"
-              size="xl"
-              className="min-w-64 text-xl py-4"
-            >
-              🌟 AI 아이돌 여정 시작하기 🌟
             </Button>
           </div>
-        </section>
 
-        {/* Footer */}
-        <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
-          <p className="text-muted-foreground">
-            © 2024 Sui:Idol³. Web3 팬덤 플랫폼 · Made with 💖 by Lovable
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            당신의 성향을 분석하고 운명적 아이돌을 만나세요
           </p>
-        </footer>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="container mx-auto px-4 pb-16">
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="text-center space-y-4 p-6 glass rounded-2xl border border-white/10">
+            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
+              <Heart className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold">아이돌 Pick</h3>
+            <p className="text-muted-foreground">
+              3명의 매력적인 아이돌 중 당신의 최애를 선택하고 IdolCard NFT를 받아보세요
+            </p>
+          </div>
+
+          <div className="text-center space-y-4 p-6 glass rounded-2xl border border-white/10">
+            <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto">
+              <Gamepad2 className="w-8 h-8 text-secondary" />
+            </div>
+            <h3 className="text-xl font-bold">일상 스토리</h3>
+            <p className="text-muted-foreground">
+              아이돌과 함께하는 달콤한 일상 스토리를 플레이하고 MemoryCard를 수집하세요
+            </p>
+          </div>
+
+          <div className="text-center space-y-4 p-6 glass rounded-2xl border border-white/10">
+            <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto">
+              <Trophy className="w-8 h-8 text-yellow-500" />
+            </div>
+            <h3 className="text-xl font-bold">데뷔 & Rise</h3>
+            <p className="text-muted-foreground">
+              데뷔 에피소드를 완료하고 Rookie로 승급하며 성장을 체감하세요
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 시즌 정보 */}
+      <div className="container mx-auto px-4 pb-16">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center p-8 glass rounded-2xl border border-white/10 shadow-lg">
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold gradient-text">2025 AI심쿵챌린지</h3>
+              <p className="text-5xl font-black text-foreground">101</p>
+              <p className="text-lg text-muted-foreground">SEASON 1, 당신의 픽으로 탄생하는 K-POP 아이돌</p>
+              <p className="text-base text-muted-foreground">
+                최애의 성장과 추억을 만드는 특별한 여정
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 하단 설명 */}
+      <div className="container mx-auto px-4 pb-16">
+        <div className="text-center space-y-6 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold gradient-text">
+            "내일의 무대를 위해, 오늘의 추억을 금고에."
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6 text-left">
+            <div className="space-y-3">
+              <h4 className="font-bold text-lg flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                핵심 경험
+              </h4>
+              <ul className="space-y-1 text-muted-foreground">
+                <li>• 아이돌 Pick → IdolCard NFT 발급</li>
+                <li>• 일상 스토리 클리어 → MemoryCard 획득</li>
+                <li>• 데뷔 에피소드 해금 → Rookie 승급</li>
+                <li>• Vault에서 안전한 추억 보관</li>
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <h4 className="font-bold text-lg flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-yellow-500" />
+                특별한 기능
+              </h4>
+              <ul className="space-y-1 text-muted-foreground">
+                <li>• 암호화된 대화 로그 보관</li>
+                <li>• NFT 포토카드 수집 시스템</li>
+                <li>• Rise Point로 성장 추적</li>
+                <li>• SBT 데뷔 배지 (Soul Bound Token)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
