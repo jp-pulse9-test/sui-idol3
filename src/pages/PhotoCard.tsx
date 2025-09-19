@@ -17,9 +17,9 @@ export const PhotoCard = () => {
   const [idealType, setIdealType] = useState<IdealType | null>(null);
   const [customText, setCustomText] = useState("");
   const [borderColor, setBorderColor] = useState("#FFFFFF");
-  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
+  const [frontCardImage, setFrontCardImage] = useState<string>("");
+  const [backCardImage, setBackCardImage] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isCardFlipped, setIsCardFlipped] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
@@ -65,28 +65,26 @@ export const PhotoCard = () => {
       };
       
       setCustomText(getPersonalityAnalysis(parsedFinalPick.personality, mbtiType));
+      
+      // 자동으로 프로필 카드 생성
+      generateProfileCards(parsedFinalPick);
     } catch (error) {
       toast.error("데이터를 불러올 수 없습니다.");
       navigate('/');
     }
   }, [navigate]);
 
-  const generateBehindPhotos = async () => {
-    if (!idealType) {
-      toast.error("캐릭터 정보를 불러올 수 없습니다!");
-      return;
-    }
-    
+  const generateProfileCards = async (character: IdealType) => {
     setIsGenerating(true);
     
     try {
-      toast.info(`${idealType.name}의 비하인드 포토를 생성 중입니다...`);
+      toast.info(`${character.name}의 프로필 카드를 생성 중입니다...`);
       
-      const { data, error } = await supabase.functions.invoke('generate-behind-photos', {
+      const { data, error } = await supabase.functions.invoke('generate-profile-cards', {
         body: {
-          characterName: idealType.name,
-          personality: idealType.personality,
-          description: `A ${idealType.personality} K-pop idol character`
+          characterName: character.name,
+          personality: character.personality,
+          description: `A ${character.personality} K-pop idol character`
         }
       });
 
@@ -95,37 +93,21 @@ export const PhotoCard = () => {
         throw new Error(error.message);
       }
 
-      if (!data.success || !data.images) {
-        throw new Error('이미지 생성에 실패했습니다.');
+      if (!data.success || !data.images || data.images.length < 2) {
+        throw new Error('프로필 카드 생성에 실패했습니다.');
       }
 
-      // 생성된 이미지들 중 유효한 것들만 필터링
-      const validImages = data.images.filter((img: string) => img && img.length > 0);
-      
-      if (validImages.length === 0) {
-        throw new Error('유효한 이미지가 생성되지 않았습니다.');
-      }
-
-      // 4장이 되도록 부족한 만큼 기본 이미지로 채우기
-      while (validImages.length < 4) {
-        validImages.push(idealType.realImage || idealType.image);
-      }
-      
-      setGeneratedImages(validImages);
-      toast.success(`${idealType.name}의 비하인드 포토 ${validImages.length}장이 생성되었습니다!`);
+      setFrontCardImage(data.images[0]);
+      setBackCardImage(data.images[1]);
+      toast.success(`${character.name}의 프로필 카드가 생성되었습니다!`);
       
     } catch (error) {
-      console.error('비하인드 포토 생성 오류:', error);
-      toast.error(`비하인드 포토 생성에 실패했습니다: ${error.message}`);
+      console.error('프로필 카드 생성 오류:', error);
+      toast.error(`프로필 카드 생성에 실패했습니다: ${error.message}`);
       
-      // 실패 시 기본 이미지들로 대체
-      const fallbackImages = [
-        idealType.realImage || idealType.image,
-        idealType.realImage || idealType.image,
-        idealType.realImage || idealType.image,
-        idealType.realImage || idealType.image
-      ];
-      setGeneratedImages(fallbackImages);
+      // 실패 시 기본 이미지로 대체
+      setFrontCardImage(character.realImage || character.image);
+      setBackCardImage(character.realImage || character.image);
       
     } finally {
       setIsGenerating(false);
@@ -139,37 +121,71 @@ export const PhotoCard = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 카드 크기
-    canvas.width = 320;
-    canvas.height = 480;
+    // 앞면 카드 표시 (9:16 비율)
+    if (!isCardFlipped && frontCardImage) {
+      canvas.width = 360;
+      canvas.height = 640;
+      
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = frontCardImage;
+    } 
+    // 뒷면 카드 표시
+    else if (isCardFlipped && backCardImage) {
+      canvas.width = 360;
+      canvas.height = 640;
+      
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // 뒷면에 캐릭터 정보 오버레이
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, canvas.height - 200, canvas.width, 200);
+        
+        // 캐릭터 정보 텍스트
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 24px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(idealType.name, canvas.width / 2, canvas.height - 150);
+        
+        ctx.fillStyle = borderColor;
+        ctx.font = '18px Arial, sans-serif';
+        ctx.fillText(idealType.personality, canvas.width / 2, canvas.height - 120);
+        
+        // 사용자 메시지
+        ctx.fillStyle = '#E2E8F0';
+        ctx.font = '14px Arial, sans-serif';
+        ctx.textAlign = 'left';
+        
+        const maxWidth = canvas.width - 40;
+        const lineHeight = 18;
+        const words = customText.split(' ');
+        let line = '';
+        let y = canvas.height - 90;
 
-    // 선택된 비하인드 포토가 있으면 포토카드 스타일로 표시
-    if (generatedImages.length > 0 && selectedImageIndex >= 0) {
-      const imageSource = generatedImages[selectedImageIndex];
-      if (imageSource) {
-        const img = new Image();
-        img.onload = () => {
-          // 전체 카드에 이미지 꽉차게 표시 (포토카드 스타일)
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          
-          // 하단에 반투명 오버레이와 이름만 표시
-          const overlayHeight = 80;
-          const gradient = ctx.createLinearGradient(0, canvas.height - overlayHeight, 0, canvas.height);
-          gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-          gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, canvas.height - overlayHeight, canvas.width, overlayHeight);
-          
-          // 이름
-          ctx.fillStyle = '#FFFFFF';
-          ctx.font = 'bold 20px Arial, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(idealType.name, canvas.width / 2, canvas.height - 30);
-        };
-        img.src = imageSource;
-      }
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          const metrics = ctx.measureText(testLine);
+          const testWidth = metrics.width;
+          if (testWidth > maxWidth && n > 0) {
+            ctx.fillText(line, 20, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        ctx.fillText(line, 20, y);
+      };
+      img.src = backCardImage;
     } else {
       // 기본 프로필 카드 스타일
+      canvas.width = 320;
+      canvas.height = 480;
+      
       // 모던한 그라데이션 배경
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
       gradient.addColorStop(0, '#0f172a');
@@ -359,29 +375,17 @@ export const PhotoCard = () => {
     toast.success("프로필카드가 다운로드되었습니다!");
   };
 
-  const selectBehindPhoto = (index: number) => {
-    if (generatedImages[index]) {
-      setSelectedImageIndex(index);
-      // 카드 뒤집기 애니메이션 시작
-      setIsCardFlipped(true);
-      
-      // 1초 후 이미지 변경하고 다시 뒤집기
-      setTimeout(() => {
-        // 새로운 이미지로 카드 재생성
-        generatePhotoCard();
-        setIsCardFlipped(false);
-      }, 600);
-      
-      toast.success(`비하인드 포토 ${index + 1}이 프로필에 적용되었습니다!`);
-    }
+  const flipCard = () => {
+    setIsCardFlipped(!isCardFlipped);
+    toast.success(isCardFlipped ? "앞면이 표시됩니다!" : "뒷면이 표시됩니다!");
   };
 
   // 자동으로 카드 생성
   useEffect(() => {
-    if (idealType) {
+    if (idealType && (frontCardImage || backCardImage)) {
       generatePhotoCard();
     }
-  }, [idealType, customText, borderColor, selectedImageIndex]);
+  }, [idealType, customText, borderColor, frontCardImage, backCardImage, isCardFlipped]);
 
   if (!idealType) {
     return (
@@ -413,7 +417,7 @@ export const PhotoCard = () => {
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold gradient-text">내가 픽한 캐릭터</h1>
           <p className="text-muted-foreground">
-            {idealType.name}의 비하인드 포토를 생성하고 캐릭터 프로필을 만들어보세요
+            {idealType.name}의 프로필 카드가 자동으로 생성되었습니다
           </p>
           <div className="flex items-center justify-center gap-2">
             <div 
@@ -427,129 +431,82 @@ export const PhotoCard = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* 비하인드 포토 생성 영역 */}
+          
+          {/* 프로필 카드 표시 영역 */}
           <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
             <div className="space-y-6">
               <div className="text-center space-y-4">
-                <h2 className="text-2xl font-bold">🎬 비하인드 포토 생성</h2>
+                <h2 className="text-2xl font-bold">🎨 프로필 카드</h2>
                 <p className="text-muted-foreground">
-                  {idealType.name}의 특별한 비하인드 순간들을 만들어보세요
+                  {isGenerating ? "프로필 카드 생성 중..." : "생성된 프로필 카드를 확인하세요"}
                 </p>
               </div>
 
-              {/* 생성 버튼 */}
-              <div className="text-center">
-                <Button
-                  onClick={generateBehindPhotos}
-                  disabled={isGenerating}
-                  size="lg"
-                  className="w-full max-w-sm"
+              {/* 프로필 카드 캔버스 */}
+              <div className="flex justify-center">
+                <div 
+                  className={`transition-transform duration-500 ${isCardFlipped ? 'transform rotateY-180' : ''}`}
                 >
-                  {isGenerating ? (
-                    <>
-                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                      비하인드 포토 생성 중...
-                    </>
-                  ) : (
-                    '📸 비하인드 포토 4장 생성'
-                  )}
+                  <canvas 
+                    ref={canvasRef}
+                    className="w-full h-auto rounded-lg shadow-2xl border-4 border-white/20"
+                  />
+                </div>
+              </div>
+
+              {/* 카드 액션 버튼들 */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Button
+                  onClick={flipCard}
+                  variant="outline"
+                  size="lg"
+                  className="bg-card/80 backdrop-blur-sm border-border hover:bg-card"
+                >
+                  🔄 카드 뒤집기
+                </Button>
+                <Button
+                  onClick={saveToCollection}
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  💾 보관함에 저장
+                </Button>
+                <Button
+                  onClick={downloadPhotoCard}
+                  variant="outline"
+                  size="lg"
+                  className="bg-card/80 backdrop-blur-sm border-border hover:bg-card"
+                >
+                  📥 다운로드
                 </Button>
               </div>
 
-              {/* 생성된 이미지들 */}
-              {generatedImages.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-center">생성된 비하인드 포토</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {generatedImages.map((image, index) => (
-                      <div key={index} className="relative group cursor-pointer" onClick={() => selectBehindPhoto(index)}>
-                        <img 
-                          src={image} 
-                          alt={`Behind photo ${index + 1}`}
-                          className={`w-full h-60 object-contain rounded-lg border-2 transition-all duration-300 ${
-                            selectedImageIndex === index 
-                              ? 'border-primary shadow-lg shadow-primary/50' 
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                        />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              selectBehindPhoto(index);
-                            }}
-                            variant="outline"
-                            size="sm"
-                            className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
-                          >
-                            {selectedImageIndex === index ? '✓ 선택됨' : '선택하기'}
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </Card>
-
-          {/* 프로필 카드 영역 */}
-          <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-center">📇 캐릭터 프로필 카드</h2>
-              
-              <div className="flex justify-center">
-                <div className="relative perspective-1000">
-                  {/* 카드 뒤 글로우 효과 */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-lg blur-xl scale-110 opacity-60"></div>
-                  
-                  <div className={`relative transition-transform duration-600 transform-style-preserve-3d ${isCardFlipped ? 'rotate-y-180' : ''}`}>
-                    <canvas 
-                      ref={canvasRef}
-                      className="border border-border rounded-lg shadow-2xl transition-all duration-300 hover:scale-105 relative z-10"
-                      style={{ maxWidth: '100%', height: 'auto' }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="text-center space-x-2">
-                  <Button
-                    onClick={saveToCollection}
-                    variant="default"
-                    size="lg"
-                  >
-                    📥 보관함에 저장
-                  </Button>
-                  <Button
-                    onClick={downloadPhotoCard}
-                    variant="outline"
-                    size="lg"
-                  >
-                    💾 다운로드
-                  </Button>
-                </div>
-                
-                <div className="text-center space-y-2">
-                  <Button
-                    onClick={() => navigate('/final-pick')}
-                    variant="ghost"
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    다른 캐릭터 선택하기
-                  </Button>
-                  <Button
-                    onClick={() => navigate('/collection')}
-                    variant="outline"
-                    className="ml-4"
-                  >
-                    보관함으로 이동
-                  </Button>
-                </div>
+              {/* 캐릭터 정보 */}
+              <div className="text-center space-y-2 p-4 glass rounded-lg">
+                <h3 className="text-xl font-bold">{idealType.name}</h3>
+                <p className="text-muted-foreground">{idealType.personality}</p>
+                <p className="text-sm text-muted-foreground italic">{customText}</p>
               </div>
             </div>
           </Card>
+        </div>
+
+        {/* 하단 네비게이션 */}
+        <div className="flex justify-center space-x-4 pt-8">
+          <Button
+            onClick={() => navigate('/final-pick')}
+            variant="outline"
+            size="lg"
+            className="bg-card/80 backdrop-blur-sm border-border hover:bg-card"
+          >
+            다른 캐릭터 선택
+          </Button>
+          <Button
+            onClick={() => navigate('/collection')}
+            size="lg"
+          >
+            보관함 바로가기
+          </Button>
         </div>
       </div>
     </div>
