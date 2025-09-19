@@ -111,41 +111,15 @@ serve(async (req) => {
         const description = personalityMatch ? personalityMatch[1].trim() : `${randomPersonality} 성격의 매력적인 K-pop 아이돌입니다.`
         const personaPrompt = personaMatch ? personaMatch[1].trim() : `안녕하세요! 저는 ${uniqueName}이에요. ${randomPersonality} 성격으로 팬 여러분과 즐겁게 대화하고 싶어요!`
         
-        // Gemini 2.5 Flash로 이미지 생성
-        const imagePrompt = `Create a professional K-pop idol portrait photo: ${randomPersonality} personality, ${randomConcept} concept style, beautiful Korean idol with perfect makeup and stylish outfit, high quality studio lighting, detailed facial features, commercial photography, 4K resolution, clean background, photorealistic`
+        // 현재는 플레이스홀더 이미지 사용 (향후 이미지 생성 API 연동 예정)
+        const imagePrompt = `Professional K-pop idol portrait: ${randomPersonality} personality, ${randomConcept} concept, beautiful Korean idol, perfect makeup, stylish outfit, studio lighting, photorealistic`
         
-        let profileImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${uniqueName}` // 기본 이미지
+        // 더 다양한 아바타 스타일로 플레이스홀더 이미지 생성
+        const avatarStyles = ['adventurer', 'avataaars', 'bottts', 'croodles', 'personas']
+        const randomStyle = avatarStyles[Math.floor(Math.random() * avatarStyles.length)]
+        const profileImage = `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${uniqueName}&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80`
         
-        try {
-          const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${googleApiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              prompt: imagePrompt,
-              generationConfig: {
-                aspectRatio: "1:1",
-                negativePrompt: "blurry, low quality, distorted, cartoon, anime, illustration",
-                outputMimeType: "image/jpeg"
-              }
-            })
-          })
-          
-          if (imageResponse.ok) {
-            const imageData = await imageResponse.json()
-            
-            // Imagen API에서 base64 이미지 데이터 받기
-            if (imageData.generatedImages && imageData.generatedImages.length > 0) {
-              const base64Image = imageData.generatedImages[0].bytesBase64Encoded
-              profileImage = `data:image/jpeg;base64,${base64Image}`
-              console.log(`Generated image for ${uniqueName} successfully`)
-            }
-          } else {
-            console.error(`Image generation failed for ${uniqueName}:`, imageResponse.status, await imageResponse.text())
-          }
-          
-        } catch (imageError) {
-          console.error(`Image generation failed for ${uniqueName}:`, imageError)
-        }
+        console.log(`Generated image prompt for ${uniqueName}: ${imagePrompt}`)
         
         const idolData: IdolData = {
           name: uniqueName,
