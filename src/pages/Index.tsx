@@ -311,38 +311,11 @@ const Index = () => {
           <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
             <div className="space-y-4">
               <h2 className="text-4xl font-bold gradient-text">
-                바로 체험
+               바로 체험
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
                 Pick은 체험, Vault부터 지갑 연결로 본격 시작!
               </p>
-              
-              {/* 슈퍼어드민 전용 개발자 도구 */}
-              {user?.wallet_address === "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc" && (
-                <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                  <p className="text-sm text-yellow-300 mb-3">🚀 개발자 도구</p>
-                  <Dialog open={devToolsOpen} onOpenChange={setDevToolsOpen}>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-yellow-500/20 border-yellow-500 text-yellow-200 hover:bg-yellow-500/30"
-                      >
-                        🔧 슈퍼 어드민 도구 열기
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
-                      <DialogHeader className="sr-only">
-                        <DialogTitle>슈퍼 어드민 도구</DialogTitle>
-                        <DialogDescription>아이돌 데이터 관리 및 생성 도구</DialogDescription>
-                      </DialogHeader>
-                      <div className="h-full overflow-y-auto p-6">
-                        <DevTools />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              )}
             </div>
             
             <Button
