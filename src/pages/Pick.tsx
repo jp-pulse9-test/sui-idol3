@@ -17,15 +17,12 @@ interface IdolPreset {
   persona_prompt: string;
 }
 
-type GamePhase = 'loading' | 'worldcup' | 'result';
+type GamePhase = 'loading' | 'selection' | 'result';
 
 const Pick = () => {
   const [gamePhase, setGamePhase] = useState<GamePhase>('loading');
   const [idols, setIdols] = useState<IdolPreset[]>([]);
-  const [currentPair, setCurrentPair] = useState<[IdolPreset, IdolPreset] | null>(null);
-  const [bracket, setBracket] = useState<IdolPreset[]>([]);
-  const [currentRound, setCurrentRound] = useState<IdolPreset[]>([]);
-  const [roundNumber, setRoundNumber] = useState(1);
+  const [selectedIdols, setSelectedIdols] = useState<IdolPreset[]>([]);
   const [finalWinner, setFinalWinner] = useState<IdolPreset | null>(null);
   const navigate = useNavigate();
 
@@ -86,14 +83,12 @@ const Pick = () => {
       
       if (idolData.length > 0) {
         setIdols(idolData);
-        // Randomly select 16 idols for tournament
+        // Randomly select 3 idols for selection
         const shuffled = [...idolData].sort(() => Math.random() - 0.5);
-        const selected16 = shuffled.slice(0, 16);
+        const selected3 = shuffled.slice(0, 3);
         
-        setBracket(selected16);
-        setCurrentRound(selected16);
-        setCurrentPair([selected16[0], selected16[1]]);
-        setGamePhase('worldcup');
+        setSelectedIdols(selected3);
+        setGamePhase('selection');
       } else {
         toast.error('아이돌 데이터를 불러올 수 없습니다.');
       }
@@ -104,43 +99,8 @@ const Pick = () => {
 
   // Handle idol selection
   const selectIdol = (selectedIdol: IdolPreset) => {
-    if (!currentPair || !currentPair[0] || !currentPair[1]) return;
-
-    const currentIndex = currentRound.indexOf(currentPair[0]);
-    if (currentIndex === -1) return;
-    
-    const nextRound = [...currentRound];
-    
-    // Remove the current pair and add winner to next round
-    nextRound.splice(currentIndex, 2, selectedIdol);
-    
-    // Check if current round is complete
-    const pairsRemaining = Math.floor(nextRound.length / 2);
-    
-    if (currentIndex + 2 >= currentRound.length) {
-      // Current round complete
-      if (pairsRemaining === 1) {
-        // Tournament complete
-        setFinalWinner(selectedIdol);
-        setGamePhase('result');
-        return;
-      } else {
-        // Start next round
-        const filteredNextRound = nextRound.filter(idol => idol && idol.profile_image).slice(0, pairsRemaining);
-        setCurrentRound(filteredNextRound);
-        if (filteredNextRound.length >= 2) {
-          setCurrentPair([filteredNextRound[0], filteredNextRound[1]]);
-        }
-        setRoundNumber(prev => prev + 1);
-      }
-    } else {
-      // Continue current round
-      const nextPairIndex = currentIndex + 2;
-      if (nextPairIndex + 1 < currentRound.length && currentRound[nextPairIndex] && currentRound[nextPairIndex + 1]) {
-        setCurrentPair([currentRound[nextPairIndex], currentRound[nextPairIndex + 1]]);
-      }
-      setCurrentRound(nextRound);
-    }
+    setFinalWinner(selectedIdol);
+    setGamePhase('result');
   };
 
   // Save selected idol and navigate to vault
@@ -160,26 +120,6 @@ const Pick = () => {
     navigate('/vault');
   };
 
-  const getTournamentRoundName = () => {
-    const remaining = currentRound.length;
-    switch (remaining) {
-      case 16: return "16강";
-      case 8: return "8강";
-      case 4: return "준결승";
-      case 2: return "결승";
-      default: return `${remaining}강`;
-    }
-  };
-
-  const getTotalMatches = () => {
-    return Math.floor(currentRound.length / 2);
-  };
-
-  const getCurrentMatchNumber = () => {
-    if (!currentPair) return 0;
-    const currentIndex = currentRound.indexOf(currentPair[0]);
-    return Math.floor(currentIndex / 2) + 1;
-  };
 
   // Loading phase
   if (gamePhase === 'loading') {
@@ -273,97 +213,81 @@ const Pick = () => {
     );
   }
 
-  // Tournament phase
-  if (gamePhase === 'worldcup' && currentPair) {
+  // Selection phase
+  if (gamePhase === 'selection' && selectedIdols.length === 3) {
     return (
       <div className="min-h-screen bg-gradient-background p-4">
         <div className="max-w-6xl mx-auto space-y-8 pt-8">
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold gradient-text">
-              🏆 아이돌 월드컵
+              💕 최애 아이돌 선택
             </h1>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <Badge variant="secondary" className="px-4 py-2">
-                {getTournamentRoundName()}
-              </Badge>
-              <Badge variant="outline" className="px-4 py-2">
-                {getCurrentMatchNumber()} / {getTotalMatches()} 경기
-              </Badge>
-            </div>
-            <Progress 
-              value={(getCurrentMatchNumber() / getTotalMatches()) * 100} 
-              className="w-64 mx-auto h-2" 
-            />
+            <p className="text-xl text-muted-foreground">
+              3명 중에서 가장 마음에 드는 아이돌을 선택해주세요
+            </p>
           </div>
 
-          {/* VS Section */}
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-foreground mb-8">
-              누가 더 매력적인가요?
-            </h2>
-            
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {currentPair.filter(idol => idol && idol.profile_image).map((idol, index) => (
-                <Card
-                  key={idol.id}
-                  className="p-6 glass-dark border-white/10 card-hover cursor-pointer group transition-all duration-300"
-                  onClick={() => selectIdol(idol)}
-                >
-                  <div className="space-y-6">
-                    <div className="relative">
-                      <div className="w-48 h-48 mx-auto rounded-full overflow-hidden bg-gradient-primary/20 group-hover:scale-105 transition-transform duration-300">
-                        <img 
-                          src={idol.profile_image}
-                          alt={idol.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${idol.name}`;
-                          }}
-                        />
-                      </div>
-                      {index === 0 && (
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-2xl animate-pulse">
-                          ⚡
-                        </div>
-                      )}
-                      {index === 1 && (
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-2xl animate-pulse">
-                          🔥
-                        </div>
-                      )}
+          {/* Selection Grid */}
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {selectedIdols.map((idol, index) => (
+              <Card
+                key={idol.id}
+                className="p-6 glass-dark border-white/10 card-hover cursor-pointer group transition-all duration-300"
+                onClick={() => selectIdol(idol)}
+              >
+                <div className="space-y-6">
+                  <div className="relative">
+                    <div className="w-40 h-40 mx-auto rounded-full overflow-hidden bg-gradient-primary/20 group-hover:scale-105 transition-transform duration-300">
+                      <img 
+                        src={idol.profile_image}
+                        alt={idol.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${idol.name}`;
+                        }}
+                      />
                     </div>
-                    
-                    <div className="space-y-3">
-                      <h3 className="text-2xl font-bold gradient-text group-hover:scale-105 transition-transform">
-                        {idol.name}
-                      </h3>
-                      <Badge variant="secondary" className="text-sm">
-                        {idol.personality}
-                      </Badge>
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        {idol.description}
-                      </p>
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-2xl animate-pulse">
+                      {index === 0 && "⭐"}
+                      {index === 1 && "💖"}
+                      {index === 2 && "✨"}
                     </div>
-                    
-                    <Button 
-                      size="lg"
-                      className="w-full group-hover:bg-primary/90 transition-colors"
-                    >
-                      선택하기
-                    </Button>
                   </div>
-                </Card>
-              ))}
-            </div>
-            
-            <div className="text-6xl mt-8 animate-pulse">
-              VS
-            </div>
+                  
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-bold gradient-text group-hover:scale-105 transition-transform">
+                      {idol.name}
+                    </h3>
+                    <Badge variant="secondary" className="text-sm">
+                      {idol.personality}
+                    </Badge>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {idol.description}
+                    </p>
+                  </div>
+                  
+                  <Button 
+                    size="lg"
+                    className="w-full group-hover:bg-primary/90 transition-colors"
+                  >
+                    선택하기
+                  </Button>
+                </div>
+              </Card>
+            ))}
           </div>
 
           {/* Navigation */}
           <div className="flex justify-center space-x-4 pt-8">
+            <Button
+              onClick={() => window.location.reload()}
+              variant="outline"
+              size="lg"
+              className="bg-card/80 backdrop-blur-sm border-border hover:bg-card"
+            >
+              다른 아이돌 보기
+            </Button>
             <Button
               onClick={() => navigate('/')}
               variant="outline"
