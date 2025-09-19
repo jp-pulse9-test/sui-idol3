@@ -6,7 +6,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { Trophy, Star, Crown, Gift } from "lucide-react";
+import { Trophy, Star, Crown, Gift, Users, TrendingUp } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Leaderboard } from "@/components/ui/leaderboard";
+import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
+import { Marketplace } from "@/components/ui/marketplace";
 
 interface SelectedIdol {
   id: number;
@@ -48,6 +52,71 @@ const Rise = () => {
     rank: "Trainee"
   });
   const [isDebutPlaying, setIsDebutPlaying] = useState(false);
+  const [activeTab, setActiveTab] = useState<'debut' | 'leaderboard' | 'gallery' | 'marketplace'>('debut');
+
+  // Mock data for new features - replace with actual API calls
+  const mockLeaderboardData = [
+    {
+      rank: 1,
+      walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
+      fanPoints: 15420,
+      randomBoxOpens: 84,
+      photocardRarityScore: 3200,
+      tradingContribution: 12,
+      badges: ["debut", "collector", "trader"],
+      avatar: selectedIdol?.image
+    },
+    // Add more mock entries...
+  ];
+
+  const mockPhotocards = [
+    {
+      id: "pc1",
+      idolId: selectedIdol?.id.toString() || "1",
+      idolName: selectedIdol?.name || "Unknown",
+      rarity: 'SR' as const,
+      concept: "Summer Dream",
+      season: "Season 1",
+      serialNo: 1234,
+      totalSupply: 5000,
+      mintedAt: "2024-01-15T10:00:00Z",
+      owner: walletAddress,
+      isPublic: true,
+      imageUrl: selectedIdol?.image || "",
+      floorPrice: 2.5,
+      lastSalePrice: 3.2
+    },
+    // Add more mock photocards...
+  ];
+
+  const mockMarketplaceListings = [
+    {
+      id: "listing1",
+      photocardId: "pc1",
+      idolName: selectedIdol?.name || "Unknown",
+      concept: "Summer Dream",
+      rarity: 'SR' as const,
+      serialNo: 1234,
+      imageUrl: selectedIdol?.image || "",
+      price: 2.5,
+      seller: "0x9876543210fedcba9876543210fedcba98765432",
+      listedAt: "2024-01-20T15:30:00Z",
+      isAuction: false
+    },
+    // Add more mock listings...
+  ];
+
+  const mockPriceHistory = [
+    {
+      id: "sale1",
+      photocardId: "pc1", 
+      price: 3.2,
+      soldAt: "2024-01-19T12:00:00Z",
+      seller: "0x1111111111111111111111111111111111111111",
+      buyer: "0x2222222222222222222222222222222222222222"
+    },
+    // Add more mock history...
+  ];
   
   if (loading) {
     return (
@@ -215,10 +284,10 @@ const Rise = () => {
         {/* Header */}
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl font-bold gradient-text">
-            📈 RISE - 데뷔 & 성장
+            📈 RISE - 리더보드 & 갤러리 & 마켓플레이스
           </h1>
           <p className="text-xl text-muted-foreground">
-            {selectedIdol.name}와 함께하는 성장 여정
+            {selectedIdol.name}와 함께하는 성장 여정 · 경쟁과 거래의 무대
           </p>
           <div className="flex items-center justify-center gap-4">
             <Badge variant="outline" className="px-4 py-2">
@@ -277,107 +346,172 @@ const Rise = () => {
           </div>
         </Card>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* 데뷔 에피소드 */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold gradient-text flex items-center gap-2">
-              <Star className="w-6 h-6" />
-              데뷔 에피소드
-            </h2>
-            
-            <Card
-              className={`p-6 border transition-all duration-300 ${
-                debutEpisode.unlocked 
-                  ? 'glass-dark border-white/10 card-hover cursor-pointer'
-                  : 'bg-muted/20 border-muted/30 opacity-50'
-              }`}
-              onClick={() => debutEpisode.unlocked && !debutEpisode.completed && handleDebutStart()}
-            >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold gradient-text">{debutEpisode.title}</h3>
-                  <Badge variant="outline" className="text-accent">
-                    {debutEpisode.turns}턴
-                  </Badge>
-                </div>
-                
-                <p className="text-muted-foreground">
-                  {debutEpisode.description}
-                </p>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Gift className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-primary">보상: DebutCard NFT + Debut Badge (SBT)</span>
-                  </div>
-                  
-                  {!debutEpisode.unlocked ? (
-                    <div className="p-3 bg-muted/20 rounded-lg">
-                      <p className="text-sm text-muted-foreground text-center">
-                        💎 MemoryCard 1장 이상 보유 시 해금됩니다
-                      </p>
-                    </div>
-                  ) : debutEpisode.completed ? (
-                    <Badge variant="default" className="bg-green-500/20 text-green-400 w-full justify-center py-3">
-                      ✅ 완료 - Rookie 랭크 달성
-                    </Badge>
-                  ) : (
-                    <Button 
-                      variant="default" 
-                      className="w-full btn-modern"
-                      onClick={handleDebutStart}
-                    >
-                      🎤 데뷔 에피소드 시작하기
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card>
-          </div>
+        {/* Rise Tabs */}
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'debut' | 'leaderboard' | 'gallery' | 'marketplace')} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 bg-card/50 backdrop-blur-sm">
+            <TabsTrigger value="debut" className="data-[state=active]:bg-primary/20">
+              🎤 데뷔
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="data-[state=active]:bg-primary/20">
+              🏆 리더보드
+            </TabsTrigger>
+            <TabsTrigger value="gallery" className="data-[state=active]:bg-primary/20">
+              📸 갤러리
+            </TabsTrigger>
+            <TabsTrigger value="marketplace" className="data-[state=active]:bg-primary/20">
+              🛒 마켓
+            </TabsTrigger>
+          </TabsList>
 
-          {/* 성취 현황 */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold gradient-text flex items-center gap-2">
-              <Crown className="w-6 h-6" />
-              성취 현황
-            </h2>
-            
-            <div className="space-y-3">
-              {achievements.map((achievement) => (
+          <TabsContent value="debut" className="mt-8">
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* 데뷔 에피소드 */}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold gradient-text flex items-center gap-2">
+                  <Star className="w-6 h-6" />
+                  데뷔 에피소드
+                </h2>
+                
                 <Card
-                  key={achievement.id}
-                  className={`p-4 border transition-all duration-300 ${
-                    achievement.completed
-                      ? 'glass-dark border-primary/30 bg-primary/5'
-                      : 'bg-muted/20 border-muted/30'
+                  className={`p-6 border transition-all duration-300 ${
+                    debutEpisode.unlocked 
+                      ? 'glass-dark border-white/10 card-hover cursor-pointer'
+                      : 'bg-muted/20 border-muted/30 opacity-50'
                   }`}
+                  onClick={() => debutEpisode.unlocked && !debutEpisode.completed && handleDebutStart()}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="text-2xl">{achievement.icon}</div>
-                    <div className="flex-1">
-                      <h4 className="font-bold">{achievement.title}</h4>
-                      <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        요구사항: {achievement.requirement}
-                      </p>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl font-bold gradient-text">{debutEpisode.title}</h3>
+                      <Badge variant="outline" className="text-accent">
+                        {debutEpisode.turns}턴
+                      </Badge>
                     </div>
-                    <div>
-                      {achievement.completed ? (
-                        <Badge variant="default" className="bg-green-500/20 text-green-400">
-                          완료
+                    
+                    <p className="text-muted-foreground">
+                      {debutEpisode.description}
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Gift className="w-4 h-4 text-primary" />
+                        <span className="text-sm text-primary">보상: DebutCard NFT + Debut Badge (SBT)</span>
+                      </div>
+                      
+                      {!debutEpisode.unlocked ? (
+                        <div className="p-3 bg-muted/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground text-center">
+                            💎 MemoryCard 1장 이상 보유 시 해금됩니다
+                          </p>
+                        </div>
+                      ) : debutEpisode.completed ? (
+                        <Badge variant="default" className="bg-green-500/20 text-green-400 w-full justify-center py-3">
+                          ✅ 완료 - Rookie 랭크 달성
                         </Badge>
                       ) : (
-                        <Badge variant="secondary" className="opacity-50">
-                          진행 중
-                        </Badge>
+                        <Button 
+                          variant="default" 
+                          className="w-full btn-modern"
+                          onClick={handleDebutStart}
+                        >
+                          🎤 데뷔 에피소드 시작하기
+                        </Button>
                       )}
                     </div>
                   </div>
                 </Card>
-              ))}
+              </div>
+
+              {/* 성취 현황 */}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold gradient-text flex items-center gap-2">
+                  <Crown className="w-6 h-6" />
+                  성취 현황
+                </h2>
+                
+                <div className="space-y-3">
+                  {achievements.map((achievement) => (
+                    <Card
+                      key={achievement.id}
+                      className={`p-4 border transition-all duration-300 ${
+                        achievement.completed
+                          ? 'glass-dark border-primary/30 bg-primary/5'
+                          : 'bg-muted/20 border-muted/30'
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-2xl">{achievement.icon}</div>
+                        <div className="flex-1">
+                          <h4 className="font-bold">{achievement.title}</h4>
+                          <p className="text-sm text-muted-foreground">{achievement.description}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            요구사항: {achievement.requirement}
+                          </p>
+                        </div>
+                        <div>
+                          {achievement.completed ? (
+                            <Badge variant="default" className="bg-green-500/20 text-green-400">
+                              완료
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="opacity-50">
+                              진행 중
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="leaderboard" className="mt-8">
+            <Leaderboard
+              currentUser={mockLeaderboardData.find(entry => entry.walletAddress === walletAddress)}
+              globalLeaderboard={mockLeaderboardData}
+              idolSpecificLeaderboard={mockLeaderboardData.filter(entry => entry.rank <= 50)}
+              selectedIdolId={selectedIdol?.id.toString()}
+            />
+          </TabsContent>
+
+          <TabsContent value="gallery" className="mt-8">
+            <PhotoCardGallery
+              photocards={mockPhotocards}
+              selectedIdolId={selectedIdol?.id.toString()}
+              onToggleVisibility={(cardId) => {
+                console.log('Toggle visibility for card:', cardId);
+                // Implement visibility toggle
+              }}
+              onViewCard={(card) => {
+                console.log('View card:', card);
+                // Implement card detail view
+              }}
+              isOwner={true}
+            />
+          </TabsContent>
+
+          <TabsContent value="marketplace" className="mt-8">
+            <Marketplace
+              listings={mockMarketplaceListings}
+              priceHistory={mockPriceHistory}
+              userWallet={walletAddress}
+              onPurchase={(listingId) => {
+                console.log('Purchase listing:', listingId);
+                // Implement purchase logic
+              }}
+              onBid={(listingId, amount) => {
+                console.log('Bid on listing:', listingId, 'Amount:', amount);
+                // Implement bidding logic
+              }}
+              onCreateListing={(photocardId, price, isAuction) => {
+                console.log('Create listing:', photocardId, price, isAuction);
+                // Implement listing creation
+              }}
+            />
+          </TabsContent>
+        </Tabs>
 
         {/* 데뷔 진행 중 모달 */}
         {isDebutPlaying && (
