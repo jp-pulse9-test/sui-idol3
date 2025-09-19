@@ -7,9 +7,11 @@ export interface EmotionLabel {
 export interface Choice {
   id: string;
   text: string;
-  emotionImpact: EmotionLabel;
+  textEn?: string;
   nextSceneId?: string;
-  affinityBonus: number; // -10 to +10
+  affinityBonus: number;
+  emotionImpact: EmotionLabel;
+  requiresProfile?: string[];
 }
 
 export interface StoryScene {
@@ -40,6 +42,21 @@ export interface HybridProfile {
   vibe: string; // 분위기
   talent: string; // 역량
 }
+
+// Enhanced Scene type for new episode flow
+export interface Scene {
+  id: string;
+  beatType?: 'hook' | 'engage' | 'pivot' | 'climax' | 'wrap';
+  content: string;
+  contentEn?: string;
+  choices: Choice[];
+  ambiance?: {
+    mood: string;
+    setting: string;
+    timeOfDay: string;
+  };
+}
+
 
 export interface PhotoCard {
   id: string;

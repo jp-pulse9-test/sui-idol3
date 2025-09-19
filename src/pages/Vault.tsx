@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { MessageCircle, Trophy, Gift, Lock } from "lucide-react";
-import StoryGameModal from "@/components/StoryGameModal";
+import StoryGameModalEnhanced from "@/components/StoryGameModalEnhanced";
 
 interface StoryEpisode {
   id: string;
@@ -339,7 +339,7 @@ const Vault = () => {
 
         {/* 스토리 게임 모달 */}
         {currentEpisode && selectedIdol && (
-          <StoryGameModal
+          <StoryGameModalEnhanced
             isOpen={isGameModalOpen}
             onClose={() => {
               setIsGameModalOpen(false);
