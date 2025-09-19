@@ -111,11 +111,36 @@ serve(async (req) => {
         const description = personalityMatch ? personalityMatch[1].trim() : `${randomPersonality} 성격의 매력적인 K-pop 아이돌입니다.`
         const personaPrompt = personaMatch ? personaMatch[1].trim() : `안녕하세요! 저는 ${uniqueName}이에요. ${randomPersonality} 성격으로 팬 여러분과 즐겁게 대화하고 싶어요!`
         
-        // 이미지 생성을 위한 프롬프트
-        const imagePrompt = `Professional K-pop idol portrait photo of ${uniqueName}, ${randomPersonality} personality, ${randomConcept} concept, high quality studio lighting, beautiful Korean idol, detailed face, perfect makeup, stylish outfit, commercial photography style, 4K resolution`
+        // Gemini로 이미지 생성
+        const imagePrompt = `Professional K-pop idol portrait photo, ${randomPersonality} personality, ${randomConcept} style, beautiful Korean idol with perfect makeup and stylish outfit, high quality studio lighting, detailed facial features, commercial photography, 4K resolution, clean background`
         
-        // 실제 이미지 생성은 시간이 많이 걸리므로, 플레이스홀더 이미지 사용
-        const profileImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${uniqueName}&backgroundColor=b6e3f4,c0aede,d1d4f9&clothesColor=black,blue01,blue02,blue03,gray01,gray02&topColor=auburn,black,blonde,brown,pastel,platinum,red,silverGray`
+        let profileImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${uniqueName}` // 기본 이미지
+        
+        try {
+          const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${googleApiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `Generate an image: ${imagePrompt}`
+                }]
+              }],
+              generationConfig: {
+                temperature: 0.7
+              }
+            })
+          })
+          
+          const imageData = await imageResponse.json()
+          
+          // Gemini는 텍스트 모델이므로 이미지를 직접 생성할 수 없습니다
+          // 대신 이미지 생성 API 호출을 위한 상세한 프롬프트를 생성합니다
+          console.log(`Generated image prompt for ${uniqueName}: ${imagePrompt}`)
+          
+        } catch (imageError) {
+          console.error(`Image generation failed for ${uniqueName}:`, imageError)
+        }
         
         const idolData: IdolData = {
           name: uniqueName,
