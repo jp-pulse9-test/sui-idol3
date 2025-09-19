@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { secureStorage } from "@/utils/secureStorage";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -35,16 +38,51 @@ const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string>("");
 
   useEffect(() => {
-    const savedWallet = localStorage.getItem('walletAddress');
+    const savedWallet = secureStorage.getWalletAddress();
     if (savedWallet) {
       setIsWalletConnected(true);
       setWalletAddress(savedWallet);
     }
   }, []);
+
+  // Create user profile when authenticated
+  useEffect(() => {
+    const createUserProfile = async () => {
+      if (user && isWalletConnected) {
+        try {
+          // Check if user profile exists
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (!existingUser) {
+            // Create user profile
+            const { error } = await supabase
+              .from('users')
+              .insert([{
+                id: user.id,
+                wallet_address: walletAddress
+              }]);
+
+            if (error) {
+              console.error('Error creating user profile:', error);
+            }
+          }
+        } catch (error) {
+          console.error('Error in createUserProfile:', error);
+        }
+      }
+    };
+
+    createUserProfile();
+  }, [user, isWalletConnected, walletAddress]);
 
   const connectWallet = async () => {
     try {
@@ -52,7 +90,7 @@ const Index = () => {
       const mockAddress = "0x" + Math.random().toString(16).substring(2, 42);
       setWalletAddress(mockAddress);
       setIsWalletConnected(true);
-      localStorage.setItem('walletAddress', mockAddress);
+      secureStorage.setWalletAddress(mockAddress);
       toast.success("지갑이 연결되었습니다!");
     } catch (error) {
       toast.error("지갑 연결에 실패했습니다.");
@@ -62,16 +100,27 @@ const Index = () => {
   const disconnectWallet = () => {
     setIsWalletConnected(false);
     setWalletAddress("");
-    localStorage.removeItem('walletAddress');
+    secureStorage.removeWalletAddress();
     toast.success("지갑 연결이 해제되었습니다.");
   };
 
   const handleStartJourney = () => {
+    if (!user) {
+      toast.error("먼저 로그인해주세요!");
+      navigate('/auth');
+      return;
+    }
     if (!isWalletConnected) {
       toast.error("먼저 지갑을 연결해주세요!");
       return;
     }
     navigate('/pick');
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    disconnectWallet();
+    toast.success("로그아웃되었습니다.");
   };
 
   return (
@@ -82,32 +131,53 @@ const Index = () => {
       
       {/* 메인 콘텐츠 */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
-        {/* 상단 지갑 연결 영역 */}
-        <div className="fixed top-4 right-4 z-20">
-          {!isWalletConnected ? (
+        {/* 상단 인증 및 지갑 연결 영역 */}
+        <div className="fixed top-4 right-4 z-20 flex gap-2">
+          {!user ? (
             <Button
-              onClick={connectWallet}
+              onClick={() => navigate('/auth')}
               variant="premium"
               size="lg"
               className="shadow-lg"
             >
-              🔗 지갑으로 참여
+              🔐 로그인
             </Button>
           ) : (
-            <div className="flex items-center gap-2 bg-card/80 backdrop-blur-sm p-3 rounded-lg border border-border">
-              <Badge variant="secondary" className="px-3 py-1">
-                🟢 연결됨
-              </Badge>
-              <span className="text-sm text-muted-foreground">
-                {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
-              </span>
+            <div className="flex items-center gap-2">
+              {!isWalletConnected ? (
+                <Button
+                  onClick={connectWallet}
+                  variant="premium"
+                  size="lg"
+                  className="shadow-lg"
+                >
+                  🔗 지갑 연결
+                </Button>
+              ) : (
+                <div className="flex items-center gap-2 bg-card/80 backdrop-blur-sm p-3 rounded-lg border border-border">
+                  <Badge variant="secondary" className="px-3 py-1">
+                    🟢 연결됨
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
+                  </span>
+                  <Button
+                    onClick={disconnectWallet}
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto p-1"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              )}
               <Button
-                onClick={disconnectWallet}
+                onClick={handleSignOut}
                 variant="ghost"
                 size="sm"
-                className="h-auto p-1"
+                className="text-muted-foreground hover:text-foreground"
               >
-                ✕
+                로그아웃
               </Button>
             </div>
           )}
@@ -131,7 +201,21 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col gap-6 items-center">
-              {!isWalletConnected ? (
+              {!user ? (
+                <>
+                  <Button
+                    onClick={() => navigate('/auth')}
+                    variant="premium"
+                    size="xl"
+                    className="min-w-80 text-2xl py-6"
+                  >
+                    🔐 로그인하고 시작하기
+                  </Button>
+                  <p className="text-lg text-muted-foreground">
+                    계정을 생성하고 나만의 아이돌 여정을 시작하세요
+                  </p>
+                </>
+              ) : !isWalletConnected ? (
                 <>
                   <Button
                     onClick={connectWallet}
@@ -191,7 +275,7 @@ const Index = () => {
                 title="🎯 PICK"
                 description="성향 분석 후 101명 중 운명적 AI 아이돌 선택. 각 아이돌은 고유한 페르소나와 기억을 가진 대화형 에이전트입니다."
                 icon={mbtiIcon}
-                onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
+                onClick={() => user && isWalletConnected ? navigate('/pick') : handleStartJourney()}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
               />
               
@@ -199,7 +283,7 @@ const Index = () => {
                 title="🗃️ VAULT"
                 description="일상 스토리 텍스트 게임을 클리어하며 획득한 포토카드 NFT를 비밀 금고에 안전하게 보관합니다."
                 icon={photocardIcon}
-                onClick={() => isWalletConnected ? navigate('/vault') : toast.error("먼저 지갑을 연결해주세요!")}
+                onClick={() => user && isWalletConnected ? navigate('/vault') : handleStartJourney()}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
               />
               
@@ -207,7 +291,7 @@ const Index = () => {
                 title="📈 RISE"
                 description="데뷔 에피소드를 완료하면 특별한 뱃지를 획득하며, 아이돌과 함께 성장하는 과정을 체감합니다."
                 icon={tournamentIcon}
-                onClick={() => isWalletConnected ? navigate('/rise') : toast.error("먼저 지갑을 연결해주세요!")}
+                onClick={() => user && isWalletConnected ? navigate('/rise') : handleStartJourney()}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
               />
             </div>
@@ -263,7 +347,7 @@ const Index = () => {
             </div>
             
             <Button
-              onClick={() => isWalletConnected ? navigate('/pick') : toast.error("먼저 지갑을 연결해주세요!")}
+              onClick={() => user && isWalletConnected ? navigate('/pick') : handleStartJourney()}
               variant="premium"
               size="xl"
               className="min-w-64 text-xl py-4"

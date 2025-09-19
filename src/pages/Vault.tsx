@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +40,19 @@ interface SelectedIdol {
 
 const Vault = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, loading } = useAuthGuard();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">로딩 중...</div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return null;
+  }
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [currentEpisode, setCurrentEpisode] = useState<StoryEpisode | null>(null);
