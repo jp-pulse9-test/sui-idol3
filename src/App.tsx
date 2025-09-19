@@ -28,6 +28,7 @@ import Gallery from "./pages/Gallery";
 import Growth from "./pages/Growth";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import SettingsPage from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ const App = () => (
           <Route path="/collection" element={<Collection />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/growth" element={<Growth />} />
+          <Route path="/settings" element={<SettingsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>

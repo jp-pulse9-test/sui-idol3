@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
+import { Settings } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -162,6 +163,15 @@ const Index = () => {
                   ✕
                 </Button>
               </div>
+              <Button
+                onClick={() => navigate('/settings')}
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+                title="Settings"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
               <Button
                 onClick={handleSignOut}
                 variant="ghost"
