@@ -159,26 +159,6 @@ export const DevTools: React.FC = () => {
   };
 
   if (!isVisible) {
-    // 권한이 없는 경우 안내 메시지 (dev=true이지만 슈퍼어드민이 아닌 경우)
-    const urlParams = new URLSearchParams(window.location.search);
-    const devModeRequested = urlParams.get('dev') === 'true';
-    const isSuperAdmin = user?.wallet_address === SUPER_ADMIN_WALLET;
-    
-    if (devModeRequested && !isSuperAdmin) {
-      return (
-        <div className="fixed bottom-4 right-4 z-50">
-          <Card className="w-80 shadow-lg border-yellow-200 bg-yellow-50/95 backdrop-blur">
-            <CardContent className="p-4 text-center">
-              <p className="text-sm text-yellow-700">
-                🔒 슈퍼 어드민 전용 도구입니다<br/>
-                권한이 없는 사용자입니다.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
-    
     return null;
   }
 
