@@ -122,7 +122,7 @@ const Index = () => {
               </h1>
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold gradient-text">
-                  Web3 팬덤 플랫폼
+                  가상아이돌 스토리 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   최애 아이돌을 고르고, 스토리 에피소드를 통해 최애와 나의 추억이 담긴 포토카드를 모아 데뷔와 성장(Rise)을 체감하는 특별한 경험.
@@ -276,7 +276,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
           <p className="text-muted-foreground">
-            © 2024 Sui:Idol³. Web3 팬덤 플랫폼 · Made with 💖 by Lovable
+            © 2024 Sui:Idol³. 가상아이돌 스토리 플랫폼 · Made with 💖 by Lovable
           </p>
         </footer>
       </div>
