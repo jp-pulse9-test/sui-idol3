@@ -44,6 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const realWalletAddress = "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc";
       
       console.log('🔥 목업 지갑 연결 시도:', realWalletAddress);
+      console.log('🔍 Supabase 연결 테스트 시작...');
       
       // 새 사용자 생성 시도 (기존 사용자 조회는 보안상 제한됨)
       const { data: newUser, error: insertError } = await supabase
