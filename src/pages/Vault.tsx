@@ -4,31 +4,10 @@ import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { MessageCircle, Trophy, Gift, Lock } from "lucide-react";
-import StoryGameModalEnhanced from "@/components/StoryGameModalEnhanced";
-
-interface StoryEpisode {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  difficulty: 'Easy' | 'Normal' | 'Hard';
-  turns: number;
-  unlocked: boolean;
-  completed: boolean;
-  memoryCardEarned?: boolean;
-}
-
-interface MemoryCard {
-  id: string;
-  episodeId: string;
-  title: string;
-  rarity: 'N' | 'R' | 'SR' | 'SSR';
-  image: string;
-  earnedAt: Date;
-}
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RandomBox } from "@/components/ui/random-box";
+import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 
 interface SelectedIdol {
   id: number;
@@ -38,17 +17,39 @@ interface SelectedIdol {
   persona_prompt?: string;
 }
 
+interface PhotoCard {
+  id: string;
+  idolId: string;
+  idolName: string;
+  rarity: 'N' | 'R' | 'SR' | 'SSR';
+  concept: string;
+  season: string;
+  serialNo: number;
+  totalSupply: number;
+  mintedAt: string;
+  owner: string;
+  isPublic: boolean;
+  imageUrl: string;
+  floorPrice?: number;
+  lastSalePrice?: number;
+}
+
 const Vault = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading } = useAuthGuard('/auth', true);
   
-  // All useState hooks must be called before any conditional returns
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
-  const [currentEpisode, setCurrentEpisode] = useState<StoryEpisode | null>(null);
-  const [memoryCards, setMemoryCards] = useState<MemoryCard[]>([]);
-  const [isGameModalOpen, setIsGameModalOpen] = useState(false);
-  // 상태 복원 및 초기화 훅은 조건문 이전에 호출되어야 합니다
+  const [userCoins, setUserCoins] = useState(1000);
+  const [dailyFreeAttempts, setDailyFreeAttempts] = useState(3);
+  const [pityCounters, setPityCounters] = useState({
+    basic: 0,
+    premium: 0,
+    special: 0
+  });
+  const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
+  const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection'>('storage');
+
   useEffect(() => {
     const savedWallet = localStorage.getItem('walletAddress');
     const savedIdol = localStorage.getItem('selectedIdol');
@@ -68,9 +69,16 @@ const Vault = () => {
     setWalletAddress(savedWallet);
     setSelectedIdol(JSON.parse(savedIdol));
     
-    // 로컬 스토리지에서 메모리카드 불러오기
-    const savedCards = JSON.parse(localStorage.getItem('memoryCards') || '[]');
-    setMemoryCards(savedCards);
+    // 로컬 스토리지에서 포카 불러오기
+    const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
+    setPhotoCards(savedCards);
+    
+    // 코인 및 시도 횟수 불러오기
+    const savedCoins = localStorage.getItem('userCoins');
+    if (savedCoins) setUserCoins(parseInt(savedCoins));
+    
+    const savedAttempts = localStorage.getItem('dailyFreeAttempts');
+    if (savedAttempts) setDailyFreeAttempts(parseInt(savedAttempts));
   }, [navigate]);
 
   if (loading) {
@@ -85,92 +93,62 @@ const Vault = () => {
     return null;
   }
 
-  // 일상 스토리 에피소드들 (6-8턴)
-  const storyEpisodes: StoryEpisode[] = [
-    {
-      id: "ep1",
-      title: "첫 만남",
-      description: "아이돌과의 첫 만남에서 벌어지는 설렘 가득한 이야기",
-      category: "일상",
-      difficulty: "Easy",
-      turns: 6,
-      unlocked: true,
-      completed: false
-    },
-    {
-      id: "ep2", 
-      title: "연습실에서",
-      description: "늦은 밤 연습실에서 함께하는 특별한 시간",
-      category: "연습",
-      difficulty: "Normal",
-      turns: 7,
-      unlocked: true,
-      completed: false
-    },
-    {
-      id: "ep3",
-      title: "무대 뒤에서",
-      description: "콘서트 무대 뒤에서 벌어지는 긴장감 넘치는 순간들",
-      category: "공연",
-      difficulty: "Normal", 
-      turns: 8,
-      unlocked: false,
-      completed: false
-    },
-    {
-      id: "ep4",
-      title: "휴식의 시간",
-      description: "바쁜 스케줄 사이의 소중한 휴식 시간",
-      category: "일상",
-      difficulty: "Easy",
-      turns: 6,
-      unlocked: false,
-      completed: false
-    }
-  ];
-
-
-  const handleEpisodeStart = (episode: StoryEpisode) => {
-    if (!episode.unlocked) {
-      toast.error("아직 해금되지 않은 에피소드입니다.");
+  const handleOpenRandomBox = (type: "free" | "paid") => {
+    // 랜덤박스 개봉 로직
+    if (type === 'free' && dailyFreeAttempts <= 0) {
+      toast.error('오늘의 무료 시도 횟수를 모두 사용했습니다.');
       return;
     }
     
-    setCurrentEpisode(episode);
-    setIsGameModalOpen(true);
-  };
-
-  const handleGameComplete = (newMemoryCard: MemoryCard) => {
-    const updatedCards = [...memoryCards, newMemoryCard];
-    setMemoryCards(updatedCards);
-    localStorage.setItem('memoryCards', JSON.stringify(updatedCards));
-    
-    // 에피소드 완료 상태 업데이트
-    const updatedEpisodes = storyEpisodes.map(ep => 
-      ep.id === currentEpisode?.id ? { ...ep, completed: true } : ep
-    );
-    localStorage.setItem('completedEpisodes', JSON.stringify(updatedEpisodes));
-    
-    setIsGameModalOpen(false);
-    setCurrentEpisode(null);
-  };
-
-  const getRarityColor = (rarity: string) => {
-    switch (rarity) {
-      case 'SSR': return 'bg-gradient-to-r from-yellow-400 to-orange-500';
-      case 'SR': return 'bg-gradient-to-r from-purple-500 to-pink-500';
-      case 'R': return 'bg-gradient-to-r from-blue-500 to-cyan-500';
-      default: return 'bg-gradient-to-r from-gray-400 to-gray-600';
+    const cost = type === 'free' ? 0 : 100;
+    if (type !== 'free' && userCoins < cost) {
+      toast.error('코인이 부족합니다.');
+      return;
     }
-  };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Easy': return 'text-green-400';
-      case 'Normal': return 'text-yellow-400';
-      case 'Hard': return 'text-red-400';
-      default: return 'text-gray-400';
+    // 랜덤 포카 생성
+    const rarities = ['N', 'R', 'SR', 'SSR'] as const;
+    const concepts = ['Summer Dream', 'Winter Story', 'Spring Love', 'Autumn Wind'];
+    const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+    const randomConcept = concepts[Math.floor(Math.random() * concepts.length)];
+
+    const newPhotoCard: PhotoCard = {
+      id: `pc-${Date.now()}`,
+      idolId: selectedIdol?.id.toString() || '1',
+      idolName: selectedIdol?.name || 'Unknown',
+      rarity: randomRarity,
+      concept: randomConcept,
+      season: 'Season 1',
+      serialNo: Math.floor(Math.random() * 10000) + 1,
+      totalSupply: 5000,
+      mintedAt: new Date().toISOString(),
+      owner: walletAddress,
+      isPublic: true,
+      imageUrl: selectedIdol?.image || '',
+      floorPrice: Math.random() * 5 + 1,
+      lastSalePrice: Math.random() * 8 + 2
+    };
+
+    // 상태 업데이트
+    const updatedCards = [...photoCards, newPhotoCard];
+    setPhotoCards(updatedCards);
+    localStorage.setItem('photoCards', JSON.stringify(updatedCards));
+
+    if (type === 'free') {
+      setDailyFreeAttempts(prev => {
+        const newValue = prev - 1;
+        localStorage.setItem('dailyFreeAttempts', newValue.toString());
+        return newValue;
+      });
+    } else {
+      setUserCoins(prev => {
+        const newValue = prev - cost;
+        localStorage.setItem('userCoins', newValue.toString());
+        return newValue;
+      });
     }
+
+    toast.success(`🎉 ${randomRarity} 등급 포토카드를 획득했습니다!`);
   };
 
   if (!selectedIdol) {
@@ -185,17 +163,20 @@ const Vault = () => {
         {/* Header */}
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl font-bold gradient-text">
-            🗃️ VAULT - 비밀 금고
+            🗃️ VAULT - 최애 수납 & 랜덤박스 & 포카 생성
           </h1>
           <p className="text-xl text-muted-foreground">
-            {selectedIdol.name}와의 스토리 플레이 & 추억 수집
+            {selectedIdol.name}와 함께하는 포토카드 수집 여정
           </p>
           <div className="flex items-center justify-center gap-4">
             <Badge variant="outline" className="px-4 py-2">
               🔗 {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
-              💎 MemoryCard {memoryCards.length}장
+              🪙 {userCoins} 코인
+            </Badge>
+            <Badge variant="secondary" className="px-4 py-2">
+              📦 {photoCards.length}장 보유
             </Badge>
           </div>
         </div>
@@ -219,143 +200,109 @@ const Vault = () => {
               variant="outline"
               className="border-accent text-accent hover:bg-accent/20"
             >
-              데뷔하러 가기 →
+              RISE로 이동 →
             </Button>
           </div>
         </Card>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* 스토리 에피소드 */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold gradient-text flex items-center gap-2">
-              <MessageCircle className="w-6 h-6" />
-              일상 스토리 에피소드
-            </h2>
-            
-            <div className="space-y-4">
-              {storyEpisodes.map((episode) => (
-                <Card
-                  key={episode.id}
-                  className={`p-4 border transition-all duration-300 ${
-                    episode.unlocked 
-                      ? 'glass-dark border-white/10 card-hover cursor-pointer'
-                      : 'bg-muted/20 border-muted/30 opacity-50'
-                  }`}
-                  onClick={() => episode.unlocked && handleEpisodeStart(episode)}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-lg">{episode.title}</h3>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={getDifficultyColor(episode.difficulty)}>
-                          {episode.difficulty}
-                        </Badge>
-                        <Badge variant="secondary">
-                          {episode.turns}턴
-                        </Badge>
-                      </div>
+        {/* Vault Tabs */}
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'storage' | 'randombox' | 'collection')} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
+            <TabsTrigger value="storage" className="data-[state=active]:bg-primary/20">
+              🗃️ 최애 수납
+            </TabsTrigger>
+            <TabsTrigger value="randombox" className="data-[state=active]:bg-primary/20">
+              📦 랜덤박스
+            </TabsTrigger>
+            <TabsTrigger value="collection" className="data-[state=active]:bg-primary/20">
+              🎴 포카 보관함
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="storage" className="mt-8">
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* 최애 수납 현황 */}
+              <Card className="p-6 glass-dark border-white/10">
+                <div className="space-y-6">
+                  <h3 className="text-2xl font-bold gradient-text">최애 수납 현황</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
+                      <span>수납된 아이돌</span>
+                      <Badge variant="default">{selectedIdol.name}</Badge>
                     </div>
-                    
-                    <p className="text-muted-foreground text-sm">
-                      {episode.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-xs">
-                        {episode.category}
-                      </Badge>
-                      
-                      {episode.completed ? (
-                        <Badge variant="default" className="bg-green-500/20 text-green-400">
-                          완료
-                        </Badge>
-                      ) : episode.unlocked ? (
-                        <Button variant="outline" size="sm">
-                          시작하기
-                        </Button>
-                      ) : (
-                        <Badge variant="secondary" className="opacity-50">
-                          잠김
-                        </Badge>
-                      )}
+                    <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
+                      <span>보유 포토카드</span>
+                      <Badge variant="secondary">{photoCards.length}장</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
+                      <span>보유 코인</span>
+                      <Badge variant="outline">{userCoins} 🪙</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
+                      <span>일일 무료 시도</span>
+                      <Badge variant="outline">{dailyFreeAttempts}/3</Badge>
                     </div>
                   </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* 메모리카드 컬렉션 */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold gradient-text flex items-center gap-2">
-              <Gift className="w-6 h-6" />
-              MemoryCard 컬렉션
-            </h2>
-            
-            {memoryCards.length === 0 ? (
-              <Card className="p-8 text-center glass-dark border-white/10">
-                <div className="space-y-4">
-                  <div className="text-4xl">📱</div>
-                  <h3 className="text-xl font-bold">아직 획득한 카드가 없습니다</h3>
-                  <p className="text-muted-foreground">
-                    스토리 에피소드를 완료하여 첫 번째 MemoryCard를 획득하세요!
-                  </p>
                 </div>
               </Card>
-            ) : (
-              <div className="grid grid-cols-2 gap-4">
-                {memoryCards.map((card) => (
-                  <Card key={card.id} className="p-4 glass-dark border-white/10">
-                    <div className="space-y-3">
-                      <div className="aspect-square rounded-lg overflow-hidden bg-gradient-primary/20">
-                        <img 
-                          src={card.image}
-                          alt={card.title}
-                          className="w-full h-full object-cover"
-                        />
+
+              {/* 최애 프로필 */}
+              <Card className="p-6 glass-dark border-white/10">
+                <div className="space-y-6">
+                  <h3 className="text-2xl font-bold gradient-text">최애 프로필</h3>
+                  
+                  <div className="text-center space-y-4">
+                    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-primary/20">
+                      <img 
+                        src={selectedIdol.image}
+                        alt={selectedIdol.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold">{selectedIdol.name}</h4>
+                      <p className="text-muted-foreground">{selectedIdol.personality}</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="p-3 bg-card/50 rounded-lg">
+                        <div className="font-bold text-primary">수집률</div>
+                        <div className="text-xl">{photoCards.length * 5}%</div>
                       </div>
-                      
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-sm">{card.title}</h4>
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${getRarityColor(card.rarity)}`}
-                          >
-                            {card.rarity}
-                          </Badge>
+                      <div className="p-3 bg-card/50 rounded-lg">
+                        <div className="font-bold text-accent">희귀도</div>
+                        <div className="text-xl">
+                          {photoCards.filter(card => card.rarity === 'SSR').length > 0 ? 'SSR' : 
+                           photoCards.filter(card => card.rarity === 'SR').length > 0 ? 'SR' : 
+                           photoCards.filter(card => card.rarity === 'R').length > 0 ? 'R' : 'N'}
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(card.earnedAt).toLocaleDateString()}
-                        </p>
                       </div>
                     </div>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </TabsContent>
 
-        {/* 스토리 게임 모달 */}
-        {currentEpisode && selectedIdol && (
-          <StoryGameModalEnhanced
-            isOpen={isGameModalOpen}
-            onClose={() => {
-              setIsGameModalOpen(false);
-              setCurrentEpisode(null);
-            }}
-            episode={currentEpisode}
-            selectedIdol={{
-              id: selectedIdol.id,
-              name: selectedIdol.name,
-              personality: selectedIdol.personality,
-              image: selectedIdol.image,
-              persona_prompt: selectedIdol.persona_prompt || ""
-            }}
-            onComplete={handleGameComplete}
-          />
-        )}
+          <TabsContent value="randombox" className="mt-8">
+            <RandomBox
+              dailyFreeCount={dailyFreeAttempts}
+              maxDailyFree={3}
+              userCoins={userCoins}
+              pityCounter={{ sr: pityCounters.premium, ssr: pityCounters.special }}
+              onOpenBox={handleOpenRandomBox}
+              isOpening={false}
+            />
+          </TabsContent>
+
+          <TabsContent value="collection" className="mt-8">
+            <PhotoCardGallery
+              photocards={photoCards}
+              selectedIdolId={selectedIdol.id.toString()}
+            />
+          </TabsContent>
+        </Tabs>
 
         {/* Navigation */}
         <div className="flex justify-center space-x-4 pt-8">
