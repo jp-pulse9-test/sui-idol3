@@ -6,6 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { 
   Settings, 
   Database, 
@@ -33,6 +36,8 @@ export const DevTools: React.FC = () => {
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
   const [batchProgress, setBatchProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [genderFilter, setGenderFilter] = useState<'boy' | 'girl' | null>(null);
+  const [generate101Mode, setGenerate101Mode] = useState(false);
 
   useEffect(() => {
     // 컴포넌트가 마운트되면 통계를 로드
@@ -70,27 +75,36 @@ export const DevTools: React.FC = () => {
     setIsGeneratingBatch(true);
     setBatchProgress(0);
     
+    const actualCount = generate101Mode ? 101 : count;
+    
     try {
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < actualCount; i++) {
+        const requestBody: any = {};
+        
+        // 성별 필터가 설정되어 있으면 포함
+        if (genderFilter) {
+          requestBody.gender = genderFilter;
+        }
+        
         const { data, error } = await supabase.functions.invoke('generate-single-idol', {
-          body: {}
+          body: requestBody
         });
 
         if (error) throw error;
         
-        setBatchProgress(((i + 1) / count) * 100);
+        setBatchProgress(((i + 1) / actualCount) * 100);
         
         if (data.success) {
-          toast.success(`${i + 1}/${count}: ${data.idol.name} 생성 완료`);
+          toast.success(`${i + 1}/${actualCount}: ${data.idol.name} 생성 완료`);
         }
         
         // API 요청 제한을 위한 딜레이
-        if (i < count - 1) {
+        if (i < actualCount - 1) {
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
       
-      toast.success(`🎉 ${count}명의 아이돌 생성이 완료되었습니다!`);
+      toast.success(`🎉 ${actualCount}명의 아이돌 생성이 완료되었습니다!`);
       await loadStats();
     } catch (error) {
       console.error('Error generating batch:', error);
@@ -211,7 +225,60 @@ export const DevTools: React.FC = () => {
                   </div>
                 )}
                 
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h5 className="font-medium">생성 옵션</h5>
+                    
+                    {/* 성별 선택 스위치 */}
+                    <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+                      <div className="space-y-1">
+                        <Label className="font-medium">성별 지정</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {genderFilter ? `${genderFilter === 'boy' ? '소년' : '소녀'} 아이돌만 생성` : '성별 무작위 생성'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="boy-switch" className="text-sm">소년</Label>
+                        <Switch
+                          id="boy-switch"
+                          checked={genderFilter === 'boy'}
+                          onCheckedChange={(checked) => {
+                            setGenderFilter(checked ? 'boy' : (genderFilter === 'girl' ? 'girl' : null));
+                          }}
+                          disabled={isGeneratingBatch}
+                        />
+                        <span className="text-xs text-muted-foreground">|</span>
+                        <Switch
+                          id="girl-switch"
+                          checked={genderFilter === 'girl'}
+                          onCheckedChange={(checked) => {
+                            setGenderFilter(checked ? 'girl' : (genderFilter === 'boy' ? 'boy' : null));
+                          }}
+                          disabled={isGeneratingBatch}
+                        />
+                        <Label htmlFor="girl-switch" className="text-sm">소녀</Label>
+                      </div>
+                    </div>
+
+                    {/* 101명 연속 생성 체크박스 */}
+                    <div className="flex items-center space-x-3 p-3 bg-muted/20 rounded-lg">
+                      <Checkbox
+                        id="generate-101"
+                        checked={generate101Mode}
+                        onCheckedChange={(checked) => setGenerate101Mode(checked === true)}
+                        disabled={isGeneratingBatch}
+                      />
+                      <div className="space-y-1">
+                        <Label htmlFor="generate-101" className="font-medium">
+                          연속 101명 생성 모드
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          활성화 시 모든 버튼이 101명씩 생성합니다
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <h5 className="font-medium mb-3">빠른 배치 생성</h5>
                     <div className="grid grid-cols-2 gap-3">
@@ -221,7 +288,7 @@ export const DevTools: React.FC = () => {
                         disabled={isGeneratingBatch}
                         className="h-12"
                       >
-                        1명 생성
+                        {generate101Mode ? '101명' : '1명'} 생성
                       </Button>
                       <Button
                         variant="outline"
@@ -229,7 +296,7 @@ export const DevTools: React.FC = () => {
                         disabled={isGeneratingBatch}
                         className="h-12"
                       >
-                        5명 생성
+                        {generate101Mode ? '101명' : '5명'} 생성
                       </Button>
                       <Button
                         variant="outline"
@@ -237,7 +304,7 @@ export const DevTools: React.FC = () => {
                         disabled={isGeneratingBatch}
                         className="h-12"
                       >
-                        10명 생성
+                        {generate101Mode ? '101명' : '10명'} 생성
                       </Button>
                       <Button
                         variant="outline"
@@ -245,7 +312,7 @@ export const DevTools: React.FC = () => {
                         disabled={isGeneratingBatch}
                         className="h-12"
                       >
-                        20명 생성
+                        {generate101Mode ? '101명' : '20명'} 생성
                       </Button>
                     </div>
                   </div>
