@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import { isSuperAdmin, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
 
 interface HeartSystemState {
   dailyHearts: number;
@@ -85,14 +86,18 @@ export const useHeartSystem = () => {
     const lastReset = localStorage.getItem('lastHeartReset');
     
     if (lastReset !== today) {
+      const currentWallet = localStorage.getItem('walletAddress') || '';
+      const isAdmin = isSuperAdmin(currentWallet);
+      const dailyAmount = isAdmin ? SUPER_ADMIN_DAILY_HEARTS : 10;
+      
       const newState = {
         ...heartState,
-        dailyHearts: 10,
+        dailyHearts: dailyAmount,
         givenHearts: {} // 하트 기록도 초기화
       };
       
       setHeartState(newState);
-      localStorage.setItem('dailyHearts', '10');
+      localStorage.setItem('dailyHearts', dailyAmount.toString());
       localStorage.setItem('givenHearts', '{}');
       localStorage.setItem('lastHeartReset', today);
     }

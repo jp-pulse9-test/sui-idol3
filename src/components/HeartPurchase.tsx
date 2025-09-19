@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Coins } from "lucide-react";
+import { Heart, Coins, Crown } from "lucide-react";
 import { useHeartSystem } from "@/hooks/useHeartSystem";
+import { isSuperAdmin } from "@/utils/adminWallets";
 
 export const HeartPurchase = () => {
   const { fanHearts, purchaseHearts } = useHeartSystem();
   const [suiCoins, setSuiCoins] = useState(() => parseFloat(localStorage.getItem('suiCoins') || '0'));
+  const currentWallet = localStorage.getItem('walletAddress') || '';
+  const isAdmin = isSuperAdmin(currentWallet);
 
   const handlePurchaseHearts = () => {
     if (purchaseHearts(10)) {
@@ -19,9 +22,20 @@ export const HeartPurchase = () => {
     <Card className="p-6 glass-dark border-white/10">
       <div className="space-y-4">
         <div className="text-center">
-          <h3 className="text-xl font-bold gradient-text">💖 팬 하트 구매</h3>
+          <div className="flex items-center justify-center gap-2">
+            <h3 className="text-xl font-bold gradient-text">💖 팬 하트 구매</h3>
+            {isAdmin && (
+              <div className="relative group">
+                <Crown className="w-5 h-5 text-yellow-400" />
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  수퍼어드민
+                </div>
+              </div>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm">
             팬 하트로 다른 팬들의 포카에 응원을 보내세요!
+            {isAdmin && <span className="text-yellow-400 font-semibold"> (수퍼어드민 특권)</span>}
           </p>
         </div>
 

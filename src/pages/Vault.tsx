@@ -10,6 +10,7 @@ import { RandomBox } from "@/components/ui/random-box";
 import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { Heart } from "lucide-react";
+import { isSuperAdmin, SUPER_ADMIN_INITIAL_SUI_COINS, SUPER_ADMIN_INITIAL_FAN_HEARTS, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
 
 interface SelectedIdol {
   id: number;
@@ -78,25 +79,50 @@ const Vault = () => {
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     setPhotoCards(savedCards);
     
-    // 수이 코인, 팬 하트, 일일 하트 불러오기
+    // 수이 코인, 팬 하트, 일일 하트 불러오기 (수퍼어드민 특별 지급)
+    const isAdmin = isSuperAdmin(savedWallet);
+    
     const savedSuiCoins = localStorage.getItem('suiCoins');
-    if (savedSuiCoins) setSuiCoins(parseFloat(savedSuiCoins));
+    if (savedSuiCoins) {
+      setSuiCoins(parseFloat(savedSuiCoins));
+    } else if (isAdmin) {
+      // 수퍼어드민 첫 로그인 시 특별 지급
+      setSuiCoins(SUPER_ADMIN_INITIAL_SUI_COINS);
+      localStorage.setItem('suiCoins', SUPER_ADMIN_INITIAL_SUI_COINS.toString());
+      toast.success(`🎉 수퍼어드민 특별 지급! ${SUPER_ADMIN_INITIAL_SUI_COINS} SUI 코인 획득!`);
+    } else {
+      setSuiCoins(1.0); // 일반 유저 기본값
+      localStorage.setItem('suiCoins', '1.0');
+    }
     
     const savedFanHearts = localStorage.getItem('fanHearts');
-    if (savedFanHearts) setFanHearts(parseInt(savedFanHearts));
+    if (savedFanHearts) {
+      setFanHearts(parseInt(savedFanHearts));
+    } else if (isAdmin) {
+      // 수퍼어드민 첫 로그인 시 특별 지급
+      setFanHearts(SUPER_ADMIN_INITIAL_FAN_HEARTS);
+      localStorage.setItem('fanHearts', SUPER_ADMIN_INITIAL_FAN_HEARTS.toString());
+      toast.success(`💖 수퍼어드민 특별 지급! ${SUPER_ADMIN_INITIAL_FAN_HEARTS} 팬 하트 획득!`);
+    }
     
     const savedDailyHearts = localStorage.getItem('dailyHearts');
-    if (savedDailyHearts) setDailyHearts(parseInt(savedDailyHearts));
+    if (savedDailyHearts) {
+      setDailyHearts(parseInt(savedDailyHearts));
+    } else if (isAdmin) {
+      setDailyHearts(SUPER_ADMIN_DAILY_HEARTS);
+      localStorage.setItem('dailyHearts', SUPER_ADMIN_DAILY_HEARTS.toString());
+    }
     
     const savedAttempts = localStorage.getItem('dailyFreeAttempts');
     if (savedAttempts) setDailyFreeAttempts(parseInt(savedAttempts));
     
-    // 일일 하트 리셋 체크 (매일 자정)
+    // 일일 하트 리셋 체크 (매일 자정) - 수퍼어드민은 더 많이 지급
     const lastHeartReset = localStorage.getItem('lastHeartReset');
     const today = new Date().toDateString();
     if (lastHeartReset !== today) {
-      setDailyHearts(10);
-      localStorage.setItem('dailyHearts', '10');
+      const dailyAmount = isAdmin ? SUPER_ADMIN_DAILY_HEARTS : 10;
+      setDailyHearts(dailyAmount);
+      localStorage.setItem('dailyHearts', dailyAmount.toString());
       localStorage.setItem('lastHeartReset', today);
     }
   }, [navigate]);
