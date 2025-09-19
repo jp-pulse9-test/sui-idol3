@@ -308,7 +308,7 @@ const Index = () => {
           <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
             <div className="space-y-4">
               <h2 className="text-4xl font-bold gradient-text">
-                지금 바로 체험해보세요!
+                바로 체험
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
                 Pick은 체험, Vault부터 지갑 연결로 본격 시작!
