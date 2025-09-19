@@ -196,7 +196,7 @@ const Index = () => {
                   가상아이돌 스토리 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  최애 아이돌을 고르고, 스토리 에피소드를 통해 최애와 나의 추억이 담긴 포토카드를 모아 데뷔와 성장(Rise)을 체감하는 특별한 경험.
+                  성향 분석으로 나와 잘 맞는 아이돌을 찾고, 랜덤박스로 포토카드를 수집하며, 리더보드에서 다른 팬들과 경쟁하는 완전한 팬덤 경험.
                 </p>
               </div>
             </div>
@@ -211,13 +211,13 @@ const Index = () => {
                 🎮 나의 아이돌 PICK 하러가기
               </Button>
               <p className="text-lg text-muted-foreground">
-                지갑 연결 없이도 바로 체험 가능! 데이터 저장은 Vault에서 📦
+                지갑 연결 없이도 바로 체험 가능! 본격적인 수집과 거래는 Vault에서 📦
               </p>
               
               {!user && (
                 <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
                   <p className="text-sm text-muted-foreground text-center">
-                    💡 <span className="text-accent font-semibold">Pick</span>은 체험용, <span className="text-primary font-semibold">Vault</span>부터 지갑 연결이 필요해요
+                    💡 <span className="text-accent font-semibold">Pick</span>은 체험용, <span className="text-primary font-semibold">Vault</span>부터 본격 수집과 거래가 시작돼요
                   </p>
                 </div>
               )}
@@ -243,14 +243,14 @@ const Index = () => {
             <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
               <h2 className="text-4xl font-bold gradient-text">Pick · Vault · Rise</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                선택하고, 보관하고, 성장하는 3단계 아이돌 경험
+                선택하고, 수집하고, 경쟁하는 3단계 팬덤 경험
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
                 title="🎯 PICK"
-                description="성향 분석 후 101명 중 운명적 AI 아이돌 선택. 각 아이돌은 고유한 페르소나와 기억을 가진 대화형 에이전트입니다."
+                description="3가지 방식 성향 분석 후 16강 심쿵 배틀로 운명의 아이돌 선택. 각 아이돌은 고유한 매력과 개성을 가진 AI 캐릭터입니다."
                 icon={mbtiIcon}
                 onClick={() => openPreview('pick')}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
@@ -259,7 +259,7 @@ const Index = () => {
               
               <FeatureCard
                 title="🗃️ VAULT"
-                description="일상 스토리 텍스트 게임을 클리어하며 획득한 포토카드 NFT를 비밀 금고에 안전하게 보관합니다."
+                description="최애를 안전하게 수납하고 랜덤박스로 포토카드를 수집하세요. 희귀한 카드일수록 더 높은 가치를 가집니다."
                 icon={photocardIcon}
                 onClick={() => openPreview('vault')}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
@@ -268,7 +268,7 @@ const Index = () => {
               
               <FeatureCard
                 title="📈 RISE"
-                description="데뷔 에피소드를 완료하면 특별한 뱃지를 획득하며, 아이돌과 함께 성장하는 과정을 체감합니다."
+                description="리더보드에서 팬 포인트로 경쟁하고, 갤러리에서 포카를 전시하며, 마켓플레이스에서 자유롭게 거래하세요."
                 icon={tournamentIcon}
                 onClick={() => openPreview('rise')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
@@ -292,21 +292,21 @@ const Index = () => {
                       🎯
                     </div>
                     <h3 className="text-xl font-bold text-primary">PICK</h3>
-                    <p className="text-foreground">성향 분석 → 심쿵 배틀 → 최애 선택</p>
+                    <p className="text-foreground">성향 분석 → 심쿵 배틀 → 최애 민팅</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       🗃️
                     </div>
                     <h3 className="text-xl font-bold text-accent">VAULT</h3>
-                    <p className="text-foreground">지갑 연결 → 스토리 앨범 → 추억 보관</p>
+                    <p className="text-foreground">최애 수납 → 랜덤박스 → 포카 수집</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       📈
                     </div>
                     <h3 className="text-xl font-bold text-secondary">RISE</h3>
-                    <p className="text-foreground">피어 멘토링 → 추억 생성 → 데뷔</p>
+                    <p className="text-foreground">리더보드 → 갤러리 → 거래소</p>
                   </div>
                 </div>
               </div>
@@ -322,8 +322,8 @@ const Index = () => {
                바로 체험
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
-                Pick은 체험, Vault부터 지갑 연결로 본격 시작!
-              </p>
+                 Pick은 체험, Vault부터 본격 수집과 거래!
+               </p>
             </div>
             
             <Button
@@ -332,7 +332,7 @@ const Index = () => {
               size="xl"
               className="min-w-64 text-xl py-4"
             >
-              🌟 아이돌 PICK 체험하기 🌟
+              🌟 성향 분석으로 최애 PICK하기 🌟
             </Button>
           </div>
         </section>
@@ -348,7 +348,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
           <p className="text-muted-foreground">
-            © 2024 Sui:Idol³. 가상아이돌 스토리 플랫폼 · Made with 💖 by Lovable
+            © 2024 Sui:Idol³. K-POP 팬덤 플랫폼 · Made with 💖 by Lovable
           </p>
         </footer>
       </div>
