@@ -14,41 +14,342 @@ export type Database = {
   }
   public: {
     Tables: {
-      character_profiles: {
+      chat_logs: {
         Row: {
-          border_color: string
-          created_at: string
-          custom_text: string
+          created_at: string | null
           id: string
-          image: string
-          name: string
-          personality: string
-          updated_at: string
-          user_id: string
+          payload_encrypted: string
+          session_id: string | null
+          sha256_hash: string
+          vault_id: string | null
         }
         Insert: {
-          border_color?: string
-          created_at?: string
-          custom_text: string
+          created_at?: string | null
           id?: string
-          image: string
-          name: string
-          personality: string
-          updated_at?: string
-          user_id: string
+          payload_encrypted: string
+          session_id?: string | null
+          sha256_hash: string
+          vault_id?: string | null
         }
         Update: {
-          border_color?: string
-          created_at?: string
-          custom_text?: string
+          created_at?: string | null
           id?: string
-          image?: string
+          payload_encrypted?: string
+          session_id?: string | null
+          sha256_hash?: string
+          vault_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_logs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "story_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_logs_vault_id_fkey"
+            columns: ["vault_id"]
+            isOneToOne: false
+            referencedRelation: "vaults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      debut_badges: {
+        Row: {
+          badge_id: string | null
+          created_at: string | null
+          id: string
+          tx_digest: string | null
+          vault_id: string | null
+        }
+        Insert: {
+          badge_id?: string | null
+          created_at?: string | null
+          id?: string
+          tx_digest?: string | null
+          vault_id?: string | null
+        }
+        Update: {
+          badge_id?: string | null
+          created_at?: string | null
+          id?: string
+          tx_digest?: string | null
+          vault_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debut_badges_vault_id_fkey"
+            columns: ["vault_id"]
+            isOneToOne: false
+            referencedRelation: "vaults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      debut_cards: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string | null
+          token_id: string | null
+          tx_digest: string | null
+          vault_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          token_id?: string | null
+          tx_digest?: string | null
+          vault_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          token_id?: string | null
+          tx_digest?: string | null
+          vault_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debut_cards_vault_id_fkey"
+            columns: ["vault_id"]
+            isOneToOne: false
+            referencedRelation: "vaults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idol_cards: {
+        Row: {
+          id: string
+          minted_at: string | null
+          token_id: string | null
+          tx_digest: string | null
+          vault_id: string | null
+        }
+        Insert: {
+          id?: string
+          minted_at?: string | null
+          token_id?: string | null
+          tx_digest?: string | null
+          vault_id?: string | null
+        }
+        Update: {
+          id?: string
+          minted_at?: string | null
+          token_id?: string | null
+          tx_digest?: string | null
+          vault_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idol_cards_vault_id_fkey"
+            columns: ["vault_id"]
+            isOneToOne: false
+            referencedRelation: "vaults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idols: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: number
+          name: string
+          persona_prompt: string
+          personality: string
+          profile_image: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: number
+          name: string
+          persona_prompt: string
+          personality: string
+          profile_image: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: number
           name?: string
+          persona_prompt?: string
           personality?: string
-          updated_at?: string
-          user_id?: string
+          profile_image?: string
         }
         Relationships: []
+      }
+      memory_cards: {
+        Row: {
+          caption: string | null
+          choice_hash: string
+          created_at: string | null
+          id: string
+          image_url: string | null
+          moment_hash: string
+          rarity: number
+          scene_id: number
+          token_id: string | null
+          tx_digest: string | null
+          vault_id: string | null
+        }
+        Insert: {
+          caption?: string | null
+          choice_hash: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          moment_hash: string
+          rarity: number
+          scene_id: number
+          token_id?: string | null
+          tx_digest?: string | null
+          vault_id?: string | null
+        }
+        Update: {
+          caption?: string | null
+          choice_hash?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          moment_hash?: string
+          rarity?: number
+          scene_id?: number
+          token_id?: string | null
+          tx_digest?: string | null
+          vault_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_cards_vault_id_fkey"
+            columns: ["vault_id"]
+            isOneToOne: false
+            referencedRelation: "vaults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      story_sessions: {
+        Row: {
+          choices_made: Json | null
+          completed_at: string | null
+          created_at: string | null
+          current_turn: number | null
+          expires_at: string | null
+          id: string
+          is_completed: boolean | null
+          scene_id: number
+          session_type: string
+          vault_id: string | null
+        }
+        Insert: {
+          choices_made?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_turn?: number | null
+          expires_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          scene_id: number
+          session_type: string
+          vault_id?: string | null
+        }
+        Update: {
+          choices_made?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_turn?: number | null
+          expires_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          scene_id?: number
+          session_type?: string
+          vault_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_sessions_vault_id_fkey"
+            columns: ["vault_id"]
+            isOneToOne: false
+            referencedRelation: "vaults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      vaults: {
+        Row: {
+          created_at: string | null
+          debut_done: boolean | null
+          id: string
+          idol_id: number | null
+          level: number | null
+          rise_points: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          debut_done?: boolean | null
+          id?: string
+          idol_id?: number | null
+          level?: number | null
+          rise_points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          debut_done?: boolean | null
+          id?: string
+          idol_id?: number | null
+          level?: number | null
+          rise_points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vaults_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vaults_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
