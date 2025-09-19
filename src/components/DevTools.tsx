@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -26,6 +27,8 @@ interface DatabaseStats {
 }
 
 export const DevTools: React.FC = () => {
+  const { user } = useAuth();
+  const SUPER_ADMIN_WALLET = "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc";
   const [isVisible, setIsVisible] = useState(false);
   const [stats, setStats] = useState<DatabaseStats>({ totalIdols: 0, recentIdols: [] });
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
@@ -33,14 +36,18 @@ export const DevTools: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // 개발 모드에서만 표시 (URL에 ?dev=true가 있을 때)
+    // 슈퍼 어드민 권한 체크
+    const isSuperAdmin = user?.wallet_address === SUPER_ADMIN_WALLET;
     const urlParams = new URLSearchParams(window.location.search);
-    setIsVisible(urlParams.get('dev') === 'true');
+    const devModeRequested = urlParams.get('dev') === 'true';
     
-    if (urlParams.get('dev') === 'true') {
+    // 슈퍼 어드민이면서 dev=true 파라미터가 있을 때만 표시
+    setIsVisible(isSuperAdmin && devModeRequested);
+    
+    if (isSuperAdmin && devModeRequested) {
       loadStats();
     }
-  }, []);
+  }, [user]);
 
   const loadStats = async () => {
     setIsLoading(true);
@@ -152,6 +159,26 @@ export const DevTools: React.FC = () => {
   };
 
   if (!isVisible) {
+    // 권한이 없는 경우 안내 메시지 (dev=true이지만 슈퍼어드민이 아닌 경우)
+    const urlParams = new URLSearchParams(window.location.search);
+    const devModeRequested = urlParams.get('dev') === 'true';
+    const isSuperAdmin = user?.wallet_address === SUPER_ADMIN_WALLET;
+    
+    if (devModeRequested && !isSuperAdmin) {
+      return (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Card className="w-80 shadow-lg border-yellow-200 bg-yellow-50/95 backdrop-blur">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm text-yellow-700">
+                🔒 슈퍼 어드민 전용 도구입니다<br/>
+                권한이 없는 사용자입니다.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    
     return null;
   }
 
@@ -161,10 +188,11 @@ export const DevTools: React.FC = () => {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Settings className="w-5 h-5 text-primary" />
-            개발자 도구
+            슈퍼 어드민 도구
+            <Badge variant="destructive" className="text-xs">ADMIN</Badge>
           </CardTitle>
           <CardDescription>
-            아이돌 데이터 관리 및 생성 도구
+            아이돌 데이터 관리 및 생성 도구 (권한 필요)
           </CardDescription>
         </CardHeader>
         
