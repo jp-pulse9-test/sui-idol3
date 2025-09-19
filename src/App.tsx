@@ -4,10 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import IdolPick from "./pages/IdolPick";
-import Vault from "./pages/Vault";
-import Collection from "./pages/Collection";
-import PickOld from "./pages/Pick";
+import Pick from "./pages/Pick";
 import Play from "./pages/Play";
 import Progress from "./pages/Progress";
 import GenderSelect from "./pages/GenderSelect";
@@ -17,6 +14,8 @@ import AppearanceTestEnhanced from "./pages/AppearanceTestEnhanced";
 import ResultAnalysisEnhanced from "./pages/ResultAnalysisEnhanced";
 import FinalPick from "./pages/FinalPick";
 import WorldCup from "./pages/WorldCup";
+import PhotoCard from "./pages/PhotoCard";
+import Collection from "./pages/Collection";
 import Gallery from "./pages/Gallery";
 import Growth from "./pages/Growth";
 import NotFound from "./pages/NotFound";
@@ -31,13 +30,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* PRD 기반 메인 플로우 */}
-          <Route path="/pick" element={<IdolPick />} />
-          <Route path="/vault" element={<Vault />} />
-          <Route path="/collection" element={<Collection />} />
-          
-          {/* 기존 3단계 플로우 */}
-          <Route path="/pick-old" element={<PickOld />} />
+          {/* 3단계 플로우 */}
+          <Route path="/pick" element={<Pick />} />
           <Route path="/play" element={<Play />} />
           <Route path="/progress" element={<Progress />} />
           
@@ -49,6 +43,8 @@ const App = () => (
           <Route path="/result-analysis" element={<ResultAnalysisEnhanced />} />
           <Route path="/final-pick" element={<FinalPick />} />
           <Route path="/worldcup" element={<WorldCup />} />
+          <Route path="/photocard" element={<PhotoCard />} />
+          <Route path="/collection" element={<Collection />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/growth" element={<Growth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
