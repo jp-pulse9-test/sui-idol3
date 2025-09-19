@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { MessageCircle, Trophy, Gift } from "lucide-react";
+import { MessageCircle, Trophy, Gift, Lock } from "lucide-react";
+import StoryGameModal from "@/components/StoryGameModal";
 
 interface StoryEpisode {
   id: string;
@@ -33,6 +34,7 @@ interface SelectedIdol {
   name: string;
   personality: string;
   image: string;
+  persona_prompt?: string;
 }
 
 const Vault = () => {
@@ -41,7 +43,7 @@ const Vault = () => {
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [currentEpisode, setCurrentEpisode] = useState<StoryEpisode | null>(null);
   const [memoryCards, setMemoryCards] = useState<MemoryCard[]>([]);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isGameModalOpen, setIsGameModalOpen] = useState(false);
 
   // 일상 스토리 에피소드들 (6-8턴)
   const storyEpisodes: StoryEpisode[] = [
@@ -118,28 +120,22 @@ const Vault = () => {
     }
     
     setCurrentEpisode(episode);
-    setIsPlaying(true);
+    setIsGameModalOpen(true);
+  };
+
+  const handleGameComplete = (newMemoryCard: MemoryCard) => {
+    const updatedCards = [...memoryCards, newMemoryCard];
+    setMemoryCards(updatedCards);
+    localStorage.setItem('memoryCards', JSON.stringify(updatedCards));
     
-    // 모의 스토리 플레이 (실제로는 채팅형 인터페이스)
-    setTimeout(() => {
-      // 에피소드 완료 시 MemoryCard 발급
-      const newMemoryCard: MemoryCard = {
-        id: `memory-${episode.id}-${Date.now()}`,
-        episodeId: episode.id,
-        title: `${episode.title} - 추억의 순간`,
-        rarity: Math.random() > 0.7 ? 'R' : 'N',
-        image: selectedIdol?.image || '',
-        earnedAt: new Date().toISOString()
-      };
-      
-      const updatedCards = [...memoryCards, newMemoryCard];
-      setMemoryCards(updatedCards);
-      localStorage.setItem('memoryCards', JSON.stringify(updatedCards));
-      
-      toast.success(`${newMemoryCard.rarity}등급 MemoryCard를 획득했습니다!`);
-      setIsPlaying(false);
-      setCurrentEpisode(null);
-    }, 3000);
+    // 에피소드 완료 상태 업데이트
+    const updatedEpisodes = storyEpisodes.map(ep => 
+      ep.id === currentEpisode?.id ? { ...ep, completed: true } : ep
+    );
+    localStorage.setItem('completedEpisodes', JSON.stringify(updatedEpisodes));
+    
+    setIsGameModalOpen(false);
+    setCurrentEpisode(null);
   };
 
   const getRarityColor = (rarity: string) => {
@@ -324,24 +320,22 @@ const Vault = () => {
           </div>
         </div>
 
-        {/* 플레이 중 모달 */}
-        {isPlaying && currentEpisode && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <Card className="p-8 glass-dark border-white/10 max-w-lg w-full mx-4">
-              <div className="text-center space-y-6">
-                <h3 className="text-2xl font-bold gradient-text">
-                  {currentEpisode.title}
-                </h3>
-                <div className="space-y-4">
-                  <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
-                  <p className="text-muted-foreground">
-                    {selectedIdol.name}와의 스토리가 진행 중입니다...
-                  </p>
-                  <Progress value={60} className="w-full" />
-                </div>
-              </div>
-            </Card>
-          </div>
+        {/* 스토리 게임 모달 */}
+        {currentEpisode && selectedIdol && (
+          <StoryGameModal
+            isOpen={isGameModalOpen}
+            onClose={() => {
+              setIsGameModalOpen(false);
+              setCurrentEpisode(null);
+            }}
+            episode={currentEpisode}
+            idol={{
+              name: selectedIdol.name,
+              personality: selectedIdol.personality,
+              persona_prompt: selectedIdol.persona_prompt || ""
+            }}
+            onComplete={handleGameComplete}
+          />
         )}
 
         {/* Navigation */}

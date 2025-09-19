@@ -265,14 +265,7 @@ const Play = () => {
         />
       )}
 
-      {showStoryGame && currentScenario && selectedIdol && (
-        <StoryGameModal
-          isOpen={showStoryGame}
-          onClose={() => setShowStoryGame(false)}
-          scenario={currentScenario}
-          idolName={selectedIdol.name}
-        />
-      )}
+      {/* Commented out old StoryGameModal - using new implementation in Vault */}
     </div>
   );
 };
