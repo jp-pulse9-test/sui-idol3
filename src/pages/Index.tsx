@@ -328,10 +328,10 @@ const Index = () => {
           <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
             <div className="space-y-4">
               <h2 className="text-4xl font-bold gradient-text">
-               바로 체험
+               바로 즐겨! Pick에서 심쿵 픽
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
-                 Pick은 체험, Vault부터 본격 수집과 거래!
+                 내가 PICK한 아이돌, 포카는 랜박으로, 자랑은 리더보드로!
                </p>
             </div>
             
