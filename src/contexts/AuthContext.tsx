@@ -50,16 +50,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const connectWallet = async () => {
     try {
-      // 목업 지갑 주소 생성 (더 간단하게)
-      const mockWalletAddress = "0x" + Math.random().toString(16).substring(2, 42);
+      // 실제 지갑 주소 사용
+      const realWalletAddress = "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc";
       
-      console.log('목업 지갑 연결 시도:', mockWalletAddress);
+      console.log('실제 지갑 연결 시도:', realWalletAddress);
       
       // 사용자 생성 또는 조회
       const { data: existingUser } = await supabase
         .from('users')
         .select('*')
-        .eq('wallet_address', mockWalletAddress)
+        .eq('wallet_address', realWalletAddress)
         .maybeSingle();
 
       let userId: string;
@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // 새 사용자 생성
         const { data: newUser, error } = await supabase
           .from('users')
-          .insert([{ wallet_address: mockWalletAddress }])
+          .insert([{ wallet_address: realWalletAddress }])
           .select()
           .single();
 
@@ -84,10 +84,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // 지갑 저장 및 사용자 설정
-      secureStorage.setWalletAddress(mockWalletAddress);
-      setUser({ id: userId, wallet_address: mockWalletAddress });
+      secureStorage.setWalletAddress(realWalletAddress);
+      setUser({ id: userId, wallet_address: realWalletAddress });
       
-      console.log('목업 지갑 연결 성공');
+      console.log('실제 지갑 연결 성공');
       return { error: null };
     } catch (error) {
       console.error('지갑 연결 오류:', error);
