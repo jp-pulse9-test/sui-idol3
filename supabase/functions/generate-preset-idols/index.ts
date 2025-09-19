@@ -111,32 +111,37 @@ serve(async (req) => {
         const description = personalityMatch ? personalityMatch[1].trim() : `${randomPersonality} 성격의 매력적인 K-pop 아이돌입니다.`
         const personaPrompt = personaMatch ? personaMatch[1].trim() : `안녕하세요! 저는 ${uniqueName}이에요. ${randomPersonality} 성격으로 팬 여러분과 즐겁게 대화하고 싶어요!`
         
-        // Gemini로 이미지 생성
-        const imagePrompt = `Professional K-pop idol portrait photo, ${randomPersonality} personality, ${randomConcept} style, beautiful Korean idol with perfect makeup and stylish outfit, high quality studio lighting, detailed facial features, commercial photography, 4K resolution, clean background`
+        // Gemini 2.5 Flash로 이미지 생성
+        const imagePrompt = `Create a professional K-pop idol portrait photo: ${randomPersonality} personality, ${randomConcept} concept style, beautiful Korean idol with perfect makeup and stylish outfit, high quality studio lighting, detailed facial features, commercial photography, 4K resolution, clean background, photorealistic`
         
         let profileImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${uniqueName}` // 기본 이미지
         
         try {
-          const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${googleApiKey}`, {
+          const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateImage?key=${googleApiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{
-                parts: [{
-                  text: `Generate an image: ${imagePrompt}`
-                }]
-              }],
+              prompt: imagePrompt,
               generationConfig: {
-                temperature: 0.7
+                aspectRatio: "1:1",
+                negativePrompt: "blurry, low quality, distorted, cartoon, anime, illustration",
+                outputMimeType: "image/jpeg"
               }
             })
           })
           
-          const imageData = await imageResponse.json()
-          
-          // Gemini는 텍스트 모델이므로 이미지를 직접 생성할 수 없습니다
-          // 대신 이미지 생성 API 호출을 위한 상세한 프롬프트를 생성합니다
-          console.log(`Generated image prompt for ${uniqueName}: ${imagePrompt}`)
+          if (imageResponse.ok) {
+            const imageData = await imageResponse.json()
+            
+            // Imagen API에서 base64 이미지 데이터 받기
+            if (imageData.generatedImages && imageData.generatedImages.length > 0) {
+              const base64Image = imageData.generatedImages[0].bytesBase64Encoded
+              profileImage = `data:image/jpeg;base64,${base64Image}`
+              console.log(`Generated image for ${uniqueName} successfully`)
+            }
+          } else {
+            console.error(`Image generation failed for ${uniqueName}:`, imageResponse.status, await imageResponse.text())
+          }
           
         } catch (imageError) {
           console.error(`Image generation failed for ${uniqueName}:`, imageError)
