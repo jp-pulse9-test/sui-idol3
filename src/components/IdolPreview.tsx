@@ -3,10 +3,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Crown, Heart, Star, Sparkles } from "lucide-react";
+import { Crown, Heart, Star, Sparkles, BarChart3, Radar } from "lucide-react";
 import { toast } from "sonner";
 import { applySuperAdminBenefits } from "@/utils/superAdminBenefits";
 import { isSuperAdmin } from "@/utils/adminWallets";
+import { IdolStatsDisplay, generateRandomStats } from "@/components/IdolStatsDisplay";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface IdolPreset {
   id: number;
@@ -28,6 +30,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
   const [isVoting, setIsVoting] = useState(false);
   const [hasSufficientCoins, setHasSufficientCoins] = useState(false);
   const [currentSuiCoins, setCurrentSuiCoins] = useState(0);
+  const [idolStats, setIdolStats] = useState(() => generateRandomStats(selectedIdol.personality));
 
   useEffect(() => {
     // 수퍼어드민 특권 먼저 적용
@@ -128,22 +131,52 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
                 <p className="text-muted-foreground">
                   {selectedIdol.description}
                 </p>
-
-                {/* 예상 특성 */}
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="text-center p-3 bg-card/50 rounded-lg">
-                    <div className="text-pink-400 font-bold">매력도</div>
-                    <div className="text-2xl">★★★★★</div>
-                  </div>
-                  <div className="text-center p-3 bg-card/50 rounded-lg">
-                    <div className="text-purple-400 font-bold">호감도</div>
-                    <div className="text-2xl">💕💕💕💕💕</div>
-                  </div>
-                </div>
               </div>
             </div>
           </Card>
         </div>
+
+        {/* 아이돌 상세 스탯 */}
+        <Card className="p-6 glass-dark border-white/10">
+          <Tabs defaultValue="radar" className="w-full">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold gradient-text">📊 아이돌 능력치</h3>
+              <TabsList className="bg-card/50">
+                <TabsTrigger value="radar" className="flex items-center gap-2">
+                  <Radar className="w-4 h-4" />
+                  레이더
+                </TabsTrigger>
+                <TabsTrigger value="bar" className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  막대그래프
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            
+            <TabsContent value="radar">
+              <IdolStatsDisplay stats={idolStats} viewMode="radar" />
+            </TabsContent>
+            
+            <TabsContent value="bar">
+              <IdolStatsDisplay stats={idolStats} viewMode="bar" />
+            </TabsContent>
+          </Tabs>
+
+          <div className="mt-6 grid grid-cols-2 gap-4 text-sm bg-card/30 p-4 rounded-lg">
+            <div className="text-center">
+              <div className="text-lg font-bold text-primary">
+                {Math.round(Object.values(idolStats).reduce((acc, stat) => acc + stat.current, 0) / 8)}
+              </div>
+              <div className="text-muted-foreground">현재 평균</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-accent">
+                {Math.round(Object.values(idolStats).reduce((acc, stat) => acc + stat.potential, 0) / 8)}
+              </div>
+              <div className="text-muted-foreground">잠재력 평균</div>
+            </div>
+          </div>
+        </Card>
 
         {/* 투표 프로세스 */}
         {!isVoting ? (
