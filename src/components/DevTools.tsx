@@ -208,7 +208,16 @@ export const DevTools: React.FC = () => {
                   </div>
                 )}
                 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-4 gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => generateBatchIdols(1)}
+                    disabled={isGeneratingBatch}
+                    className="text-xs"
+                  >
+                    1명
+                  </Button>
                   <Button
                     size="sm"
                     variant="outline"
