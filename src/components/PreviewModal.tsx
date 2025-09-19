@@ -22,21 +22,21 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onOpenChange, type, o
           steps: [
             {
               step: '1단계',
-              title: 'MBTI 성향 분석',
+              title: '성향 분석',
               description: '당신의 성격과 취향을 분석합니다',
               example: '외향형 → 화려한 무대를 좋아하는 아이돌 추천',
               icon: <Heart className="w-5 h-5" />
             },
             {
               step: '2단계', 
-              title: '이상형 월드컵',
+              title: '심쿵 배틀',
               description: '101명 중 끌리는 아이돌들을 선별합니다',
               example: '16강 → 8강 → 결승전으로 좁혀가기',
               icon: <Star className="w-5 h-5" />
             },
             {
               step: '3단계',
-              title: '최종 선택',
+              title: '최애 선택',
               description: '분석 결과와 선호도를 종합해 최애를 결정합니다',
               example: '"밝고 에너지 넘치는 하루"와 95% 매칭!',
               icon: <Zap className="w-5 h-5" />
@@ -50,21 +50,21 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onOpenChange, type, o
           description: '최애와 함께하는 일상 스토리와 포토카드 수집 (지갑 연결 필요)',
           steps: [
             {
-              step: '스토리',
-              title: '일상 에피소드 게임',
-              description: '최애와의 다양한 상황을 텍스트 게임으로 체험',
-              example: '"카페에서 우연히 만난 최애, 어떻게 할까요?"',
+              step: '지갑연결',
+              title: 'Sui 지갑 연결',
+              description: '데이터 보관을 위한 지갑 연결이 필요합니다',
+              example: '안전한 블록체인 기반 데이터 저장',
               icon: <Heart className="w-5 h-5" />
             },
             {
-              step: '포토카드',
+              step: '스토리앨범',
               title: '추억 포토카드 획득',
               description: '스토리 클리어 시 특별한 순간이 담긴 NFT 카드',
               example: 'SSR 등급 "첫 만남의 설렘" 포토카드 획득!',
               icon: <Star className="w-5 h-5" />
             },
             {
-              step: '보관함',
+              step: '추억보관',
               title: '나만의 비밀 금고',
               description: '수집한 모든 추억을 안전하게 보관',
               example: '현재 12장 보유 (N:8장, R:3장, SR:1장)',
@@ -79,24 +79,24 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onOpenChange, type, o
           description: '최애의 데뷔와 성장을 함께 체감하는 특별한 여정 (지갑 연결 필요)',
           steps: [
             {
-              step: '데뷔',
-              title: '데뷔 에피소드 완주',
-              description: '최애의 첫 무대까지의 스토리를 완성합니다',
-              example: '"드디어 데뷔 무대! 떨리는 마음을 달래주세요"',
-              icon: <Heart className="w-5 h-5" />
-            },
-            {
-              step: '성장',
+              step: '피어멘토링',
               title: '함께 성장하기',
               description: '다양한 활동을 통해 최애와 함께 발전합니다',
               example: '신곡 발매, 팬미팅, 콘서트 등 특별한 순간들',
+              icon: <Heart className="w-5 h-5" />
+            },
+            {
+              step: '추억생성',
+              title: '특별한 순간들',
+              description: '중요한 이정표마다 새로운 추억을 만듭니다',
+              example: '"첫 1위 달성!" 특별한 순간 기록',
               icon: <Star className="w-5 h-5" />
             },
             {
-              step: '뱃지',
-              title: '특별한 뱃지 획득',
-              description: '중요한 이정표마다 기념 뱃지를 받습니다',
-              example: '"첫 1위 기념" 골드 뱃지 영구 소장!',
+              step: '스토리앨범',
+              title: '성장 스토리 완성',
+              description: '모든 추억이 담긴 완전한 스토리를 완성합니다',
+              example: '데뷔부터 현재까지의 완전한 성장 스토리',
               icon: <Zap className="w-5 h-5" />
             }
           ]

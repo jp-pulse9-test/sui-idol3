@@ -281,21 +281,21 @@ const Index = () => {
                       🎯
                     </div>
                     <h3 className="text-xl font-bold text-primary">PICK</h3>
-                    <p className="text-foreground">지갑 연결 없이 체험 → MBTI 분석 → 최종 선택</p>
+                    <p className="text-foreground">성향 분석 → 심쿵 배틀 → 최애 선택</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       🗃️
                     </div>
                     <h3 className="text-xl font-bold text-accent">VAULT</h3>
-                    <p className="text-foreground">지갑 연결 → 포토카드 → 안전한 보관</p>
+                    <p className="text-foreground">지갑 연결 → 스토리 앨범 → 추억 보관</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       📈
                     </div>
                     <h3 className="text-xl font-bold text-secondary">RISE</h3>
-                    <p className="text-foreground">함께 성장 → 추억 생성 → 특별한 스토리</p>
+                    <p className="text-foreground">피어 멘토링 → 추억 생성 → 스토리 앨범</p>
                   </div>
                 </div>
               </div>
