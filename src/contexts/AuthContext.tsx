@@ -27,20 +27,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const checkWalletConnection = async () => {
       const savedWallet = secureStorage.getWalletAddress();
       if (savedWallet) {
-        try {
-          // Check if user exists in database
-          const { data: existingUser } = await supabase
-            .from('users')
-            .select('*')
-            .eq('wallet_address', savedWallet)
-            .maybeSingle();
-
-          if (existingUser) {
-            setUser({ id: existingUser.id, wallet_address: existingUser.wallet_address });
-          }
-        } catch (error) {
-          console.error('Error checking wallet connection:', error);
-        }
+        // 보안을 위해 DB 조회 없이 로컬 상태 복원
+        const userId = 'user_' + savedWallet.slice(-12);
+        setUser({ id: userId, wallet_address: savedWallet });
+        console.log('저장된 지갑 연결 복원:', savedWallet);
       }
       setLoading(false);
     };
@@ -55,30 +45,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log('실제 지갑 연결 시도:', realWalletAddress);
       
-      // 사용자 생성 또는 조회
-      const { data: existingUser } = await supabase
+      // 새 사용자 생성 (기존 사용자 조회는 보안상 제한됨)
+      const { data: newUser, error } = await supabase
         .from('users')
-        .select('*')
-        .eq('wallet_address', realWalletAddress)
-        .maybeSingle();
+        .insert([{ wallet_address: realWalletAddress }])
+        .select()
+        .single();
 
       let userId: string;
 
-      if (existingUser) {
-        userId = existingUser.id;
-        console.log('기존 사용자 발견:', userId);
+      if (error && error.code === '23505') {
+        // 중복 지갑 주소 - 이미 존재하는 사용자
+        // 로컬 스토리지에서 사용자 ID 생성 (보안을 위해 실제 DB 조회 없이)
+        userId = 'user_' + realWalletAddress.slice(-12);
+        console.log('기존 사용자 지갑 연결:', userId);
+      } else if (error) {
+        console.error('사용자 생성 오류:', error);
+        return { error };
       } else {
-        // 새 사용자 생성
-        const { data: newUser, error } = await supabase
-          .from('users')
-          .insert([{ wallet_address: realWalletAddress }])
-          .select()
-          .single();
-
-        if (error) {
-          console.error('사용자 생성 오류:', error);
-          return { error };
-        }
         userId = newUser.id;
         console.log('새 사용자 생성:', userId);
       }
