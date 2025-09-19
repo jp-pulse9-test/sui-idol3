@@ -75,6 +75,29 @@ export const IdolGenerator: React.FC = () => {
     await generateSingleIdol();
   };
 
+  const generateMultipleIdols = async () => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-preset-idols', {
+        body: { count: 50 }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success(`${data.generated_count}명의 새로운 아이돌이 생성되었습니다! 🎉`);
+        setGeneratedIdol(null); // 이전 결과 클리어
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      console.error('Error generating multiple idols:', error);
+      toast.error('아이돌 대량 생성에 실패했습니다.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card className="border-2 border-primary/20">
@@ -141,7 +164,7 @@ export const IdolGenerator: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               onClick={generateSingleIdol}
               disabled={isGenerating}
@@ -168,6 +191,20 @@ export const IdolGenerator: React.FC = () => {
                 <Sparkles className="w-4 h-4" />
               )}
               랜덤 생성
+            </Button>
+
+            <Button
+              onClick={generateMultipleIdols}
+              disabled={isGenerating}
+              variant="secondary"
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none hover:from-purple-600 hover:to-pink-600"
+            >
+              {isGenerating ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4" />
+              )}
+              50명 대량 생성
             </Button>
           </div>
         </CardContent>
