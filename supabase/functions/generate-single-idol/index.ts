@@ -105,22 +105,24 @@ serve(async (req) => {
     const description = personalityMatch ? personalityMatch[1].trim() : `${finalPersonality} 성격의 매력적인 K-pop 아이돌입니다.`
     const personaPrompt = personaMatch ? personaMatch[1].trim() : `안녕하세요! 저는 ${uniqueName}이에요. ${finalPersonality} 성격으로 팬 여러분과 즐겁게 대화하고 싶어요!`
     
-    // Gemini 2.5 Flash로 실제 K-pop 아이돌 이미지 생성
-    const imagePrompt = `Professional portrait of a beautiful Korean K-pop idol with ${finalPersonality} personality and ${finalConcept} concept. Studio lighting, perfect makeup, stylish modern outfit, photorealistic, high fashion photography style, ultra detailed, beautiful face`
+    // Imagen 3 모델로 실제 K-pop 아이돌 이미지 생성
+    const imagePrompt = `Professional studio portrait of a beautiful Korean K-pop idol, ${finalPersonality} personality, ${finalConcept} concept, perfect makeup, stylish modern outfit, professional studio lighting, photorealistic, ultra high resolution, beautiful face, magazine quality photography`
     
-    console.log(`Generating image with Gemini 2.5 Flash for ${uniqueName}`)
+    console.log(`Generating image with Imagen 3 for ${uniqueName}`)
     
-    const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleApiKey}`, {
+    const imageResponse = await fetch(`https://us-central1-aiplatform.googleapis.com/v1/projects/PROJECT_ID/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Authorization': `Bearer ${googleApiKey}`,
+        'Content-Type': 'application/json' 
+      },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `Generate an image: ${imagePrompt}`
-          }]
+        instances: [{
+          prompt: imagePrompt,
+          sampleCount: 1
         }],
-        generationConfig: {
-          temperature: 0.7
+        parameters: {
+          sampleImageSize: "1024"
         }
       })
     })
@@ -129,7 +131,7 @@ serve(async (req) => {
     
     if (imageResponse.ok) {
       const imageData = await imageResponse.json()
-      const imageBase64 = imageData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data
+      const imageBase64 = imageData.predictions?.[0]?.bytesBase64Encoded
       if (imageBase64) {
         profileImage = `data:image/png;base64,${imageBase64}`
         console.log(`Successfully generated AI image for ${uniqueName}`)

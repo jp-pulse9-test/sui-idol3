@@ -150,29 +150,31 @@ serve(async (req) => {
           if (personaMatch) personaPrompt = personaMatch[1].trim()
         }
 
-        // Gemini 2.5 Flash로 이미지 생성
-        const imagePrompt = `Professional portrait of a beautiful Korean K-pop girl idol with ${personality} personality and ${concept} concept. Studio lighting, perfect makeup, stylish modern outfit, photorealistic, high fashion photography style, ultra detailed, beautiful face, Korean girl`
+        // Imagen 3 모델로 이미지 생성
+        const imagePrompt = `Professional studio portrait of a beautiful Korean K-pop girl idol, ${personality} personality, ${concept} concept, perfect makeup, stylish modern outfit, professional studio lighting, photorealistic, ultra high resolution, beautiful face, magazine quality photography`
         
         let profileImage = `https://api.dicebear.com/7.x/personas/svg?seed=${name}&backgroundColor=f8bfdb,fde7e9,fce4ec&scale=80`
         
-        const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleApiKey}`, {
+        const imageResponse = await fetch(`https://us-central1-aiplatform.googleapis.com/v1/projects/PROJECT_ID/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Authorization': `Bearer ${googleApiKey}`,
+            'Content-Type': 'application/json' 
+          },
           body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `Generate an image: ${imagePrompt}`
-              }]
+            instances: [{
+              prompt: imagePrompt,
+              sampleCount: 1
             }],
-            generationConfig: {
-              temperature: 0.7
+            parameters: {
+              sampleImageSize: "1024"
             }
           })
         })
         
         if (imageResponse.ok) {
           const imageData = await imageResponse.json()
-          const imageBase64 = imageData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data
+          const imageBase64 = imageData.predictions?.[0]?.bytesBase64Encoded
           if (imageBase64) {
             profileImage = `data:image/png;base64,${imageBase64}`
           }
@@ -246,29 +248,31 @@ serve(async (req) => {
           if (personaMatch) personaPrompt = personaMatch[1].trim()
         }
 
-        // Gemini 2.5 Image Flash로 이미지 생성
-        const imagePrompt = `Professional portrait of a handsome Korean K-pop boy idol with ${personality} personality and ${concept} concept. Studio lighting, perfect makeup, stylish modern outfit, photorealistic, high fashion photography style, ultra detailed, handsome face, Korean boy`
+        // Imagen 3 모델로 이미지 생성
+        const imagePrompt = `Professional studio portrait of a handsome Korean K-pop boy idol, ${personality} personality, ${concept} concept, perfect makeup, stylish modern outfit, professional studio lighting, photorealistic, ultra high resolution, handsome face, magazine quality photography`
         
         let profileImage = `https://api.dicebear.com/7.x/personas/svg?seed=${name}&backgroundColor=bde3ff,c0deff,e1f5fe&scale=80`
         
-        const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleApiKey}`, {
+        const imageResponse = await fetch(`https://us-central1-aiplatform.googleapis.com/v1/projects/PROJECT_ID/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Authorization': `Bearer ${googleApiKey}`,
+            'Content-Type': 'application/json' 
+          },
           body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `Generate an image: ${imagePrompt}`
-              }]
+            instances: [{
+              prompt: imagePrompt,
+              sampleCount: 1
             }],
-            generationConfig: {
-              temperature: 0.7
+            parameters: {
+              sampleImageSize: "1024"
             }
           })
         })
         
         if (imageResponse.ok) {
           const imageData = await imageResponse.json()
-          const imageBase64 = imageData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data
+          const imageBase64 = imageData.predictions?.[0]?.bytesBase64Encoded
           if (imageBase64) {
             profileImage = `data:image/png;base64,${imageBase64}`
           }
