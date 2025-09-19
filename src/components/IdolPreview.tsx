@@ -9,6 +9,7 @@ import { applySuperAdminBenefits } from "@/utils/superAdminBenefits";
 import { isSuperAdmin } from "@/utils/adminWallets";
 import { IdolStatsDisplay, generateRandomStats } from "@/components/IdolStatsDisplay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { secureStorage } from "@/utils/secureStorage";
 
 interface IdolPreset {
   id: number;
@@ -34,7 +35,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
 
   useEffect(() => {
     // 수퍼어드민 특권 먼저 적용
-    const currentWallet = localStorage.getItem('walletAddress');
+    const currentWallet = secureStorage.getWalletAddress();
     if (currentWallet && isSuperAdmin(currentWallet)) {
       applySuperAdminBenefits();
     }

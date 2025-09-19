@@ -1,9 +1,10 @@
 import { SUPER_ADMIN_INITIAL_SUI_COINS, SUPER_ADMIN_INITIAL_FAN_HEARTS, SUPER_ADMIN_DAILY_HEARTS, isSuperAdmin } from "@/utils/adminWallets";
 import { toast } from "sonner";
+import { secureStorage } from "@/utils/secureStorage";
 
 // 수퍼어드민 특권 강제 적용 함수
 export const applySuperAdminBenefits = () => {
-  const currentWallet = localStorage.getItem('walletAddress');
+  const currentWallet = secureStorage.getWalletAddress();
   
   if (!currentWallet || !isSuperAdmin(currentWallet)) {
     return false;

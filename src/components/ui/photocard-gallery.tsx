@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, EyeOff, Search, Filter, TrendingUp, TrendingDown, Heart } from "lucide-react";
 import { useHeartSystem } from "@/hooks/useHeartSystem";
 import { toast } from "sonner";
+import { secureStorage } from "@/utils/secureStorage";
 
 interface PhotoCard {
   id: string;
@@ -51,7 +52,7 @@ export const PhotoCardGallery = ({
   const [activeTab, setActiveTab] = useState<'catalog' | 'owned'>('catalog');
   
   const { dailyHearts, giveHeart, hasGivenHeart } = useHeartSystem();
-  const currentWallet = localStorage.getItem('walletAddress');
+  const currentWallet = secureStorage.getWalletAddress();
 
   const rarityOrder = { 'SSR': 4, 'SR': 3, 'R': 2, 'N': 1 };
   const rarityColors = {

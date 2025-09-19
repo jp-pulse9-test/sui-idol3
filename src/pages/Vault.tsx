@@ -12,6 +12,7 @@ import { HeartPurchase } from "@/components/HeartPurchase";
 import { Heart } from "lucide-react";
 import { isSuperAdmin, SUPER_ADMIN_INITIAL_SUI_COINS, SUPER_ADMIN_INITIAL_FAN_HEARTS, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
 import { applySuperAdminBenefits, autoApplySuperAdminBenefits } from "@/utils/superAdminBenefits";
+import { secureStorage } from "@/utils/secureStorage";
 
 interface SelectedIdol {
   id: number;
@@ -58,7 +59,7 @@ const Vault = () => {
   const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection'>('storage');
 
   useEffect(() => {
-    const savedWallet = localStorage.getItem('walletAddress');
+    const savedWallet = secureStorage.getWalletAddress();
     const savedIdol = localStorage.getItem('selectedIdol');
     
     if (!savedWallet) {

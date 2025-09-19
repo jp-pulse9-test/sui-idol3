@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { isSuperAdmin, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
+import { secureStorage } from "@/utils/secureStorage";
 
 interface HeartSystemState {
   dailyHearts: number;
@@ -29,7 +30,7 @@ export const useHeartSystem = () => {
     }
 
     // 자신의 포카에는 하트를 줄 수 없음
-    const currentWallet = localStorage.getItem('walletAddress');
+    const currentWallet = secureStorage.getWalletAddress();
     if (cardOwnerId === currentWallet) {
       toast.error('자신의 포카에는 하트를 줄 수 없습니다!');
       return false;
@@ -71,7 +72,7 @@ export const useHeartSystem = () => {
   const updateOwnerFanHearts = (ownerId: string) => {
     // 실제로는 서버에서 소유자의 팬 하트를 증가시켜야 함
     // 현재는 로컬에서만 시뮬레이션
-    const currentWallet = localStorage.getItem('walletAddress');
+    const currentWallet = secureStorage.getWalletAddress();
     if (ownerId === currentWallet) {
       const currentFanHearts = parseInt(localStorage.getItem('fanHearts') || '0');
       const newFanHearts = currentFanHearts + 1;
@@ -86,7 +87,7 @@ export const useHeartSystem = () => {
     const lastReset = localStorage.getItem('lastHeartReset');
     
     if (lastReset !== today) {
-      const currentWallet = localStorage.getItem('walletAddress') || '';
+      const currentWallet = secureStorage.getWalletAddress() || '';
       const isAdmin = isSuperAdmin(currentWallet);
       const dailyAmount = isAdmin ? SUPER_ADMIN_DAILY_HEARTS : 10;
       

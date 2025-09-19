@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Leaderboard } from "@/components/ui/leaderboard";
 import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { Marketplace } from "@/components/ui/marketplace";
+import { secureStorage } from "@/utils/secureStorage";
 
 interface SelectedIdol {
   id: number;
@@ -135,7 +136,7 @@ const Rise = () => {
   ];
 
   useEffect(() => {
-    const savedWallet = localStorage.getItem('walletAddress');
+    const savedWallet = secureStorage.getWalletAddress();
     const savedIdol = localStorage.getItem('selectedIdol');
     
     if (!savedWallet) {

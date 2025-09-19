@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Coins, Crown } from "lucide-react";
 import { useHeartSystem } from "@/hooks/useHeartSystem";
 import { isSuperAdmin } from "@/utils/adminWallets";
+import { secureStorage } from "@/utils/secureStorage";
 
 export const HeartPurchase = () => {
   const { fanHearts, purchaseHearts } = useHeartSystem();
   const [suiCoins, setSuiCoins] = useState(() => parseFloat(localStorage.getItem('suiCoins') || '0'));
-  const currentWallet = localStorage.getItem('walletAddress') || '';
+  const currentWallet = secureStorage.getWalletAddress() || '';
   const isAdmin = isSuperAdmin(currentWallet);
 
   const handlePurchaseHearts = () => {
