@@ -41,7 +41,10 @@ interface IdealType {
 
 export const FinalPick = () => {
   const navigate = useNavigate();
-  const [idealTypes, setIdealTypes] = useState<IdealType[]>([]);
+  const [contestants, setContestants] = useState<IdealType[]>([]);
+  const [currentPair, setCurrentPair] = useState<[IdealType, IdealType] | null>(null);
+  const [winners, setWinners] = useState<IdealType[]>([]);
+  const [round, setRound] = useState(1);
   const [selectedGender, setSelectedGender] = useState<string>("");
 
   useEffect(() => {
@@ -56,10 +59,13 @@ export const FinalPick = () => {
     }
 
     setSelectedGender(gender);
-    generateIdealTypes(gender, JSON.parse(personalityProfile), JSON.parse(appearanceProfile));
+    
+    const candidates = generateIdealTypes(gender, JSON.parse(personalityProfile), JSON.parse(appearanceProfile));
+    setContestants(candidates);
+    setCurrentPair([candidates[0], candidates[1]]);
   }, [navigate]);
 
-  const generateIdealTypes = (gender: string, personality: any, appearance: any) => {
+  const generateIdealTypes = (gender: string, personality: any, appearance: any): IdealType[] => {
     const maleIdols = [
       { 
         id: 1, 
@@ -154,7 +160,50 @@ export const FinalPick = () => {
       compatibility: Math.floor(Math.random() * 30) + 70 // 70-100% 호환성
     })).sort((a, b) => b.compatibility - a.compatibility);
 
-    setIdealTypes(scoredCandidates);
+    return scoredCandidates;
+  };
+
+  const handleChoice = (chosen: IdealType) => {
+    const newWinners = [...winners, chosen];
+    setWinners(newWinners);
+
+    const remainingContestants = contestants.slice(2);
+    
+    if (remainingContestants.length >= 2) {
+      setCurrentPair([remainingContestants[0], remainingContestants[1]]);
+      setContestants(remainingContestants);
+    } else if (remainingContestants.length === 1) {
+      // Last contestant automatically advances
+      const finalWinners = [...newWinners, remainingContestants[0]];
+      if (finalWinners.length === 1) {
+        // Tournament complete
+        localStorage.setItem('finalPick', JSON.stringify(finalWinners[0]));
+        toast.success(`${finalWinners[0].name}이(가) 최종 선택되었습니다!`);
+        setTimeout(() => {
+          navigate('/photocard');
+        }, 1000);
+      } else {
+        // Start next round
+        setContestants(finalWinners);
+        setWinners([]);
+        setCurrentPair([finalWinners[0], finalWinners[1]]);
+        setRound(round + 1);
+      }
+    } else {
+      // Start next round with winners
+      if (newWinners.length === 1) {
+        localStorage.setItem('finalPick', JSON.stringify(newWinners[0]));
+        toast.success(`${newWinners[0].name}이(가) 최종 선택되었습니다!`);
+        setTimeout(() => {
+          navigate('/photocard');
+        }, 1000);
+      } else {
+        setContestants(newWinners);
+        setWinners([]);
+        setCurrentPair([newWinners[0], newWinners[1]]);
+        setRound(round + 1);
+      }
+    }
   };
 
   const handleSelect = (idealType: IdealType) => {
@@ -165,90 +214,55 @@ export const FinalPick = () => {
     }, 1000);
   };
 
+  if (!currentPair) {
+    return (
+      <div className="min-h-screen bg-gradient-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+          <p className="text-muted-foreground">아이돌 월드컵을 준비중...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-background p-4">
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-6">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">3. 최종 픽 선택</h1>
+          <h1 className="text-4xl font-bold gradient-text">3. 최종 픽 선택 (하이브리드 월드컵)</h1>
           <p className="text-muted-foreground">
-            당신의 성향에 맞는 이상형들입니다. 마음에 드는 아이돌을 선택해보세요!
+            당신의 성향에 맞는 아이돌들 중에서 이상형을 찾아보세요!
           </p>
+          <div className="bg-card/50 backdrop-blur-sm rounded-lg p-3 inline-block">
+            <p className="text-sm font-medium">Round {round}</p>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {idealTypes.map((idealType) => (
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {currentPair.map((idealType) => (
             <Card 
               key={idealType.id}
-              className="p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-card/80 backdrop-blur-sm border-border hover:border-primary/50"
-              onClick={() => handleSelect(idealType)}
+              className="p-6 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 transition-all duration-300 cursor-pointer card-hover"
+              onClick={() => handleChoice(idealType)}
             >
               <div className="text-center space-y-4">
                 <div className="relative">
-                  <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-primary/20">
+                  <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-2 border-primary/20">
                     <img 
                       src={idealType.realImage} 
                       alt={idealType.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="absolute -bottom-2 -right-2 text-2xl bg-background rounded-full p-1 border border-border">
+                  <div className="absolute -bottom-2 -right-2 text-3xl bg-background rounded-full p-2 border border-border">
                     {idealType.image}
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold">{idealType.name}</h3>
-                  <p className="text-sm text-primary font-medium">{idealType.personality}</p>
-                  <p className="text-sm text-muted-foreground">{idealType.description}</p>
-                </div>
-
-                {/* 이중 8각형 레이더 차트 */}
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-center">연습생 성장 스탯</h4>
-                  <div className="text-xs text-center text-muted-foreground mb-2">
-                    <span className="inline-block w-3 h-3 bg-primary rounded-full mr-1"></span>현재 실력
-                    <span className="inline-block w-3 h-3 bg-primary/40 rounded-full ml-3 mr-1"></span>성장 잠재력
-                  </div>
-                  <div className="h-40 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart data={[
-                        { subject: '보컬', current: idealType.stats.vocal, potential: idealType.potentialStats.vocal, fullMark: 100 },
-                        { subject: '댄스', current: idealType.stats.dance, potential: idealType.potentialStats.dance, fullMark: 100 },
-                        { subject: '비주얼', current: idealType.stats.visual, potential: idealType.potentialStats.visual, fullMark: 100 },
-                        { subject: '카리스마', current: idealType.stats.charisma, potential: idealType.potentialStats.charisma, fullMark: 100 },
-                        { subject: '매력', current: idealType.stats.charm, potential: idealType.potentialStats.charm, fullMark: 100 },
-                        { subject: '리더십', current: idealType.stats.leadership, potential: idealType.potentialStats.leadership, fullMark: 100 },
-                        { subject: '재능', current: idealType.stats.talent, potential: idealType.potentialStats.talent, fullMark: 100 },
-                        { subject: '인기', current: idealType.stats.popularity, potential: idealType.potentialStats.popularity, fullMark: 100 }
-                      ]}>
-                        <PolarGrid stroke="hsl(var(--border))" />
-                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
-                        <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-                        
-                        {/* 잠재 스탯 (뒤쪽, 연한 색) */}
-                        <Radar 
-                          name="잠재력" 
-                          dataKey="potential" 
-                          stroke="hsl(var(--primary))" 
-                          fill="hsl(var(--primary))" 
-                          fillOpacity={0.1}
-                          strokeOpacity={0.4}
-                          strokeWidth={1}
-                          strokeDasharray="5 5"
-                        />
-                        
-                        {/* 현재 스탯 (앞쪽, 진한 색) */}
-                        <Radar 
-                          name="현재 실력" 
-                          dataKey="current" 
-                          stroke="hsl(var(--primary))" 
-                          fill="hsl(var(--primary))" 
-                          fillOpacity={0.3}
-                          strokeWidth={2}
-                        />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <h3 className="text-2xl font-bold text-foreground">{idealType.name}</h3>
+                  <p className="text-primary font-medium">{idealType.personality}</p>
+                  <p className="text-muted-foreground">{idealType.description}</p>
                 </div>
 
                 <div className="space-y-2">
@@ -257,18 +271,18 @@ export const FinalPick = () => {
                     <span className="text-lg font-bold text-primary">{idealType.compatibility}%</span>
                   </div>
                   
-                  <div className="w-full bg-muted rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-3">
                     <div 
-                      className="bg-gradient-primary h-2 rounded-full transition-all duration-500"
+                      className="bg-gradient-primary h-3 rounded-full transition-all duration-500"
                       style={{ width: `${idealType.compatibility}%` }}
                     />
                   </div>
                 </div>
 
                 <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="w-full hover:bg-primary hover:text-primary-foreground"
+                  variant="hero"
+                  size="lg"
+                  className="w-full"
                 >
                   선택하기
                 </Button>
@@ -277,11 +291,7 @@ export const FinalPick = () => {
           ))}
         </div>
 
-        <div className="text-center space-y-4">
-          <p className="text-sm text-muted-foreground">
-            💡 호환성은 당신의 성향 분석과 외모 취향을 바탕으로 계산됩니다
-          </p>
-          
+        <div className="text-center">
           <Button
             onClick={() => navigate('/result-analysis')}
             variant="ghost"
