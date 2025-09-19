@@ -42,7 +42,11 @@ export const WalletConnectButton: React.FC<WalletConnectButtonProps> = ({
   };
 
   const handleDisconnect = async () => {
-    await disconnectWallet();
+    try {
+      await disconnectWallet();
+    } catch (error) {
+      console.error('지갑 연결 해제 오류:', error);
+    }
   };
 
   if (!isConnected) {
