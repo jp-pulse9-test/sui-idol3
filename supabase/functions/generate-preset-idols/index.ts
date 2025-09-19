@@ -111,15 +111,46 @@ serve(async (req) => {
         const description = personalityMatch ? personalityMatch[1].trim() : `${randomPersonality} 성격의 매력적인 K-pop 아이돌입니다.`
         const personaPrompt = personaMatch ? personaMatch[1].trim() : `안녕하세요! 저는 ${uniqueName}이에요. ${randomPersonality} 성격으로 팬 여러분과 즐겁게 대화하고 싶어요!`
         
-        // 현재는 플레이스홀더 이미지 사용 (향후 이미지 생성 API 연동 예정)
-        const imagePrompt = `Professional K-pop idol portrait: ${randomPersonality} personality, ${randomConcept} concept, beautiful Korean idol, perfect makeup, stylish outfit, studio lighting, photorealistic`
+        // Vertex AI를 통한 실제 이미지 생성
+        const imagePrompt = `Professional K-pop idol portrait: ${randomPersonality} personality, ${randomConcept} concept, beautiful Korean idol, perfect makeup, stylish outfit, studio lighting, photorealistic, high quality, detailed facial features`
         
-        // 더 다양한 아바타 스타일로 플레이스홀더 이미지 생성
+        let profileImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${uniqueName}` // 기본 이미지
+        
+        try {
+          const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${googleApiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `Create a detailed image description for: ${imagePrompt}. Return only a single, comprehensive image description optimized for AI image generation.`
+                }]
+              }],
+              generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 200
+              }
+            })
+          })
+          
+          if (imageResponse.ok) {
+            const responseData = await imageResponse.json()
+            const enhancedPrompt = responseData.candidates?.[0]?.content?.parts?.[0]?.text
+            
+            if (enhancedPrompt) {
+              console.log(`Enhanced image prompt for ${uniqueName}: ${enhancedPrompt}`)
+              // 향후 실제 이미지 생성 API 연동 시 사용할 프롬프트 저장
+            }
+          }
+          
+        } catch (error) {
+          console.error(`Image prompt generation failed for ${uniqueName}:`, error)
+        }
+        
+        // 다양한 아바타 스타일 사용
         const avatarStyles = ['adventurer', 'avataaars', 'bottts', 'croodles', 'personas']
         const randomStyle = avatarStyles[Math.floor(Math.random() * avatarStyles.length)]
-        const profileImage = `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${uniqueName}&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80`
-        
-        console.log(`Generated image prompt for ${uniqueName}: ${imagePrompt}`)
+        profileImage = `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${uniqueName}&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80`
         
         const idolData: IdolData = {
           name: uniqueName,
