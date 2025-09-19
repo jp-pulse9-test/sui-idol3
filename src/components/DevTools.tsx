@@ -29,25 +29,15 @@ interface DatabaseStats {
 export const DevTools: React.FC = () => {
   const { user } = useAuth();
   const SUPER_ADMIN_WALLET = "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc";
-  const [isVisible, setIsVisible] = useState(false);
   const [stats, setStats] = useState<DatabaseStats>({ totalIdols: 0, recentIdols: [] });
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
   const [batchProgress, setBatchProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // 슈퍼 어드민 권한 체크
-    const isSuperAdmin = user?.wallet_address === SUPER_ADMIN_WALLET;
-    const urlParams = new URLSearchParams(window.location.search);
-    const devModeRequested = urlParams.get('dev') === 'true';
-    
-    // 슈퍼 어드민이면서 dev=true 파라미터가 있을 때만 표시
-    setIsVisible(isSuperAdmin && devModeRequested);
-    
-    if (isSuperAdmin && devModeRequested) {
-      loadStats();
-    }
-  }, [user]);
+    // 컴포넌트가 마운트되면 통계를 로드
+    loadStats();
+  }, []);
 
   const loadStats = async () => {
     setIsLoading(true);
@@ -157,10 +147,6 @@ export const DevTools: React.FC = () => {
       toast.error('데이터 내보내기에 실패했습니다.');
     }
   };
-
-  if (!isVisible) {
-    return null;
-  }
 
   return (
     <div className="w-full">

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -331,8 +331,12 @@ const Index = () => {
                         🔧 슈퍼 어드민 도구 열기
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0">
-                      <div className="h-full overflow-y-auto">
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+                      <DialogHeader className="sr-only">
+                        <DialogTitle>슈퍼 어드민 도구</DialogTitle>
+                        <DialogDescription>아이돌 데이터 관리 및 생성 도구</DialogDescription>
+                      </DialogHeader>
+                      <div className="h-full overflow-y-auto p-6">
                         <DevTools />
                       </div>
                     </DialogContent>
