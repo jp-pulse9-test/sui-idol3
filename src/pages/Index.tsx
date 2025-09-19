@@ -211,13 +211,16 @@ const Index = () => {
                 🎮 나의 아이돌 PICK 하러가기
               </Button>
               <p className="text-lg text-muted-foreground">
-                지갑 연결 없이도 바로 체험 가능! 본격적인 수집과 거래는 Vault에서 📦
+                Pick은 체험, Vault는 수집, Rise는 경쟁과 거래!
+              </p>
+              <p className="text-base text-muted-foreground">
+                심쿵 배틀로 최애를 고르고 → 랜덤박스로 포카 만들고 → 리더보드와 마켓에서 빛나세요.
               </p>
               
               {!user && (
                 <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
                   <p className="text-sm text-muted-foreground text-center">
-                    💡 <span className="text-accent font-semibold">Pick</span>은 체험용, <span className="text-primary font-semibold">Vault</span>부터 본격 수집과 거래가 시작돼요
+                    💡 지갑 연결 없이도 바로 체험 가능! Vault부터 본격 수집과 거래 시작
                   </p>
                 </div>
               )}
