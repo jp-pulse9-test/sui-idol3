@@ -18,7 +18,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onOpenChange, type, o
       case 'pick':
         return {
           title: '🎯 PICK 단계 미리보기',
-          description: '당신만의 운명적 아이돌을 찾는 3단계 여정',
+          description: '당신만의 운명적 아이돌을 찾는 3단계 여정 (지갑 연결 불필요)',
           steps: [
             {
               step: '1단계',
@@ -47,7 +47,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onOpenChange, type, o
       case 'vault':
         return {
           title: '🗃️ VAULT 단계 미리보기',
-          description: '최애와 함께하는 일상 스토리와 포토카드 수집',
+          description: '최애와 함께하는 일상 스토리와 포토카드 수집 (지갑 연결 필요)',
           steps: [
             {
               step: '스토리',
@@ -76,7 +76,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onOpenChange, type, o
       case 'rise':
         return {
           title: '📈 RISE 단계 미리보기',
-          description: '최애의 데뷔와 성장을 함께 체감하는 특별한 여정',
+          description: '최애의 데뷔와 성장을 함께 체감하는 특별한 여정 (지갑 연결 필요)',
           steps: [
             {
               step: '데뷔',

@@ -40,7 +40,7 @@ interface SelectedIdol {
 
 const Vault = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, loading } = useAuthGuard();
+  const { isAuthenticated, loading } = useAuthGuard('/auth', true);
   
   if (loading) {
     return (

@@ -78,12 +78,25 @@ const Index = () => {
   };
 
   const handleStartJourney = () => {
+    navigate('/pick');
+  };
+
+  const handleVaultAccess = () => {
     if (!user) {
-      toast.error("먼저 Sui 지갑을 연결해주세요!");
+      toast.error("Vault 이용을 위해 Sui 지갑 연결이 필요합니다!");
       navigate('/auth');
       return;
     }
-    navigate('/pick');
+    navigate('/vault');
+  };
+
+  const handleRiseAccess = () => {
+    if (!user) {
+      toast.error("Rise 이용을 위해 Sui 지갑 연결이 필요합니다!");
+      navigate('/auth');
+      return;
+    }
+    navigate('/rise');
   };
 
   const handleSignOut = async () => {
@@ -102,7 +115,13 @@ const Index = () => {
 
   const handlePreviewStart = () => {
     closePreview();
-    handleStartJourney();
+    if (previewModal.type === 'pick') {
+      handleStartJourney();
+    } else if (previewModal.type === 'vault') {
+      handleVaultAccess();
+    } else if (previewModal.type === 'rise') {
+      handleRiseAccess();
+    }
   };
 
   return (
@@ -172,34 +191,24 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col gap-6 items-center">
-              {!user ? (
-                <>
-                  <Button
-                    onClick={() => navigate('/auth')}
-                    variant="premium"
-                    size="xl"
-                    className="min-w-80 text-2xl py-6"
-                  >
-                    🔐 Sui 지갑 연결하고 시작하기
-                  </Button>
-                  <p className="text-lg text-muted-foreground">
-                    Sui 지갑을 연결하고 나만의 아이돌 여정을 시작하세요
+              <Button
+                onClick={handleStartJourney}
+                variant="default"
+                size="xl"
+                className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                🎮 나의 아이돌 PICK 하러가기
+              </Button>
+              <p className="text-lg text-muted-foreground">
+                지갑 연결 없이도 바로 체험 가능! 데이터 저장은 Vault에서 📦
+              </p>
+              
+              {!user && (
+                <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
+                  <p className="text-sm text-muted-foreground text-center">
+                    💡 <span className="text-accent font-semibold">Pick</span>은 체험용, <span className="text-primary font-semibold">Vault</span>부터 지갑 연결이 필요해요
                   </p>
-                </>
-              ) : (
-                <>
-                  <Button
-                    onClick={handleStartJourney}
-                    variant="default"
-                    size="xl"
-                    className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    🎮 나의 아이돌 PICK 하러가기
-                  </Button>
-                  <p className="text-lg text-muted-foreground">
-                    당신의 성향을 분석하고 운명적 아이돌을 만나세요
-                  </p>
-                </>
+                </div>
               )}
             </div>
             
@@ -272,14 +281,14 @@ const Index = () => {
                       🎯
                     </div>
                     <h3 className="text-xl font-bold text-primary">PICK</h3>
-                    <p className="text-foreground">성향 분석 → 이상형 월드컵 → 최종 선택</p>
+                    <p className="text-foreground">지갑 연결 없이 체험 → MBTI 분석 → 최종 선택</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       🗃️
                     </div>
                     <h3 className="text-xl font-bold text-accent">VAULT</h3>
-                    <p className="text-foreground">프로필 카드 → 포토카드 → 안전한 보관</p>
+                    <p className="text-foreground">지갑 연결 → 포토카드 → 안전한 보관</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
@@ -299,20 +308,20 @@ const Index = () => {
           <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
             <div className="space-y-4">
               <h2 className="text-4xl font-bold gradient-text">
-                지금 바로 시작해보세요!
+                지금 바로 체험해보세요!
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
-                몇 번의 선택으로, 당신만의 가상아이돌을 찾으세요.
+                Pick은 무료 체험, Vault부터 지갑 연결로 본격 시작!
               </p>
             </div>
             
             <Button
-              onClick={() => user ? navigate('/pick') : handleStartJourney()}
+              onClick={handleStartJourney}
               variant="premium"
               size="xl"
               className="min-w-64 text-xl py-4"
             >
-              🌟 나와 최애의 비밀 여정 시작하기 🌟
+              🌟 무료로 아이돌 PICK 체험하기 🌟
             </Button>
           </div>
         </section>
