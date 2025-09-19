@@ -105,10 +105,9 @@ const ChatModalEnhanced = ({ character, isOpen, onClose }: ChatModalEnhancedProp
   };
 
   const generateCharacterResponseWithGemini = async (userMessage: string, character: any) => {
-    const selectedWorld = localStorage.getItem('selectedWorld');
     const selectedGender = localStorage.getItem('selectedGender');
     
-    const worldContext = getWorldContext(selectedWorld);
+    const worldContext = getWorldContext('modern');
     const genderText = selectedGender === 'male' ? '소년' : '소녀';
     
     const prompt = `당신은 ${worldContext}에 사는 ${genderText} 아이돌 ${character.name}입니다.

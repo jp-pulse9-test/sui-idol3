@@ -306,34 +306,10 @@ export const PhotoCard = () => {
     try {
       toast.loading("캐릭터를 보관함에 저장 중...");
       
-      // Supabase에 캐릭터 프로필 저장
-      const { data, error } = await supabase
-        .from('character_profiles')
-        .insert([
-          {
-            user_id: crypto.randomUUID(), // 임시 UUID 생성 (인증 구현 후 auth.uid()로 변경)
-            name: idealType.name,
-            image: canvas.toDataURL(),
-            personality: idealType.personality,
-            custom_text: customText,
-            border_color: borderColor
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Supabase 저장 에러:', error);
-        throw error;
-      }
-
-      if (!data || data.length === 0) {
-        throw new Error('저장된 데이터를 받지 못했습니다.');
-      }
-
-      // localStorage에도 백업 저장
+      // localStorage에 카드 저장
       const savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
       const newCard = {
-        id: data[0].id,
+        id: crypto.randomUUID(),
         name: idealType.name,
         image: canvas.toDataURL(),
         personality: idealType.personality,

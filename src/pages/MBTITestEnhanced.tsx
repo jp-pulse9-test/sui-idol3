@@ -232,7 +232,6 @@ export const MBTITestEnhanced = () => {
   useEffect(() => {
     const walletAddress = localStorage.getItem('walletAddress');
     const selectedGender = localStorage.getItem('selectedGender');
-    const selectedWorld = localStorage.getItem('selectedWorld');
     
     if (!walletAddress) {
       toast.error("먼저 지갑을 연결해주세요!");
@@ -245,17 +244,11 @@ export const MBTITestEnhanced = () => {
       navigate('/pick');
       return;
     }
-    
-    if (!selectedWorld) {
-      toast.error("먼저 세계관을 선택해주세요!");
-      navigate('/world-select');
-      return;
-    }
 
-    // 성별과 세계관에 따른 질문 설정
+    // 성별에 따른 질문 설정
     const questionsToUse = selectedGender === 'male' 
-      ? getMaleQuestions(selectedWorld) 
-      : getFemaleQuestions(selectedWorld);
+      ? getMaleQuestions('modern') 
+      : getFemaleQuestions('modern');
     setQuestions(questionsToUse);
   }, [navigate]);
 
@@ -295,7 +288,6 @@ export const MBTITestEnhanced = () => {
 
   const generateTraits = (mbti: string) => {
     const selectedGender = localStorage.getItem('selectedGender');
-    const selectedWorld = localStorage.getItem('selectedWorld');
     
     const baseTraits: { [key: string]: string[] } = {
       'ENFJ': ['감정 공감형', '리더십 추구', '사교적'],
@@ -317,22 +309,12 @@ export const MBTITestEnhanced = () => {
     };
 
     let traits = baseTraits[mbti] || ['독특한', '매력적', '특별한'];
-    
-    // 세계관별 특성 추가
-    if (selectedWorld === 'academy') {
-      traits.push('학원물 애호가');
-    } else if (selectedWorld === 'beast') {
-      traits.push('환상 세계 추구');
-    } else if (selectedWorld === 'apocalypse') {
-      traits.push('극한 상황 매력');
-    }
 
     return traits;
   };
 
   const generateDescription = (mbti: string) => {
     const selectedGender = localStorage.getItem('selectedGender');
-    const selectedWorld = localStorage.getItem('selectedWorld');
     
     const baseDescriptions: { [key: string]: string } = {
       'ENFJ': `외향적이고 감정이 풍부한 당신은 ${selectedGender === 'male' ? '소년' : '소녀'} 아이돌의 진심 어린 감정 표현에 깊이 공감합니다.`,
@@ -354,17 +336,6 @@ export const MBTITestEnhanced = () => {
     };
 
     let description = baseDescriptions[mbti] || `당신은 독특하고 특별한 ${selectedGender === 'male' ? '소년' : '소녀'} 아이돌 취향을 가지고 있습니다.`;
-    
-    // 세계관별 설명 추가
-    if (selectedWorld === 'academy') {
-      description += ' 특히 학원 생활의 청춘과 성장 스토리에 끌립니다.';
-    } else if (selectedWorld === 'beast') {
-      description += ' 환상적이고 신비로운 수인 세계관에 매료됩니다.';
-    } else if (selectedWorld === 'apocalypse') {
-      description += ' 극한 상황에서의 희망과 용기에 감동받습니다.';
-    } else if (selectedWorld === 'fantasy') {
-      description += ' 마법과 모험이 가득한 판타지 세계에 빠져듭니다.';
-    }
 
     return description;
   };
@@ -420,7 +391,7 @@ export const MBTITestEnhanced = () => {
 
         <div className="text-center">
           <Button
-            onClick={() => navigate('/world-select')}
+            onClick={() => navigate('/pick')}
             variant="ghost"
             className="text-muted-foreground hover:text-foreground"
           >

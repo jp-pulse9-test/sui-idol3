@@ -71,7 +71,6 @@ export const ResultAnalysisEnhanced = () => {
   const generateFanAnalysisWithGemini = async (personality: PersonalityProfile, appearance: AppearanceProfile) => {
     try {
       const selectedGender = localStorage.getItem('selectedGender');
-      const selectedWorld = localStorage.getItem('selectedWorld');
       
       const prompt = `당신은 K-POP 아이돌 팬 분석 전문가입니다. 다음 정보를 바탕으로 창의적이고 재미있는 팬 운명 분석을 생성해주세요:
 
@@ -88,12 +87,11 @@ export const ResultAnalysisEnhanced = () => {
 - 스타일: ${appearance.style}
 - 표정: ${appearance.expression}
 
-세계관: ${selectedWorld}
 성별: ${selectedGender === 'male' ? '소년' : '소녀'} 아이돌
 
 요구사항:
 1. 웹소설 형태의 창작적인 스토리텔링으로 작성
-2. 선택한 세계관(${selectedWorld})을 적극 반영
+2. 현대적인 아이돌 세계관을 반영
 3. 구체적이고 재미있는 팬 운명 시나리오 제시
 4. 한국어로 작성
 5. 300-500자 내외로 작성
@@ -112,14 +110,13 @@ export const ResultAnalysisEnhanced = () => {
         localStorage.setItem('fanAnalysis', data.analysis);
       } else {
         // 백업 분석
-        setAnalysis(generateBackupAnalysis(personality, appearance, selectedWorld, selectedGender));
+        setAnalysis(generateBackupAnalysis(personality, appearance, 'modern', selectedGender));
       }
     } catch (error) {
       console.error('Gemini 팬 분석 생성 실패:', error);
       // 백업 분석 사용
-      const selectedWorld = localStorage.getItem('selectedWorld');
       const selectedGender = localStorage.getItem('selectedGender');
-      setAnalysis(generateBackupAnalysis(personality, appearance, selectedWorld, selectedGender));
+      setAnalysis(generateBackupAnalysis(personality, appearance, 'modern', selectedGender));
     }
   };
 

@@ -8,7 +8,7 @@ import Pick from "./pages/Pick";
 import Play from "./pages/Play";
 import Progress from "./pages/Progress";
 import GenderSelect from "./pages/GenderSelect";
-import WorldSelect from "./pages/WorldSelect";
+
 import MBTITestEnhanced from "./pages/MBTITestEnhanced";
 import AppearanceTestEnhanced from "./pages/AppearanceTestEnhanced";
 import ResultAnalysisEnhanced from "./pages/ResultAnalysisEnhanced";
@@ -37,7 +37,7 @@ const App = () => (
           
           {/* 기존 세부 페이지들 */}
           <Route path="/gender-select" element={<GenderSelect />} />
-          <Route path="/world-select" element={<WorldSelect />} />
+          
           <Route path="/mbti" element={<MBTITestEnhanced />} />
           <Route path="/appearance" element={<AppearanceTestEnhanced />} />
           <Route path="/result-analysis" element={<ResultAnalysisEnhanced />} />

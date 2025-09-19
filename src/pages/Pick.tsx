@@ -43,7 +43,7 @@ const Pick = () => {
     localStorage.setItem('selectedGender', gender);
     toast.success(`${gender === 'male' ? '소년' : '소녀'} 아이돌을 선택했습니다!`);
     setTimeout(() => {
-      navigate('/world-select');
+      navigate('/mbti');
     }, 1000);
   };
 

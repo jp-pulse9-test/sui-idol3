@@ -296,7 +296,6 @@ export const AppearanceTestEnhanced = () => {
   useEffect(() => {
     const walletAddress = localStorage.getItem('walletAddress');
     const selectedGender = localStorage.getItem('selectedGender');
-    const selectedWorld = localStorage.getItem('selectedWorld');
     
     if (!walletAddress) {
       toast.error("먼저 지갑을 연결해주세요!");
@@ -309,17 +308,11 @@ export const AppearanceTestEnhanced = () => {
       navigate('/pick');
       return;
     }
-    
-    if (!selectedWorld) {
-      toast.error("먼저 세계관을 선택해주세요!");
-      navigate('/world-select');
-      return;
-    }
 
-    // 성별과 세계관에 따른 질문 설정
+    // 성별에 따른 질문 설정
     const questionsToUse = selectedGender === 'male' 
-      ? getMaleAppearanceQuestions(selectedWorld) 
-      : getFemaleAppearanceQuestions(selectedWorld);
+      ? getMaleAppearanceQuestions('modern') 
+      : getFemaleAppearanceQuestions('modern');
     setQuestions(questionsToUse);
   }, [navigate]);
 
@@ -340,9 +333,8 @@ export const AppearanceTestEnhanced = () => {
 
   const calculateAppearanceProfile = (answers: string[]) => {
     const selectedGender = localStorage.getItem('selectedGender');
-    const selectedWorld = localStorage.getItem('selectedWorld');
     
-    // 외모 취향 분석 로직 (세계관 반영)
+    // 외모 취향 분석 로직
     const profile = {
       hair: answers[0],
       eyes: answers[1], 
@@ -355,9 +347,9 @@ export const AppearanceTestEnhanced = () => {
       manner: answers[8],
       charm: answers[9],
       concept: answers[10],
-      type: determineAppearanceType(answers, selectedGender || 'male', selectedWorld || 'modern'),
+      type: determineAppearanceType(answers, selectedGender || 'male', 'modern'),
       gender: selectedGender,
-      world: selectedWorld
+      world: 'modern'
     };
     return profile;
   };
