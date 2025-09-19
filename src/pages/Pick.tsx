@@ -104,9 +104,11 @@ const Pick = () => {
 
   // Handle idol selection
   const selectIdol = (selectedIdol: IdolPreset) => {
-    if (!currentPair) return;
+    if (!currentPair || !currentPair[0] || !currentPair[1]) return;
 
     const currentIndex = currentRound.indexOf(currentPair[0]);
+    if (currentIndex === -1) return;
+    
     const nextRound = [...currentRound];
     
     // Remove the current pair and add winner to next round
@@ -124,14 +126,19 @@ const Pick = () => {
         return;
       } else {
         // Start next round
-        setCurrentRound(nextRound.slice(0, pairsRemaining));
-        setCurrentPair([nextRound[0], nextRound[1]]);
+        const filteredNextRound = nextRound.filter(idol => idol && idol.profile_image).slice(0, pairsRemaining);
+        setCurrentRound(filteredNextRound);
+        if (filteredNextRound.length >= 2) {
+          setCurrentPair([filteredNextRound[0], filteredNextRound[1]]);
+        }
         setRoundNumber(prev => prev + 1);
       }
     } else {
       // Continue current round
       const nextPairIndex = currentIndex + 2;
-      setCurrentPair([currentRound[nextPairIndex], currentRound[nextPairIndex + 1]]);
+      if (nextPairIndex + 1 < currentRound.length && currentRound[nextPairIndex] && currentRound[nextPairIndex + 1]) {
+        setCurrentPair([currentRound[nextPairIndex], currentRound[nextPairIndex + 1]]);
+      }
       setCurrentRound(nextRound);
     }
   };
@@ -297,7 +304,7 @@ const Pick = () => {
             </h2>
             
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {currentPair.map((idol, index) => (
+              {currentPair.filter(idol => idol && idol.profile_image).map((idol, index) => (
                 <Card
                   key={idol.id}
                   className="p-6 glass-dark border-white/10 card-hover cursor-pointer group transition-all duration-300"
