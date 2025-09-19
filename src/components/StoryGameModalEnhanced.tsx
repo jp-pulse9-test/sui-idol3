@@ -44,7 +44,7 @@ interface StoryGameModalProps {
   onComplete: (memoryCard: MemoryCard) => void;
 }
 
-export const StoryGameModalEnhanced = ({ 
+const StoryGameModalEnhanced = ({ 
   episode, 
   selectedIdol, 
   isOpen, 
@@ -146,13 +146,15 @@ export const StoryGameModalEnhanced = ({
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 bg-transparent border-none">
-          <EpisodeFlow
-            initialScene={initialScene}
-            hybridProfile={hybridProfile}
-            selectedIdol={selectedIdol}
-            onEpisodeComplete={handleEpisodeComplete}
-            onExit={onClose}
-          />
+          <div className="text-center space-y-4">
+            <div className="text-6xl animate-pulse">🎮</div>
+            <h3 className="text-xl font-bold gradient-text">
+              에피소드 시작하기
+            </h3>
+            <p className="text-muted-foreground">
+              곧 {selectedIdol.name}와의 특별한 이야기가 시작됩니다...
+            </p>
+          </div>
         </DialogContent>
       </Dialog>
     );

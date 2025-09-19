@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import ChatModal from "@/components/ChatModal";
-import StoryGameModal from "@/components/StoryGameModal";
+import StoryGameModalEnhanced from "@/components/StoryGameModalEnhanced";
 
 interface StoryChoice {
   id: string;

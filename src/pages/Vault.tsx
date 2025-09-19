@@ -27,7 +27,7 @@ interface MemoryCard {
   title: string;
   rarity: 'N' | 'R' | 'SR' | 'SSR';
   image: string;
-  earnedAt: string;
+  earnedAt: Date;
 }
 
 interface SelectedIdol {
@@ -346,9 +346,11 @@ const Vault = () => {
               setCurrentEpisode(null);
             }}
             episode={currentEpisode}
-            idol={{
+            selectedIdol={{
+              id: selectedIdol.id,
               name: selectedIdol.name,
               personality: selectedIdol.personality,
+              image: selectedIdol.image,
               persona_prompt: selectedIdol.persona_prompt || ""
             }}
             onComplete={handleGameComplete}
