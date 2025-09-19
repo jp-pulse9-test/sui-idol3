@@ -115,6 +115,16 @@ const Auth = () => {
             )}
           </Button>
 
+          {/* 홈으로 돌아가기 버튼 */}
+          <Button 
+            onClick={() => navigate('/')}
+            variant="outline"
+            size="lg"
+            className="w-full border-border/50 hover:border-border bg-card/80 backdrop-blur-sm"
+          >
+            홈으로 돌아가기
+          </Button>
+
           {/* 지원 지갑 안내 */}
           <div className="text-center space-y-2">
             <p className="text-sm text-muted-foreground">목업 모드 (개발용)</p>
