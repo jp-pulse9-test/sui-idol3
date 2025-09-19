@@ -261,6 +261,7 @@ const Index = () => {
                 title="🎯 PICK"
                 description="3가지 방식 성향 분석 후 16강 심쿵 배틀로 운명의 아이돌 선택. 각 아이돌은 고유한 매력과 개성을 가진 AI 캐릭터입니다."
                 icon={mbtiIcon}
+                emoji="🎯"
                 onClick={() => openPreview('pick')}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
                 buttonText="미리보기"
@@ -270,6 +271,7 @@ const Index = () => {
                 title="🗃️ VAULT"
                 description="최애를 안전하게 수납하고 랜덤박스로 포토카드를 수집하세요. 희귀한 카드일수록 더 높은 가치를 가집니다."
                 icon={photocardIcon}
+                emoji="🗃️"
                 onClick={() => openPreview('vault')}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
                 buttonText="미리보기"
@@ -279,6 +281,7 @@ const Index = () => {
                 title="📈 RISE"
                 description="리더보드에서 팬 포인트로 경쟁하고, 갤러리에서 포카를 전시하며, 마켓플레이스에서 자유롭게 거래하세요."
                 icon={tournamentIcon}
+                emoji="📈"
                 onClick={() => openPreview('rise')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
                 buttonText="미리보기"
@@ -297,22 +300,25 @@ const Index = () => {
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8 mt-8">
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      🎯
+                    <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
+                      <span className="text-4xl relative z-10 filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]" style={{ textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>🎯</span>
                     </div>
                     <h3 className="text-xl font-bold text-primary">PICK</h3>
                     <p className="text-foreground">성향 분석 → 심쿵 배틀 → 최애 민팅</p>
                   </div>
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      🗃️
+                    <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-500 opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
+                      <span className="text-4xl relative z-10 filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]" style={{ textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>🗃️</span>
                     </div>
                     <h3 className="text-xl font-bold text-accent">VAULT</h3>
                     <p className="text-foreground">최애 수납 → 랜덤박스 → 포카 수집</p>
                   </div>
                   <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      📈
+                    <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-pink-400 to-red-500 opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
+                      <span className="text-4xl relative z-10 filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]" style={{ textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>📈</span>
                     </div>
                     <h3 className="text-xl font-bold text-secondary">RISE</h3>
                     <p className="text-foreground">리더보드 → 갤러리 → 거래소</p>
