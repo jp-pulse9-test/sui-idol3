@@ -217,6 +217,7 @@ export type Database = {
           Gender: string
           id: number
           Name: string
+          profile_image: string | null
         }
         Insert: {
           Category: string
@@ -225,6 +226,7 @@ export type Database = {
           Gender: string
           id?: number
           Name: string
+          profile_image?: string | null
         }
         Update: {
           Category?: string
@@ -233,6 +235,7 @@ export type Database = {
           Gender?: string
           id?: number
           Name?: string
+          profile_image?: string | null
         }
         Relationships: []
       }
