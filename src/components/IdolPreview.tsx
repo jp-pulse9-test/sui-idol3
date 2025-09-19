@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Crown, Heart, Star, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 interface IdolPreset {
   id: number;
@@ -21,19 +22,35 @@ interface IdolPreviewProps {
 }
 
 const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
-  const [mintingProgress, setMintingProgress] = useState(0);
-  const [isMinting, setIsMinting] = useState(false);
+  const [votingProgress, setVotingProgress] = useState(0);
+  const [isVoting, setIsVoting] = useState(false);
+  const [hasSufficientCoins, setHasSufficientCoins] = useState(false);
 
-  const handleMinting = async () => {
-    setIsMinting(true);
-    setMintingProgress(0);
+  useEffect(() => {
+    // 수이 코인 잔액 체크 (0.15 코인 = 700원)
+    const userCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
+    setHasSufficientCoins(userCoins >= 0.15);
+  }, []);
+
+  const handleVoting = async () => {
+    if (!hasSufficientCoins) {
+      toast.error("수이 코인이 부족합니다. 0.15 코인(700원)이 필요합니다.");
+      return;
+    }
+
+    setIsVoting(true);
+    setVotingProgress(0);
     
-    // 민팅 시뮬레이션
+    // 투표 진행 시뮬레이션
     const intervals = [20, 40, 60, 80, 100];
     for (const progress of intervals) {
       await new Promise(resolve => setTimeout(resolve, 800));
-      setMintingProgress(progress);
+      setVotingProgress(progress);
     }
+    
+    // 코인 차감
+    const currentCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
+    localStorage.setItem('suiCoins', (currentCoins - 0.15).toFixed(2));
     
     // 완료 후 확인
     setTimeout(() => {
@@ -112,15 +129,22 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
           </Card>
         </div>
 
-        {/* 민팅 프로세스 */}
-        {!isMinting ? (
+        {/* 투표 프로세스 */}
+        {!isVoting ? (
           <div className="text-center space-y-6">
             <div className="space-y-4">
-              <h3 className="text-2xl font-bold gradient-text">IdolCard NFT 생성</h3>
+              <h3 className="text-2xl font-bold gradient-text">💝 최애 투표하기</h3>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                선택한 아이돌을 NFT로 만들어 영구히 소유하세요. <br />
-                이 카드는 VAULT에서 스토리를 진행하고 RISE에서 성장시킬 수 있습니다.
+                선택한 아이돌에게 투표하여 영구히 소유하세요. <br />
+                투표 비용: 0.15 SUI 코인 (700원)
               </p>
+              {!hasSufficientCoins && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 max-w-md mx-auto">
+                  <p className="text-destructive text-sm">
+                    ⚠️ 수이 코인이 부족합니다. 0.15 코인이 필요합니다.
+                  </p>
+                </div>
+              )}
             </div>
             
             <div className="flex justify-center gap-4">
@@ -128,12 +152,13 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
                 ← 다시 선택
               </Button>
               <Button 
-                onClick={handleMinting} 
+                onClick={handleVoting} 
                 variant="default" 
                 size="lg"
                 className="btn-modern px-8"
+                disabled={!hasSufficientCoins}
               >
-                🎨 IdolCard NFT 생성하기
+                💝 투표하기 (0.15 SUI)
               </Button>
             </div>
           </div>
@@ -142,26 +167,26 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack }: IdolPreviewProps) => {
             <Card className="p-8 glass-dark border-white/10 max-w-md mx-auto">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-bold gradient-text">NFT 생성 중...</h3>
+                  <h3 className="text-2xl font-bold gradient-text">투표 진행 중...</h3>
                   <p className="text-muted-foreground">잠시만 기다려주세요</p>
                 </div>
                 
                 <div className="space-y-4">
-                  <Progress value={mintingProgress} className="w-full h-3" />
+                  <Progress value={votingProgress} className="w-full h-3" />
                   <div className="text-sm text-muted-foreground">
-                    {mintingProgress === 0 && "블록체인 네트워크 연결 중..."}
-                    {mintingProgress === 20 && "스마트 컨트랙트 호출 중..."}
-                    {mintingProgress === 40 && "메타데이터 생성 중..."}
-                    {mintingProgress === 60 && "NFT 민팅 중..."}
-                    {mintingProgress === 80 && "소유권 등록 중..."}
-                    {mintingProgress === 100 && "🎉 민팅 완료!"}
+                    {votingProgress === 0 && "블록체인 네트워크 연결 중..."}
+                    {votingProgress === 20 && "투표 트랜잭션 생성 중..."}
+                    {votingProgress === 40 && "스마트 컨트랙트 호출 중..."}
+                    {votingProgress === 60 && "투표 기록 중..."}
+                    {votingProgress === 80 && "소유권 등록 중..."}
+                    {votingProgress === 100 && "🎉 투표 완료!"}
                   </div>
                 </div>
 
-                {mintingProgress === 100 && (
+                {votingProgress === 100 && (
                   <div className="flex items-center justify-center gap-2 text-green-400">
                     <Heart className="w-5 h-5 fill-current" />
-                    <span className="font-bold">민팅 성공!</span>
+                    <span className="font-bold">투표 성공!</span>
                   </div>
                 )}
               </div>

@@ -264,6 +264,7 @@ const Rise = () => {
             <PhotoCardGallery
               photocards={photoCards}
               selectedIdolId={selectedIdol?.id.toString()}
+              isPinterestMode={true}
             />
           </TabsContent>
 

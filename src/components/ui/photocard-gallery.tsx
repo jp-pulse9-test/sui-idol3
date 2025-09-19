@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, EyeOff, Search, Filter, TrendingUp, TrendingDown } from "lucide-react";
+import { Eye, EyeOff, Search, Filter, TrendingUp, TrendingDown, Heart } from "lucide-react";
+import { useHeartSystem } from "@/hooks/useHeartSystem";
+import { toast } from "sonner";
 
 interface PhotoCard {
   id: string;
@@ -22,6 +24,7 @@ interface PhotoCard {
   imageUrl: string;
   floorPrice?: number;
   lastSalePrice?: number;
+  heartsReceived?: number;
 }
 
 interface PhotoCardGalleryProps {
@@ -30,6 +33,7 @@ interface PhotoCardGalleryProps {
   onToggleVisibility?: (cardId: string) => void;
   onViewCard?: (card: PhotoCard) => void;
   isOwner?: boolean;
+  isPinterestMode?: boolean;
 }
 
 export const PhotoCardGallery = ({ 
@@ -37,13 +41,17 @@ export const PhotoCardGallery = ({
   selectedIdolId, 
   onToggleVisibility, 
   onViewCard,
-  isOwner = false 
+  isOwner = false,
+  isPinterestMode = false
 }: PhotoCardGalleryProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<'rarity' | 'date' | 'price' | 'serial'>('rarity');
+  const [sortBy, setSortBy] = useState<'rarity' | 'date' | 'price' | 'serial' | 'hearts'>('hearts');
   const [filterRarity, setFilterRarity] = useState<string>('all');
   const [filterConcept, setFilterConcept] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'catalog' | 'owned'>('catalog');
+  
+  const { dailyHearts, giveHeart, hasGivenHeart } = useHeartSystem();
+  const currentWallet = localStorage.getItem('walletAddress');
 
   const rarityOrder = { 'SSR': 4, 'SR': 3, 'R': 2, 'N': 1 };
   const rarityColors = {
@@ -74,6 +82,8 @@ export const PhotoCardGallery = ({
           return (b.floorPrice || 0) - (a.floorPrice || 0);
         case 'serial':
           return a.serialNo - b.serialNo;
+        case 'hearts':
+          return (b.heartsReceived || 0) - (a.heartsReceived || 0);
         default:
           return 0;
       }
@@ -90,15 +100,20 @@ export const PhotoCardGallery = ({
     }
   };
 
+  const handleHeartClick = (card: PhotoCard, e: React.MouseEvent) => {
+    e.stopPropagation();
+    giveHeart(card.id, card.owner);
+  };
+
   const renderPhotoCard = (card: PhotoCard) => (
     <Card
       key={card.id}
       className={`group relative overflow-hidden transition-all duration-300 cursor-pointer hover:scale-105 ${
         !card.isPublic && isOwner ? 'opacity-70' : ''
-      }`}
+      } ${isPinterestMode ? 'break-inside-avoid mb-4' : ''}`}
       onClick={() => onViewCard?.(card)}
     >
-      <div className="aspect-[3/4] relative">
+      <div className={`${isPinterestMode ? 'aspect-auto' : 'aspect-[3/4]'} relative`}>
         <img
           src={card.imageUrl}
           alt={`${card.idolName} ${card.concept}`}
@@ -115,6 +130,30 @@ export const PhotoCardGallery = ({
         <Badge variant="outline" className="absolute top-2 right-2 bg-black/50 text-white border-white/20">
           #{card.serialNo.toString().padStart(4, '0')}
         </Badge>
+
+        {/* Heart Button for Pinterest Mode */}
+        {isPinterestMode && card.owner !== currentWallet && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`absolute top-2 right-12 transition-all duration-300 ${
+              hasGivenHeart(card.id) 
+                ? 'bg-red-500/80 text-white' 
+                : 'bg-black/50 hover:bg-red-500/50 text-white hover:text-red-200'
+            }`}
+            onClick={(e) => handleHeartClick(card, e)}
+            disabled={hasGivenHeart(card.id) || dailyHearts <= 0}
+          >
+            <Heart className={`w-4 h-4 ${hasGivenHeart(card.id) ? 'fill-current' : ''}`} />
+          </Button>
+        )}
+
+        {/* Heart Count */}
+        {(card.heartsReceived || 0) > 0 && (
+          <Badge className="absolute bottom-14 right-2 bg-red-500/80 text-white border-red-400">
+            ❤️ {card.heartsReceived}
+          </Badge>
+        )}
 
         {/* Privacy Toggle for Owner */}
         {isOwner && onToggleVisibility && (
@@ -202,6 +241,7 @@ export const PhotoCardGallery = ({
               <SelectValue placeholder="정렬 기준" />
             </SelectTrigger>
             <SelectContent className="bg-card/95 backdrop-blur-md border-border">
+              <SelectItem value="hearts">하트순</SelectItem>
               <SelectItem value="rarity">레어도순</SelectItem>
               <SelectItem value="date">최신순</SelectItem>
               <SelectItem value="price">가격순</SelectItem>
@@ -248,9 +288,15 @@ export const PhotoCardGallery = ({
         </TabsList>
 
         <TabsContent value="catalog" className="mt-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {filteredAndSortedCards.map(renderPhotoCard)}
-          </div>
+          {isPinterestMode ? (
+            <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
+              {filteredAndSortedCards.map(renderPhotoCard)}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {filteredAndSortedCards.map(renderPhotoCard)}
+            </div>
+          )}
           {filteredAndSortedCards.length === 0 && (
             <div className="text-center py-12">
               <Filter className="w-12 h-12 text-muted-foreground mx-auto mb-4" />

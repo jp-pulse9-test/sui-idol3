@@ -50,17 +50,17 @@ export const RandomBox = ({
     {
       id: 'premium',
       name: '프리미엄 박스',
-      cost: 100,
+      cost: 0.15,
       icon: '✨',
-      description: '더 높은 레어 확률의 프리미엄 박스',
+      description: '더 높은 레어 확률의 프리미엄 박스 (0.15 SUI)',
       rates: { N: 50, R: 35, SR: 12, SSR: 3 }
     },
     {
       id: 'ultra',
       name: '울트라 박스',
-      cost: 300,
+      cost: 0.45,
       icon: '💎',
-      description: 'SSR 확률이 대폭 증가한 최고급 박스',
+      description: 'SSR 확률이 대폭 증가한 최고급 박스 (0.45 SUI)',
       rates: { N: 30, R: 40, SR: 20, SSR: 10 }
     }
   ];
@@ -187,10 +187,10 @@ export const RandomBox = ({
                       🎁 무료
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="text-lg px-4 py-2 flex items-center gap-1 mx-auto w-fit">
-                      <Coins className="w-4 h-4" />
-                      {box.cost.toLocaleString()} 코인
-                    </Badge>
+                     <Badge variant="outline" className="text-lg px-4 py-2 flex items-center gap-1 mx-auto w-fit">
+                       <Coins className="w-4 h-4" />
+                       {box.cost} SUI
+                     </Badge>
                   )}
                 </div>
 
@@ -243,9 +243,9 @@ export const RandomBox = ({
                       <Sparkles className="w-4 h-4" />
                       구매하고 열기
                     </div>
-                  ) : (
-                    "코인 부족"
-                  )}
+                   ) : (
+                     "SUI 부족"
+                   )}
                 </Button>
 
                 {/* Special Effects for Selected Box */}
@@ -294,9 +294,10 @@ export const RandomBox = ({
           </h4>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• 매일 무료 박스 {maxDailyFree}회 제공</li>
+            <li>• 한 번에 1-10장의 포카 획득 가능</li>
             <li>• 10회 안에 SR 이상, 30회 안에 SSR 보장</li>
             <li>• 프리미엄/울트라 박스는 더 높은 레어 확률</li>
-            <li>• 서버 시드로 공정성 검증 가능</li>
+            <li>• 포카에 하트를 받으면 팬 포인트 증가</li>
           </ul>
         </div>
       </Card>

@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RandomBox } from "@/components/ui/random-box";
 import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
+import { HeartPurchase } from "@/components/HeartPurchase";
+import { Heart } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
@@ -32,6 +34,7 @@ interface PhotoCard {
   imageUrl: string;
   floorPrice?: number;
   lastSalePrice?: number;
+  heartsReceived?: number;
 }
 
 const Vault = () => {
@@ -40,7 +43,9 @@ const Vault = () => {
   
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
-  const [userCoins, setUserCoins] = useState(1000);
+  const [suiCoins, setSuiCoins] = useState(1.0);
+  const [fanHearts, setFanHearts] = useState(0);
+  const [dailyHearts, setDailyHearts] = useState(10);
   const [dailyFreeAttempts, setDailyFreeAttempts] = useState(3);
   const [pityCounters, setPityCounters] = useState({
     basic: 0,
@@ -73,12 +78,27 @@ const Vault = () => {
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     setPhotoCards(savedCards);
     
-    // 코인 및 시도 횟수 불러오기
-    const savedCoins = localStorage.getItem('userCoins');
-    if (savedCoins) setUserCoins(parseInt(savedCoins));
+    // 수이 코인, 팬 하트, 일일 하트 불러오기
+    const savedSuiCoins = localStorage.getItem('suiCoins');
+    if (savedSuiCoins) setSuiCoins(parseFloat(savedSuiCoins));
+    
+    const savedFanHearts = localStorage.getItem('fanHearts');
+    if (savedFanHearts) setFanHearts(parseInt(savedFanHearts));
+    
+    const savedDailyHearts = localStorage.getItem('dailyHearts');
+    if (savedDailyHearts) setDailyHearts(parseInt(savedDailyHearts));
     
     const savedAttempts = localStorage.getItem('dailyFreeAttempts');
     if (savedAttempts) setDailyFreeAttempts(parseInt(savedAttempts));
+    
+    // 일일 하트 리셋 체크 (매일 자정)
+    const lastHeartReset = localStorage.getItem('lastHeartReset');
+    const today = new Date().toDateString();
+    if (lastHeartReset !== today) {
+      setDailyHearts(10);
+      localStorage.setItem('dailyHearts', '10');
+      localStorage.setItem('lastHeartReset', today);
+    }
   }, [navigate]);
 
   if (loading) {
@@ -100,37 +120,59 @@ const Vault = () => {
       return;
     }
     
-    const cost = type === 'free' ? 0 : 100;
-    if (type !== 'free' && userCoins < cost) {
-      toast.error('코인이 부족합니다.');
+    const cost = type === 'free' ? 0 : 0.15; // SUI 코인 기준
+    if (type !== 'free' && suiCoins < cost) {
+      toast.error('SUI 코인이 부족합니다.');
       return;
     }
 
-    // 랜덤 포카 생성
+    // 랜덤 포카 수량 (1-10개)
+    const cardCount = Math.floor(Math.random() * 10) + 1;
+    const newPhotoCards: PhotoCard[] = [];
+    
     const rarities = ['N', 'R', 'SR', 'SSR'] as const;
+    const rarityWeights = { 'N': 50, 'R': 30, 'SR': 15, 'SSR': 5 };
     const concepts = ['Summer Dream', 'Winter Story', 'Spring Love', 'Autumn Wind'];
-    const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-    const randomConcept = concepts[Math.floor(Math.random() * concepts.length)];
 
-    const newPhotoCard: PhotoCard = {
-      id: `pc-${Date.now()}`,
-      idolId: selectedIdol?.id.toString() || '1',
-      idolName: selectedIdol?.name || 'Unknown',
-      rarity: randomRarity,
-      concept: randomConcept,
-      season: 'Season 1',
-      serialNo: Math.floor(Math.random() * 10000) + 1,
-      totalSupply: 5000,
-      mintedAt: new Date().toISOString(),
-      owner: walletAddress,
-      isPublic: true,
-      imageUrl: selectedIdol?.image || '',
-      floorPrice: Math.random() * 5 + 1,
-      lastSalePrice: Math.random() * 8 + 2
-    };
+    for (let i = 0; i < cardCount; i++) {
+      // 희귀도 가중치 기반 선택
+      const random = Math.random() * 100;
+      let rarity: typeof rarities[number] = 'N';
+      let cumulativeWeight = 0;
+      
+      for (const [r, weight] of Object.entries(rarityWeights)) {
+        cumulativeWeight += weight;
+        if (random <= cumulativeWeight) {
+          rarity = r as typeof rarities[number];
+          break;
+        }
+      }
+
+      const randomConcept = concepts[Math.floor(Math.random() * concepts.length)];
+
+      const newPhotoCard: PhotoCard = {
+        id: `pc-${Date.now()}-${i}`,
+        idolId: selectedIdol?.id.toString() || '1',
+        idolName: selectedIdol?.name || 'Unknown',
+        rarity: rarity,
+        concept: randomConcept,
+        season: 'Season 1',
+        serialNo: Math.floor(Math.random() * 10000) + 1,
+        totalSupply: 5000,
+        mintedAt: new Date().toISOString(),
+        owner: walletAddress,
+        isPublic: true,
+        imageUrl: selectedIdol?.image || '',
+        floorPrice: Math.random() * 5 + 1,
+        lastSalePrice: Math.random() * 8 + 2,
+        heartsReceived: 0
+      };
+
+      newPhotoCards.push(newPhotoCard);
+    }
 
     // 상태 업데이트
-    const updatedCards = [...photoCards, newPhotoCard];
+    const updatedCards = [...photoCards, ...newPhotoCards];
     setPhotoCards(updatedCards);
     localStorage.setItem('photoCards', JSON.stringify(updatedCards));
 
@@ -141,14 +183,14 @@ const Vault = () => {
         return newValue;
       });
     } else {
-      setUserCoins(prev => {
+      setSuiCoins(prev => {
         const newValue = prev - cost;
-        localStorage.setItem('userCoins', newValue.toString());
+        localStorage.setItem('suiCoins', newValue.toFixed(2));
         return newValue;
       });
     }
 
-    toast.success(`🎉 ${randomRarity} 등급 포토카드를 획득했습니다!`);
+    toast.success(`🎉 ${cardCount}장의 포토카드를 획득했습니다!`);
   };
 
   if (!selectedIdol) {
@@ -173,7 +215,13 @@ const Vault = () => {
               🔗 {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
-              🪙 {userCoins} 코인
+              💰 {suiCoins.toFixed(2)} SUI
+            </Badge>
+            <Badge variant="secondary" className="px-4 py-2">
+              ❤️ {fanHearts} 팬 하트
+            </Badge>
+            <Badge variant="outline" className="px-4 py-2">
+              💝 {dailyHearts}/10 일일 하트
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
               📦 {photoCards.length}장 보유
@@ -236,8 +284,12 @@ const Vault = () => {
                       <Badge variant="secondary">{photoCards.length}장</Badge>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
-                      <span>보유 코인</span>
-                      <Badge variant="outline">{userCoins} 🪙</Badge>
+                      <span>보유 SUI 코인</span>
+                      <Badge variant="outline">{suiCoins.toFixed(2)} 💰</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
+                      <span>팬 하트 포인트</span>
+                      <Badge variant="outline">{fanHearts} ❤️</Badge>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
                       <span>일일 무료 시도</span>
@@ -289,7 +341,7 @@ const Vault = () => {
             <RandomBox
               dailyFreeCount={dailyFreeAttempts}
               maxDailyFree={3}
-              userCoins={userCoins}
+              userCoins={suiCoins}
               pityCounter={{ sr: pityCounters.premium, ssr: pityCounters.special }}
               onOpenBox={handleOpenRandomBox}
               isOpening={false}
