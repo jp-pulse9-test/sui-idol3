@@ -199,17 +199,6 @@ const Index = () => {
               >
                 🎮 나의 아이돌 PICK 하러가기
               </Button>
-              <p className="text-lg text-muted-foreground">
-                지갑 연결 없이도 바로 체험 가능! 데이터 저장은 Vault에서 📦
-              </p>
-              
-              {!user && (
-                <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
-                  <p className="text-sm text-muted-foreground text-center">
-                    💡 <span className="text-accent font-semibold">Pick</span>은 체험용, <span className="text-primary font-semibold">Vault</span>부터 지갑 연결이 필요해요
-                  </p>
-                </div>
-              )}
             </div>
             
             {/* 시즌 정보 */}
