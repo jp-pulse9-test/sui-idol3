@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
+import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { Settings } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
@@ -142,33 +143,13 @@ const Index = () => {
       <div className="relative z-10 mx-auto max-w-4xl px-4">
         {/* 상단 인증 및 지갑 연결 영역 */}
         <div className="fixed top-4 right-4 z-20 flex gap-2">
-          {!user ? (
-            <Button
-              onClick={() => navigate('/auth')}
-              variant="premium"
-              size="lg"
-              className="shadow-lg"
-            >
-              🔐 Sui 지갑 연결
-            </Button>
-          ) : (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 bg-card/80 backdrop-blur-sm p-3 rounded-lg border border-border">
-                <Badge variant="secondary" className="px-3 py-1">
-                  🟢 연결됨
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
-                </span>
-                <Button
-                  onClick={disconnectWalletLocal}
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-1"
-                >
-                  ✕
-                </Button>
-              </div>
+          <WalletConnectButton 
+            variant="premium" 
+            size="lg" 
+            className="shadow-lg"
+          />
+          {user && (
+            <>
               <Button
                 onClick={() => navigate('/settings')}
                 variant="ghost"
@@ -178,15 +159,7 @@ const Index = () => {
               >
                 <Settings className="h-4 w-4" />
               </Button>
-              <Button
-                onClick={handleSignOut}
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                로그아웃
-              </Button>
-            </div>
+            </>
           )}
         </div>
 

@@ -13,6 +13,8 @@ import { Heart } from "lucide-react";
 import { isSuperAdmin, SUPER_ADMIN_INITIAL_SUI_COINS, SUPER_ADMIN_INITIAL_FAN_HEARTS, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
 import { applySuperAdminBenefits, autoApplySuperAdminBenefits } from "@/utils/superAdminBenefits";
 import { secureStorage } from "@/utils/secureStorage";
+import { usePhotoCardMinting } from "@/services/photocardMintingSimple";
+import { useWallet } from "@/hooks/useWallet";
 
 interface SelectedIdol {
   id: number;
@@ -43,6 +45,8 @@ interface PhotoCard {
 const Vault = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading } = useAuthGuard('/auth', true);
+  const { mintPhotoCard } = usePhotoCardMinting();
+  const { isConnected, walletAddress: currentWalletAddress } = useWallet();
   
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
@@ -57,6 +61,7 @@ const Vault = () => {
   });
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
   const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection'>('storage');
+  const [isMinting, setIsMinting] = useState(false);
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
@@ -144,7 +149,7 @@ const Vault = () => {
     return null;
   }
 
-  const handleOpenRandomBox = (type: "free" | "paid") => {
+  const handleOpenRandomBox = async (type: "free" | "paid") => {
     // 랜덤박스 개봉 로직
     if (type === 'free' && dailyFreeAttempts <= 0) {
       toast.error('오늘의 무료 시도 횟수를 모두 사용했습니다.');
@@ -157,71 +162,100 @@ const Vault = () => {
       return;
     }
 
-    // 랜덤 포카 수량 (1-10개)
-    const cardCount = Math.floor(Math.random() * 10) + 1;
-    const newPhotoCards: PhotoCard[] = [];
-    
-    const rarities = ['N', 'R', 'SR', 'SSR'] as const;
-    const rarityWeights = { 'N': 50, 'R': 30, 'SR': 15, 'SSR': 5 };
-    const concepts = ['Summer Dream', 'Winter Story', 'Spring Love', 'Autumn Wind'];
+    if (!isConnected) {
+      toast.error('지갑을 먼저 연결해주세요!');
+      return;
+    }
 
-    for (let i = 0; i < cardCount; i++) {
-      // 희귀도 가중치 기반 선택
-      const random = Math.random() * 100;
-      let rarity: typeof rarities[number] = 'N';
-      let cumulativeWeight = 0;
+    setIsMinting(true);
+
+    try {
+      // 랜덤 포카 수량 (1-10개)
+      const cardCount = Math.floor(Math.random() * 10) + 1;
+      const newPhotoCards: PhotoCard[] = [];
       
-      for (const [r, weight] of Object.entries(rarityWeights)) {
-        cumulativeWeight += weight;
-        if (random <= cumulativeWeight) {
-          rarity = r as typeof rarities[number];
-          break;
+      const rarities = ['N', 'R', 'SR', 'SSR'] as const;
+      const rarityWeights = { 'N': 50, 'R': 30, 'SR': 15, 'SSR': 5 };
+      const concepts = ['Summer Dream', 'Winter Story', 'Spring Love', 'Autumn Wind'];
+
+      for (let i = 0; i < cardCount; i++) {
+        // 희귀도 가중치 기반 선택
+        const random = Math.random() * 100;
+        let rarity: typeof rarities[number] = 'N';
+        let cumulativeWeight = 0;
+        
+        for (const [r, weight] of Object.entries(rarityWeights)) {
+          cumulativeWeight += weight;
+          if (random <= cumulativeWeight) {
+            rarity = r as typeof rarities[number];
+            break;
+          }
         }
+
+        const randomConcept = concepts[Math.floor(Math.random() * concepts.length)];
+
+        const mintingData = {
+          idolId: selectedIdol?.id || 1,
+          idolName: selectedIdol?.name || 'Unknown',
+          rarity: rarity,
+          concept: randomConcept,
+          season: 'Season 1',
+          serialNo: Math.floor(Math.random() * 10000) + 1,
+          totalSupply: 5000,
+          imageUrl: selectedIdol?.image || '',
+          personaPrompt: selectedIdol?.persona_prompt || '',
+        };
+
+        // 실제 포토카드 민팅
+        await mintPhotoCard(mintingData);
+
+        const newPhotoCard: PhotoCard = {
+          id: `pc-${Date.now()}-${i}`,
+          idolId: selectedIdol?.id.toString() || '1',
+          idolName: selectedIdol?.name || 'Unknown',
+          rarity: rarity,
+          concept: randomConcept,
+          season: 'Season 1',
+          serialNo: Math.floor(Math.random() * 10000) + 1,
+          totalSupply: 5000,
+          mintedAt: new Date().toISOString(),
+          owner: currentWalletAddress || walletAddress,
+          isPublic: true,
+          imageUrl: selectedIdol?.image || '',
+          floorPrice: Math.random() * 5 + 1,
+          lastSalePrice: Math.random() * 8 + 2,
+          heartsReceived: 0
+        };
+
+        newPhotoCards.push(newPhotoCard);
       }
 
-      const randomConcept = concepts[Math.floor(Math.random() * concepts.length)];
+      // 상태 업데이트
+      const updatedCards = [...photoCards, ...newPhotoCards];
+      setPhotoCards(updatedCards);
+      localStorage.setItem('photoCards', JSON.stringify(updatedCards));
 
-      const newPhotoCard: PhotoCard = {
-        id: `pc-${Date.now()}-${i}`,
-        idolId: selectedIdol?.id.toString() || '1',
-        idolName: selectedIdol?.name || 'Unknown',
-        rarity: rarity,
-        concept: randomConcept,
-        season: 'Season 1',
-        serialNo: Math.floor(Math.random() * 10000) + 1,
-        totalSupply: 5000,
-        mintedAt: new Date().toISOString(),
-        owner: walletAddress,
-        isPublic: true,
-        imageUrl: selectedIdol?.image || '',
-        floorPrice: Math.random() * 5 + 1,
-        lastSalePrice: Math.random() * 8 + 2,
-        heartsReceived: 0
-      };
+      if (type === 'free') {
+        setDailyFreeAttempts(prev => {
+          const newValue = prev - 1;
+          localStorage.setItem('dailyFreeAttempts', newValue.toString());
+          return newValue;
+        });
+      } else {
+        setSuiCoins(prev => {
+          const newValue = prev - cost;
+          localStorage.setItem('suiCoins', newValue.toFixed(2));
+          return newValue;
+        });
+      }
 
-      newPhotoCards.push(newPhotoCard);
+      toast.success(`🎉 ${cardCount}장의 포토카드를 민팅했습니다!`);
+    } catch (error) {
+      console.error('포토카드 민팅 실패:', error);
+      toast.error('포토카드 민팅에 실패했습니다.');
+    } finally {
+      setIsMinting(false);
     }
-
-    // 상태 업데이트
-    const updatedCards = [...photoCards, ...newPhotoCards];
-    setPhotoCards(updatedCards);
-    localStorage.setItem('photoCards', JSON.stringify(updatedCards));
-
-    if (type === 'free') {
-      setDailyFreeAttempts(prev => {
-        const newValue = prev - 1;
-        localStorage.setItem('dailyFreeAttempts', newValue.toString());
-        return newValue;
-      });
-    } else {
-      setSuiCoins(prev => {
-        const newValue = prev - cost;
-        localStorage.setItem('suiCoins', newValue.toFixed(2));
-        return newValue;
-      });
-    }
-
-    toast.success(`🎉 ${cardCount}장의 포토카드를 획득했습니다!`);
   };
 
   if (!selectedIdol) {

@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import PersonalityTest from "@/components/PersonalityTest";
 import TournamentBattle from "@/components/TournamentBattle";
 import IdolPreview from "@/components/IdolPreview";
+import { usePhotoCardMinting } from "@/services/photocardMintingStable";
+import { useWallet } from "@/hooks/useWallet";
 
 interface IdolPreset {
   id: number;
@@ -43,7 +45,10 @@ const Pick = () => {
     judging: 50,
     selectedAnswers: []
   });
+  const [isMinting, setIsMinting] = useState(false);
   const navigate = useNavigate();
+  const { mintIdolCard } = usePhotoCardMinting();
+  const { isConnected, walletAddress } = useWallet();
 
   // Fetch idols from Supabase
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
@@ -136,8 +141,26 @@ const Pick = () => {
     setGamePhase('tournament');
   };
 
-  const handleConfirmPick = () => {
-    if (finalWinner) {
+  const handleConfirmPick = async () => {
+    if (!finalWinner) return;
+    
+    if (!isConnected) {
+      toast.error('지갑을 먼저 연결해주세요!');
+      return;
+    }
+
+    setIsMinting(true);
+    
+    try {
+      // 아이돌 카드 민팅
+      await mintIdolCard({
+        id: finalWinner.id,
+        name: finalWinner.name,
+        personality: finalWinner.personality,
+        image: finalWinner.profile_image,
+        persona_prompt: finalWinner.persona_prompt,
+      });
+
       // Save selection to localStorage
       localStorage.setItem('selectedIdol', JSON.stringify({
         id: finalWinner.id,
@@ -145,11 +168,18 @@ const Pick = () => {
         personality: finalWinner.personality,
         image: finalWinner.profile_image,
         persona_prompt: finalWinner.persona_prompt,
-        personalityData: personalityData
+        personalityData: personalityData,
+        walletAddress: walletAddress,
+        mintedAt: new Date().toISOString()
       }));
       
       toast.success('IdolCard NFT 민팅이 완료되었습니다!');
       setTimeout(() => navigate('/vault'), 2000);
+    } catch (error) {
+      console.error('민팅 실패:', error);
+      toast.error('민팅에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsMinting(false);
     }
   };
 
@@ -196,6 +226,7 @@ const Pick = () => {
         selectedIdol={finalWinner}
         onConfirm={handleConfirmPick}
         onBack={handleBackToTournament}
+        isMinting={isMinting}
       />
     );
   }
