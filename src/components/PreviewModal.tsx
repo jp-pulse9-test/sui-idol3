@@ -93,10 +93,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ open, onOpenChange, type, o
               icon: <Star className="w-5 h-5" />
             },
             {
-              step: '스토리앨범',
-              title: '성장 스토리 완성',
-              description: '모든 추억이 담긴 완전한 스토리를 완성합니다',
-              example: '데뷔부터 현재까지의 완전한 성장 스토리',
+              step: '데뷔',
+              title: '특별한 데뷔 순간',
+              description: '모든 과정을 거쳐 완성된 최애의 데뷔 순간을 체감합니다',
+              example: '드디어 완성된 데뷔 무대와 특별한 기념품',
               icon: <Zap className="w-5 h-5" />
             }
           ]

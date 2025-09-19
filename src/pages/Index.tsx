@@ -295,7 +295,7 @@ const Index = () => {
                       📈
                     </div>
                     <h3 className="text-xl font-bold text-secondary">RISE</h3>
-                    <p className="text-foreground">피어 멘토링 → 추억 생성 → 스토리 앨범</p>
+                    <p className="text-foreground">피어 멘토링 → 추억 생성 → 데뷔</p>
                   </div>
                 </div>
               </div>
