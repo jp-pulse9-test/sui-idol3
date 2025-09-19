@@ -105,18 +105,22 @@ serve(async (req) => {
     const description = personalityMatch ? personalityMatch[1].trim() : `${finalPersonality} 성격의 매력적인 K-pop 아이돌입니다.`
     const personaPrompt = personaMatch ? personaMatch[1].trim() : `안녕하세요! 저는 ${uniqueName}이에요. ${finalPersonality} 성격으로 팬 여러분과 즐겁게 대화하고 싶어요!`
     
-    // Gemini 2.5 Image Flash로 실제 K-pop 아이돌 이미지 생성
+    // Gemini 2.5 Flash로 실제 K-pop 아이돌 이미지 생성
     const imagePrompt = `Professional portrait of a beautiful Korean K-pop idol with ${finalPersonality} personality and ${finalConcept} concept. Studio lighting, perfect makeup, stylish modern outfit, photorealistic, high fashion photography style, ultra detailed, beautiful face`
     
     console.log(`Generating image with Gemini 2.5 Flash for ${uniqueName}`)
     
-    const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-img:generateImage?key=${googleApiKey}`, {
+    const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleApiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        prompt: imagePrompt,
+        contents: [{
+          parts: [{
+            text: `Generate an image: ${imagePrompt}`
+          }]
+        }],
         generationConfig: {
-          aspectRatio: "PORTRAIT"
+          temperature: 0.7
         }
       })
     })
@@ -125,8 +129,9 @@ serve(async (req) => {
     
     if (imageResponse.ok) {
       const imageData = await imageResponse.json()
-      if (imageData.image) {
-        profileImage = `data:image/png;base64,${imageData.image}`
+      const imageBase64 = imageData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data
+      if (imageBase64) {
+        profileImage = `data:image/png;base64,${imageBase64}`
         console.log(`Successfully generated AI image for ${uniqueName}`)
       } else {
         console.log(`No image data received, using fallback for ${uniqueName}`)

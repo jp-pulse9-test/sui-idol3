@@ -150,26 +150,31 @@ serve(async (req) => {
           if (personaMatch) personaPrompt = personaMatch[1].trim()
         }
 
-        // Gemini 2.5 Image Flash로 이미지 생성
+        // Gemini 2.5 Flash로 이미지 생성
         const imagePrompt = `Professional portrait of a beautiful Korean K-pop girl idol with ${personality} personality and ${concept} concept. Studio lighting, perfect makeup, stylish modern outfit, photorealistic, high fashion photography style, ultra detailed, beautiful face, Korean girl`
         
         let profileImage = `https://api.dicebear.com/7.x/personas/svg?seed=${name}&backgroundColor=f8bfdb,fde7e9,fce4ec&scale=80`
         
-        const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-img:generateImage?key=${googleApiKey}`, {
+        const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleApiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            prompt: imagePrompt,
+            contents: [{
+              parts: [{
+                text: `Generate an image: ${imagePrompt}`
+              }]
+            }],
             generationConfig: {
-              aspectRatio: "PORTRAIT"
+              temperature: 0.7
             }
           })
         })
         
         if (imageResponse.ok) {
           const imageData = await imageResponse.json()
-          if (imageData.image) {
-            profileImage = `data:image/png;base64,${imageData.image}`
+          const imageBase64 = imageData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data
+          if (imageBase64) {
+            profileImage = `data:image/png;base64,${imageBase64}`
           }
         }
 
@@ -246,21 +251,26 @@ serve(async (req) => {
         
         let profileImage = `https://api.dicebear.com/7.x/personas/svg?seed=${name}&backgroundColor=bde3ff,c0deff,e1f5fe&scale=80`
         
-        const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-img:generateImage?key=${googleApiKey}`, {
+        const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleApiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            prompt: imagePrompt,
+            contents: [{
+              parts: [{
+                text: `Generate an image: ${imagePrompt}`
+              }]
+            }],
             generationConfig: {
-              aspectRatio: "PORTRAIT"
+              temperature: 0.7
             }
           })
         })
         
         if (imageResponse.ok) {
           const imageData = await imageResponse.json()
-          if (imageData.image) {
-            profileImage = `data:image/png;base64,${imageData.image}`
+          const imageBase64 = imageData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data
+          if (imageBase64) {
+            profileImage = `data:image/png;base64,${imageBase64}`
           }
         }
 
