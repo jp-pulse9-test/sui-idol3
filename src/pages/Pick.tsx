@@ -68,6 +68,35 @@ const Pick = () => {
     }
   };
 
+  // Generate idol photos
+  const generateIdolPhotos = async (): Promise<void> => {
+    try {
+      toast.info('아이돌 사진을 생성하고 있습니다... 잠시만 기다려주세요.');
+      
+      const { data, error } = await supabase.functions.invoke('generate-idol-photos');
+      
+      if (error) {
+        console.error('Error generating idol photos:', error);
+        throw error;
+      }
+      
+      toast.success(`아이돌 사진 생성이 완료되었습니다! 성공: ${data.successful}명, 실패: ${data.failed}명`);
+      
+      // Refresh idol data
+      const updatedIdols = await fetchIdolsFromDB();
+      if (updatedIdols.length > 0) {
+        setIdols(updatedIdols);
+        // Re-select 3 idols for display
+        const shuffled = [...updatedIdols].sort(() => Math.random() - 0.5);
+        const selected3 = shuffled.slice(0, 3);
+        setSelectedIdols(selected3);
+      }
+    } catch (error) {
+      console.error('Failed to generate idol photos:', error);
+      toast.error('아이돌 사진 생성에 실패했습니다.');
+    }
+  };
+
   // Initialize game data
   useEffect(() => {
     const initializeGame = async () => {
@@ -280,6 +309,13 @@ const Pick = () => {
 
           {/* Navigation */}
           <div className="flex justify-center space-x-4 pt-8">
+            <Button
+              onClick={generateIdolPhotos}
+              size="lg"
+              className="bg-gradient-primary hover:opacity-90"
+            >
+              📸 아이돌 사진 생성하기
+            </Button>
             <Button
               onClick={() => navigate('/')}
               variant="outline"
