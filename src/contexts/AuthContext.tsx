@@ -58,8 +58,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (insertError) {
         console.log('Insert error details:', insertError);
         
-        if (insertError.code === '23505') {
-          // 중복 지갑 주소 - 이미 존재하는 사용자
+        // 중복 지갑 주소 또는 RLS 정책 위반 - 이미 존재하는 사용자로 처리
+        if (insertError.code === '23505' || insertError.code === '42501') {
           userId = 'user_' + realWalletAddress.slice(-12);
           console.log('✅ 기존 사용자 지갑 연결:', userId);
         } else {
