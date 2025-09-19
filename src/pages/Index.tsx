@@ -311,7 +311,7 @@ const Index = () => {
                 지금 바로 체험해보세요!
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
-                Pick은 무료 체험, Vault부터 지갑 연결로 본격 시작!
+                Pick은 체험, Vault부터 지갑 연결로 본격 시작!
               </p>
             </div>
             
@@ -321,7 +321,7 @@ const Index = () => {
               size="xl"
               className="min-w-64 text-xl py-4"
             >
-              🌟 무료로 아이돌 PICK 체험하기 🌟
+              🌟 아이돌 PICK 체험하기 🌟
             </Button>
           </div>
         </section>
