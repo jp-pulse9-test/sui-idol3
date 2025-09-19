@@ -26,11 +26,22 @@ export const FeatureCard = ({ title, description, icon, onClick, gradient, butto
         </div>
         <Button 
           onClick={onClick}
-          variant="hero"
+          variant="premium"
           size="lg"
-          className="w-full btn-modern py-3"
+          className="w-full font-bold text-lg py-4 relative overflow-hidden group/btn
+            bg-gradient-to-r from-accent via-primary to-secondary 
+            hover:from-primary hover:via-accent hover:to-primary
+            text-white hover:text-white
+            shadow-lg hover:shadow-xl
+            border border-white/20 hover:border-white/30
+            transition-all duration-300 ease-in-out
+            hover:scale-[1.02] active:scale-[0.98]"
         >
-          {buttonText}
+          <span className="relative z-10 font-semibold tracking-wide">
+            {buttonText}
+          </span>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 
+            translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700 ease-in-out" />
         </Button>
       </div>
     </Card>
