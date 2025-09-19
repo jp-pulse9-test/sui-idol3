@@ -17,12 +17,21 @@ interface IdolPreset {
   persona_prompt: string;
 }
 
-type GamePhase = 'loading' | 'preference' | 'worldcup' | 'result';
+type GamePhase = 'loading' | 'gender' | 'preferences' | 'tournament-size' | 'worldcup' | 'result' | 'minting';
 
 interface PreferenceData {
-  animalType: string;
-  bodyType: string;
-  concept: string;
+  gender: 'male' | 'female' | '';
+  animalTypes: string[];
+  bodyTypes: string[];
+  vibes: string[];
+  talent: string;
+}
+
+interface HybridBadge {
+  animalTypes: string[];
+  bodyTypes: string[];
+  vibes: string[];
+  talent: string;
 }
 
 const Pick = () => {
@@ -34,11 +43,15 @@ const Pick = () => {
   const [roundNumber, setRoundNumber] = useState(1);
   const [finalWinner, setFinalWinner] = useState<IdolPreset | null>(null);
   const [preference, setPreference] = useState<PreferenceData>({
-    animalType: '',
-    bodyType: '',
-    concept: ''
+    gender: '',
+    animalTypes: [],
+    bodyTypes: [],
+    vibes: [],
+    talent: ''
   });
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [tournamentSize, setTournamentSize] = useState<16 | 32>(16);
+  const [hybridBadge, setHybridBadge] = useState<HybridBadge | null>(null);
+  const [mintingProgress, setMintingProgress] = useState(0);
   const navigate = useNavigate();
 
   // Fetch idols from Supabase
@@ -83,55 +96,88 @@ const Pick = () => {
     }
   };
 
-  const preferenceQuestions = [
-    {
-      id: 1,
-      question: "선호하는 동물상은?",
-      key: 'animalType' as keyof PreferenceData,
-      options: [
-        { text: "강아지상", value: "puppy", emoji: "🐶" },
-        { text: "고양이상", value: "cat", emoji: "🐱" },
-        { text: "토끼상", value: "rabbit", emoji: "🐰" },
-        { text: "여우상", value: "fox", emoji: "🦊" }
-      ]
-    },
-    {
-      id: 2,
-      question: "선호하는 체형은?",
-      key: 'bodyType' as keyof PreferenceData,
-      options: [
-        { text: "슬림한 체형", value: "slim", emoji: "🎋" },
-        { text: "탄탄한 근육질", value: "athletic", emoji: "💪" },
-        { text: "건강한 체형", value: "healthy", emoji: "🌟" },
-        { text: "키가 큰 편", value: "tall", emoji: "🗼" }
-      ]
-    },
-    {
-      id: 3,
-      question: "선호하는 컨셉은?",
-      key: 'concept' as keyof PreferenceData,
-      options: [
-        { text: "큐트한 매력", value: "cute", emoji: "🌸" },
-        { text: "섹시한 매력", value: "sexy", emoji: "🔥" },
-        { text: "우아한 매력", value: "elegant", emoji: "💎" },
-        { text: "카리스마틱", value: "charismatic", emoji: "⚡" }
-      ]
-    }
+  const animalOptions = [
+    { text: "강아지상", value: "puppy", emoji: "🐶" },
+    { text: "고양이상", value: "cat", emoji: "🐱" },
+    { text: "여우상", value: "fox", emoji: "🦊" },
+    { text: "사슴상", value: "deer", emoji: "🦌" },
+    { text: "토끼상", value: "rabbit", emoji: "🐰" },
+    { text: "곰상", value: "bear", emoji: "🐻" },
+    { text: "늑대상", value: "wolf", emoji: "🐺" },
+    { text: "호랑이상", value: "tiger", emoji: "🐅" }
   ];
 
-  const handlePreferenceAnswer = (value: string) => {
-    const currentQuestionData = preferenceQuestions[currentQuestion];
-    setPreference(prev => ({
-      ...prev,
-      [currentQuestionData.key]: value
-    }));
+  const bodyOptions = [
+    { text: "슬림", value: "slim", emoji: "🎋" },
+    { text: "피트", value: "fit", emoji: "💪" },
+    { text: "애슬레틱", value: "athletic", emoji: "🏃" },
+    { text: "볼륨", value: "voluminous", emoji: "🌺" },
+    { text: "키큰", value: "tall", emoji: "🗼" },
+    { text: "아담", value: "petite", emoji: "🌸" }
+  ];
 
-    if (currentQuestion < preferenceQuestions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-    } else {
-      // Preference survey complete, start tournament
-      setGamePhase('worldcup');
+  const vibeOptions = [
+    { text: "청량", value: "fresh", emoji: "🌿" },
+    { text: "시크", value: "chic", emoji: "🖤" },
+    { text: "러블리", value: "lovely", emoji: "💕" },
+    { text: "카리스마", value: "charismatic", emoji: "⚡" }
+  ];
+
+  const talentOptions = [
+    { text: "보컬", value: "vocal", emoji: "🎤" },
+    { text: "댄스", value: "dance", emoji: "💃" },
+    { text: "랩", value: "rap", emoji: "🎵" },
+    { text: "프로듀싱", value: "producing", emoji: "🎹" }
+  ];
+
+  const handleGenderSelect = (gender: 'male' | 'female') => {
+    setPreference(prev => ({ ...prev, gender }));
+    setGamePhase('preferences');
+  };
+
+  const handleMultiSelect = (category: 'animalTypes' | 'bodyTypes' | 'vibes', value: string) => {
+    setPreference(prev => {
+      const current = prev[category];
+      const maxSelections = category === 'animalTypes' ? 8 : 2;
+      
+      if (current.includes(value)) {
+        return {
+          ...prev,
+          [category]: current.filter(item => item !== value)
+        };
+      } else if (current.length < maxSelections) {
+        return {
+          ...prev,
+          [category]: [...current, value]
+        };
+      }
+      return prev;
+    });
+  };
+
+  const handleTalentSelect = (talent: string) => {
+    setPreference(prev => ({ ...prev, talent }));
+  };
+
+  const handleStartTournament = () => {
+    if (preference.animalTypes.length === 0 || preference.bodyTypes.length === 0 || 
+        preference.vibes.length === 0 || !preference.talent) {
+      toast.error('모든 선호도를 설정해주세요.');
+      return;
     }
+    setGamePhase('tournament-size');
+  };
+
+  const handleTournamentSizeSelect = (size: 16 | 32) => {
+    setTournamentSize(size);
+    // Randomly select idols for tournament based on size
+    const shuffled = [...idols].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, size);
+    
+    setBracket(selected);
+    setCurrentRound(selected);
+    setCurrentPair([selected[0], selected[1]]);
+    setGamePhase('worldcup');
   };
 
   // Initialize game data
@@ -156,7 +202,7 @@ const Pick = () => {
         setBracket(selected16);
         setCurrentRound(selected16);
         setCurrentPair([selected16[0], selected16[1]]);
-        setGamePhase('preference');
+        setGamePhase('gender');
       } else {
         toast.error('아이돌 데이터를 불러올 수 없습니다.');
       }
@@ -183,7 +229,14 @@ const Pick = () => {
     if (currentIndex + 2 >= currentRound.length) {
       // Current round complete
       if (pairsRemaining === 1) {
-        // Tournament complete
+        // Tournament complete - generate hybrid badge
+        const badge: HybridBadge = {
+          animalTypes: preference.animalTypes,
+          bodyTypes: preference.bodyTypes,
+          vibes: preference.vibes,
+          talent: preference.talent
+        };
+        setHybridBadge(badge);
         setFinalWinner(selectedIdol);
         setGamePhase('result');
         return;
@@ -206,26 +259,42 @@ const Pick = () => {
     }
   };
 
-  // Save selected idol and navigate to vault
-  const handleFinalSelection = () => {
-    if (!finalWinner) return;
+  const handleConfirmPick = () => {
+    setGamePhase('minting');
+    simulateMinting();
+  };
 
-    // Save selected idol to localStorage
-    localStorage.setItem('selectedIdol', JSON.stringify({
-      id: finalWinner.id,
-      name: finalWinner.name,
-      personality: finalWinner.personality,
-      image: finalWinner.profile_image,
-      persona_prompt: finalWinner.persona_prompt
-    }));
-
-    toast.success(`${finalWinner.name}를 선택했습니다!`);
-    navigate('/vault');
+  const simulateMinting = async () => {
+    setMintingProgress(0);
+    
+    // Simulate minting progress
+    const intervals = [20, 40, 60, 80, 100];
+    for (const progress of intervals) {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setMintingProgress(progress);
+    }
+    
+    // Save final selection
+    if (finalWinner && hybridBadge) {
+      localStorage.setItem('selectedIdol', JSON.stringify({
+        id: finalWinner.id,
+        name: finalWinner.name,
+        personality: finalWinner.personality,
+        image: finalWinner.profile_image,
+        persona_prompt: finalWinner.persona_prompt,
+        hybridBadge: hybridBadge
+      }));
+    }
+    
+    toast.success('IdolCard NFT 민팅이 완료되었습니다!');
+    setTimeout(() => navigate('/vault'), 2000);
   };
 
   const getTournamentRoundName = () => {
     const remaining = currentRound.length;
+    if (remaining > 16) return `${remaining}강`;
     switch (remaining) {
+      case 32: return "32강";
       case 16: return "16강";
       case 8: return "8강";
       case 4: return "준결승";
@@ -244,49 +313,41 @@ const Pick = () => {
     return Math.floor(currentIndex / 2) + 1;
   };
 
-  // Preference survey phase
-  if (gamePhase === 'preference') {
-    const currentQuestionData = preferenceQuestions[currentQuestion];
-    const progress = ((currentQuestion + 1) / preferenceQuestions.length) * 100;
-
+  // Gender selection phase
+  if (gamePhase === 'gender') {
     return (
       <div className="min-h-screen bg-gradient-background p-4">
         <div className="max-w-4xl mx-auto space-y-8 pt-20">
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold gradient-text">
-              선호도 조사
+              성별 선택
             </h1>
             <p className="text-muted-foreground">
-              맞춤형 아이돌 추천을 위해 간단한 질문에 답해주세요
-            </p>
-            <Progress value={progress} className="w-64 mx-auto h-2" />
-            <p className="text-sm text-muted-foreground">
-              {currentQuestion + 1} / {preferenceQuestions.length}
+              선호하는 아이돌의 성별을 선택해주세요
             </p>
           </div>
 
-          <Card className="p-8 glass-dark border-white/10 max-w-2xl mx-auto">
-            <div className="space-y-8">
-              <h2 className="text-2xl font-bold text-center text-foreground">
-                {currentQuestionData.question}
-              </h2>
-              
-              <div className="grid grid-cols-2 gap-4">
-                {currentQuestionData.options.map((option) => (
-                  <Button
-                    key={option.value}
-                    onClick={() => handlePreferenceAnswer(option.value)}
-                    variant="outline"
-                    size="lg"
-                    className="h-24 flex flex-col items-center justify-center space-y-2 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
-                  >
-                    <span className="text-3xl">{option.emoji}</span>
-                    <span className="font-medium">{option.text}</span>
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+            <Button
+              onClick={() => handleGenderSelect('male')}
+              variant="outline"
+              size="lg"
+              className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+            >
+              <span className="text-6xl">👨</span>
+              <span className="text-xl font-medium">남성 아이돌</span>
+            </Button>
+            
+            <Button
+              onClick={() => handleGenderSelect('female')}
+              variant="outline"
+              size="lg"
+              className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+            >
+              <span className="text-6xl">👩</span>
+              <span className="text-xl font-medium">여성 아이돌</span>
+            </Button>
+          </div>
 
           <div className="text-center">
             <Button
@@ -295,6 +356,186 @@ const Pick = () => {
               className="text-muted-foreground hover:text-foreground"
             >
               홈으로 돌아가기
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Preferences phase
+  if (gamePhase === 'preferences') {
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-6xl mx-auto space-y-8 pt-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              속성 선택 패널
+            </h1>
+            <p className="text-muted-foreground">
+              아이돌 시드 설정을 위한 선호도를 선택해주세요
+            </p>
+          </div>
+
+          <div className="grid gap-8">
+            {/* Animal Types */}
+            <Card className="p-6 glass-dark border-white/10">
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-foreground">
+                  동물상 (복수 선택 가능)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {animalOptions.map((option) => (
+                    <Button
+                      key={option.value}
+                      onClick={() => handleMultiSelect('animalTypes', option.value)}
+                      variant={preference.animalTypes.includes(option.value) ? "default" : "outline"}
+                      className="h-16 flex flex-col items-center justify-center space-y-1"
+                    >
+                      <span className="text-2xl">{option.emoji}</span>
+                      <span className="text-sm">{option.text}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </Card>
+
+            {/* Body Types */}
+            <Card className="p-6 glass-dark border-white/10">
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-foreground">
+                  체형 (1~2개 선택)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {bodyOptions.map((option) => (
+                    <Button
+                      key={option.value}
+                      onClick={() => handleMultiSelect('bodyTypes', option.value)}
+                      variant={preference.bodyTypes.includes(option.value) ? "default" : "outline"}
+                      className="h-16 flex flex-col items-center justify-center space-y-1"
+                    >
+                      <span className="text-2xl">{option.emoji}</span>
+                      <span className="text-sm">{option.text}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </Card>
+
+            {/* Vibes */}
+            <Card className="p-6 glass-dark border-white/10">
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-foreground">
+                  분위기 (1~2개 선택)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {vibeOptions.map((option) => (
+                    <Button
+                      key={option.value}
+                      onClick={() => handleMultiSelect('vibes', option.value)}
+                      variant={preference.vibes.includes(option.value) ? "default" : "outline"}
+                      className="h-16 flex flex-col items-center justify-center space-y-1"
+                    >
+                      <span className="text-2xl">{option.emoji}</span>
+                      <span className="text-sm">{option.text}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </Card>
+
+            {/* Talent */}
+            <Card className="p-6 glass-dark border-white/10">
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-foreground">
+                  역량 선호 (1개 선택)
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {talentOptions.map((option) => (
+                    <Button
+                      key={option.value}
+                      onClick={() => handleTalentSelect(option.value)}
+                      variant={preference.talent === option.value ? "default" : "outline"}
+                      className="h-16 flex flex-col items-center justify-center space-y-1"
+                    >
+                      <span className="text-2xl">{option.emoji}</span>
+                      <span className="text-sm">{option.text}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="text-center space-y-4">
+            <Button
+              onClick={handleStartTournament}
+              size="lg"
+              className="min-w-48 text-lg py-3 bg-gradient-primary hover:opacity-90"
+            >
+              시작하기
+            </Button>
+            
+            <div className="text-center">
+              <Button
+                onClick={() => setGamePhase('gender')}
+                variant="ghost"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                이전 단계
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tournament size selection phase
+  if (gamePhase === 'tournament-size') {
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-20">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              월드컵 라운드 선택
+            </h1>
+            <p className="text-muted-foreground">
+              토너먼트 크기를 선택해주세요
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+            <Button
+              onClick={() => handleTournamentSizeSelect(16)}
+              variant="outline"
+              size="lg"
+              className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+            >
+              <span className="text-4xl">🏆</span>
+              <span className="text-xl font-medium">16강</span>
+              <span className="text-sm text-muted-foreground">빠른 게임 (~90초)</span>
+            </Button>
+            
+            <Button
+              onClick={() => handleTournamentSizeSelect(32)}
+              variant="outline"
+              size="lg"
+              className="h-32 flex flex-col items-center justify-center space-y-4 bg-card/80 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+            >
+              <span className="text-4xl">🏅</span>
+              <span className="text-xl font-medium">32강</span>
+              <span className="text-sm text-muted-foreground">확장 게임 (~3분)</span>
+            </Button>
+          </div>
+
+          <div className="text-center">
+            <Button
+              onClick={() => setGamePhase('preferences')}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              이전 단계
             </Button>
           </div>
         </div>
@@ -317,57 +558,114 @@ const Pick = () => {
     );
   }
 
-  // Result phase
-  if (gamePhase === 'result' && finalWinner) {
+  // Result phase with hybrid preview
+  if (gamePhase === 'result' && finalWinner && hybridBadge) {
+    const getEmojiForValue = (category: string, value: string) => {
+      const allOptions = [...animalOptions, ...bodyOptions, ...vibeOptions, ...talentOptions];
+      return allOptions.find(opt => opt.value === value)?.emoji || '✨';
+    };
+
     return (
       <div className="min-h-screen bg-gradient-background p-4">
-        <div className="max-w-4xl mx-auto text-center space-y-8 pt-20">
+        <div className="max-w-4xl mx-auto text-center space-y-8 pt-12">
           <div className="space-y-4">
-            <h1 className="text-5xl font-bold gradient-text animate-pulse">
-              🏆 우승자 🏆
+            <h1 className="text-4xl font-bold gradient-text animate-pulse">
+              🏆 결승 & 하이브리드 미리보기 🏆
             </h1>
             <p className="text-xl text-muted-foreground">
-              축하합니다! 당신이 선택한 아이돌입니다
+              당신의 픽이 완성되었습니다!
             </p>
           </div>
 
-          <Card className="p-8 glass-dark border-white/10 max-w-md mx-auto">
-            <div className="space-y-6">
-              <div className="relative">
-                <div className="w-40 h-40 mx-auto rounded-full overflow-hidden bg-gradient-primary/20 border-4 border-primary/30">
-                  <img 
-                    src={finalWinner.profile_image}
-                    alt={finalWinner.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${finalWinner.name}`;
-                    }}
-                  />
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Winner Card */}
+            <Card className="p-6 glass-dark border-white/10">
+              <div className="space-y-6">
+                <div className="relative">
+                  <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-primary/20 border-4 border-primary/30">
+                    <img 
+                      src={finalWinner.profile_image}
+                      alt={finalWinner.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${finalWinner.name}`;
+                      }}
+                    />
+                  </div>
+                  <div className="absolute -top-2 -right-2 text-3xl animate-bounce">
+                    👑
+                  </div>
                 </div>
-                <div className="absolute -top-2 -right-2 text-4xl animate-bounce">
-                  👑
+                
+                <div className="space-y-3">
+                  <h2 className="text-2xl font-bold gradient-text">{finalWinner.name}</h2>
+                  <Badge variant="secondary" className="text-sm px-3 py-1">
+                    {finalWinner.personality}
+                  </Badge>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {finalWinner.description}
+                  </p>
                 </div>
               </div>
-              
-              <div className="space-y-3">
-                <h2 className="text-3xl font-bold gradient-text">{finalWinner.name}</h2>
-                <Badge variant="secondary" className="text-sm px-4 py-1">
-                  {finalWinner.personality}
-                </Badge>
-                <p className="text-muted-foreground leading-relaxed">
-                  {finalWinner.description}
-                </p>
+            </Card>
+
+            {/* Hybrid Badge */}
+            <Card className="p-6 glass-dark border-white/10">
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold gradient-text">하이브리드 배지</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-2">동물상</h4>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {hybridBadge.animalTypes.map((type) => (
+                        <Badge key={type} variant="outline" className="text-xs">
+                          {getEmojiForValue('animal', type)} {animalOptions.find(opt => opt.value === type)?.text}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-2">체형</h4>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {hybridBadge.bodyTypes.map((type) => (
+                        <Badge key={type} variant="outline" className="text-xs">
+                          {getEmojiForValue('body', type)} {bodyOptions.find(opt => opt.value === type)?.text}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-2">분위기</h4>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {hybridBadge.vibes.map((vibe) => (
+                        <Badge key={vibe} variant="outline" className="text-xs">
+                          {getEmojiForValue('vibe', vibe)} {vibeOptions.find(opt => opt.value === vibe)?.text}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-2">역량</h4>
+                    <Badge variant="default" className="text-xs">
+                      {getEmojiForValue('talent', hybridBadge.talent)} {talentOptions.find(opt => opt.value === hybridBadge.talent)?.text}
+                    </Badge>
+                  </div>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
 
           <div className="space-y-4">
             <Button
-              onClick={handleFinalSelection}
+              onClick={handleConfirmPick}
               size="lg"
               className="min-w-64 text-xl py-4 bg-gradient-primary hover:opacity-90"
             >
-              ✨ {finalWinner.name}와 함께 시작하기 ✨
+              🎊 나의 픽 확정 🎊
             </Button>
             
             <div className="flex justify-center gap-4">
@@ -389,6 +687,64 @@ const Pick = () => {
               </Button>
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Minting phase
+  if (gamePhase === 'minting' && finalWinner) {
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto text-center space-y-8 pt-20">
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold gradient-text">
+              🎨 IdolCard NFT 민팅
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              하이브리드 메타데이터와 함께 NFT를 생성하고 있습니다...
+            </p>
+          </div>
+
+          <Card className="p-8 glass-dark border-white/10 max-w-md mx-auto">
+            <div className="space-y-6">
+              <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-primary/20 border-4 border-primary/30">
+                <img 
+                  src={finalWinner.profile_image}
+                  alt={finalWinner.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${finalWinner.name}`;
+                  }}
+                />
+              </div>
+              
+              <div className="space-y-3">
+                <h2 className="text-2xl font-bold gradient-text">{finalWinner.name}</h2>
+                <Progress value={mintingProgress} className="w-full h-3" />
+                <p className="text-sm text-muted-foreground">
+                  민팅 진행률: {mintingProgress}%
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {mintingProgress === 100 && (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="text-4xl animate-bounce">🎉</div>
+              <p className="text-lg text-green-400 font-medium">
+                민팅이 완료되었습니다!
+              </p>
+              <Button
+                onClick={() => window.open('https://explorer.example.com', '_blank')}
+                variant="outline"
+                size="lg"
+                className="bg-card/80 backdrop-blur-sm"
+              >
+                🔍 탐색기에서 확인하기
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     );
