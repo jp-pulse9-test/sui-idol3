@@ -36,17 +36,7 @@ const Rise = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading } = useAuthGuard('/auth', true);
   
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">로딩 중...</div>
-      </div>
-    );
-  }
-  
-  if (!isAuthenticated) {
-    return null;
-  }
+  // All hooks must be called before any conditional returns
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [memoryCardCount, setMemoryCardCount] = useState(0);
@@ -58,6 +48,18 @@ const Rise = () => {
     rank: "Trainee"
   });
   const [isDebutPlaying, setIsDebutPlaying] = useState(false);
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">로딩 중...</div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return null;
+  }
 
   // 데뷔 에피소드 (4-6턴)
   const debutEpisode: DebutEpisode = {
