@@ -281,14 +281,6 @@ const Pick = () => {
           {/* Navigation */}
           <div className="flex justify-center space-x-4 pt-8">
             <Button
-              onClick={() => window.location.reload()}
-              variant="outline"
-              size="lg"
-              className="bg-card/80 backdrop-blur-sm border-border hover:bg-card"
-            >
-              다른 아이돌 보기
-            </Button>
-            <Button
               onClick={() => navigate('/')}
               variant="outline"
               size="lg"
