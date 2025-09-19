@@ -125,7 +125,7 @@ const Index = () => {
                   가상아이돌 스토리 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  성향 분석 → 이상형 월드컵 → 최애 선택 → 일상 스토리 → 포토카드 수집 → 성장 체험
+                  최애 아이돌을 고르고, 스토리 에피소드를 통해 최애와 나의 추억이 담긴 포토카드를 모아 데뷔와 성장(Rise)을 체감하는 특별한 경험.
                 </p>
               </div>
             </div>
