@@ -229,7 +229,7 @@ export const DevTools: React.FC = () => {
                   <div className="space-y-4">
                     <h5 className="font-medium">생성 옵션</h5>
                     
-                    {/* 성별 선택 스위치 */}
+                    {/* 성별 선택 토글 */}
                     <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
                       <div className="space-y-1">
                         <Label className="font-medium">성별 지정</Label>
@@ -237,26 +237,21 @@ export const DevTools: React.FC = () => {
                           {genderFilter ? `${genderFilter === 'boy' ? '소년' : '소녀'} 아이돌만 생성` : '성별 무작위 생성'}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="boy-switch" className="text-sm">소년</Label>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm">소년</span>
                         <Switch
-                          id="boy-switch"
-                          checked={genderFilter === 'boy'}
-                          onCheckedChange={(checked) => {
-                            setGenderFilter(checked ? 'boy' : (genderFilter === 'girl' ? 'girl' : null));
-                          }}
-                          disabled={isGeneratingBatch}
-                        />
-                        <span className="text-xs text-muted-foreground">|</span>
-                        <Switch
-                          id="girl-switch"
+                          id="gender-toggle"
                           checked={genderFilter === 'girl'}
                           onCheckedChange={(checked) => {
-                            setGenderFilter(checked ? 'girl' : (genderFilter === 'boy' ? 'boy' : null));
+                            if (genderFilter === null) {
+                              setGenderFilter(checked ? 'girl' : 'boy');
+                            } else {
+                              setGenderFilter(checked ? 'girl' : (genderFilter === 'girl' ? null : 'boy'));
+                            }
                           }}
                           disabled={isGeneratingBatch}
                         />
-                        <Label htmlFor="girl-switch" className="text-sm">소녀</Label>
+                        <span className="text-sm">소녀</span>
                       </div>
                     </div>
 
