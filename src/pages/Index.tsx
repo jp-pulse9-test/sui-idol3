@@ -313,6 +313,36 @@ const Index = () => {
               <p className="text-xl text-foreground max-w-2xl mx-auto">
                 Pick은 체험, Vault부터 지갑 연결로 본격 시작!
               </p>
+              
+              {/* 개발자 전용 데이터 생성 버튼 */}
+              <div className="mt-4">
+                <Button
+                  onClick={async () => {
+                    try {
+                      const { supabase } = await import('@/integrations/supabase/client');
+                      const { toast } = await import('sonner');
+                      
+                      toast.info('202명의 아이돌 데이터 생성을 시작합니다...');
+                      
+                      const { data, error } = await supabase.functions.invoke('generate-preset-idols');
+                      
+                      if (error) {
+                        console.error('Error:', error);
+                        toast.error('데이터 생성에 실패했습니다.');
+                      } else {
+                        toast.success('아이돌 데이터 생성이 완료되었습니다!');
+                      }
+                    } catch (error) {
+                      console.error('Error:', error);
+                    }
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs opacity-50 hover:opacity-100"
+                >
+                  🔧 개발자 전용: 아이돌 데이터 생성
+                </Button>
+              </div>
             </div>
             
             <Button
