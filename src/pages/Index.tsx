@@ -166,7 +166,7 @@ const Index = () => {
             <div className="mt-12 p-8 glass rounded-2xl border border-white/10 shadow-lg">
               <div className="text-center space-y-4">
                 <h3 className="text-2xl font-bold gradient-text">2025 AI심쿵챌린지</h3>
-                <p className="text-5xl font-black text-foreground">0</p>
+                <p className="text-5xl font-black text-foreground">101</p>
                 <p className="text-lg text-muted-foreground">SEASON 1, 당신의 픽으로 탄생하는 K-POP 아이돌</p>
                 <p className="text-base text-muted-foreground">
                   최애의 성장과 추억을 만드는 특별한 여정
