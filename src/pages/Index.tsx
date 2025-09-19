@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
+import { DevTools } from "@/components/DevTools";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -46,6 +48,7 @@ const Index = () => {
     open: boolean;
     type: 'pick' | 'vault' | 'rise' | null;
   }>({ open: false, type: null });
+  const [devToolsOpen, setDevToolsOpen] = useState(false);
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
@@ -318,31 +321,22 @@ const Index = () => {
               {user?.wallet_address === "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc" && (
                 <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
                   <p className="text-sm text-yellow-300 mb-3">🚀 개발자 도구</p>
-                  <Button
-                    onClick={async () => {
-                      try {
-                        const { supabase } = await import('@/integrations/supabase/client');
-                        const { toast } = await import('sonner');
-                        
-                        toast.info('202명의 아이돌 데이터 생성을 시작합니다...');
-                        
-                        const { data, error } = await supabase.functions.invoke('generate-preset-idols');
-                        
-                        if (error) {
-                          toast.error('생성 실패: ' + error.message);
-                        } else {
-                          toast.success('아이돌 데이터 생성이 완료되었습니다!');
-                        }
-                      } catch (error) {
-                        console.error('Error:', error);
-                      }
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="bg-yellow-500/20 border-yellow-500 text-yellow-200 hover:bg-yellow-500/30"
-                  >
-                    🔧 202명 아이돌 데이터 생성하기
-                  </Button>
+                  <Dialog open={devToolsOpen} onOpenChange={setDevToolsOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-yellow-500/20 border-yellow-500 text-yellow-200 hover:bg-yellow-500/30"
+                      >
+                        🔧 슈퍼 어드민 도구 열기
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0">
+                      <div className="h-full overflow-y-auto">
+                        <DevTools />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               )}
             </div>

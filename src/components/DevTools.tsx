@@ -163,177 +163,201 @@ export const DevTools: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <Card className="w-96 max-h-[80vh] overflow-y-auto shadow-2xl border-2 border-primary/20 bg-background/95 backdrop-blur">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Settings className="w-5 h-5 text-primary" />
+    <div className="w-full">
+      <Card className="w-full border-0 shadow-none bg-transparent">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Settings className="w-6 h-6 text-primary" />
             슈퍼 어드민 도구
-            <Badge variant="destructive" className="text-xs">ADMIN</Badge>
+            <Badge variant="destructive" className="text-sm">ADMIN</Badge>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-base">
             아이돌 데이터 관리 및 생성 도구 (권한 필요)
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <Tabs defaultValue="generator" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="generator" className="text-xs">
-                <Sparkles className="w-3 h-3 mr-1" />
-                생성기
+            <TabsList className="grid w-full grid-cols-3 h-12">
+              <TabsTrigger value="generator" className="text-sm font-medium">
+                <Sparkles className="w-4 h-4 mr-2" />
+                개별 생성
               </TabsTrigger>
-              <TabsTrigger value="batch" className="text-xs">
-                <Database className="w-3 h-3 mr-1" />
-                배치
+              <TabsTrigger value="batch" className="text-sm font-medium">
+                <Database className="w-4 h-4 mr-2" />
+                배치 작업
               </TabsTrigger>
-              <TabsTrigger value="stats" className="text-xs">
-                <Users className="w-3 h-3 mr-1" />
-                통계
+              <TabsTrigger value="stats" className="text-sm font-medium">
+                <Users className="w-4 h-4 mr-2" />
+                데이터 통계
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="generator" className="space-y-3 mt-4">
-              <div className="text-center">
-                <h4 className="font-medium mb-2">개별 아이돌 생성</h4>
-                <p className="text-xs text-muted-foreground mb-3">
-                  커스텀 설정으로 아이돌을 하나씩 생성합니다
-                </p>
-                <IdolGenerator />
+            <TabsContent value="generator" className="space-y-4 mt-6">
+              <div className="text-center space-y-4">
+                <div>
+                  <h4 className="text-lg font-semibold mb-2">개별 아이돌 생성</h4>
+                  <p className="text-sm text-muted-foreground">
+                    커스텀 설정으로 아이돌을 하나씩 생성합니다
+                  </p>
+                </div>
+                <div className="bg-muted/30 p-4 rounded-lg">
+                  <IdolGenerator />
+                </div>
               </div>
             </TabsContent>
 
-            <TabsContent value="batch" className="space-y-3 mt-4">
-              <div className="space-y-3">
-                <h4 className="font-medium text-center">배치 생성</h4>
+            <TabsContent value="batch" className="space-y-4 mt-6">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-lg font-semibold mb-2">배치 생성 및 관리</h4>
+                  <p className="text-sm text-muted-foreground">
+                    여러 아이돌을 한 번에 생성하거나 데이터를 관리합니다
+                  </p>
+                </div>
                 
                 {isGeneratingBatch && (
-                  <div className="space-y-2">
-                    <Progress value={batchProgress} className="w-full" />
-                    <p className="text-xs text-center text-muted-foreground">
-                      생성 중... {Math.round(batchProgress)}%
+                  <div className="space-y-3 bg-muted/30 p-4 rounded-lg">
+                    <Progress value={batchProgress} className="w-full h-2" />
+                    <p className="text-sm text-center text-muted-foreground">
+                      생성 진행 중... {Math.round(batchProgress)}%
                     </p>
                   </div>
                 )}
                 
-                <div className="grid grid-cols-4 gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => generateBatchIdols(1)}
-                    disabled={isGeneratingBatch}
-                    className="text-xs"
-                  >
-                    1명
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => generateBatchIdols(5)}
-                    disabled={isGeneratingBatch}
-                    className="text-xs"
-                  >
-                    5명
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => generateBatchIdols(10)}
-                    disabled={isGeneratingBatch}
-                    className="text-xs"
-                  >
-                    10명
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => generateBatchIdols(20)}
-                    disabled={isGeneratingBatch}
-                    className="text-xs"
-                  >
-                    20명
-                  </Button>
-                </div>
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-medium mb-3">빠른 배치 생성</h5>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => generateBatchIdols(1)}
+                        disabled={isGeneratingBatch}
+                        className="h-12"
+                      >
+                        1명 생성
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => generateBatchIdols(5)}
+                        disabled={isGeneratingBatch}
+                        className="h-12"
+                      >
+                        5명 생성
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => generateBatchIdols(10)}
+                        disabled={isGeneratingBatch}
+                        className="h-12"
+                      >
+                        10명 생성
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => generateBatchIdols(20)}
+                        disabled={isGeneratingBatch}
+                        className="h-12"
+                      >
+                        20명 생성
+                      </Button>
+                    </div>
+                  </div>
 
-                <Separator />
+                  <Separator />
 
-                <div className="space-y-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={exportData}
-                    disabled={isGeneratingBatch}
-                    className="w-full text-xs"
-                  >
-                    <Download className="w-3 h-3 mr-1" />
-                    데이터 내보내기
-                  </Button>
-                  
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={clearAllIdols}
-                    disabled={isGeneratingBatch}
-                    className="w-full text-xs"
-                  >
-                    <Trash2 className="w-3 h-3 mr-1" />
-                    모든 데이터 삭제
-                  </Button>
+                  <div>
+                    <h5 className="font-medium mb-3">데이터 관리</h5>
+                    <div className="space-y-3">
+                      <Button
+                        variant="outline"
+                        onClick={exportData}
+                        disabled={isGeneratingBatch}
+                        className="w-full h-12"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        데이터 내보내기 (JSON)
+                      </Button>
+                      
+                      <Button
+                        variant="destructive"
+                        onClick={clearAllIdols}
+                        disabled={isGeneratingBatch}
+                        className="w-full h-12"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        모든 데이터 삭제 (주의!)
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </TabsContent>
 
-            <TabsContent value="stats" className="space-y-3 mt-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">데이터베이스 현황</h4>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={loadStats}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  ) : (
-                    <RefreshCw className="w-3 h-3" />
-                  )}
-                </Button>
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
-                  {stats.totalIdols}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  전체 아이돌 수
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-2">
-                <h5 className="text-sm font-medium">최근 생성된 아이돌</h5>
-                {stats.recentIdols.length > 0 ? (
-                  <div className="space-y-1">
-                    {stats.recentIdols.map((idol) => (
-                      <div key={idol.id} className="flex items-center gap-2 text-xs">
-                        <img
-                          src={idol.profile_image}
-                          alt={idol.name}
-                          className="w-6 h-6 rounded-full"
-                        />
-                        <span className="font-medium">{idol.name}</span>
-                        <Badge variant="secondary" className="text-xs">
-                          {idol.personality.split(' • ')[0]}
-                        </Badge>
-                      </div>
-                    ))}
+            <TabsContent value="stats" className="space-y-4 mt-6">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-lg font-semibold">데이터베이스 현황</h4>
+                    <p className="text-sm text-muted-foreground">실시간 아이돌 데이터 통계</p>
                   </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground text-center">
-                    아직 생성된 아이돌이 없습니다
-                  </p>
-                )}
+                  <Button
+                    variant="outline"
+                    onClick={loadStats}
+                    disabled={isLoading}
+                    className="h-10"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : (
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                    )}
+                    새로고침
+                  </Button>
+                </div>
+
+                <div className="bg-muted/30 p-6 rounded-lg text-center">
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    {stats.totalIdols}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    전체 아이돌 수
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-3">
+                  <h5 className="font-semibold">최근 생성된 아이돌</h5>
+                  {stats.recentIdols.length > 0 ? (
+                    <div className="space-y-2">
+                      {stats.recentIdols.map((idol) => (
+                        <div key={idol.id} className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg">
+                          <img
+                            src={idol.profile_image}
+                            alt={idol.name}
+                            className="w-10 h-10 rounded-full border-2 border-primary/20"
+                          />
+                          <div className="flex-1">
+                            <div className="font-medium">{idol.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {new Date(idol.created_at).toLocaleString('ko-KR')}
+                            </div>
+                          </div>
+                          <Badge variant="secondary">
+                            {idol.personality.split(' • ')[0]}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 bg-muted/20 rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        아직 생성된 아이돌이 없습니다
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </TabsContent>
           </Tabs>
