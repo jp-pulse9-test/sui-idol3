@@ -69,14 +69,49 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting batch idol generation: 101 girls + 101 boys')
+    const { sessionId } = await req.json()
+    console.log('Starting batch idol generation: 101 girls + 101 boys', { sessionId })
     
     const generatedIdols: IdolData[] = []
     let successCount = 0
+    const totalCount = 202 // 101 girls + 101 boys
+    
+    // 진행상황 업데이트 함수
+    const updateProgress = async (current: number, stage: string, currentName?: string) => {
+      const progressData = {
+        current,
+        total: totalCount,
+        percentage: Math.round((current / totalCount) * 100),
+        stage,
+        currentName: currentName || '',
+        sessionId
+      }
+      
+      try {
+        await supabase
+          .channel(`idol-generation-${sessionId}`)
+          .send({
+            type: 'broadcast',
+            event: 'progress_update',
+            payload: progressData
+          })
+      } catch (error) {
+        console.error('Failed to send progress update:', error)
+      }
+    }
     
     // 소녀 101명 생성
     console.log('Generating 101 girls...')
+    await updateProgress(0, 'girls', '')
+    
     for (let i = 0; i < 101; i++) {
+      try {
+        const name = femaleNames[i % femaleNames.length] + (i >= femaleNames.length ? `${Math.floor(i / femaleNames.length) + 1}` : '')
+        const personality = personalities[Math.floor(Math.random() * personalities.length)]
+        const concept = concepts[Math.floor(Math.random() * concepts.length)]
+        
+        console.log(`Generating girl ${i + 1}/101: ${name}`)
+        await updateProgress(i + 1, 'girls', name)
       try {
         const name = femaleNames[i % femaleNames.length] + (i >= femaleNames.length ? `${Math.floor(i / femaleNames.length) + 1}` : '')
         const personality = personalities[Math.floor(Math.random() * personalities.length)]
@@ -173,6 +208,7 @@ serve(async (req) => {
         const concept = concepts[Math.floor(Math.random() * concepts.length)]
         
         console.log(`Generating boy ${i + 1}/101: ${name}`)
+        await updateProgress(101 + i + 1, 'boys', name)
         
         // Gemini로 성격과 페르소나 생성
         const personaResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${googleApiKey}`, {

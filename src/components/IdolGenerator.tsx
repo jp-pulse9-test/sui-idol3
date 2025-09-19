@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Loader2, Sparkles, User, Palette, Heart } from 'lucide-react';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface IdolData {
@@ -34,6 +35,33 @@ export const IdolGenerator: React.FC = () => {
   const [customName, setCustomName] = useState('');
   const [selectedPersonality, setSelectedPersonality] = useState('');
   const [selectedConcept, setSelectedConcept] = useState('');
+  
+  // 프로그래스 상태
+  const [progress, setProgress] = useState(0);
+  const [currentStage, setCurrentStage] = useState('');
+  const [currentName, setCurrentName] = useState('');
+  const [sessionId, setSessionId] = useState('');
+
+  const { toast } = useToast();
+
+  // 실시간 진행상황 구독
+  useEffect(() => {
+    if (!sessionId || !isGenerating) return;
+
+    const channel = supabase
+      .channel(`idol-generation-${sessionId}`)
+      .on('broadcast', { event: 'progress_update' }, (payload) => {
+        const data = payload.payload;
+        setProgress(data.percentage);
+        setCurrentStage(data.stage === 'girls' ? '소녀 생성 중...' : '소년 생성 중...');
+        setCurrentName(data.currentName);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [sessionId, isGenerating]);
 
   const generateSingleIdol = async () => {
     setIsGenerating(true);
@@ -50,7 +78,10 @@ export const IdolGenerator: React.FC = () => {
 
       if (data.success) {
         setGeneratedIdol(data.idol);
-        toast.success(`${data.idol.name} 아이돌이 생성되었습니다! ✨`);
+        toast({
+          title: "성공!",
+          description: `${data.idol.name} 아이돌이 생성되었습니다! ✨`,
+        });
         
         // 폼 리셋
         setCustomName('');
@@ -61,7 +92,11 @@ export const IdolGenerator: React.FC = () => {
       }
     } catch (error) {
       console.error('Error generating idol:', error);
-      toast.error('아이돌 생성에 실패했습니다.');
+      toast({
+        title: "오류",
+        description: "아이돌 생성에 실패했습니다.",
+        variant: "destructive",
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -77,28 +112,51 @@ export const IdolGenerator: React.FC = () => {
 
   const generateBatchIdols = async () => {
     setIsGenerating(true);
+    setProgress(0);
+    setCurrentStage('');
+    setCurrentName('');
+    
+    // 고유 세션 ID 생성
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    setSessionId(newSessionId);
+    
     try {
-      toast.info('대량 아이돌 생성을 시작합니다... (약 5-10분 소요)', {
-        duration: 5000
+      toast({
+        title: "대량 생성 시작",
+        description: "소녀 101명, 소년 101명 생성을 시작합니다... (약 5-10분 소요)",
       });
 
       const { data, error } = await supabase.functions.invoke('generate-batch-idols', {
-        body: {}
+        body: { sessionId: newSessionId }
       });
 
       if (error) throw error;
 
       if (data.success) {
-        toast.success(`🎉 총 ${data.generated_count}명의 아이돌이 생성되었습니다!\n👧 소녀: ${data.girls_count}명 👦 소년: ${data.boys_count}명`);
+        setProgress(100);
+        setCurrentStage('완료!');
+        setCurrentName('');
+        toast({
+          title: "🎉 대량 생성 완료!",
+          description: `총 ${data.generated_count}명의 아이돌이 생성되었습니다!\n👧 소녀: ${data.girls_count}명 👦 소년: ${data.boys_count}명`,
+        });
         setGeneratedIdol(null); // 이전 결과 클리어
       } else {
         throw new Error(data.error);
       }
     } catch (error) {
       console.error('Error generating batch idols:', error);
-      toast.error('대량 아이돌 생성에 실패했습니다.');
+      toast({
+        title: "오류",
+        description: "대량 아이돌 생성에 실패했습니다.",
+        variant: "destructive",
+      });
     } finally {
       setIsGenerating(false);
+      setSessionId('');
+      setProgress(0);
+      setCurrentStage('');
+      setCurrentName('');
     }
   };
 
@@ -213,6 +271,32 @@ export const IdolGenerator: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* 프로그래스바 */}
+      {isGenerating && sessionId && (
+        <Card className="border-2 border-blue-200 bg-blue-50/50">
+          <CardHeader>
+            <CardTitle className="text-center text-blue-700 flex items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              아이돌 대량 생성 중...
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="font-medium">{currentStage}</span>
+                <span className="text-muted-foreground">{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-3" />
+              {currentName && (
+                <p className="text-center text-sm text-blue-600">
+                  현재 생성 중: <span className="font-medium">{currentName}</span>
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {generatedIdol && (
         <Card className="border-2 border-green-200 bg-green-50/50">
