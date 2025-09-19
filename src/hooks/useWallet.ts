@@ -1,10 +1,15 @@
-import { useCurrentWallet, useWallets } from '@mysten/dapp-kit';
+import { useConnectWallet, useDisconnectWallet, useCurrentAccount, useWallets } from '@mysten/dapp-kit';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 
 export const useWallet = () => {
-  const { currentWallet, connectionStatus, isConnected } = useCurrentWallet();
+  const { mutate: connect } = useConnectWallet();
+  const { mutate: disconnect } = useDisconnectWallet();
+  const currentAccount = useCurrentAccount();
   const wallets = useWallets();
+
+  const isConnected = !!currentAccount;
+  const walletAddress = currentAccount?.address || null;
 
   const connectWallet = useCallback(async () => {
     try {
@@ -13,42 +18,62 @@ export const useWallet = () => {
         return { success: false, error: 'No wallets available' };
       }
 
-      const wallet = wallets[0]; // 첫 번째 지갑 사용
-      await wallet.connect();
+      // 첫 번째 사용 가능한 지갑 사용
+      const wallet = wallets[0];
       
-      toast.success('지갑이 성공적으로 연결되었습니다!');
-      return { success: true, wallet: currentWallet };
+      return new Promise<{ success: boolean; error?: any }>((resolve) => {
+        connect(
+          { wallet },
+          {
+            onSuccess: () => {
+              toast.success('지갑이 성공적으로 연결되었습니다!');
+              resolve({ success: true });
+            },
+            onError: (error) => {
+              console.error('지갑 연결 실패:', error);
+              toast.error('지갑 연결에 실패했습니다.');
+              resolve({ success: false, error });
+            },
+          }
+        );
+      });
     } catch (error) {
       console.error('지갑 연결 실패:', error);
       toast.error('지갑 연결에 실패했습니다.');
       return { success: false, error };
     }
-  }, [wallets, currentWallet]);
+  }, [wallets, connect]);
 
   const disconnectWallet = useCallback(async () => {
     try {
-      if (currentWallet) {
-        await currentWallet.disconnect();
-        toast.success('지갑 연결이 해제되었습니다.');
-      }
+      return new Promise<void>((resolve) => {
+        disconnect(
+          undefined,
+          {
+            onSuccess: () => {
+              toast.success('지갑 연결이 해제되었습니다.');
+              resolve();
+            },
+            onError: (error) => {
+              console.error('지갑 연결 해제 실패:', error);
+              toast.error('지갑 연결 해제에 실패했습니다.');
+              resolve(); // Still resolve to allow UI to update
+            },
+          }
+        );
+      });
     } catch (error) {
       console.error('지갑 연결 해제 실패:', error);
       toast.error('지갑 연결 해제에 실패했습니다.');
     }
-  }, [currentWallet]);
-
-  const getWalletAddress = useCallback(() => {
-    return currentWallet?.accounts[0]?.address || null;
-  }, [currentWallet]);
+  }, [disconnect]);
 
   return {
-    currentWallet,
-    connectionStatus,
     isConnected,
+    walletAddress,
     wallets,
     connectWallet,
     disconnectWallet,
-    getWalletAddress,
-    walletAddress: getWalletAddress(),
+    currentAccount,
   };
 };
