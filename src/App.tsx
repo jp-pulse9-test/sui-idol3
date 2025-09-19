@@ -4,6 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { DevTools } from "@/components/DevTools";
 import Index from "./pages/Index";
 import Pick from "./pages/Pick";
@@ -26,6 +30,37 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
+
+const AdminButton = () => {
+  const { user } = useAuth();
+  const [showDevTools, setShowDevTools] = useState(false);
+  const SUPER_ADMIN_WALLET = "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc";
+
+  if (!user || user.id !== SUPER_ADMIN_WALLET) return null;
+
+  return (
+    <>
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          onClick={() => setShowDevTools(!showDevTools)}
+          variant="outline"
+          size="sm"
+          className="bg-card/80 backdrop-blur-sm border-border hover:bg-primary/10"
+        >
+          <Settings className="w-4 h-4 mr-2" />
+          관리자
+        </Button>
+      </div>
+      {showDevTools && (
+        <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowDevTools(false)}>
+          <div className="fixed top-16 right-4 z-50" onClick={(e) => e.stopPropagation()}>
+            <DevTools />
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -62,7 +97,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-        <DevTools />
+        <AdminButton />
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
