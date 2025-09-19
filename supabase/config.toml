@@ -1,1 +1,4 @@
 project_id = "lylblbckiwabbnjasahu"
+
+[functions.generate-batch-idols]
+verify_jwt = false

@@ -75,24 +75,28 @@ export const IdolGenerator: React.FC = () => {
     await generateSingleIdol();
   };
 
-  const generateMultipleIdols = async () => {
+  const generateBatchIdols = async () => {
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-preset-idols', {
-        body: { count: 50 }
+      toast.info('대량 아이돌 생성을 시작합니다... (약 5-10분 소요)', {
+        duration: 5000
+      });
+
+      const { data, error } = await supabase.functions.invoke('generate-batch-idols', {
+        body: {}
       });
 
       if (error) throw error;
 
       if (data.success) {
-        toast.success(`${data.generated_count}명의 새로운 아이돌이 생성되었습니다! 🎉`);
+        toast.success(`🎉 총 ${data.generated_count}명의 아이돌이 생성되었습니다!\n👧 소녀: ${data.girls_count}명 👦 소년: ${data.boys_count}명`);
         setGeneratedIdol(null); // 이전 결과 클리어
       } else {
         throw new Error(data.error);
       }
     } catch (error) {
-      console.error('Error generating multiple idols:', error);
-      toast.error('아이돌 대량 생성에 실패했습니다.');
+      console.error('Error generating batch idols:', error);
+      toast.error('대량 아이돌 생성에 실패했습니다.');
     } finally {
       setIsGenerating(false);
     }
@@ -194,7 +198,7 @@ export const IdolGenerator: React.FC = () => {
             </Button>
 
             <Button
-              onClick={generateMultipleIdols}
+              onClick={generateBatchIdols}
               disabled={isGenerating}
               variant="secondary"
               className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none hover:from-purple-600 hover:to-pink-600"
@@ -204,7 +208,7 @@ export const IdolGenerator: React.FC = () => {
               ) : (
                 <Sparkles className="w-4 h-4" />
               )}
-              50명 대량 생성
+              👧101명 👦101명 대량생성
             </Button>
           </div>
         </CardContent>
