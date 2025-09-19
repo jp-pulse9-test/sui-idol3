@@ -42,6 +42,13 @@ const Vault = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading } = useAuthGuard('/auth', true);
   
+  // All useState hooks must be called before any conditional returns
+  const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string>("");
+  const [currentEpisode, setCurrentEpisode] = useState<StoryEpisode | null>(null);
+  const [memoryCards, setMemoryCards] = useState<MemoryCard[]>([]);
+  const [isGameModalOpen, setIsGameModalOpen] = useState(false);
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -53,11 +60,6 @@ const Vault = () => {
   if (!isAuthenticated) {
     return null;
   }
-  const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
-  const [walletAddress, setWalletAddress] = useState<string>("");
-  const [currentEpisode, setCurrentEpisode] = useState<StoryEpisode | null>(null);
-  const [memoryCards, setMemoryCards] = useState<MemoryCard[]>([]);
-  const [isGameModalOpen, setIsGameModalOpen] = useState(false);
 
   // 일상 스토리 에피소드들 (6-8턴)
   const storyEpisodes: StoryEpisode[] = [
