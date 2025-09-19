@@ -11,6 +11,7 @@ import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { Heart } from "lucide-react";
 import { isSuperAdmin, SUPER_ADMIN_INITIAL_SUI_COINS, SUPER_ADMIN_INITIAL_FAN_HEARTS, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
+import { applySuperAdminBenefits, autoApplySuperAdminBenefits } from "@/utils/superAdminBenefits";
 
 interface SelectedIdol {
   id: number;
@@ -125,6 +126,9 @@ const Vault = () => {
       localStorage.setItem('dailyHearts', dailyAmount.toString());
       localStorage.setItem('lastHeartReset', today);
     }
+
+    // 수퍼어드민 특권 자동 적용
+    autoApplySuperAdminBenefits();
   }, [navigate]);
 
   if (loading) {
@@ -249,6 +253,20 @@ const Vault = () => {
             <Badge variant="outline" className="px-4 py-2">
               💝 {dailyHearts}/10 일일 하트
             </Badge>
+            {isSuperAdmin(walletAddress) && (
+              <Button
+                onClick={() => {
+                  applySuperAdminBenefits();
+                  // 페이지 새로고침으로 상태 반영
+                  window.location.reload();
+                }}
+                variant="outline"
+                size="sm"
+                className="text-yellow-400 border-yellow-400 hover:bg-yellow-400/10"
+              >
+                👑 수퍼어드민 특권 적용
+              </Button>
+            )}
             <Badge variant="secondary" className="px-4 py-2">
               📦 {photoCards.length}장 보유
             </Badge>

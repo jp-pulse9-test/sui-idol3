@@ -13,6 +13,7 @@ import { Settings } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
+import { autoApplySuperAdminBenefits } from "@/utils/superAdminBenefits";
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
 import maleIdolFaces from "@/assets/male-idol-faces.jpg";
@@ -65,6 +66,11 @@ const Index = () => {
     } else {
       setIsWalletConnected(false);
       setWalletAddress("");
+    }
+    
+    // 수퍼어드민 특권 자동 적용
+    if (user?.wallet_address) {
+      autoApplySuperAdminBenefits();
     }
   }, [user]);
 
