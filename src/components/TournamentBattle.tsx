@@ -28,13 +28,28 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
   const [heartEffect, setHeartEffect] = useState<'left' | 'right' | null>(null);
 
   useEffect(() => {
-    // 16명 랜덤 선택하여 토너먼트 시작
+    // 아이돌 데이터가 충분하지 않은 경우 처리
+    if (!idols || idols.length < 2) {
+      console.log('Not enough idols for tournament:', idols?.length || 0);
+      return;
+    }
+
+    // 16명 랜덤 선택하여 토너먼트 시작 (부족하면 사용 가능한 만큼만)
     const shuffled = [...idols].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 16);
+    const availableCount = Math.min(16, idols.length);
+    const selected = shuffled.slice(0, availableCount);
     
-    setBracket(selected);
-    setCurrentRound(selected);
-    setCurrentPair([selected[0], selected[1]]);
+    // 유효한 아이돌만 필터링
+    const validIdols = selected.filter(idol => idol && idol.profile_image && idol.name);
+    
+    if (validIdols.length < 2) {
+      console.log('Not enough valid idols for tournament:', validIdols.length);
+      return;
+    }
+    
+    setBracket(validIdols);
+    setCurrentRound(validIdols);
+    setCurrentPair([validIdols[0], validIdols[1]]);
   }, [idols]);
 
   const handleChoice = (selectedIdol: IdolPreset, side: 'left' | 'right') => {
@@ -69,7 +84,9 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
     } else {
       // 다음 매치
       const nextPairIndex = currentIndex + 2;
-      if (nextPairIndex + 1 < currentRound.length) {
+      if (nextPairIndex + 1 < currentRound.length && 
+          currentRound[nextPairIndex] && 
+          currentRound[nextPairIndex + 1]) {
         setCurrentPair([currentRound[nextPairIndex], currentRound[nextPairIndex + 1]]);
       }
       setCurrentRound(nextRound);
@@ -93,9 +110,17 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
     return (completedMatches / totalMatches) * 100;
   };
 
-  if (!currentPair) {
+  if (!currentPair || !currentPair[0] || !currentPair[1]) {
     return <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-      <div className="text-center">토너먼트 준비 중...</div>
+      <Card className="p-8 glass-dark border-white/10 text-center">
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold gradient-text">토너먼트를 시작할 수 없습니다</h2>
+          <p className="text-muted-foreground">충분한 아이돌 데이터가 없습니다.</p>
+          <Button onClick={onBack} variant="outline">
+            돌아가기
+          </Button>
+        </div>
+      </Card>
     </div>;
   }
 
