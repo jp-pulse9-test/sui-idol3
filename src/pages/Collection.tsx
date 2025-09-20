@@ -37,8 +37,9 @@ const Collection = () => {
       
       setWalletAddress(wallet);
       
-      // localStorage에서 카드 불러오기
-      const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+      // localStorage에서 카드 불러오기 (지갑별로 구분)
+      const walletKey = `photoCards_${wallet}`;
+      const cards = JSON.parse(localStorage.getItem(walletKey) || '[]');
       setSavedCards(cards);
       setLoading(false);
     };
@@ -49,7 +50,8 @@ const Collection = () => {
   const deleteCard = (id: string) => {
     const updatedCards = savedCards.filter(card => card.id !== id);
     setSavedCards(updatedCards);
-    localStorage.setItem('savedCards', JSON.stringify(updatedCards));
+    const walletKey = `photoCards_${walletAddress}`;
+    localStorage.setItem(walletKey, JSON.stringify(updatedCards));
     toast.success("프로필카드가 삭제되었습니다!");
   };
 
