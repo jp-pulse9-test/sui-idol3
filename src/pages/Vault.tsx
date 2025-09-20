@@ -1,3 +1,4 @@
+// Updated to use dailyFreeStatus instead of dailyFreeAttempts
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
