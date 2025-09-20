@@ -6,9 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { AdvancedPhotocardGenerator } from "@/components/AdvancedPhotocardGenerator";
+import { CrossChainMinting } from "@/components/CrossChainMinting";
 import { googleGenAI } from "@/services/googleGenAI";
 import { toast } from "sonner";
-import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2 } from "lucide-react";
+import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
@@ -52,6 +53,7 @@ export const IdolPhotocardGenerator = ({
   const [selectedMood, setSelectedMood] = useState<string>('none');
   const [selectedTheme, setSelectedTheme] = useState<string>('none');
   const [generatedCard, setGeneratedCard] = useState<any | null>(null);
+  const [isCrossChainModalOpen, setIsCrossChainModalOpen] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
@@ -680,7 +682,7 @@ export const IdolPhotocardGenerator = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <Button 
                 onClick={handleContinueCreating}
                 variant="outline" 
@@ -689,6 +691,14 @@ export const IdolPhotocardGenerator = ({
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 계속 만들기
+              </Button>
+              <Button 
+                onClick={() => setIsCrossChainModalOpen(true)}
+                variant="outline"
+                className="px-4"
+                size="lg"
+              >
+                <ArrowRightLeft className="w-4 h-4" />
               </Button>
               <Button 
                 onClick={handleGoToCollection}
@@ -701,6 +711,21 @@ export const IdolPhotocardGenerator = ({
             </div>
           </div>
         </Card>
+      )}
+
+      {/* Cross Chain Minting Modal */}
+      {generatedCard && (
+        <CrossChainMinting
+          isOpen={isCrossChainModalOpen}
+          onClose={() => setIsCrossChainModalOpen(false)}
+          photocardData={{
+            id: generatedCard.id || `photocard_${Date.now()}`,
+            idolName: generatedCard.idolName,
+            imageUrl: generatedCard.image,
+            rarity: generatedCard.rarity,
+            concept: generatedCard.concept
+          }}
+        />
       )}
     </div>
   );

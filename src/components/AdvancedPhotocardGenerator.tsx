@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Camera, Upload, ImageIcon, User, Palette, Sparkles, Zap, ArrowRight, RotateCcw } from "lucide-react";
+import { Camera, Upload, ImageIcon, User, Palette, Sparkles, Zap, ArrowRight, RotateCcw, ArrowRightLeft } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
@@ -40,6 +40,7 @@ export const AdvancedPhotocardGenerator = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [generatedCard, setGeneratedCard] = useState<any | null>(null);
+  const [isCrossChainModalOpen, setIsCrossChainModalOpen] = useState(false);
   const [showResult, setShowResult] = useState(false);
   
   const personFileRef = useRef<HTMLInputElement>(null);
@@ -511,7 +512,7 @@ export const AdvancedPhotocardGenerator = ({
             </Card>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <Button 
                 onClick={handleContinueCreating}
                 variant="outline" 
@@ -520,6 +521,14 @@ export const AdvancedPhotocardGenerator = ({
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 계속 만들기
+              </Button>
+              <Button 
+                onClick={() => setIsCrossChainModalOpen(true)}
+                variant="outline"
+                className="px-4"
+                size="lg"
+              >
+                <ArrowRightLeft className="w-4 h-4" />
               </Button>
               <Button 
                 onClick={handleGoToCollection}
