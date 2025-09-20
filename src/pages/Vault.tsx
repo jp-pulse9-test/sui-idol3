@@ -55,7 +55,7 @@ const Vault = () => {
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [suiCoins, setSuiCoins] = useState(1.0);
-  const [fanHearts, setFanHearts] = useState(0);
+  const [fanHearts, setFanHearts] = useState(100); // 기본 하트 지급으로 컨셉 선택 가능하게 함
   const [dailyHearts, setDailyHearts] = useState(10);
   const [dailyFreeStatus, setDailyFreeStatus] = useState({
     canClaim: false,
@@ -135,6 +135,11 @@ const Vault = () => {
       setFanHearts(SUPER_ADMIN_INITIAL_FAN_HEARTS);
       localStorage.setItem('fanHearts', SUPER_ADMIN_INITIAL_FAN_HEARTS.toString());
       toast.success(`💖 수퍼어드민 특별 지급! ${SUPER_ADMIN_INITIAL_FAN_HEARTS} 팬 하트 획득!`);
+    } else {
+      // 일반 유저 기본값: 포토카드 생성을 위한 충분한 하트 지급
+      setFanHearts(100);
+      localStorage.setItem('fanHearts', '100');
+      toast.success('💖 환영합니다! 100 팬 하트를 받았습니다!');
     }
     
     const savedDailyHearts = localStorage.getItem('dailyHearts');
