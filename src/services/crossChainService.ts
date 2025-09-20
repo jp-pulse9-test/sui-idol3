@@ -34,6 +34,10 @@ class CrossChainService {
         if (tx) {
           tx.status = 'confirmed';
           this.transactions.set(txId, tx);
+          
+          // 크로스체인 민팅된 포토카드 정보를 로컬 스토리지에 저장
+          this.saveCrossChainPhotocard(mintingData, txHash);
+          
           toast.success(`✅ ${mintingData.targetChain.name}에서 민팅이 완료되었습니다!`);
         }
       }, 3000);
@@ -82,6 +86,41 @@ class CrossChainService {
       fee: estimatedFee,
       currency: targetChain.symbol
     };
+  }
+
+  private saveCrossChainPhotocard(mintingData: CrossChainMintingData, txHash: string) {
+    try {
+      const existingCards = JSON.parse(localStorage.getItem('crossChainPhotocards') || '[]');
+      const newCard = {
+        photocardId: mintingData.photocardId,
+        targetChain: mintingData.targetChain.name,
+        chainIcon: mintingData.targetChain.icon,
+        txHash,
+        mintedAt: new Date().toISOString(),
+        idolName: mintingData.idolName,
+        imageUrl: mintingData.imageUrl
+      };
+      
+      existingCards.push(newCard);
+      localStorage.setItem('crossChainPhotocards', JSON.stringify(existingCards));
+      console.log('✅ Cross-chain photocard saved to localStorage:', newCard);
+    } catch (error) {
+      console.error('Failed to save cross-chain photocard:', error);
+    }
+  }
+
+  getCrossChainPhotocards(): any[] {
+    try {
+      return JSON.parse(localStorage.getItem('crossChainPhotocards') || '[]');
+    } catch (error) {
+      console.error('Failed to get cross-chain photocards:', error);
+      return [];
+    }
+  }
+
+  isCrossChainPhotocard(photocardId: string): any | null {
+    const crossChainCards = this.getCrossChainPhotocards();
+    return crossChainCards.find(card => card.photocardId === photocardId) || null;
   }
 }
 

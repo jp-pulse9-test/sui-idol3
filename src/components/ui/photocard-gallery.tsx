@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, EyeOff, Search, Filter, TrendingUp, TrendingDown, Heart } from "lucide-react";
+import { Eye, EyeOff, Search, Filter, TrendingUp, TrendingDown, Heart, Link2 } from "lucide-react";
 import { useHeartSystem } from "@/hooks/useHeartSystem";
 import { toast } from "sonner";
 import { secureStorage } from "@/utils/secureStorage";
+import { crossChainService } from "@/services/crossChainService";
 
 interface PhotoCard {
   id: string;
@@ -26,6 +27,12 @@ interface PhotoCard {
   floorPrice?: number;
   lastSalePrice?: number;
   heartsReceived?: number;
+  crossChainInfo?: {
+    targetChain: string;
+    chainIcon: string;
+    txHash: string;
+    mintedAt: string;
+  };
 }
 
 interface PhotoCardGalleryProps {
@@ -49,6 +56,7 @@ export const PhotoCardGallery = ({
   const [sortBy, setSortBy] = useState<'rarity' | 'date' | 'price' | 'serial' | 'hearts'>('hearts');
   const [filterRarity, setFilterRarity] = useState<string>('all');
   const [filterConcept, setFilterConcept] = useState<string>('all');
+  const [filterCrossChain, setFilterCrossChain] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'catalog' | 'owned'>('catalog');
   
   const { dailyHearts, giveHeart, hasGivenHeart } = useHeartSystem();
@@ -71,7 +79,13 @@ export const PhotoCardGallery = ({
       const matchesIdol = !selectedIdolId || card.idolId === selectedIdolId;
       const matchesTab = activeTab === 'catalog' || (activeTab === 'owned' && isOwner);
       
-      return matchesSearch && matchesRarity && matchesConcept && matchesIdol && matchesTab;
+      // 크로스체인 필터링
+      const crossChainInfo = crossChainService.isCrossChainPhotocard(card.id);
+      const matchesCrossChain = filterCrossChain === 'all' || 
+                               (filterCrossChain === 'crosschain' && crossChainInfo) ||
+                               (filterCrossChain === 'sui' && !crossChainInfo);
+      
+      return matchesSearch && matchesRarity && matchesConcept && matchesIdol && matchesTab && matchesCrossChain;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -106,31 +120,42 @@ export const PhotoCardGallery = ({
     giveHeart(card.id, card.owner);
   };
 
-  const renderPhotoCard = (card: PhotoCard) => (
-    <Card
-      key={card.id}
-      className={`group relative overflow-hidden transition-all duration-300 cursor-pointer hover:scale-105 ${
-        !card.isPublic && isOwner ? 'opacity-70' : ''
-      } ${isPinterestMode ? 'break-inside-avoid mb-4' : ''}`}
-      onClick={() => onViewCard?.(card)}
-    >
-      <div className={`${isPinterestMode ? 'aspect-auto' : 'aspect-[3/4]'} relative`}>
-        <img
-          src={card.imageUrl}
-          alt={`${card.idolName} ${card.concept}`}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        
-        {/* Rarity Badge */}
-        <Badge className={`absolute top-2 left-2 ${rarityColors[card.rarity]} border font-bold`}>
-          {card.rarity}
-        </Badge>
+  const renderPhotoCard = (card: PhotoCard) => {
+    const crossChainInfo = crossChainService.isCrossChainPhotocard(card.id);
+    
+    return (
+      <Card
+        key={card.id}
+        className={`group relative overflow-hidden transition-all duration-300 cursor-pointer hover:scale-105 ${
+          !card.isPublic && isOwner ? 'opacity-70' : ''
+        } ${isPinterestMode ? 'break-inside-avoid mb-4' : ''}`}
+        onClick={() => onViewCard?.(card)}
+      >
+        <div className={`${isPinterestMode ? 'aspect-auto' : 'aspect-[3/4]'} relative`}>
+          <img
+            src={card.imageUrl}
+            alt={`${card.idolName} ${card.concept}`}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          
+          {/* Rarity Badge */}
+          <Badge className={`absolute top-2 left-2 ${rarityColors[card.rarity]} border font-bold`}>
+            {card.rarity}
+          </Badge>
 
-        {/* Serial Number */}
-        <Badge variant="outline" className="absolute top-2 right-2 bg-black/50 text-white border-white/20">
-          #{card.serialNo.toString().padStart(4, '0')}
-        </Badge>
+          {/* Cross-Chain Badge */}
+          {crossChainInfo && (
+            <Badge className="absolute top-2 left-16 bg-gradient-to-r from-purple-500 to-blue-500 text-white border-none font-bold shadow-lg">
+              <Link2 className="w-3 h-3 mr-1" />
+              {crossChainInfo.chainIcon}
+            </Badge>
+          )}
+
+          {/* Serial Number */}
+          <Badge variant="outline" className="absolute top-2 right-2 bg-black/50 text-white border-white/20">
+            #{card.serialNo.toString().padStart(4, '0')}
+          </Badge>
 
         {/* Heart Button for Pinterest Mode */}
         {isPinterestMode && card.owner !== currentWallet && (
@@ -187,7 +212,8 @@ export const PhotoCardGallery = ({
         </div>
       </div>
     </Card>
-  );
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -226,7 +252,7 @@ export const PhotoCardGallery = ({
 
       {/* Filters and Search */}
       <Card className="p-4 glass-dark border-white/10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -272,6 +298,17 @@ export const PhotoCardGallery = ({
               {uniqueConcepts.map(concept => (
                 <SelectItem key={concept} value={concept}>{concept}</SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={filterCrossChain} onValueChange={setFilterCrossChain}>
+            <SelectTrigger className="bg-card/50 border-border">
+              <SelectValue placeholder="크로스체인 필터" />
+            </SelectTrigger>
+            <SelectContent className="bg-card/95 backdrop-blur-md border-border">
+              <SelectItem value="all">전체</SelectItem>
+              <SelectItem value="crosschain">크로스체인만</SelectItem>
+              <SelectItem value="sui">Sui 전용</SelectItem>
             </SelectContent>
           </Select>
         </div>
