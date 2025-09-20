@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
 import { Leaderboard } from "@/components/ui/leaderboard";
 import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { Marketplace } from "@/components/ui/marketplace";
 import { secureStorage } from "@/utils/secureStorage";
+import { TrendingUp, ArrowLeft, Home } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
   name: string;
   personality: string;
   image: string;
+  persona_prompt?: string;
 }
 
 interface PhotoCard {
@@ -33,106 +34,103 @@ interface PhotoCard {
   imageUrl: string;
   floorPrice?: number;
   lastSalePrice?: number;
+  heartsReceived?: number;
 }
 
-interface LeaderboardEntry {
+interface IdolLeaderboardEntry {
   rank: number;
-  walletAddress: string;
-  fanPoints: number;
-  randomBoxOpens: number;
-  photocardRarityScore: number;
-  tradingContribution: number;
-  badges: string[];
-  avatar?: string;
-}
-
-interface MarketplaceListing {
-  id: string;
-  photocardId: string;
+  idolId: string;
   idolName: string;
+  personality: string;
+  profileImage: string;
+  totalFans: number;
+  totalHearts: number;
+  totalPhotocards: number;
+  averageRarity: number;
+  weeklyGrowth: number;
+  category: string;
   concept: string;
-  rarity: 'N' | 'R' | 'SR' | 'SSR';
-  serialNo: number;
-  imageUrl: string;
-  price: number;
-  seller: string;
-  listedAt: string;
-  isAuction: boolean;
-  auctionEndTime?: string;
-  currentBid?: number;
-  isOwn?: boolean;
-}
-
-interface PriceHistory {
-  id: string;
-  photocardId: string;
-  price: number;
-  soldAt: string;
-  seller: string;
-  buyer: string;
 }
 
 const Rise = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, loading } = useAuthGuard('/auth', true);
-  
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
   const [activeTab, setActiveTab] = useState<'leaderboard' | 'gallery' | 'marketplace'>('leaderboard');
 
-  // Mock data - 실제 구현에서는 API로 대체
-  const mockLeaderboardData: LeaderboardEntry[] = [
+  // Mock 아이돌 리더보드 데이터 - 실제 구현에서는 API로 대체
+  const mockIdolLeaderboardData: IdolLeaderboardEntry[] = [
     {
       rank: 1,
-      walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
-      fanPoints: 15420,
-      randomBoxOpens: 84,
-      photocardRarityScore: 3200,
-      tradingContribution: 12,
-      badges: ["debut", "collector", "trader"],
-      avatar: selectedIdol?.image
+      idolId: "1",
+      idolName: "지우",
+      personality: "밝고 활발한",
+      profileImage: selectedIdol?.image || "/api/placeholder/120/120",
+      totalFans: 15420,
+      totalHearts: 98500,
+      totalPhotocards: 8400,
+      averageRarity: 4.2,
+      weeklyGrowth: 12.5,
+      category: "댄스",
+      concept: "Summer Dream"
     },
     {
       rank: 2,
-      walletAddress: walletAddress,
-      fanPoints: 12800,
-      randomBoxOpens: 67,
-      photocardRarityScore: 2800,
-      tradingContribution: 8,
-      badges: ["debut", "collector"],
-      avatar: selectedIdol?.image
+      idolId: selectedIdol?.id.toString() || "2",
+      idolName: selectedIdol?.name || "내 최애",
+      personality: selectedIdol?.personality || "사랑스러운",
+      profileImage: selectedIdol?.image || "/api/placeholder/120/120",
+      totalFans: 12800,
+      totalHearts: 76300,
+      totalPhotocards: 6700,
+      averageRarity: 3.8,
+      weeklyGrowth: 8.9,
+      category: "보컬",
+      concept: "Winter Story"
     },
-    // 더 많은 목 데이터...
-  ];
-
-  const mockMarketplaceListings: MarketplaceListing[] = [
     {
-      id: "listing1",
-      photocardId: "pc1",
-      idolName: selectedIdol?.name || "Unknown",
-      concept: "Summer Dream",
-      rarity: 'SR',
-      serialNo: 1234,
-      imageUrl: selectedIdol?.image || "",
-      price: 2.5,
-      seller: "0x9876543210fedcba9876543210fedcba98765432",
-      listedAt: "2024-01-20T15:30:00Z",
-      isAuction: false
+      rank: 3,
+      idolId: "3",
+      idolName: "하늘",
+      personality: "차분하고 우아한",
+      profileImage: "/api/placeholder/120/120",
+      totalFans: 11200,
+      totalHearts: 65400,
+      totalPhotocards: 5900,
+      averageRarity: 3.6,
+      weeklyGrowth: 5.2,
+      category: "랩",
+      concept: "Spring Love"
     },
-    // 더 많은 목 데이터...
-  ];
-
-  const mockPriceHistory: PriceHistory[] = [
     {
-      id: "sale1",
-      photocardId: "pc1", 
-      price: 3.2,
-      soldAt: "2024-01-19T12:00:00Z",
-      seller: "0x1111111111111111111111111111111111111111",
-      buyer: "0x2222222222222222222222222222222222222222"
+      rank: 4,
+      idolId: "4",
+      idolName: "별",
+      personality: "매력적이고 카리스마",
+      profileImage: "/api/placeholder/120/120",
+      totalFans: 9800,
+      totalHearts: 58200,
+      totalPhotocards: 5100,
+      averageRarity: 3.4,
+      weeklyGrowth: 7.1,
+      category: "댄스",
+      concept: "Autumn Wind"
     },
-    // 더 많은 목 데이터...
+    {
+      rank: 5,
+      idolId: "5",
+      idolName: "달",
+      personality: "신비롭고 세련된",
+      profileImage: "/api/placeholder/120/120",
+      totalFans: 8900,
+      totalHearts: 52100,
+      totalPhotocards: 4600,
+      averageRarity: 3.2,
+      weeklyGrowth: 3.8,
+      category: "보컬",
+      concept: "Night Dream"
+    }
   ];
 
   useEffect(() => {
@@ -154,61 +152,41 @@ const Rise = () => {
     setWalletAddress(savedWallet);
     setSelectedIdol(JSON.parse(savedIdol));
     
-    // 포토카드 불러오기
+    // 로컬 스토리지에서 포카 불러오기
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     setPhotoCards(savedCards);
   }, [navigate]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">로딩 중...</div>
-      </div>
-    );
-  }
-  
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  const handlePurchase = (listingId: string) => {
-    toast.success('포토카드를 구매했습니다!');
-    // 실제 구매 로직 구현
-  };
-
-  const handleBid = (listingId: string, bidAmount: number) => {
-    toast.success(`${bidAmount} SUI로 입찰했습니다!`);
-    // 실제 입찰 로직 구현
-  };
+  const currentIdolData = mockIdolLeaderboardData.find(entry => entry.idolId === selectedIdol?.id.toString());
 
   if (!selectedIdol) {
-    return <div className="min-h-screen bg-gradient-background flex items-center justify-center">
+    return <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">로딩 중...</div>
     </div>;
   }
-
-  const currentUserData = mockLeaderboardData.find(entry => entry.walletAddress === walletAddress);
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4 pt-8">
-          <h1 className="text-4xl font-bold gradient-text">
-            📈 RISE - 리더보드 & 갤러리 & 마켓플레이스
+          <h1 className="text-4xl md:text-6xl font-bold gradient-text flex items-center justify-center gap-3">
+            <TrendingUp className="w-12 h-12" />
+            📈 RISE - 아이돌 리더보드 & 갤러리 & 마켓플레이스
           </h1>
-          <p className="text-xl text-muted-foreground">
-            경쟁·과시·유동성으로 완성되는 팬 생태계
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            아이돌 인기 순위를 확인하고, 포토카드를 전시하며, 자유롭게 거래하는 공간입니다.
           </p>
-          <div className="flex items-center justify-center gap-4">
+          
+          <div className="flex items-center justify-center gap-4 flex-wrap">
             <Badge variant="outline" className="px-4 py-2">
-              🔗 {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
+              👑 {selectedIdol.name}님의 최애
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
               🎴 {photoCards.length}장 보유
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
-              🏆 {currentUserData?.rank || 'Unranked'}위
+              🏆 {currentIdolData?.rank || 'Unranked'}위
             </Badge>
           </div>
         </div>
@@ -216,7 +194,7 @@ const Rise = () => {
         {/* 아이돌 & 시즌 정보 */}
         <Card className="p-6 glass-dark border-white/10">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-primary/20">
                 <img 
                   src={selectedIdol.image}
@@ -229,52 +207,55 @@ const Rise = () => {
                 <p className="text-muted-foreground">{selectedIdol.personality}</p>
               </div>
             </div>
-            
             <div className="text-right">
-              <div className="text-sm text-muted-foreground">Season 1</div>
-              <div className="text-lg font-bold">2025 AI심쿵챌린지</div>
-              <Badge variant="outline">시즌 종료까지 45일</Badge>
+              <Badge variant="outline" className="text-accent border-accent/30">
+                🏆 시즌 1 진행 중
+              </Badge>
+              <p className="text-sm text-muted-foreground mt-2">
+                매월 아이돌 어워드 시상식
+              </p>
             </div>
           </div>
         </Card>
 
-        {/* Rise Tabs */}
+        {/* 탭 컨텐츠 */}
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'leaderboard' | 'gallery' | 'marketplace')} className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
             <TabsTrigger value="leaderboard" className="data-[state=active]:bg-primary/20">
-              🏆 리더보드
+              🏆 아이돌 리더보드
             </TabsTrigger>
             <TabsTrigger value="gallery" className="data-[state=active]:bg-primary/20">
-              🖼️ 인물별 갤러리
+              🖼️ 포토카드 갤러리
             </TabsTrigger>
             <TabsTrigger value="marketplace" className="data-[state=active]:bg-primary/20">
-              🛒 2차 거래
+              🛒 마켓플레이스
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="leaderboard" className="mt-8">
             <Leaderboard
-              currentUser={currentUserData}
-              globalLeaderboard={mockLeaderboardData}
-              idolSpecificLeaderboard={mockLeaderboardData.filter(entry => entry.rank <= 50)}
-              selectedIdolId={selectedIdol?.id.toString()}
+              currentIdol={currentIdolData}
+              globalLeaderboard={mockIdolLeaderboardData}
+              categoryLeaderboard={mockIdolLeaderboardData.filter(entry => entry.category === "댄스")}
+              selectedCategory="댄스"
             />
           </TabsContent>
 
           <TabsContent value="gallery" className="mt-8">
             <PhotoCardGallery
               photocards={photoCards}
-              selectedIdolId={selectedIdol?.id.toString()}
-              isPinterestMode={true}
+              selectedIdolId={selectedIdol.id.toString()}
             />
           </TabsContent>
 
           <TabsContent value="marketplace" className="mt-8">
             <Marketplace
-              listings={mockMarketplaceListings}
-              priceHistory={mockPriceHistory}
-              onPurchase={handlePurchase}
-              onBid={handleBid}
+              listings={[]} // 실제로는 API에서 가져올 예정
+              priceHistory={[]} // 실제로는 API에서 가져올 예정
+              userWallet={walletAddress}
+              onPurchase={(listingId) => console.log('Purchase:', listingId)}
+              onBid={(listingId, amount) => console.log('Bid:', listingId, amount)}
+              onCreateListing={(photocardId, price, isAuction) => console.log('Create listing:', photocardId, price, isAuction)}
             />
           </TabsContent>
         </Tabs>
@@ -282,20 +263,20 @@ const Rise = () => {
         {/* Navigation */}
         <div className="flex justify-center space-x-4 pt-8">
           <Button
-            onClick={() => navigate('/vault')}
             variant="outline"
-            size="lg"
-            className="bg-card/80 backdrop-blur-sm border-border hover:bg-card"
+            onClick={() => navigate('/vault')}
+            className="flex items-center gap-2"
           >
-            ← VAULT로 돌아가기
+            <ArrowLeft className="w-4 h-4" />
+            볼트로 돌아가기
           </Button>
           <Button
-            onClick={() => navigate('/')}
             variant="outline"
-            size="lg"
-            className="bg-card/80 backdrop-blur-sm border-border hover:bg-card"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
           >
-            홈으로 돌아가기
+            <Home className="w-4 h-4" />
+            홈으로
           </Button>
         </div>
       </div>
