@@ -11,7 +11,7 @@ import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { ZkLoginButton } from "@/components/ZkLoginButton";
-import { Settings, Shield, Camera } from "lucide-react";
+import { Settings, Shield, Camera, Wallet, Coins, Crown } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -307,6 +307,30 @@ const Index = () => {
               >
                 <Shield className="w-4 h-4" />
                 실제 작동 zkLogin 테스트
+              </Button>
+              <Button
+                onClick={() => navigate('/sui-balance-test')}
+                variant="outline"
+                className="flex items-center gap-2 bg-purple-600/20 border-purple-400 text-purple-400 hover:bg-purple-600/30"
+              >
+                <Wallet className="w-4 h-4" />
+                SUI 잔액 API 테스트
+              </Button>
+              <Button
+                onClick={() => navigate('/photocard-minting-test')}
+                variant="outline"
+                className="flex items-center gap-2 bg-yellow-600/20 border-yellow-400 text-yellow-400 hover:bg-yellow-600/30"
+              >
+                <Coins className="w-4 h-4" />
+                포토카드 민팅 테스트
+              </Button>
+              <Button
+                onClick={() => navigate('/idolcard-minting-test')}
+                variant="outline"
+                className="flex items-center gap-2 bg-pink-600/20 border-pink-400 text-pink-400 hover:bg-pink-600/30"
+              >
+                <Crown className="w-4 h-4" />
+                아이돌 카드 민팅 테스트
               </Button>
             </div>
           </div>

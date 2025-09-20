@@ -36,6 +36,9 @@ import Auth from "./pages/Auth";
 import SettingsPage from "./pages/Settings";
 import PhotocardGenerator from "./pages/PhotocardGenerator";
 import My from "./pages/My";
+import SuiBalanceTest from "./pages/SuiBalanceTest";
+import PhotoCardMintingTest from "./pages/PhotoCardMintingTest";
+import IdolCardMintingTest from "./pages/IdolCardMintingTest";
 
 const AdminButton = () => {
   const { user } = useAuth();
@@ -124,6 +127,9 @@ const App = () => {
           <Route path="/zklogin-test-working" element={<ZkLoginTestWorking />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/photocard-generator" element={<PhotocardGenerator />} />
+          <Route path="/sui-balance-test" element={<SuiBalanceTest />} />
+          <Route path="/photocard-minting-test" element={<PhotoCardMintingTest />} />
+          <Route path="/idolcard-minting-test" element={<IdolCardMintingTest />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
