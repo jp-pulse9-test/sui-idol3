@@ -590,36 +590,6 @@ export type Database = {
       }
     }
     Views: {
-      idols_basic: {
-        Row: {
-          category: string | null
-          concept: string | null
-          created_at: string | null
-          gender: string | null
-          id: number | null
-          name: string | null
-          profile_image: string | null
-        }
-        Insert: {
-          category?: string | null
-          concept?: string | null
-          created_at?: string | null
-          gender?: string | null
-          id?: number | null
-          name?: string | null
-          profile_image?: string | null
-        }
-        Update: {
-          category?: string | null
-          concept?: string | null
-          created_at?: string | null
-          gender?: string | null
-          id?: number | null
-          name?: string | null
-          profile_image?: string | null
-        }
-        Relationships: []
-      }
       idols_public: {
         Row: {
           Category: string | null
@@ -676,6 +646,18 @@ export type Database = {
       get_daily_free_box_status: {
         Args: { user_wallet_param: string }
         Returns: Json
+      }
+      get_public_idols: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+          concept: string
+          created_at: string
+          gender: string
+          id: number
+          name: string
+          profile_image: string
+        }[]
       }
       is_admin_user: {
         Args: Record<PropertyKey, never>

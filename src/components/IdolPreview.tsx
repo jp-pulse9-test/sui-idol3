@@ -8,15 +8,7 @@ import { toast } from "sonner";
 import { IdolStatsDisplay, generateRandomStats } from "@/components/IdolStatsDisplay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { secureStorage } from "@/utils/secureStorage";
-
-interface IdolPreset {
-  id: number;
-  name: string;
-  personality: string;
-  description: string;
-  profile_image: string;
-  persona_prompt: string;
-}
+import { IdolPreset } from "@/types/idol";
 
 interface IdolPreviewProps {
   selectedIdol: IdolPreset;

@@ -11,16 +11,7 @@ import IdolPreview from "@/components/IdolPreview";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { useWallet } from "@/hooks/useWallet";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-
-interface IdolPreset {
-  id: number;
-  name: string;
-  personality: string;
-  description: string;
-  profile_image: string;
-  persona_prompt: string;
-  Gender?: string; // Add Gender property
-}
+import { IdolPreset, PublicIdolData } from "@/types/idol";
 
 type GamePhase = 'loading' | 'gender-select' | 'personality-test' | 'tournament' | 'result' | 'preview' | 'minting';
 
@@ -55,22 +46,37 @@ const Pick = () => {
   const { isConnected, walletAddress } = useWallet();
   const { isAuthenticated } = useAuthGuard('/auth', false);
 
-  // Fetch idols from Supabase
+  // Fetch idols from Supabase using secure function
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
     try {
       console.log('Fetching idols from database...');
       const { data, error } = await supabase
-        .from('idols')
-        .select('*')
-        .order('id');
+        .rpc('get_public_idols');
       
       if (error) {
         console.error('Error fetching idols:', error);
         throw error;
       }
       
-      console.log('Successfully fetched', data?.length || 0, 'idols');
-      return data || [];
+      console.log('Successfully fetched idols:', data?.length);
+      
+      if (!data || data.length === 0) {
+        console.log('No idols found in database');
+        return [];
+      }
+      
+      // Transform the data to match IdolPreset interface
+      return data.map((idol: PublicIdolData): IdolPreset => ({
+        id: idol.id,
+        name: idol.name,
+        Gender: idol.gender,
+        Category: idol.category,
+        Concept: idol.concept,
+        description: '', // Not available in public function for security
+        personality: '', // Not available in public function for security
+        profile_image: idol.profile_image || '',
+        persona_prompt: '' // Not available in public function for security
+      }));
     } catch (error) {
       console.error('Failed to fetch idols from database:', error);
       toast.error('아이돌 데이터를 불러오는데 실패했습니다.');

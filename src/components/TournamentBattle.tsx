@@ -4,15 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Heart, Zap } from "lucide-react";
-
-interface IdolPreset {
-  id: number;
-  name: string;
-  personality: string;
-  description: string;
-  profile_image: string;
-  persona_prompt: string;
-}
+import { IdolPreset } from "@/types/idol";
 
 interface TournamentBattleProps {
   idols: IdolPreset[];
