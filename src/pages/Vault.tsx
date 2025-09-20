@@ -81,6 +81,8 @@ const Vault = () => {
   }, []);
 
   useEffect(() => {
+    console.log('Vault useEffect triggered - User:', user, 'Loading:', loading);
+    
     // user가 있을 때만 실행 (AuthContext에서 지갑 연결 확인됨)
     if (!user) return;
 
@@ -136,8 +138,10 @@ const Vault = () => {
       localStorage.setItem('dailyHearts', '10');
     }
     
-    // 매일 무료 박스 상태 로드
-    loadDailyFreeStatus(user.wallet_address);
+    // 매일 무료 박스 상태 로드 (비동기로 처리하여 렌더링 블로킹 방지)
+    setTimeout(() => {
+      loadDailyFreeStatus(user.wallet_address);
+    }, 0);
 
     // 고급 접근 권한 로드
     const savedAdvancedAccess = localStorage.getItem('hasAdvancedAccess');
@@ -154,14 +158,24 @@ const Vault = () => {
       localStorage.setItem('dailyHearts', dailyAmount.toString());
       localStorage.setItem('lastHeartReset', today);
     }
-  }, [navigate, user]);
+  }, [user]);
 
   const loadDailyFreeStatus = async (walletAddress: string) => {
     try {
+      console.log('Loading daily free status for:', walletAddress);
       const status = await dailyFreeBoxService.getStatus(walletAddress);
+      console.log('Daily free status loaded:', status);
       setDailyFreeStatus(status);
     } catch (error) {
       console.error('Error loading daily free status:', error);
+      // 에러가 발생해도 기본값으로 계속 진행
+      setDailyFreeStatus({
+        canClaim: false,
+        remainingSlots: 0,
+        totalClaimsToday: 10,
+        userHasClaimedToday: true,
+        maxDailyClaims: 10
+      });
     }
   };
 
@@ -309,11 +323,8 @@ const Vault = () => {
     }
   };
 
-  if (!selectedIdol) {
-    return <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-      <div className="text-center">로딩 중...</div>
-    </div>;
-  }
+  // 아이돌이 선택되지 않았어도 Vault 접근 허용 (제한된 기능)
+  const showLimitedAccess = !selectedIdol;
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
