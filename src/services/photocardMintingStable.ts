@@ -50,6 +50,9 @@ export const usePhotoCardMinting = () => {
         ],
       });
 
+      // 가스비 설정 (0.01 SUI)
+      txb.setGasBudget(10000000); // 0.01 SUI = 10,000,000 MIST
+
       // 트랜잭션 실행
       return new Promise((resolve, reject) => {
         signAndExecute(
@@ -89,7 +92,26 @@ export const usePhotoCardMinting = () => {
             },
             onError: (error) => {
               console.error('포토카드 민팅 실패:', error);
-              toast.error(`포토카드 민팅에 실패했습니다: ${error.message || error}`);
+              
+              // 가스비 부족 에러 상세 처리
+              if (error.message?.includes('No valid gas coins') || 
+                  error.message?.includes('gas') ||
+                  error.message?.includes('insufficient')) {
+                toast.error(
+                  '💰 가스비(SUI)가 부족합니다!\n\n' +
+                  '지갑에 최소 0.01 SUI가 필요합니다.\n' +
+                  'Sui Testnet Faucet에서 테스트 SUI를 받으세요:\n' +
+                  'https://faucet.testnet.sui.io/',
+                  { duration: 8000 }
+                );
+              } else if (error.message?.includes('Rejected') || error.message?.includes('User rejected')) {
+                toast.error('사용자가 트랜잭션을 취소했습니다.');
+              } else if (error.message?.includes('network') || error.message?.includes('connection')) {
+                toast.error('네트워크 연결에 문제가 있습니다. 잠시 후 다시 시도해주세요.');
+              } else {
+                toast.error(`포토카드 민팅 실패: ${error.message || '알 수 없는 오류가 발생했습니다.'}`);
+              }
+              
               reject(error);
             },
           }
