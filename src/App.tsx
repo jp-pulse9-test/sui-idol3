@@ -34,6 +34,8 @@ import ZkLoginTestWorking from "./pages/ZkLoginTestWorking";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import SettingsPage from "./pages/Settings";
+import PhotocardGenerator from "./pages/PhotocardGenerator";
+import My from "./pages/My";
 
 const AdminButton = () => {
   const { user } = useAuth();
@@ -95,6 +97,7 @@ const App = () => {
             <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/my" element={<My />} />
           {/* 새로운 3단계 플로우: Pick → Vault → Rise */}
           <Route path="/pick" element={<Pick />} />
           <Route path="/vault" element={<Vault />} />
@@ -120,6 +123,7 @@ const App = () => {
           <Route path="/zklogin-test-official" element={<ZkLoginTestOfficial />} />
           <Route path="/zklogin-test-working" element={<ZkLoginTestWorking />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/photocard-generator" element={<PhotocardGenerator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>

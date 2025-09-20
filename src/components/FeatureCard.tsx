@@ -21,7 +21,7 @@ export const FeatureCard = ({ title, description, icon, onClick, gradient, butto
           <div className="absolute inset-0 rounded-2xl bg-gradient-primary opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
         </div>
         <div className="space-y-3">
-          <h3 className="text-2xl font-bold gradient-text">{title}</h3>
+          <h3 className="text-2xl font-bold text-foreground">{title}</h3>
           <p className="text-muted-foreground leading-relaxed max-w-sm">{description}</p>
         </div>
         <Button 

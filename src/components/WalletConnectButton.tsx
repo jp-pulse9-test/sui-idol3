@@ -1,10 +1,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useWallet } from '@/hooks/useWallet';
-import { Wallet, LogOut, Copy, Check } from 'lucide-react';
+import { Wallet, LogOut, Copy, Check, User, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface WalletConnectButtonProps {
   className?: string;
@@ -19,6 +21,7 @@ export const WalletConnectButton: React.FC<WalletConnectButtonProps> = ({
 }) => {
   const { isConnected, walletAddress, connectWallet, disconnectWallet } = useWallet();
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
 
   const handleCopyAddress = async () => {
     if (walletAddress) {
@@ -87,15 +90,35 @@ export const WalletConnectButton: React.FC<WalletConnectButtonProps> = ({
             )}
           </Button>
         </div>
-        <Button
-          onClick={handleDisconnect}
-          variant="ghost"
-          size="sm"
-          className="h-auto p-1 hover:bg-destructive/10 hover:text-destructive"
-          title="연결 해제"
-        >
-          <LogOut className="w-3 h-3" />
-        </Button>
+        
+        {/* 제대로 된 드롭다운 메뉴 */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-auto p-1 hover:bg-muted/50"
+              title="메뉴"
+            >
+              <ChevronDown className="w-3 h-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => navigate('/my')}>
+              <User className="w-4 h-4 mr-2" />
+              My로 이동
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleCopyAddress}>
+              <Copy className="w-4 h-4 mr-2" />
+              주소 복사
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDisconnect} className="text-destructive focus:text-destructive">
+              <LogOut className="w-4 h-4 mr-2" />
+              연결 해제
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

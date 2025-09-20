@@ -34,10 +34,12 @@ export const usePhotoCardMinting = () => {
         heartsReceived: 0,
       };
 
-      // 로컬 스토리지에 추가
-      const existingCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
+      // 로컬 스토리지에 추가 (지갑별로 구분)
+      const walletAddress = localStorage.getItem('walletAddress') || 'anonymous';
+      const walletKey = `photoCards_${walletAddress}`;
+      const existingCards = JSON.parse(localStorage.getItem(walletKey) || '[]');
       existingCards.push(mintedPhotoCard);
-      localStorage.setItem('photoCards', JSON.stringify(existingCards));
+      localStorage.setItem(walletKey, JSON.stringify(existingCards));
 
       toast.success('포토카드가 성공적으로 민팅되었습니다! (시뮬레이션)');
       return mintedPhotoCard;

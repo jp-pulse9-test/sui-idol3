@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,10 +63,28 @@ export const Marketplace = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<'price' | 'date' | 'rarity' | 'ending'>('date');
   const [filterRarity, setFilterRarity] = useState<string>('all');
+  const [filterIdol, setFilterIdol] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<{ min: string; max: string }>({ min: '', max: '' });
   const [activeTab, setActiveTab] = useState<'buy' | 'history'>('buy');
   const [selectedListing, setSelectedListing] = useState<MarketplaceListing | null>(null);
   const [bidAmount, setBidAmount] = useState("");
+
+  // Get unique idol names for filter dropdown
+  const uniqueIdols = Array.from(new Set(listings.map(l => l.idolName))).sort();
+
+  // Check URL params for idol filter
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idolParam = urlParams.get('idol');
+    if (idolParam) {
+      // Find idol name by ID or use the parameter directly
+      const idolListing = listings.find(l => l.photocardId === idolParam || l.idolName.includes(idolParam));
+      if (idolListing) {
+        setFilterIdol(idolListing.idolName);
+        setSearchTerm(idolListing.idolName);
+      }
+    }
+  }, [listings]);
 
   const rarityColors = {
     'N': 'bg-gray-500/20 text-gray-400 border-gray-500/30',
@@ -80,10 +98,11 @@ export const Marketplace = ({
       const matchesSearch = listing.idolName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            listing.concept.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRarity = filterRarity === 'all' || listing.rarity === filterRarity;
+      const matchesIdol = filterIdol === 'all' || listing.idolName === filterIdol;
       const matchesPriceMin = !priceRange.min || listing.price >= Number(priceRange.min);
       const matchesPriceMax = !priceRange.max || listing.price <= Number(priceRange.max);
       
-      return matchesSearch && matchesRarity && matchesPriceMin && matchesPriceMax;
+      return matchesSearch && matchesRarity && matchesIdol && matchesPriceMin && matchesPriceMax;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -353,7 +372,7 @@ export const Marketplace = ({
         <TabsContent value="buy" className="space-y-6 mt-6">
           {/* Filters */}
           <Card className="p-4 glass-dark border-white/10">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               <Input
                 placeholder="아이돌명, 컨셉 검색..."
                 value={searchTerm}
@@ -370,6 +389,18 @@ export const Marketplace = ({
                   <SelectItem value="price">가격순</SelectItem>
                   <SelectItem value="rarity">레어도순</SelectItem>
                   <SelectItem value="ending">경매 마감순</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={filterIdol} onValueChange={setFilterIdol}>
+                <SelectTrigger className="bg-card/50 border-border">
+                  <SelectValue placeholder="아이돌" />
+                </SelectTrigger>
+                <SelectContent className="bg-card/95 backdrop-blur-md border-border">
+                  <SelectItem value="all">전체 아이돌</SelectItem>
+                  {uniqueIdols.map((idol) => (
+                    <SelectItem key={idol} value={idol}>{idol}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
