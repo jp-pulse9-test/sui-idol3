@@ -262,7 +262,8 @@ const Rise = () => {
             selectedCategory="댄스"
             allPhotocards={photoCards}
             onIdolClick={(idolId) => {
-              console.log('Clicked idol:', idolId);
+              // Navigate to marketplace with idol filter
+              navigate(`/vault?tab=marketplace&idol=${idolId}`);
             }}
           />
         </div>

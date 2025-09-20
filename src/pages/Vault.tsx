@@ -73,6 +73,15 @@ const Vault = () => {
   const [isMinting, setIsMinting] = useState(false);
   const [hasAdvancedAccess, setHasAdvancedAccess] = useState(false);
 
+  // Check URL params for tab and filters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && ['storage', 'randombox', 'collection', 'generator', 'marketplace'].includes(tabParam)) {
+      setActiveTab(tabParam as any);
+    }
+  }, []);
+
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
     const savedIdol = localStorage.getItem('selectedIdol');

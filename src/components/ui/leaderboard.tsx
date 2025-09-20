@@ -91,12 +91,11 @@ export const Leaderboard = ({
     return (
       <Card
         key={entry.idolId}
-        className={`p-4 border transition-all duration-300 cursor-pointer ${
+        className={`p-4 border transition-all duration-300 ${
           isCurrentIdol 
             ? 'glass-dark border-primary/30 bg-primary/5 ring-1 ring-primary/20' 
             : 'glass-dark border-white/10 hover:border-white/20 hover:scale-[1.02]'
         }`}
-        onClick={() => handleIdolClick(entry.idolId, entry.idolName)}
       >
         <div className="flex items-center gap-4">
           {/* Rank */}
@@ -109,7 +108,14 @@ export const Leaderboard = ({
 
           {/* Idol Profile & Info */}
           <div className="flex-1 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-primary/20 border-2 border-primary/30">
+            <div 
+              className="w-12 h-12 rounded-full overflow-hidden bg-gradient-primary/20 border-2 border-primary/30 cursor-pointer hover:scale-110 transition-transform"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleIdolClick(entry.idolId, entry.idolName);
+              }}
+              title="마켓플레이스에서 포토카드 보기"
+            >
               <img 
                 src={entry.profileImage} 
                 alt={entry.idolName} 
@@ -118,17 +124,41 @@ export const Leaderboard = ({
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-foreground text-lg">{entry.idolName}</span>
+                <span 
+                  className="font-bold text-foreground text-lg cursor-pointer hover:text-primary transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleIdolClick(entry.idolId, entry.idolName);
+                  }}
+                  title="마켓플레이스에서 포토카드 보기"
+                >
+                  {entry.idolName}
+                </span>
                 {isCurrentIdol && <Badge variant="secondary" className="text-xs">내 최애</Badge>}
                 <Badge variant="outline" className="text-xs">{entry.category}</Badge>
                 {idolPhotocards.length > 0 && (
-                  <Badge variant="outline" className="text-xs flex items-center gap-1">
+                  <Badge 
+                    variant="outline" 
+                    className="text-xs flex items-center gap-1 cursor-pointer hover:bg-primary/20 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleIdolClick(entry.idolId, entry.idolName);
+                    }}
+                    title="마켓플레이스에서 포토카드 보기"
+                  >
                     <ImageIcon className="w-3 h-3" />
                     {idolPhotocards.length}
                   </Badge>
                 )}
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div 
+                className="text-sm text-muted-foreground cursor-pointer hover:text-primary transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleIdolClick(entry.idolId, entry.idolName);
+                }}
+                title="마켓플레이스에서 포토카드 보기"
+              >
                 {entry.personality} · {entry.concept}
               </div>
               <div className="flex items-center gap-3 mt-1 text-sm">
@@ -147,7 +177,14 @@ export const Leaderboard = ({
 
           {/* Stats */}
           <div className="hidden md:flex items-center gap-4 text-sm">
-            <div className="text-center">
+            <div 
+              className="text-center cursor-pointer hover:bg-primary/20 rounded p-1 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleIdolClick(entry.idolId, entry.idolName);
+              }}
+              title="마켓플레이스에서 포토카드 보기"
+            >
               <div className="font-semibold text-foreground">{entry.totalPhotocards.toLocaleString()}</div>
               <div className="text-muted-foreground text-xs">포토카드</div>
             </div>
@@ -186,7 +223,7 @@ export const Leaderboard = ({
           아이돌 리더보드
         </h2>
         <p className="text-muted-foreground">
-          팬 수와 하트 수를 기준으로 한 아이돌 인기 랭킹 · 클릭하면 포토카드 확인 가능
+          팬 수와 하트 수를 기준으로 한 아이돌 인기 랭킹 · 프로필, 이름, 포토카드 수를 클릭하면 마켓플레이스로 이동
         </p>
       </div>
 
