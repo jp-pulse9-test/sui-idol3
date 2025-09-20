@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import { isSuperAdmin, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
 import { secureStorage } from "@/utils/secureStorage";
 
 interface HeartSystemState {
@@ -87,9 +86,7 @@ export const useHeartSystem = () => {
     const lastReset = localStorage.getItem('lastHeartReset');
     
     if (lastReset !== today) {
-      const currentWallet = secureStorage.getWalletAddress() || '';
-      const isAdmin = isSuperAdmin(currentWallet);
-      const dailyAmount = isAdmin ? SUPER_ADMIN_DAILY_HEARTS : 10;
+      const dailyAmount = 10;
       
       const newState = {
         ...heartState,

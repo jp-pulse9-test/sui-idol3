@@ -125,14 +125,6 @@ const Auth = () => {
             홈으로 돌아가기
           </Button>
 
-          {/* 지원 지갑 안내 */}
-          <div className="text-center space-y-2">
-            <p className="text-sm text-muted-foreground">목업 모드 (개발용)</p>
-            <div className="flex justify-center gap-4 text-xs text-muted-foreground">
-              <span className="px-3 py-1 bg-muted rounded-full">Mock Wallet</span>
-              <span className="px-3 py-1 bg-muted rounded-full">Demo Mode</span>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

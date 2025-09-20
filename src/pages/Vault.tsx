@@ -13,8 +13,6 @@ import { Marketplace } from "@/components/ui/marketplace";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { IdolPhotocardGenerator } from "@/components/IdolPhotocardGenerator";
 import { Heart } from "lucide-react";
-import { isSuperAdmin, SUPER_ADMIN_INITIAL_SUI_COINS, SUPER_ADMIN_INITIAL_FAN_HEARTS, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
-import { applySuperAdminBenefits, autoApplySuperAdminBenefits } from "@/utils/superAdminBenefits";
 import { secureStorage } from "@/utils/secureStorage";
 import { usePhotoCardMinting } from "@/services/photocardMintingSimple";
 import { useWallet } from "@/hooks/useWallet";
@@ -111,32 +109,20 @@ const Vault = () => {
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     setPhotoCards(savedCards);
     
-    // 수이 코인, 팬 하트, 일일 하트 불러오기 (수퍼어드민 특별 지급)
-    const isAdmin = isSuperAdmin(user.wallet_address);
-    
+    // 수이 코인 불러오기
     const savedSuiCoins = localStorage.getItem('suiCoins');
     if (savedSuiCoins) {
       setSuiCoins(parseFloat(savedSuiCoins));
-    } else if (isAdmin) {
-      // 수퍼어드민 첫 로그인 시 특별 지급
-      setSuiCoins(SUPER_ADMIN_INITIAL_SUI_COINS);
-      localStorage.setItem('suiCoins', SUPER_ADMIN_INITIAL_SUI_COINS.toString());
-      toast.success(`🎉 수퍼어드민 특별 지급! ${SUPER_ADMIN_INITIAL_SUI_COINS} SUI 코인 획득!`);
     } else {
-      setSuiCoins(1.0); // 일반 유저 기본값
+      setSuiCoins(1.0); // 기본값
       localStorage.setItem('suiCoins', '1.0');
     }
     
     const savedFanHearts = localStorage.getItem('fanHearts');
     if (savedFanHearts) {
       setFanHearts(parseInt(savedFanHearts));
-    } else if (isAdmin) {
-      // 수퍼어드민 첫 로그인 시 특별 지급
-      setFanHearts(SUPER_ADMIN_INITIAL_FAN_HEARTS);
-      localStorage.setItem('fanHearts', SUPER_ADMIN_INITIAL_FAN_HEARTS.toString());
-      toast.success(`💖 수퍼어드민 특별 지급! ${SUPER_ADMIN_INITIAL_FAN_HEARTS} 팬 하트 획득!`);
     } else {
-      // 일반 유저 기본값: 포토카드 생성을 위한 충분한 하트 지급
+      // 기본값: 포토카드 생성을 위한 충분한 하트 지급
       setFanHearts(100);
       localStorage.setItem('fanHearts', '100');
       toast.success('💖 환영합니다! 100 팬 하트를 받았습니다!');
@@ -145,9 +131,9 @@ const Vault = () => {
     const savedDailyHearts = localStorage.getItem('dailyHearts');
     if (savedDailyHearts) {
       setDailyHearts(parseInt(savedDailyHearts));
-    } else if (isAdmin) {
-      setDailyHearts(SUPER_ADMIN_DAILY_HEARTS);
-      localStorage.setItem('dailyHearts', SUPER_ADMIN_DAILY_HEARTS.toString());
+    } else {
+      setDailyHearts(10);
+      localStorage.setItem('dailyHearts', '10');
     }
     
     // 매일 무료 박스 상태 로드
@@ -159,18 +145,15 @@ const Vault = () => {
       setHasAdvancedAccess(true);
     }
     
-    // 일일 하트 리셋 체크 (매일 자정) - 수퍼어드민은 더 많이 지급
+    // 일일 하트 리셋 체크 (매일 자정)
     const lastHeartReset = localStorage.getItem('lastHeartReset');
     const today = new Date().toDateString();
     if (lastHeartReset !== today) {
-      const dailyAmount = isAdmin ? SUPER_ADMIN_DAILY_HEARTS : 10;
+      const dailyAmount = 10;
       setDailyHearts(dailyAmount);
       localStorage.setItem('dailyHearts', dailyAmount.toString());
       localStorage.setItem('lastHeartReset', today);
     }
-
-    // 수퍼어드민 특권 자동 적용
-    autoApplySuperAdminBenefits();
   }, [navigate, user]);
 
   const loadDailyFreeStatus = async (walletAddress: string) => {
@@ -356,20 +339,6 @@ const Vault = () => {
             <Badge variant="outline" className="px-4 py-2">
               💝 {dailyHearts}/10 일일 하트
             </Badge>
-            {isSuperAdmin(walletAddress) && (
-              <Button
-                onClick={() => {
-                  applySuperAdminBenefits();
-                  // 페이지 새로고침으로 상태 반영
-                  window.location.reload();
-                }}
-                variant="outline"
-                size="sm"
-                className="text-yellow-400 border-yellow-400 hover:bg-yellow-400/10"
-              >
-                👑 수퍼어드민 특권 적용
-              </Button>
-            )}
             <Badge variant="secondary" className="px-4 py-2">
               📦 {photoCards.length}장 보유
             </Badge>

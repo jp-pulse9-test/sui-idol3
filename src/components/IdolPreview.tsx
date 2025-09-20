@@ -5,8 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Crown, Heart, Star, Sparkles, BarChart3, Radar } from "lucide-react";
 import { toast } from "sonner";
-import { applySuperAdminBenefits } from "@/utils/superAdminBenefits";
-import { isSuperAdmin } from "@/utils/adminWallets";
 import { IdolStatsDisplay, generateRandomStats } from "@/components/IdolStatsDisplay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { secureStorage } from "@/utils/secureStorage";
@@ -35,12 +33,6 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
   const [idolStats, setIdolStats] = useState(() => generateRandomStats(selectedIdol.personality));
 
   useEffect(() => {
-    // 수퍼어드민 특권 먼저 적용
-    const currentWallet = secureStorage.getWalletAddress();
-    if (currentWallet && isSuperAdmin(currentWallet)) {
-      applySuperAdminBenefits();
-    }
-    
     // 수이 코인 잔액 체크 (0.15 코인 = 700원)
     const userCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
     setCurrentSuiCoins(userCoins);
@@ -195,19 +187,6 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
                     ⚠️ 수이 코인이 부족합니다. 0.15 코인이 필요합니다. <br />
                     현재 보유: {currentSuiCoins.toFixed(2)} SUI
                   </p>
-                  <Button
-                    onClick={() => {
-                      applySuperAdminBenefits();
-                      const newCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
-                      setCurrentSuiCoins(newCoins);
-                      setHasSufficientCoins(newCoins >= 0.15);
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="mt-2 text-yellow-400 border-yellow-400"
-                  >
-                    👑 수퍼어드민 코인 지급
-                  </Button>
                 </div>
               )}
             </div>

@@ -35,14 +35,9 @@ import My from "./pages/My";
 const AdminButton = () => {
   const { user } = useAuth();
   const [showDevTools, setShowDevTools] = useState(false);
-  const SUPER_ADMIN_WALLETS = [
-    "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc",
-    "0x6f8a5d5a7f7b8a527c9493841e21699ee87453a341b95b297eb2f616c687ac1f",
-    "0x0065009a167c25172cccf24adeb1c0e5a53726cbf2a15bf261a2e3a559d7c5ca",
-    "0xbf0ca9fc3f88f59193a5b985e61dd8b02d97f83b2efe99b9a2c5ae50c16cb531"
-  ];
-
-  if (!user || !SUPER_ADMIN_WALLETS.includes(user.id)) return null;
+  
+  // 관리자 기능은 제거되었습니다
+  return null;
 
   return (
     <>

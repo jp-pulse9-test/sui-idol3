@@ -29,10 +29,7 @@ export const WalletProviderWrapper: React.FC<WalletProviderWrapperProps> = ({ ch
   return (
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-        <WalletProvider
-          autoConnect={true}
-          enableUnsafeBurner={true}
-        >
+        <WalletProvider autoConnect={true}>
           {children}
         </WalletProvider>
       </SuiClientProvider>

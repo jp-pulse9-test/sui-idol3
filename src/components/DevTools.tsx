@@ -30,8 +30,7 @@ interface DatabaseStats {
 }
 
 export const DevTools: React.FC = () => {
-  const { user } = useAuth();
-  const SUPER_ADMIN_WALLET = "0x999403dcfae1c4945e4f548fb2e7e6c7912ad4dd68297f1a5855c847513ec8fc";
+  // 관리자 기능은 제거되었습니다
   const [stats, setStats] = useState<DatabaseStats>({ totalIdols: 0, recentIdols: [] });
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
   const [batchProgress, setBatchProgress] = useState(0);
