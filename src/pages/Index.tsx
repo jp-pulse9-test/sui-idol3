@@ -258,22 +258,14 @@ const Index = () => {
               />
               
                <FeatureCard
-                title="📈 RISE"
-                description="아이돌 리더보드에서 인기 순위를 확인하고, 공개 갤러리에서 모든 유저의 포카를 구경하며, 마켓플레이스에서 자유롭게 거래하세요."
+                 title="📈 RISE"
+                 description="아이돌 리더보드에서 인기 순위를 확인하고 마켓플레이스에서 자유롭게 거래하세요."
                 icon={tournamentIcon}
                 onClick={() => openPreview('rise')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
                 buttonText="미리보기"
               />
               
-              <FeatureCard
-                title="🖼️ 공개 갤러리"
-                description="모든 유저들이 만든 아이돌 포토카드를 인물별로 탐색하고, 마음에 드는 작품에 하트를 보내세요."
-                icon={photocardIcon}
-                onClick={() => navigate('/gallery')}
-                gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
-                buttonText="갤러리 보기"
-              />
             </div>
           </div>
         </section>
@@ -334,14 +326,6 @@ const Index = () => {
                 className="min-w-64 text-xl py-4"
               >
                 🌟 성향 분석으로 최애 PICK하기 🌟
-              </Button>
-              <Button
-                onClick={() => navigate('/gallery')}
-                variant="outline"
-                size="xl"
-                className="min-w-64 text-xl py-4 border-2 border-primary/50 text-primary hover:bg-primary/10"
-              >
-                🖼️ 공개 갤러리 둘러보기
               </Button>
             </div>
           </div>

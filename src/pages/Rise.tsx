@@ -150,13 +150,13 @@ const Rise = () => {
     setWalletAddress(savedWallet);
     setSelectedIdol(JSON.parse(savedIdol));
     
-    // 로컬 스토리지에서 모든 포카 불러오기 (공개 갤러리용)
+    // 로컬 스토리지에서 포카 불러오기
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     
-    // Mock 데이터 추가 (실제로는 서버에서 모든 유저의 공개 포카를 가져옴)
+    // Mock 데이터 설정
     const mockPublicCards: PhotoCard[] = [
       ...savedCards,
-      // 다른 유저들의 mock 데이터
+      // Mock 데이터
       {
         id: 'mock-1',
         idolId: '1',
