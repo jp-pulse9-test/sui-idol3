@@ -57,10 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const connectWallet = async () => {
     try {
       console.log('🔥 dapp-kit 지갑 연결 시도...');
-      console.log('현재 사용 가능한 지갑 확인 중...');
       
       const result = await dappKitConnect();
-      console.log('dapp-kit 연결 결과:', result);
       
       if (result.success && walletAddress) {
         console.log('✅ dapp-kit 지갑 연결 성공:', walletAddress);
@@ -92,7 +90,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         return { error: null };
       } else {
-        console.error('❌ 지갑 연결 실패:', result.error);
         return { error: result.error || '지갑 연결 실패' };
       }
     } catch (error) {

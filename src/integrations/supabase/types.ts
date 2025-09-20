@@ -590,51 +590,9 @@ export type Database = {
       }
     }
     Views: {
-      idols_public: {
-        Row: {
-          Category: string | null
-          Concept: string | null
-          created_at: string | null
-          description: string | null
-          Gender: string | null
-          id: number | null
-          name: string | null
-          persona_prompt: string | null
-          personality: string | null
-          profile_image: string | null
-        }
-        Insert: {
-          Category?: string | null
-          Concept?: never
-          created_at?: string | null
-          description?: never
-          Gender?: string | null
-          id?: number | null
-          name?: string | null
-          persona_prompt?: never
-          personality?: never
-          profile_image?: string | null
-        }
-        Update: {
-          Category?: string | null
-          Concept?: never
-          created_at?: string | null
-          description?: never
-          Gender?: string | null
-          id?: number | null
-          name?: string | null
-          persona_prompt?: never
-          personality?: never
-          profile_image?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      check_idol_access_rate: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
       claim_daily_free_box: {
         Args: { user_wallet_param: string }
         Returns: Json

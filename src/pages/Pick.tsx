@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import PersonalityTest from "@/components/PersonalityTest";
 import TournamentBattle from "@/components/TournamentBattle";
 import IdolPreview from "@/components/IdolPreview";
-import SecurityNotice from "@/components/SecurityNotice";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { useWallet } from "@/hooks/useWallet";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
@@ -51,47 +50,19 @@ const Pick = () => {
     selectedAnswers: []
   });
   const [isMinting, setIsMinting] = useState(false);
-  const [showSecurityNotice, setShowSecurityNotice] = useState(false);
   const navigate = useNavigate();
   const { mintIdolCard } = usePhotoCardMinting();
   const { isConnected, walletAddress } = useWallet();
   const { isAuthenticated } = useAuthGuard('/auth', false);
 
-  // Gender normalization helpers
-  const normalizeGender = (g?: string) => (g ?? '').trim().toLowerCase();
-  const isDBMale = (g?: string) => {
-    const n = normalizeGender(g);
-    return ['boy','male','man','m','남자','소년'].includes(n);
-  };
-  const isDBFemale = (g?: string) => {
-    const n = normalizeGender(g);
-    return ['girl','female','woman','f','여자','소녀'].includes(n);
-  };
-
   // Fetch idols from Supabase
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
     try {
       console.log('Fetching idols from database...');
-      
-      // 보안 강화: 인증된 사용자는 전체 데이터, 미인증 사용자는 공개 뷰 사용
-      const { data: session } = await supabase.auth.getSession();
-      
-      let query;
-      if (session?.session?.user) {
-        // 인증된 사용자: 전체 데이터 접근
-        query = supabase
-          .from('idols')
-          .select('*')
-          .order('id');
-      } else {
-        // 미인증 사용자: 제한된 공개 데이터만 접근
-        query = supabase
-          .from('idols_public')
-          .select('*')
-          .order('id');
-      }
-      
-      const { data, error } = await query;
+      const { data, error } = await supabase
+        .from('idols')
+        .select('*')
+        .order('id');
       
       if (error) {
         console.error('Error fetching idols:', error);
@@ -160,20 +131,19 @@ const Pick = () => {
       let idolData = await fetchIdolsFromDB();
       console.log('Fetched idol data:', idolData?.length || 0, 'idols');
       
-      // 아이돌 데이터가 있다면 성별 선택부터 진행 (보안: 기본 정보는 공개)
+      // 아이돌 데이터가 충분하다면 바로 진행
       if (idolData.length >= 10) {
-        console.log('Sufficient idol data found, proceeding to gender select');
+        console.log('Sufficient idol data found, proceeding to personality test');
         setIdols(idolData);
-        setGamePhase('gender-select');
+        setGamePhase('personality-test');
         return;
       }
 
-      // 데이터가 부족한 경우 인증 후 전체 데이터 접근 시도
-      if (!isAuthenticated && idolData.length < 10) {
-        console.log('Limited data available, authentication recommended for full access');
-        setShowSecurityNotice(true);
-        setIdols(idolData);
-        setGamePhase('gender-select');
+      // 데이터가 부족한 경우만 인증 체크
+      if (!isAuthenticated) {
+        console.log('User not authenticated, redirecting to auth');
+        toast.error('아이돌 데이터에 접근하려면 지갑 연결이 필요합니다.');
+        navigate('/auth');
         return;
       }
       
@@ -207,23 +177,16 @@ const Pick = () => {
     setSelectedGender(gender);
     setPersonalityData(prev => ({ ...prev, gender }));
     
-    // Filter idols by selected gender (robust, handles Boy/Girl/Male/Female etc.)
+    // Filter idols by selected gender
     const filtered = idols.filter(idol => 
-      gender === 'male' ? isDBMale(idol.Gender) : isDBFemale(idol.Gender)
+      idol.Gender && idol.Gender.toLowerCase() === gender
     );
-    
-    console.log(`Selected ${gender}. Total idols: ${idols.length}, filtered: ${filtered.length}`);
-    console.log('Gender values present in DB:', [...new Set(idols.map(i => i.Gender))]);
-    
     setFilteredIdols(filtered);
     
-    if (filtered.length === 0) {
-      toast.error(`${gender === 'male' ? '소년' : '소녀'} 아이돌 데이터가 없습니다. 관리자에게 문의해주세요.`);
-      return;
-    }
-    
+    console.log(`Selected ${gender}, filtered ${filtered.length} idols`);
     setGamePhase('personality-test');
   };
+
   const handlePersonalityComplete = (scores: { extroversion: number; intuition: number; feeling: number; judging: number }) => {
     setPersonalityData(prev => ({
       ...prev,
@@ -261,8 +224,6 @@ const Pick = () => {
     setIsMinting(true);
     
     try {
-      console.log('아이돌 카드 민팅 시작:', finalWinner);
-      
       // 아이돌 카드 민팅
       await mintIdolCard({
         id: finalWinner.id,
@@ -312,20 +273,12 @@ const Pick = () => {
   // Gender select phase
   if (gamePhase === 'gender-select') {
     // Get sample idols for preview
-    const maleIdols = idols.filter(idol => isDBMale(idol.Gender)).slice(0, 3);
-    const femaleIdols = idols.filter(idol => isDBFemale(idol.Gender)).slice(0, 3);
+    const maleIdols = idols.filter(idol => idol.Gender?.toLowerCase() === 'male').slice(0, 3);
+    const femaleIdols = idols.filter(idol => idol.Gender?.toLowerCase() === 'female').slice(0, 3);
 
     return (
       <div className="min-h-screen bg-gradient-background p-4">
         <div className="max-w-4xl mx-auto space-y-8 pt-12">
-          {/* 보안 알림 */}
-          {showSecurityNotice && !isAuthenticated && (
-            <SecurityNotice 
-              type="limited-access" 
-              onDismiss={() => setShowSecurityNotice(false)}
-            />
-          )}
-          
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold gradient-text mb-8">
               💫 성별 선택
@@ -412,24 +365,9 @@ const Pick = () => {
 
   // Tournament battle phase  
   if (gamePhase === 'tournament') {
-    // 반드시 필터링된 아이돌만 사용, 없으면 에러 처리
-    if (filteredIdols.length === 0) {
-      return (
-        <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-          <Card className="p-8 glass-dark border-white/10 text-center">
-            <h2 className="text-xl font-bold text-destructive">선택한 성별의 아이돌이 없습니다</h2>
-            <p className="text-muted-foreground mt-2">다시 성별을 선택해주세요.</p>
-            <Button onClick={handleBackToGender} className="mt-4">
-              성별 선택으로 돌아가기
-            </Button>
-          </Card>
-        </div>
-      );
-    }
-
     return (
       <TournamentBattle
-        idols={filteredIdols}
+        idols={filteredIdols.length > 0 ? filteredIdols : idols}
         onComplete={handleTournamentComplete}
         onBack={handleBackToPersonality}
       />
