@@ -10,7 +10,6 @@ import TournamentBattle from "@/components/TournamentBattle";
 import IdolPreview from "@/components/IdolPreview";
 import SecurityNotice from "@/components/SecurityNotice";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
-import { useMockMinting } from "@/services/mockMinting";
 import { useWallet } from "@/hooks/useWallet";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 
@@ -55,7 +54,6 @@ const Pick = () => {
   const [showSecurityNotice, setShowSecurityNotice] = useState(false);
   const navigate = useNavigate();
   const { mintIdolCard } = usePhotoCardMinting();
-  const { mockMintIdolCard, checkMockWalletConnection } = useMockMinting();
   const { isConnected, walletAddress } = useWallet();
   const { isAuthenticated } = useAuthGuard('/auth', false);
 
@@ -254,10 +252,7 @@ const Pick = () => {
   const handleConfirmPick = async () => {
     if (!finalWinner) return;
     
-    // 지갑 연결 상태 확인 (실제 지갑 또는 모의 지갑)
-    const isMockConnected = checkMockWalletConnection();
-    
-    if (!isConnected && !isMockConnected) {
+    if (!isConnected) {
       toast.error('지갑을 먼저 연결해주세요!');
       navigate('/auth');
       return;
@@ -266,33 +261,16 @@ const Pick = () => {
     setIsMinting(true);
     
     try {
-      console.log('민팅 시작 - 선택된 아이돌:', finalWinner);
+      console.log('아이돌 카드 민팅 시작:', finalWinner);
       
-      let mintingResult;
-      
-      if (isConnected && walletAddress) {
-        // 실제 지갑 연결된 경우 - 실제 민팅
-        console.log('실제 지갑으로 민팅 진행');
-        mintingResult = await mintIdolCard({
-          id: finalWinner.id,
-          name: finalWinner.name,
-          personality: finalWinner.personality,
-          image: finalWinner.profile_image,
-          persona_prompt: finalWinner.persona_prompt,
-        });
-      } else if (isMockConnected) {
-        // 모의 지갑 연결된 경우 - 모의 민팅
-        console.log('모의 지갑으로 민팅 진행');
-        mintingResult = await mockMintIdolCard({
-          id: finalWinner.id,
-          name: finalWinner.name,
-          personality: finalWinner.personality,
-          image: finalWinner.profile_image,
-          persona_prompt: finalWinner.persona_prompt,
-        });
-      } else {
-        throw new Error('지갑이 연결되지 않았습니다.');
-      }
+      // 아이돌 카드 민팅
+      await mintIdolCard({
+        id: finalWinner.id,
+        name: finalWinner.name,
+        personality: finalWinner.personality,
+        image: finalWinner.profile_image,
+        persona_prompt: finalWinner.persona_prompt,
+      });
 
       // Save selection to localStorage
       localStorage.setItem('selectedIdol', JSON.stringify({
@@ -302,9 +280,8 @@ const Pick = () => {
         image: finalWinner.profile_image,
         persona_prompt: finalWinner.persona_prompt,
         personalityData: personalityData,
-        walletAddress: walletAddress || localStorage.getItem('walletAddress'),
-        mintedAt: new Date().toISOString(),
-        mintingResult: mintingResult
+        walletAddress: walletAddress,
+        mintedAt: new Date().toISOString()
       }));
       
       toast.success('IdolCard NFT 민팅이 완료되었습니다!');

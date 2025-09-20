@@ -20,24 +20,24 @@ const Auth = () => {
 
   const handleWalletConnect = async () => {
     setLoading(true);
-    console.log('🔥 목업 지갑 연결 시도...');
+    console.log('🔥 Auth 페이지에서 지갑 연결 시도...');
     
     try {
       const result = await connectWallet();
-      console.log('연결 결과:', result);
+      console.log('Auth 페이지 연결 결과:', result);
       
       if (result.error) {
-        console.error('❌ 지갑 연결 실패:', result.error);
+        console.error('❌ Auth 페이지 지갑 연결 실패:', result.error);
         toast({
           title: "지갑 연결 실패",
-          description: `오류: ${result.error.message || '알 수 없는 오류가 발생했습니다.'}`,
+          description: `오류: ${result.error.message || result.error || '알 수 없는 오류가 발생했습니다.'}`,
           variant: "destructive",
         });
       } else {
-        console.log('✅ 목업 지갑 연결 성공!');
+        console.log('✅ Auth 페이지 지갑 연결 성공!');
         toast({
           title: "🎉 환영합니다!",
-          description: "슈퍼 어드민 지갑이 성공적으로 연결되었습니다.",
+          description: "지갑이 성공적으로 연결되었습니다.",
         });
         // 약간의 지연 후 메인 페이지로 이동
         setTimeout(() => {
