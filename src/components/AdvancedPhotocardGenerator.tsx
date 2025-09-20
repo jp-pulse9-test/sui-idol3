@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Camera, Upload, ImageIcon, User, Palette, Sparkles, Zap } from "lucide-react";
+import { Camera, Upload, ImageIcon, User, Palette, Sparkles, Zap, ArrowRight, RotateCcw } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
@@ -39,6 +39,8 @@ export const AdvancedPhotocardGenerator = ({
   const [theme, setTheme] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [generatedCard, setGeneratedCard] = useState<any | null>(null);
+  const [showResult, setShowResult] = useState(false);
   
   const personFileRef = useRef<HTMLInputElement>(null);
   const materialFileRef = useRef<HTMLInputElement>(null);
@@ -153,9 +155,24 @@ export const AdvancedPhotocardGenerator = ({
 
       const result = await response.json();
       
-      // For demo purposes, use the idol image
-      // In production, this would be the generated image from the API
+      // Create card data for preview
+      const cardData = {
+        idolName: selectedIdol.name,
+        concept: `고급 AI 생성 (${style})`,
+        rarity: 'SSR' as const,
+        season: 'Advanced',
+        image: selectedIdol.image, // In production, this would be the generated image
+        serialNo: Math.floor(Math.random() * 1000) + 1,
+        totalSupply: 100,
+        prompt: prompt,
+        weather: weather,
+        mood: mood,
+        theme: theme
+      };
+      
+      setGeneratedCard(cardData);
       setGeneratedImage(selectedIdol.image);
+      setShowResult(true);
       
       onCostDeduction(advancedCost.sui, advancedCost.hearts);
       toast.success('🎉 고급 포토카드가 생성되었습니다!');
@@ -165,6 +182,22 @@ export const AdvancedPhotocardGenerator = ({
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleContinueCreating = () => {
+    setShowResult(false);
+    setGeneratedCard(null);
+    setGeneratedImage(null);
+    setPersonImage(null);
+    setMaterialImage(null);
+    setPrompt('');
+    setWeather('');
+    setMood('');
+    setTheme('');
+  };
+
+  const handleGoToCollection = () => {
+    window.location.hash = 'collection';
   };
 
   const canAfford = () => {
@@ -409,29 +442,92 @@ export const AdvancedPhotocardGenerator = ({
         </Button>
       </Card>
 
-      {/* Generated Image */}
-      {generatedImage && (
-        <Card className="p-4 glass-dark border-green-400/30 bg-green-400/5">
-          <div className="space-y-4">
-            <h4 className="font-semibold text-green-400 flex items-center gap-2">
-              <Camera className="w-4 h-4" />
-              생성된 고급 포토카드
-            </h4>
+      {/* Generated Card Result */}
+      {showResult && generatedCard && (
+        <Card className="p-6 glass-dark border-green-400/30 bg-green-400/5">
+          <div className="space-y-6">
             <div className="text-center">
-              <img 
-                src={generatedImage} 
-                alt="Generated photocard" 
-                className="max-w-full h-auto rounded-lg mx-auto max-h-96"
-              />
+              <h3 className="text-2xl font-bold text-green-400 flex items-center justify-center gap-2">
+                <Sparkles className="w-6 h-6" />
+                고급 포토카드 생성 완료!
+              </h3>
+              <p className="text-muted-foreground mt-2">
+                AI가 생성한 고품질 포토카드가 완성되었습니다
+              </p>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" className="flex-1">
-                <Upload className="w-4 h-4 mr-2" />
-                다운로드
+
+            {/* Card Preview */}
+            <div className="max-w-sm mx-auto">
+              <div className="relative bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-400/30">
+                <div className="aspect-[3/4] bg-gradient-primary/20 rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={generatedCard.image}
+                    alt={generatedCard.idolName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-lg gradient-text">{generatedCard.idolName}</h4>
+                    <Badge className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black">
+                      {generatedCard.rarity}
+                    </Badge>
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">{generatedCard.concept}</p>
+                  
+                  {generatedCard.weather && (
+                    <p className="text-xs text-blue-400">날씨: {generatedCard.weather}</p>
+                  )}
+                  {generatedCard.mood && (
+                    <p className="text-xs text-pink-400">분위기: {generatedCard.mood}</p>
+                  )}
+                  {generatedCard.theme && (
+                    <p className="text-xs text-green-400">주제: {generatedCard.theme}</p>
+                  )}
+                  
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>#{generatedCard.serialNo.toString().padStart(3, '0')}</span>
+                    <span>/{generatedCard.totalSupply}</span>
+                  </div>
+                </div>
+                
+                <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
+                  AI PREMIUM
+                </Badge>
+              </div>
+            </div>
+
+            {/* Generated Details */}
+            <Card className="p-4 bg-muted/20">
+              <h5 className="font-semibold mb-2 text-sm">생성 설정</h5>
+              <div className="space-y-1 text-xs text-muted-foreground">
+                <p><span className="font-medium">프롬프트:</span> {generatedCard.prompt}</p>
+                <p><span className="font-medium">스타일:</span> {style}</p>
+                {personImage && <p><span className="font-medium">인물 이미지:</span> 업로드됨</p>}
+                {materialImage && <p><span className="font-medium">재질 이미지:</span> 업로드됨</p>}
+              </div>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <Button 
+                onClick={handleContinueCreating}
+                variant="outline" 
+                className="flex-1"
+                size="lg"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                계속 만들기
               </Button>
-              <Button variant="outline" className="flex-1">
-                <ImageIcon className="w-4 h-4 mr-2" />
-                컬렉션에 저장
+              <Button 
+                onClick={handleGoToCollection}
+                className="flex-1"
+                size="lg"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                포카 보관함으로
               </Button>
             </div>
           </div>

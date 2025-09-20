@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { AdvancedPhotocardGenerator } from "@/components/AdvancedPhotocardGenerator";
 import { toast } from "sonner";
-import { Camera, Sparkles, Heart, Star, Zap } from "lucide-react";
+import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
@@ -47,6 +47,8 @@ export const IdolPhotocardGenerator = ({
   const [selectedWeather, setSelectedWeather] = useState<string>('');
   const [selectedMood, setSelectedMood] = useState<string>('');
   const [selectedTheme, setSelectedTheme] = useState<string>('');
+  const [generatedCard, setGeneratedCard] = useState<any | null>(null);
+  const [showResult, setShowResult] = useState(false);
 
   const conceptOptions: ConceptOption[] = [
     {
@@ -146,15 +148,42 @@ export const IdolPhotocardGenerator = ({
         personaPrompt: selectedIdol.persona_prompt || selectedIdol.personality,
       };
 
+      const cardData = {
+        idolName: selectedIdol.name,
+        concept: additionalDetails ? `${selectedConcept.name} (${additionalDetails})` : selectedConcept.name,
+        rarity: selectedConcept.rarity,
+        season: selectedSeason,
+        image: selectedIdol.image,
+        serialNo: Math.floor(Math.random() * 10000) + 1,
+        totalSupply: selectedConcept.rarity === 'SSR' ? 500 : selectedConcept.rarity === 'SR' ? 2000 : 5000,
+      };
+
       await mintPhotoCard(mintingData);
       onCostDeduction(suiCost, heartCost);
       
+      setGeneratedCard(cardData);
+      setShowResult(true);
+      
       toast.success(`🎉 ${selectedIdol.name}의 ${selectedConcept.name} 포토카드가 생성되었습니다!`);
-      setSelectedConcept(null);
     } catch (error) {
       console.error('포토카드 생성 실패:', error);
       toast.error('포토카드 생성에 실패했습니다.');
     }
+  };
+
+  const handleContinueCreating = () => {
+    setShowResult(false);
+    setGeneratedCard(null);
+    setSelectedConcept(null);
+    setSelectedWeather('');
+    setSelectedMood('');
+    setSelectedTheme('');
+  };
+
+  const handleGoToCollection = () => {
+    // Assuming there's a parent component that handles tab changes
+    // You might need to pass this as a prop or use a navigation method
+    window.location.hash = 'collection';
   };
 
   const canAfford = (concept: ConceptOption) => {
@@ -195,237 +224,236 @@ export const IdolPhotocardGenerator = ({
         </TabsList>
 
         <TabsContent value="basic" className="space-y-6 mt-6">
-
-      {/* Idol Info */}
-      <Card className="p-4 glass-dark border-white/10">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-primary/20">
-            <img 
-              src={selectedIdol.image}
-              alt={selectedIdol.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="flex-1">
-            <h4 className="text-lg font-bold gradient-text">{selectedIdol.name}</h4>
-            <p className="text-sm text-muted-foreground">{selectedIdol.personality}</p>
-          </div>
-          <div className="text-right space-y-1">
-            <Badge variant="outline" className="text-xs">
-              💰 {userCoins.toFixed(2)} SUI
-            </Badge>
-            <Badge variant="outline" className="text-xs">
-              ❤️ {fanHearts} Hearts
-            </Badge>
-          </div>
-        </div>
-      </Card>
-
-      {/* Season and Options Selection */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card className="p-4 glass-dark border-white/10">
-          <div className="space-y-3">
-            <h4 className="font-semibold flex items-center gap-2">
-              <Star className="w-4 h-4" />
-              시즌 선택
-            </h4>
-            <Select value={selectedSeason} onValueChange={setSelectedSeason}>
-              <SelectTrigger className="bg-card/50">
-                <SelectValue placeholder="시즌을 선택하세요" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border border-border z-50">
-                {seasons.map((season) => (
-                  <SelectItem key={season} value={season}>
-                    {season}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </Card>
-
-        <Card className="p-4 glass-dark border-white/10">
-          <div className="space-y-3">
-            <h4 className="font-semibold flex items-center gap-2">
-              ☀️ 날씨
-            </h4>
-            <Select value={selectedWeather} onValueChange={setSelectedWeather}>
-              <SelectTrigger className="bg-card/50">
-                <SelectValue placeholder="날씨를 선택하세요 (선택사항)" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border border-border z-50">
-                <SelectItem value="">선택 안함</SelectItem>
-                {weatherOptions.map((weather) => (
-                  <SelectItem key={weather} value={weather}>
-                    {weather}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </Card>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card className="p-4 glass-dark border-white/10">
-          <div className="space-y-3">
-            <h4 className="font-semibold flex items-center gap-2">
-              😊 기분/분위기
-            </h4>
-            <Select value={selectedMood} onValueChange={setSelectedMood}>
-              <SelectTrigger className="bg-card/50">
-                <SelectValue placeholder="기분을 선택하세요 (선택사항)" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border border-border z-50">
-                <SelectItem value="">선택 안함</SelectItem>
-                {moodOptions.map((mood) => (
-                  <SelectItem key={mood} value={mood}>
-                    {mood}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </Card>
-
-        <Card className="p-4 glass-dark border-white/10">
-          <div className="space-y-3">
-            <h4 className="font-semibold flex items-center gap-2">
-              🎨 주제
-            </h4>
-            <Select value={selectedTheme} onValueChange={setSelectedTheme}>
-              <SelectTrigger className="bg-card/50">
-                <SelectValue placeholder="주제를 선택하세요 (선택사항)" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border border-border z-50">
-                <SelectItem value="">선택 안함</SelectItem>
-                {themeOptions.map((theme) => (
-                  <SelectItem key={theme} value={theme}>
-                    {theme}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </Card>
-      </div>
-
-      {/* Concept Selection */}
-      <div className="space-y-4">
-        <h4 className="font-semibold flex items-center gap-2">
-          <Sparkles className="w-4 h-4" />
-          컨셉 선택
-        </h4>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {conceptOptions.map((concept) => {
-            const affordable = canAfford(concept);
-            const isSelected = selectedConcept?.id === concept.id;
-            
-            return (
-              <Card
-                key={concept.id}
-                className={`p-4 cursor-pointer transition-all duration-300 ${
-                  isSelected 
-                    ? 'ring-2 ring-primary/50 scale-105' 
-                    : 'hover:scale-102'
-                } ${
-                  !affordable 
-                    ? 'opacity-50 grayscale' 
-                    : 'glass-dark border-white/10 hover:border-white/20'
-                }`}
-                onClick={() => affordable && setSelectedConcept(concept)}
-              >
-                <div className="space-y-3">
-                  <div className="text-center space-y-2">
-                    <div className="text-3xl">{concept.icon}</div>
-                    <h5 className="font-bold gradient-text">{concept.name}</h5>
-                    <p className="text-xs text-muted-foreground">{concept.description}</p>
-                  </div>
-                  
-                  <div className="text-center">
-                    <Badge className={`${getRarityColor(concept.rarity)} bg-transparent`}>
-                      {concept.rarity}
-                    </Badge>
-                  </div>
-                  
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span>💰 SUI:</span>
-                      <span className={userCoins >= concept.cost.sui ? 'text-green-400' : 'text-red-400'}>
-                        {concept.cost.sui}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>❤️ Hearts:</span>
-                      <span className={fanHearts >= concept.cost.hearts ? 'text-green-400' : 'text-red-400'}>
-                        {concept.cost.hearts}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Generate Button */}
-      <Card className="p-4 glass-dark border-white/10">
-        <div className="space-y-4">
-          {selectedConcept && (
-            <div className="text-center space-y-2">
-              <h4 className="font-semibold text-primary">선택된 컨셉</h4>
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-2xl">{selectedConcept.icon}</span>
-                <span className="font-bold">{selectedConcept.name}</span>
-                <Badge className={`${getRarityColor(selectedConcept.rarity)} bg-transparent`}>
-                  {selectedConcept.rarity}
+          {/* Idol Info */}
+          <Card className="p-4 glass-dark border-white/10">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-primary/20">
+                <img 
+                  src={selectedIdol.image}
+                  alt={selectedIdol.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-bold gradient-text">{selectedIdol.name}</h4>
+                <p className="text-sm text-muted-foreground">{selectedIdol.personality}</p>
+              </div>
+              <div className="text-right space-y-1">
+                <Badge variant="outline" className="text-xs">
+                  💰 {userCoins.toFixed(2)} SUI
+                </Badge>
+                <Badge variant="outline" className="text-xs">
+                  ❤️ {fanHearts} Hearts
                 </Badge>
               </div>
-              <div className="flex items-center justify-center gap-4 text-sm">
-                <span>💰 {selectedConcept.cost.sui} SUI</span>
-                <span>❤️ {selectedConcept.cost.hearts} Hearts</span>
-              </div>
             </div>
-          )}
-          
-          <Button
-            onClick={handleGeneratePhotocard}
-            disabled={!selectedConcept || isPending || !canAfford(selectedConcept!)}
-            className="w-full"
-            size="lg"
-          >
-            {isPending ? (
-              <div className="flex items-center gap-2">
-                <div className="animate-spin">⭐</div>
-                포토카드 생성 중...
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Camera className="w-4 h-4" />
-                포토카드 생성하기
-              </div>
-            )}
-          </Button>
-        </div>
-      </Card>
+          </Card>
 
-      {/* Tips */}
-      <Card className="p-4 glass-dark border-accent/20 bg-accent/5">
-        <div className="space-y-2">
-          <h4 className="font-semibold text-accent flex items-center gap-2">
-            <Heart className="w-4 h-4" />
-            포토카드 생성 가이드
-          </h4>
-          <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• 내 아이돌 전용 포토카드를 다양한 컨셉으로 생성</li>
-            <li>• 높은 등급일수록 더 희귀하고 아름다운 포토카드</li>
-            <li>• 시즌별로 다른 스타일의 포토카드 제작 가능</li>
-            <li>• 생성된 포토카드는 컬렉션에서 확인 가능</li>
-            <li>• 팬 하트는 다른 사람 포카에 하트를 받으면 획득</li>
-          </ul>
-        </div>
-      </Card>
+          {/* Season and Options Selection */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <Card className="p-4 glass-dark border-white/10">
+              <div className="space-y-3">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Star className="w-4 h-4" />
+                  시즌 선택
+                </h4>
+                <Select value={selectedSeason} onValueChange={setSelectedSeason}>
+                  <SelectTrigger className="bg-card/50">
+                    <SelectValue placeholder="시즌을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border z-50">
+                    {seasons.map((season) => (
+                      <SelectItem key={season} value={season}>
+                        {season}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </Card>
+
+            <Card className="p-4 glass-dark border-white/10">
+              <div className="space-y-3">
+                <h4 className="font-semibold flex items-center gap-2">
+                  ☀️ 날씨
+                </h4>
+                <Select value={selectedWeather} onValueChange={setSelectedWeather}>
+                  <SelectTrigger className="bg-card/50">
+                    <SelectValue placeholder="날씨를 선택하세요 (선택사항)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border z-50">
+                    <SelectItem value="">선택 안함</SelectItem>
+                    {weatherOptions.map((weather) => (
+                      <SelectItem key={weather} value={weather}>
+                        {weather}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </Card>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <Card className="p-4 glass-dark border-white/10">
+              <div className="space-y-3">
+                <h4 className="font-semibold flex items-center gap-2">
+                  😊 기분/분위기
+                </h4>
+                <Select value={selectedMood} onValueChange={setSelectedMood}>
+                  <SelectTrigger className="bg-card/50">
+                    <SelectValue placeholder="기분을 선택하세요 (선택사항)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border z-50">
+                    <SelectItem value="">선택 안함</SelectItem>
+                    {moodOptions.map((mood) => (
+                      <SelectItem key={mood} value={mood}>
+                        {mood}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </Card>
+
+            <Card className="p-4 glass-dark border-white/10">
+              <div className="space-y-3">
+                <h4 className="font-semibold flex items-center gap-2">
+                  🎨 주제
+                </h4>
+                <Select value={selectedTheme} onValueChange={setSelectedTheme}>
+                  <SelectTrigger className="bg-card/50">
+                    <SelectValue placeholder="주제를 선택하세요 (선택사항)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border z-50">
+                    <SelectItem value="">선택 안함</SelectItem>
+                    {themeOptions.map((theme) => (
+                      <SelectItem key={theme} value={theme}>
+                        {theme}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </Card>
+          </div>
+
+          {/* Concept Selection */}
+          <div className="space-y-4">
+            <h4 className="font-semibold flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              컨셉 선택
+            </h4>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {conceptOptions.map((concept) => {
+                const affordable = canAfford(concept);
+                const isSelected = selectedConcept?.id === concept.id;
+                
+                return (
+                  <Card
+                    key={concept.id}
+                    className={`p-4 cursor-pointer transition-all duration-300 ${
+                      isSelected 
+                        ? 'ring-2 ring-primary/50 scale-105' 
+                        : 'hover:scale-102'
+                    } ${
+                      !affordable 
+                        ? 'opacity-50 grayscale' 
+                        : 'glass-dark border-white/10 hover:border-white/20'
+                    }`}
+                    onClick={() => affordable && setSelectedConcept(concept)}
+                  >
+                    <div className="space-y-3">
+                      <div className="text-center space-y-2">
+                        <div className="text-3xl">{concept.icon}</div>
+                        <h5 className="font-bold gradient-text">{concept.name}</h5>
+                        <p className="text-xs text-muted-foreground">{concept.description}</p>
+                      </div>
+                      
+                      <div className="text-center">
+                        <Badge className={`${getRarityColor(concept.rarity)} bg-transparent`}>
+                          {concept.rarity}
+                        </Badge>
+                      </div>
+                      
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span>💰 SUI:</span>
+                          <span className={userCoins >= concept.cost.sui ? 'text-green-400' : 'text-red-400'}>
+                            {concept.cost.sui}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>❤️ Hearts:</span>
+                          <span className={fanHearts >= concept.cost.hearts ? 'text-green-400' : 'text-red-400'}>
+                            {concept.cost.hearts}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Generate Button */}
+          <Card className="p-4 glass-dark border-white/10">
+            <div className="space-y-4">
+              {selectedConcept && (
+                <div className="text-center space-y-2">
+                  <h4 className="font-semibold text-primary">선택된 컨셉</h4>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-2xl">{selectedConcept.icon}</span>
+                    <span className="font-bold">{selectedConcept.name}</span>
+                    <Badge className={`${getRarityColor(selectedConcept.rarity)} bg-transparent`}>
+                      {selectedConcept.rarity}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-center gap-4 text-sm">
+                    <span>💰 {selectedConcept.cost.sui} SUI</span>
+                    <span>❤️ {selectedConcept.cost.hearts} Hearts</span>
+                  </div>
+                </div>
+              )}
+              
+              <Button
+                onClick={handleGeneratePhotocard}
+                disabled={!selectedConcept || isPending || !canAfford(selectedConcept!)}
+                className="w-full"
+                size="lg"
+              >
+                {isPending ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin">⭐</div>
+                    포토카드 생성 중...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Camera className="w-4 h-4" />
+                    포토카드 생성하기
+                  </div>
+                )}
+              </Button>
+            </div>
+          </Card>
+
+          {/* Tips */}
+          <Card className="p-4 glass-dark border-accent/20 bg-accent/5">
+            <div className="space-y-2">
+              <h4 className="font-semibold text-accent flex items-center gap-2">
+                <Heart className="w-4 h-4" />
+                포토카드 생성 가이드
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• 내 아이돌 전용 포토카드를 다양한 컨셉으로 생성</li>
+                <li>• 높은 등급일수록 더 희귀하고 아름다운 포토카드</li>
+                <li>• 시즌별로 다른 스타일의 포토카드 제작 가능</li>
+                <li>• 생성된 포토카드는 컬렉션에서 확인 가능</li>
+                <li>• 팬 하트는 다른 사람 포카에 하트를 받으면 획득</li>
+              </ul>
+            </div>
+          </Card>
         </TabsContent>
 
         <TabsContent value="advanced" className="mt-6">
@@ -452,6 +480,74 @@ export const IdolPhotocardGenerator = ({
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Generated Card Result Modal */}
+      {showResult && generatedCard && (
+        <Card className="p-6 glass-dark border-green-400/30 bg-green-400/5 mt-6">
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-green-400 flex items-center justify-center gap-2">
+                <Sparkles className="w-6 h-6" />
+                포토카드 생성 완료!
+              </h3>
+              <p className="text-muted-foreground mt-2">
+                새로운 포토카드가 성공적으로 생성되었습니다
+              </p>
+            </div>
+
+            {/* Card Preview */}
+            <div className="max-w-sm mx-auto">
+              <div className="relative bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl p-4 border border-white/20">
+                <div className="aspect-[3/4] bg-gradient-primary/20 rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={generatedCard.image}
+                    alt={generatedCard.idolName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-lg gradient-text">{generatedCard.idolName}</h4>
+                    <Badge className={`${getRarityColor(generatedCard.rarity)} bg-transparent`}>
+                      {generatedCard.rarity}
+                    </Badge>
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">{generatedCard.concept}</p>
+                  <p className="text-xs text-muted-foreground">{generatedCard.season}</p>
+                  
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>#{generatedCard.serialNo.toString().padStart(4, '0')}</span>
+                    <span>/{generatedCard.totalSupply.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <Button 
+                onClick={handleContinueCreating}
+                variant="outline" 
+                className="flex-1"
+                size="lg"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                계속 만들기
+              </Button>
+              <Button 
+                onClick={handleGoToCollection}
+                className="flex-1"
+                size="lg"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                포카 보관함으로
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   );
 };
