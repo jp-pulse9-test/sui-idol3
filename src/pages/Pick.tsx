@@ -181,9 +181,16 @@ const Pick = () => {
     const filtered = idols.filter(idol => 
       idol.Gender && idol.Gender.toLowerCase() === gender
     );
+    
+    console.log(`Selected ${gender}, filtered ${filtered.length} idols from total ${idols.length}`);
+    console.log('Filtered idols:', filtered.map(idol => ({ name: idol.name, gender: idol.Gender })));
+    
     setFilteredIdols(filtered);
     
-    console.log(`Selected ${gender}, filtered ${filtered.length} idols`);
+    if (filtered.length === 0) {
+      toast.error(`${gender === 'male' ? '소년' : '소녀'} 아이돌 데이터가 없습니다. 관리자에게 문의해주세요.`);
+      return;
+    }
     setGamePhase('personality-test');
   };
 
@@ -365,9 +372,24 @@ const Pick = () => {
 
   // Tournament battle phase  
   if (gamePhase === 'tournament') {
+    // 반드시 필터링된 아이돌만 사용, 없으면 에러 처리
+    if (filteredIdols.length === 0) {
+      return (
+        <div className="min-h-screen bg-gradient-background flex items-center justify-center">
+          <Card className="p-8 glass-dark border-white/10 text-center">
+            <h2 className="text-xl font-bold text-destructive">선택한 성별의 아이돌이 없습니다</h2>
+            <p className="text-muted-foreground mt-2">다시 성별을 선택해주세요.</p>
+            <Button onClick={handleBackToGender} className="mt-4">
+              성별 선택으로 돌아가기
+            </Button>
+          </Card>
+        </div>
+      );
+    }
+
     return (
       <TournamentBattle
-        idols={filteredIdols.length > 0 ? filteredIdols : idols}
+        idols={filteredIdols}
         onComplete={handleTournamentComplete}
         onBack={handleBackToPersonality}
       />
