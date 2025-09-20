@@ -1,9 +1,21 @@
--- Update profile_image for male idols in idols202 table with storage paths
-UPDATE idols202 
-SET profile_image = 'https://lylblbckiwabbnjasahu.supabase.co/storage/v1/object/public/idols/male' || ((ROW_NUMBER() OVER (ORDER BY id)) % 20 + 1) || '.png'
-WHERE "Gender" = 'Male' AND (profile_image IS NULL OR profile_image = '');
+-- Update profile_image for male idols in idols2002 table with storage paths
+-- First, create a temporary sequence for numbering
+DO $$
+DECLARE
+    rec RECORD;
+    counter INTEGER := 1;
+BEGIN
+    FOR rec IN
+        SELECT id
+        FROM idols2002
+        WHERE "Gender" = 'Male'
+        ORDER BY id
+        LIMIT 101
+    LOOP
+        UPDATE idols2002
+        SET profile_image = 'https://lylblbckiwabbnjasahu.supabase.co/storage/v1/object/public/idols/male_' || LPAD(counter::text, 3, '0') || '.png'
+        WHERE id = rec.id;
 
--- Update profile_image for female idols in idols202 table with storage paths  
-UPDATE idols202 
-SET profile_image = 'https://lylblbckiwabbnjasahu.supabase.co/storage/v1/object/public/idols/female' || ((ROW_NUMBER() OVER (ORDER BY id)) % 20 + 1) || '.png'
-WHERE "Gender" = 'Female' AND (profile_image IS NULL OR profile_image = '');
+        counter := counter + 1;
+    END LOOP;
+END $$;
