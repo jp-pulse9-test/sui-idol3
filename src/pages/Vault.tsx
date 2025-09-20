@@ -27,6 +27,7 @@ import { SuiBalanceCard } from "@/components/SuiBalanceCard";
 import { useTransactionHistory } from "@/services/transactionHistoryService";
 import { useDataSync } from "@/services/dataSyncService";
 import MultiChainTransfer from "@/components/MultiChainTransfer";
+import CrossChainTransferModal from "@/components/CrossChainTransferModal";
 import { ResponsiveGrid, ResponsiveCard, ResponsiveText, ResponsiveButton, ResponsiveContainer } from "@/components/ResponsiveGrid";
 import { FadeIn, SlideIn, ScaleIn, Stagger } from "@/components/Animations";
 import { LoadingGrid, LoadingSpinner, LoadingOverlay } from "@/components/LoadingStates";
@@ -63,7 +64,7 @@ const Vault = () => {
   const { mintPhotoCard } = usePhotoCardMinting();
   const { mintIdolCard } = useIdolCardMinting();
   const { isConnected, walletAddress: currentWalletAddress } = useWallet();
-  const { balance: realSuiBalance, isLoading: isBalanceLoading, error: balanceError, fetchBalance } = useSuiBalance();
+  const { balance: suiBalance, isLoading: isBalanceLoading, error: balanceError, fetchBalance } = useSuiBalance();
   
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
@@ -97,18 +98,24 @@ const Vault = () => {
   // 멀티체인 전송 모달 상태
   const [selectedPhotoCard, setSelectedPhotoCard] = useState<PhotoCard | null>(null);
   const [showMultiChainModal, setShowMultiChainModal] = useState(false);
+  const [showCrossChainModal, setShowCrossChainModal] = useState(false);
+
+  // 크로스 체인 전송 핸들러
+  const handleCrossChainTransfer = () => {
+    setShowCrossChainModal(true);
+  };
 
   // SUI 잔액 표시 함수
   const getDisplaySuiBalance = () => {
     if (isBalanceLoading) return '로딩 중...';
     if (balanceError) return '오류';
-    if (realSuiBalance) return (Number(realSuiBalance) / 1e9).toFixed(2);
+    if (suiBalance) return (Number(suiBalance) / 1e9).toFixed(2);
     return suiCoins.toFixed(2);
   };
 
   // SUI 잔액 숫자 값 (계산용)
   const getSuiBalanceValue = () => {
-    if (realSuiBalance) return Number(realSuiBalance) / 1e9;
+    if (suiBalance) return Number(suiBalance) / 1e9;
     return suiCoins;
   };
 
@@ -797,7 +804,7 @@ const Vault = () => {
               🛒 마켓플레이스
             </TabsTrigger>
             <TabsTrigger value="multichain" className="data-[state=active]:bg-primary/20">
-              🌐 멀티체인
+              🌐 크로스 체인
             </TabsTrigger>
           </TabsList>
 
@@ -996,65 +1003,137 @@ const Vault = () => {
           </TabsContent>
 
           <TabsContent value="multichain" className="mt-8">
-            {photoCards.length > 0 ? (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <h3 className="text-xl font-bold gradient-text mb-4">
-                    멀티체인 전송할 포토카드를 선택하세요
-                  </h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {photoCards.slice(0, 6).map((card) => (
-                    <Card key={card.id} className="p-4 glass-dark border-white/10 hover:border-primary/50 transition-colors cursor-pointer">
-                      <div className="space-y-3">
-                        <div className="w-full h-32 rounded-lg overflow-hidden bg-gradient-primary/20">
-                          <img
-                            src={card.imageUrl}
-                            alt={`${card.idolName} ${card.concept}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <h4 className="font-semibold text-sm">{card.idolName}</h4>
-                          <p className="text-xs text-muted-foreground">{card.concept}</p>
-                          <div className="flex items-center gap-2">
-                            <Badge className={`text-xs ${card.rarity === 'SSR' ? 'bg-yellow-500/20 text-yellow-400' : card.rarity === 'SR' ? 'bg-purple-500/20 text-purple-400' : card.rarity === 'R' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                              {card.rarity}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs">
-                              #{card.serialNo.toString().padStart(4, '0')}
-                            </Badge>
-                          </div>
-                        </div>
-                        <Button
-                          onClick={() => {
-                            // 멀티체인 전송 모달 열기
-                            setSelectedPhotoCard(card);
-                            setShowMultiChainModal(true);
-                          }}
-                          className="w-full btn-modern text-sm"
-                        >
-                          🌐 멀티체인 전송
-                        </Button>
+            <div className="space-y-6">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold gradient-text mb-4">
+                  🌐 크로스 체인 전송
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Wormhole NTT를 사용하여 SUI 토큰을 다른 체인으로 안전하게 전송하세요
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* SUI 토큰 전송 */}
+                <Card className="p-6 glass-dark border-white/10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-lg flex items-center justify-center">
+                        <span className="text-2xl">💰</span>
                       </div>
-                    </Card>
+                      <div>
+                        <h4 className="text-lg font-semibold">SUI 토큰 전송</h4>
+                        <p className="text-sm text-muted-foreground">
+                          SUI를 다른 체인으로 전송
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>현재 잔액:</span>
+                        <span className="font-medium text-yellow-500">
+                          {suiBalance ? (Number(suiBalance) / 1e9).toFixed(4) : '0.0000'} SUI
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>지원 체인:</span>
+                        <span className="font-medium">8개 체인</span>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={handleCrossChainTransfer}
+                      className="w-full btn-modern"
+                      disabled={!suiBalance || Number(suiBalance) === 0}
+                    >
+                      SUI 토큰 전송하기
+                    </Button>
+                  </div>
+                </Card>
+
+                {/* 포토카드 전송 */}
+                <Card className="p-6 glass-dark border-white/10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center">
+                        <span className="text-2xl">🎴</span>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-semibold">포토카드 전송</h4>
+                        <p className="text-sm text-muted-foreground">
+                          NFT 포토카드를 다른 체인으로 전송
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>보유 포토카드:</span>
+                        <span className="font-medium">{photoCards.length}개</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>지원 체인:</span>
+                        <span className="font-medium">8개 체인</span>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        if (photoCards.length > 0) {
+                          setSelectedPhotoCard(photoCards[0]);
+                          setShowMultiChainModal(true);
+                        }
+                      }}
+                      className="w-full btn-modern"
+                      disabled={photoCards.length === 0}
+                    >
+                      {photoCards.length > 0 ? '포토카드 전송하기' : '보유한 포토카드가 없습니다'}
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+
+              {/* 지원되는 체인 목록 */}
+              <Card className="p-6 glass-dark border-white/10">
+                <h4 className="text-lg font-semibold mb-4">지원되는 체인</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { name: 'Sui', icon: '🟢', status: 'Source' },
+                    { name: 'Ethereum', icon: '🔷', status: 'Supported' },
+                    { name: 'BSC', icon: '🟡', status: 'Supported' },
+                    { name: 'Polygon', icon: '🟣', status: 'Supported' },
+                    { name: 'Arbitrum', icon: '🔵', status: 'Supported' },
+                    { name: 'Optimism', icon: '🔴', status: 'Supported' },
+                    { name: 'Base', icon: '🔵', status: 'Supported' },
+                    { name: 'Avalanche', icon: '🔴', status: 'Supported' },
+                  ].map((chain) => (
+                    <div key={chain.name} className="flex items-center gap-2 p-3 bg-card/50 rounded-lg">
+                      <span className="text-lg">{chain.icon}</span>
+                      <div>
+                        <p className="text-sm font-medium">{chain.name}</p>
+                        <p className="text-xs text-muted-foreground">{chain.status}</p>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
-            ) : (
-              <Card className="p-8 glass-dark border-white/10">
-                <div className="text-center space-y-4">
-                  <div className="text-6xl">🌐</div>
-                  <h3 className="text-xl font-bold">멀티체인 전송</h3>
-                  <p className="text-muted-foreground">
-                    포토카드를 다른 체인으로 전송하거나 다른 체인에서 수신하려면 먼저 포토카드를 보유해야 합니다.
-                  </p>
-                  <Button onClick={() => setActiveTab('randombox')} className="btn-modern">
-                    랜덤박스에서 포토카드 획득하기
-                  </Button>
+              </Card>
+
+              {/* 주의사항 */}
+              <Card className="p-6 glass-dark border-yellow-500/20 border">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-yellow-500">⚠️</span>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-yellow-500">중요한 주의사항</h4>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      <li>• 크로스 체인 전송은 되돌릴 수 없습니다</li>
+                      <li>• 수신자 주소를 정확히 확인해주세요</li>
+                      <li>• 전송 완료까지 2-10분 정도 소요될 수 있습니다</li>
+                      <li>• 네트워크 상황에 따라 시간이 더 걸릴 수 있습니다</li>
+                      <li>• 전송 전에 충분한 가스비를 확보해주세요</li>
+                    </ul>
+                  </div>
                 </div>
               </Card>
-            )}
+            </div>
           </TabsContent>
         </Tabs>
         </SlideIn>
@@ -1079,6 +1158,13 @@ const Vault = () => {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* 크로스 체인 전송 모달 */}
+        <CrossChainTransferModal
+          isOpen={showCrossChainModal}
+          onClose={() => setShowCrossChainModal(false)}
+          selectedPhotoCard={selectedPhotoCard}
+        />
 
         {/* Navigation */}
         <FadeIn delay={1100}>

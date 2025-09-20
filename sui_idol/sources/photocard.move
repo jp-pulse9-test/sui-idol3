@@ -48,6 +48,16 @@ module sui_idol::photocard {
         owner: address,
     }
 
+    // 크로스 체인 전송 이벤트
+    struct CrossChainTransferInitiated has copy, drop {
+        token_address: address,
+        amount: u64,
+        target_chain: String,
+        recipient: String,
+        timestamp: u64,
+        sender: address,
+    }
+
     // 포토카드 민팅 함수
     public fun mint_photocard(
         idol_id: u64,
@@ -148,5 +158,25 @@ module sui_idol::photocard {
     // 아이돌 카드 소유자 확인 함수
     public fun get_idol_card_owner(idol_card: &IdolCard): address {
         idol_card.owner
+    }
+
+    // 크로스 체인 전송 함수
+    public fun cross_chain_transfer(
+        token_address: address,
+        amount: u64,
+        target_chain: String,
+        recipient: String,
+        timestamp: u64,
+        ctx: &mut TxContext
+    ) {
+        // 크로스 체인 전송 이벤트 발생
+        event::emit(CrossChainTransferInitiated {
+            token_address,
+            amount,
+            target_chain,
+            recipient,
+            timestamp,
+            sender: tx_context::sender(ctx),
+        });
     }
 }

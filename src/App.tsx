@@ -39,6 +39,7 @@ import My from "./pages/My";
 import SuiBalanceTest from "./pages/SuiBalanceTest";
 import PhotoCardMintingTest from "./pages/PhotoCardMintingTest";
 import IdolCardMintingTest from "./pages/IdolCardMintingTest";
+import CrossChainTest from "./pages/CrossChainTest";
 
 const AdminButton = () => {
   const { user } = useAuth();
@@ -130,6 +131,7 @@ const App = () => {
           <Route path="/sui-balance-test" element={<SuiBalanceTest />} />
           <Route path="/photocard-minting-test" element={<PhotoCardMintingTest />} />
           <Route path="/idolcard-minting-test" element={<IdolCardMintingTest />} />
+          <Route path="/cross-chain-test" element={<CrossChainTest />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
