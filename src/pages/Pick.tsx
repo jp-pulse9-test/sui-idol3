@@ -55,6 +55,17 @@ const Pick = () => {
   const { isConnected, walletAddress } = useWallet();
   const { isAuthenticated } = useAuthGuard('/auth', false);
 
+  // Gender normalization helpers
+  const normalizeGender = (g?: string) => (g ?? '').trim().toLowerCase();
+  const isDBMale = (g?: string) => {
+    const n = normalizeGender(g);
+    return ['boy','male','man','m','남자','소년'].includes(n);
+  };
+  const isDBFemale = (g?: string) => {
+    const n = normalizeGender(g);
+    return ['girl','female','woman','f','여자','소녀'].includes(n);
+  };
+
   // Fetch idols from Supabase
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
     try {
@@ -131,11 +142,11 @@ const Pick = () => {
       let idolData = await fetchIdolsFromDB();
       console.log('Fetched idol data:', idolData?.length || 0, 'idols');
       
-      // 아이돌 데이터가 충분하다면 바로 진행
+      // 아이돌 데이터가 충분하다면 성별 선택부터 진행
       if (idolData.length >= 10) {
-        console.log('Sufficient idol data found, proceeding to personality test');
+        console.log('Sufficient idol data found, proceeding to gender select');
         setIdols(idolData);
-        setGamePhase('personality-test');
+        setGamePhase('gender-select');
         return;
       }
 
@@ -177,13 +188,13 @@ const Pick = () => {
     setSelectedGender(gender);
     setPersonalityData(prev => ({ ...prev, gender }));
     
-    // Filter idols by selected gender
+    // Filter idols by selected gender (robust, handles Boy/Girl/Male/Female etc.)
     const filtered = idols.filter(idol => 
-      idol.Gender && idol.Gender.toLowerCase() === gender
+      gender === 'male' ? isDBMale(idol.Gender) : isDBFemale(idol.Gender)
     );
     
-    console.log(`Selected ${gender}, filtered ${filtered.length} idols from total ${idols.length}`);
-    console.log('Filtered idols:', filtered.map(idol => ({ name: idol.name, gender: idol.Gender })));
+    console.log(`Selected ${gender}. Total idols: ${idols.length}, filtered: ${filtered.length}`);
+    console.log('Gender values present in DB:', [...new Set(idols.map(i => i.Gender))]);
     
     setFilteredIdols(filtered);
     
@@ -191,9 +202,9 @@ const Pick = () => {
       toast.error(`${gender === 'male' ? '소년' : '소녀'} 아이돌 데이터가 없습니다. 관리자에게 문의해주세요.`);
       return;
     }
+    
     setGamePhase('personality-test');
   };
-
   const handlePersonalityComplete = (scores: { extroversion: number; intuition: number; feeling: number; judging: number }) => {
     setPersonalityData(prev => ({
       ...prev,
@@ -280,8 +291,8 @@ const Pick = () => {
   // Gender select phase
   if (gamePhase === 'gender-select') {
     // Get sample idols for preview
-    const maleIdols = idols.filter(idol => idol.Gender === 'Boy').slice(0, 3);
-    const femaleIdols = idols.filter(idol => idol.Gender === 'Girl').slice(0, 3);
+    const maleIdols = idols.filter(idol => isDBMale(idol.Gender)).slice(0, 3);
+    const femaleIdols = idols.filter(idol => isDBFemale(idol.Gender)).slice(0, 3);
 
     return (
       <div className="min-h-screen bg-gradient-background p-4">
