@@ -15,9 +15,10 @@ interface Question {
 interface PersonalityTestProps {
   onComplete: (scores: { extroversion: number; intuition: number; feeling: number; judging: number }) => void;
   onSkip: () => void;
+  onBack?: () => void; // Add optional onBack prop
 }
 
-const PersonalityTest = ({ onComplete, onSkip }: PersonalityTestProps) => {
+const PersonalityTest = ({ onComplete, onSkip, onBack }: PersonalityTestProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState('quick');
@@ -183,15 +184,17 @@ const PersonalityTest = ({ onComplete, onSkip }: PersonalityTestProps) => {
           </TabsContent>
         </Tabs>
 
-        <div className="text-center">
-          <Button
-            onClick={() => window.history.back()}
-            variant="ghost"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            ← 뒤로가기
-          </Button>
-        </div>
+        {onBack && (
+          <div className="text-center">
+            <Button
+              onClick={onBack}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              ← 뒤로가기
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

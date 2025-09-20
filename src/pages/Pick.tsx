@@ -19,9 +19,10 @@ interface IdolPreset {
   description: string;
   profile_image: string;
   persona_prompt: string;
+  Gender?: string; // Add Gender property
 }
 
-type GamePhase = 'loading' | 'personality-test' | 'tournament' | 'result' | 'preview' | 'minting';
+type GamePhase = 'loading' | 'gender-select' | 'personality-test' | 'tournament' | 'result' | 'preview' | 'minting';
 
 interface PersonalityTestData {
   gender: 'male' | 'female' | '';
@@ -36,6 +37,8 @@ interface PersonalityTestData {
 const Pick = () => {
   const [gamePhase, setGamePhase] = useState<GamePhase>('loading');
   const [idols, setIdols] = useState<IdolPreset[]>([]);
+  const [selectedGender, setSelectedGender] = useState<'male' | 'female' | ''>('');
+  const [filteredIdols, setFilteredIdols] = useState<IdolPreset[]>([]);
   const [finalWinner, setFinalWinner] = useState<IdolPreset | null>(null);
   const [personalityData, setPersonalityData] = useState<PersonalityTestData>({
     gender: '',
@@ -156,13 +159,13 @@ const Pick = () => {
       }
       
       if (idolData.length > 0) {
-        console.log('Setting idols and moving to personality test');
+        console.log('Setting idols and moving to gender select');
         setIdols(idolData);
-        setGamePhase('personality-test');
+        setGamePhase('gender-select');
       } else {
         console.log('Still no idol data, continuing with empty data');
         toast.error('아이돌 데이터를 불러올 수 없습니다.');
-        setGamePhase('personality-test'); // Continue with empty data to prevent infinite loading
+        setGamePhase('gender-select'); // Continue to gender select even with no data
       }
     };
 
@@ -170,12 +173,30 @@ const Pick = () => {
     initializeGame();
   }, [navigate]); // isAuthenticated 의존성 제거
 
+  const handleGenderSelect = (gender: 'male' | 'female') => {
+    setSelectedGender(gender);
+    setPersonalityData(prev => ({ ...prev, gender }));
+    
+    // Filter idols by selected gender
+    const filtered = idols.filter(idol => 
+      idol.Gender && idol.Gender.toLowerCase() === gender
+    );
+    setFilteredIdols(filtered);
+    
+    console.log(`Selected ${gender}, filtered ${filtered.length} idols`);
+    setGamePhase('personality-test');
+  };
+
   const handlePersonalityComplete = (scores: { extroversion: number; intuition: number; feeling: number; judging: number }) => {
     setPersonalityData(prev => ({
       ...prev,
       ...scores
     }));
     setGamePhase('tournament');
+  };
+
+  const handleBackToGender = () => {
+    setGamePhase('gender-select');
   };
 
   const handlePersonalitySkip = () => {
@@ -189,10 +210,6 @@ const Pick = () => {
 
   const handleBackToPersonality = () => {
     setGamePhase('personality-test');
-  };
-
-  const handleBackToTournament = () => {
-    setGamePhase('tournament');
   };
 
   const handleConfirmPick = async () => {
@@ -253,12 +270,95 @@ const Pick = () => {
     );
   }
 
+  // Gender select phase
+  if (gamePhase === 'gender-select') {
+    // Get sample idols for preview
+    const maleIdols = idols.filter(idol => idol.Gender?.toLowerCase() === 'male').slice(0, 3);
+    const femaleIdols = idols.filter(idol => idol.Gender?.toLowerCase() === 'female').slice(0, 3);
+
+    return (
+      <div className="min-h-screen bg-gradient-background p-4">
+        <div className="max-w-4xl mx-auto space-y-8 pt-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold gradient-text mb-8">
+              💫 성별 선택
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              어떤 아이돌과 함께하고 싶나요?
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* 소년 선택 */}
+            <Card 
+              className="p-8 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-300 hover:scale-105"
+              onClick={() => handleGenderSelect('male')}
+            >
+              <div className="text-center space-y-6">
+                <div className="text-6xl mb-4">👦</div>
+                <h2 className="text-2xl font-bold gradient-text">소년 아이돌</h2>
+                <p className="text-muted-foreground">매력적인 소년 아이돌들과 함께해요</p>
+                
+                {/* Preview images */}
+                <div className="flex justify-center gap-2 mt-4">
+                  {maleIdols.map((idol, index) => (
+                    <div key={idol.id} className="w-12 h-12 rounded-full overflow-hidden bg-gradient-primary/20">
+                      <img 
+                        src={idol.profile_image} 
+                        alt={idol.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                <Button variant="outline" size="lg" className="w-full mt-4">
+                  소년 선택
+                </Button>
+              </div>
+            </Card>
+
+            {/* 소녀 선택 */}
+            <Card 
+              className="p-8 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-300 hover:scale-105"
+              onClick={() => handleGenderSelect('female')}
+            >
+              <div className="text-center space-y-6">
+                <div className="text-6xl mb-4">👧</div>
+                <h2 className="text-2xl font-bold gradient-text">소녀 아이돌</h2>
+                <p className="text-muted-foreground">사랑스러운 소녀 아이돌들과 함께해요</p>
+                
+                {/* Preview images */}
+                <div className="flex justify-center gap-2 mt-4">
+                  {femaleIdols.map((idol, index) => (
+                    <div key={idol.id} className="w-12 h-12 rounded-full overflow-hidden bg-gradient-primary/20">
+                      <img 
+                        src={idol.profile_image} 
+                        alt={idol.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                <Button variant="outline" size="lg" className="w-full mt-4">
+                  소녀 선택
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Personality test phase
   if (gamePhase === 'personality-test') {
     return (
       <PersonalityTest 
         onComplete={handlePersonalityComplete}
         onSkip={handlePersonalitySkip}
+        onBack={handleBackToGender}
       />
     );
   }
@@ -267,7 +367,7 @@ const Pick = () => {
   if (gamePhase === 'tournament') {
     return (
       <TournamentBattle
-        idols={idols}
+        idols={filteredIdols.length > 0 ? filteredIdols : idols}
         onComplete={handleTournamentComplete}
         onBack={handleBackToPersonality}
       />
@@ -280,7 +380,7 @@ const Pick = () => {
       <IdolPreview
         selectedIdol={finalWinner}
         onConfirm={handleConfirmPick}
-        onBack={handleBackToTournament}
+        onBack={handleBackToPersonality}
         isMinting={isMinting}
       />
     );
