@@ -71,6 +71,7 @@ const Vault = () => {
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
   const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection' | 'generator' | 'marketplace'>('storage');
   const [isMinting, setIsMinting] = useState(false);
+  const [hasAdvancedAccess, setHasAdvancedAccess] = useState(false);
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
@@ -132,6 +133,12 @@ const Vault = () => {
     // 매일 무료 박스 상태 로드
     if (savedWallet) {
       loadDailyFreeStatus(savedWallet);
+    }
+
+    // 고급 접근 권한 로드
+    const savedAdvancedAccess = localStorage.getItem('hasAdvancedAccess');
+    if (savedAdvancedAccess === 'true') {
+      setHasAdvancedAccess(true);
     }
     
     // 일일 하트 리셋 체크 (매일 자정) - 수퍼어드민은 더 많이 지급
@@ -212,6 +219,13 @@ const Vault = () => {
           remainingSlots: claimResult.remainingSlots
         }));
       }
+      // 울트라 박스인 경우 고급 생성 권한 부여
+      if (type === 'paid' && cost === 0.45) {
+        setHasAdvancedAccess(true);
+        localStorage.setItem('hasAdvancedAccess', 'true');
+        toast.success('🎉 고급 포토카드 생성 권한을 획득했습니다!');
+      }
+
       // 랜덤 포카 수량 (1-10개)
       const cardCount = Math.floor(Math.random() * 10) + 1;
       const newPhotoCards: PhotoCard[] = [];
@@ -460,25 +474,26 @@ const Vault = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="generator" className="mt-8">
-            <IdolPhotocardGenerator
-              selectedIdol={selectedIdol}
-              userCoins={suiCoins}
-              fanHearts={fanHearts}
-              onCostDeduction={(suiCost, heartCost) => {
-                setSuiCoins(prev => {
-                  const newValue = prev - suiCost;
-                  localStorage.setItem('suiCoins', newValue.toFixed(2));
-                  return newValue;
-                });
-                setFanHearts(prev => {
-                  const newValue = prev - heartCost;
-                  localStorage.setItem('fanHearts', newValue.toString());
-                  return newValue;
-                });
-              }}
-            />
-          </TabsContent>
+            <TabsContent value="generator" className="mt-8">
+              <IdolPhotocardGenerator
+                selectedIdol={selectedIdol}
+                userCoins={suiCoins}
+                fanHearts={fanHearts}
+                hasAdvancedAccess={hasAdvancedAccess}
+                onCostDeduction={(suiCost, heartCost) => {
+                  setSuiCoins(prev => {
+                    const newValue = prev - suiCost;
+                    localStorage.setItem('suiCoins', newValue.toFixed(2));
+                    return newValue;
+                  });
+                  setFanHearts(prev => {
+                    const newValue = prev - heartCost;
+                    localStorage.setItem('fanHearts', newValue.toString());
+                    return newValue;
+                  });
+                }}
+              />
+            </TabsContent>
 
           <TabsContent value="randombox" className="mt-8">
             <RandomBox

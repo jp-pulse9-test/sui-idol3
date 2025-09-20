@@ -60,7 +60,7 @@ export const RandomBox = ({
       name: '울트라 박스',
       cost: 0.45,
       icon: '💎',
-      description: 'SSR 확률이 대폭 증가한 최고급 박스 (0.45 SUI)',
+      description: '전문가용 포카 생성 권한 획득 (고급 AI 기능 포함)',
       rates: { N: 30, R: 40, SR: 20, SSR: 10 }
     }
   ];
@@ -197,25 +197,6 @@ export const RandomBox = ({
                   )}
                 </div>
 
-                {/* Drop Rates */}
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-center">확률표</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(box.rates).map(([rarity, rate]) => (
-                      <div 
-                        key={rarity}
-                        className="text-center p-2 rounded-lg border"
-                        style={{ 
-                          backgroundColor: getRarityColor(rarity, rate),
-                          borderColor: getRarityColor(rarity, rate * 2)
-                        }}
-                      >
-                        <div className="font-bold text-sm">{rarity}</div>
-                        <div className="text-xs">{rate}%</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
 
                 {/* Action Button */}
                 <Button

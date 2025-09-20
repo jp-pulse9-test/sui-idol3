@@ -3,9 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
+import { AdvancedPhotocardGenerator } from "@/components/AdvancedPhotocardGenerator";
 import { toast } from "sonner";
-import { Camera, Sparkles, Heart, Star } from "lucide-react";
+import { Camera, Sparkles, Heart, Star, Zap } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
@@ -19,6 +21,7 @@ interface IdolPhotocardGeneratorProps {
   selectedIdol: SelectedIdol;
   userCoins: number;
   fanHearts: number;
+  hasAdvancedAccess?: boolean;
   onCostDeduction: (suiCost: number, heartCost: number) => void;
 }
 
@@ -35,6 +38,7 @@ export const IdolPhotocardGenerator = ({
   selectedIdol, 
   userCoins, 
   fanHearts, 
+  hasAdvancedAccess = false,
   onCostDeduction 
 }: IdolPhotocardGeneratorProps) => {
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
@@ -152,6 +156,20 @@ export const IdolPhotocardGenerator = ({
           {selectedIdol.name}의 특별한 순간을 포토카드로 만들어보세요
         </p>
       </div>
+
+      <Tabs defaultValue="basic" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="basic">기본 생성</TabsTrigger>
+          <TabsTrigger value="advanced" disabled={!hasAdvancedAccess}>
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4" />
+              고급 생성
+              {!hasAdvancedAccess && <span className="text-xs">(권한 필요)</span>}
+            </div>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="basic" className="space-y-6 mt-6">
 
       {/* Idol Info */}
       <Card className="p-4 glass-dark border-white/10">
@@ -316,6 +334,32 @@ export const IdolPhotocardGenerator = ({
           </ul>
         </div>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="advanced" className="mt-6">
+          {hasAdvancedAccess ? (
+            <AdvancedPhotocardGenerator
+              selectedIdol={selectedIdol}
+              userCoins={userCoins}
+              fanHearts={fanHearts}
+              onCostDeduction={onCostDeduction}
+            />
+          ) : (
+            <Card className="p-8 glass-dark border-amber-400/30 bg-amber-400/5">
+              <div className="text-center space-y-4">
+                <Zap className="w-16 h-16 mx-auto text-amber-400" />
+                <h3 className="text-xl font-bold text-amber-400">고급 생성 권한 필요</h3>
+                <p className="text-muted-foreground">
+                  울트라 박스를 개봉하여 고급 포토카드 생성 권한을 획득하세요!
+                </p>
+                <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                  Gemini 2.5 Flash AI 고급 생성
+                </Badge>
+              </div>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
