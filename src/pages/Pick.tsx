@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import PersonalityTest from "@/components/PersonalityTest";
 import TournamentBattle from "@/components/TournamentBattle";
 import IdolPreview from "@/components/IdolPreview";
+import SecurityNotice from "@/components/SecurityNotice";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { useWallet } from "@/hooks/useWallet";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
@@ -50,6 +51,7 @@ const Pick = () => {
     selectedAnswers: []
   });
   const [isMinting, setIsMinting] = useState(false);
+  const [showSecurityNotice, setShowSecurityNotice] = useState(false);
   const navigate = useNavigate();
   const { mintIdolCard } = usePhotoCardMinting();
   const { isConnected, walletAddress } = useWallet();
@@ -70,10 +72,26 @@ const Pick = () => {
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
     try {
       console.log('Fetching idols from database...');
-      const { data, error } = await supabase
-        .from('idols')
-        .select('*')
-        .order('id');
+      
+      // 보안 강화: 인증된 사용자는 전체 데이터, 미인증 사용자는 공개 뷰 사용
+      const { data: session } = await supabase.auth.getSession();
+      
+      let query;
+      if (session?.session?.user) {
+        // 인증된 사용자: 전체 데이터 접근
+        query = supabase
+          .from('idols')
+          .select('*')
+          .order('id');
+      } else {
+        // 미인증 사용자: 제한된 공개 데이터만 접근
+        query = supabase
+          .from('idols_public')
+          .select('*')
+          .order('id');
+      }
+      
+      const { data, error } = await query;
       
       if (error) {
         console.error('Error fetching idols:', error);
@@ -142,7 +160,7 @@ const Pick = () => {
       let idolData = await fetchIdolsFromDB();
       console.log('Fetched idol data:', idolData?.length || 0, 'idols');
       
-      // 아이돌 데이터가 충분하다면 성별 선택부터 진행
+      // 아이돌 데이터가 있다면 성별 선택부터 진행 (보안: 기본 정보는 공개)
       if (idolData.length >= 10) {
         console.log('Sufficient idol data found, proceeding to gender select');
         setIdols(idolData);
@@ -150,11 +168,12 @@ const Pick = () => {
         return;
       }
 
-      // 데이터가 부족한 경우만 인증 체크
-      if (!isAuthenticated) {
-        console.log('User not authenticated, redirecting to auth');
-        toast.error('아이돌 데이터에 접근하려면 지갑 연결이 필요합니다.');
-        navigate('/auth');
+      // 데이터가 부족한 경우 인증 후 전체 데이터 접근 시도
+      if (!isAuthenticated && idolData.length < 10) {
+        console.log('Limited data available, authentication recommended for full access');
+        setShowSecurityNotice(true);
+        setIdols(idolData);
+        setGamePhase('gender-select');
         return;
       }
       
@@ -297,6 +316,14 @@ const Pick = () => {
     return (
       <div className="min-h-screen bg-gradient-background p-4">
         <div className="max-w-4xl mx-auto space-y-8 pt-12">
+          {/* 보안 알림 */}
+          {showSecurityNotice && !isAuthenticated && (
+            <SecurityNotice 
+              type="limited-access" 
+              onDismiss={() => setShowSecurityNotice(false)}
+            />
+          )}
+          
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold gradient-text mb-8">
               💫 성별 선택
