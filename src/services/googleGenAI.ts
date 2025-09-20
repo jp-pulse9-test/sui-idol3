@@ -220,13 +220,45 @@ Return only the converted prompt with proper face consistency tags.`;
   }
 
   private async generateActualImage(prompt: string, referenceImage?: string): Promise<string> {
-    // Gemini는 이미지 생성이 아닌 프롬프트 개선만 제공하므로
-    // placeholder 이미지 생성
-    console.log('Enhanced Gemini prompt:', prompt);
+    try {
+      // NanoBanana API를 사용하여 실제 이미지 생성
+      const nanoBananaAPI = (await import('../services/nanoBananaAPI')).nanoBananaAPI;
+      
+      const generateRequest = {
+        prompt,
+        width: 512,
+        height: 768,
+        num_outputs: 1,
+        guidance_scale: 7.5,
+        num_inference_steps: 20,
+        scheduler: "K_EULER",
+        seed: Math.floor(Math.random() * 1000000),
+        // 참조 이미지가 있으면 포함
+        ...(referenceImage && { init_image: referenceImage, prompt_strength: 0.8 })
+      };
 
-    // 임시로 고품질 K-pop 포토카드 스타일 이미지 반환
-    const seed = Math.random().toString(36).substring(7);
-    return `https://picsum.photos/seed/${seed}/512/768`;
+      console.log('🎨 Generating image with NanoBanana API:', { 
+        prompt: prompt.substring(0, 100) + '...', 
+        hasReferenceImage: !!referenceImage 
+      });
+
+      const result = await nanoBananaAPI.generateImage(generateRequest);
+      
+      if (result.success && result.data?.image_url) {
+        console.log('✅ Image generated successfully with NanoBanana');
+        return result.data.image_url;
+      } else {
+        console.error('❌ NanoBanana generation failed:', result.error);
+        // Fallback to placeholder
+        const seed = Math.random().toString(36).substring(7);
+        return `https://picsum.photos/seed/${seed}/512/768`;
+      }
+    } catch (error) {
+      console.error('❌ Error generating image:', error);
+      // Fallback to placeholder
+      const seed = Math.random().toString(36).substring(7);
+      return `https://picsum.photos/seed/${seed}/512/768`;
+    }
   }
 
   private async imageUrlToBase64(imageUrl: string): Promise<string> {
