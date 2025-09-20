@@ -48,7 +48,7 @@ interface PhotoCard {
 
 const Vault = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, loading } = useAuthGuard('/auth', true);
+  const { user, loading } = useAuthGuard('/', true);
   const { mintPhotoCard } = usePhotoCardMinting();
   const { isConnected, walletAddress: currentWalletAddress } = useWallet();
   
@@ -83,30 +83,36 @@ const Vault = () => {
   }, []);
 
   useEffect(() => {
-    const savedWallet = secureStorage.getWalletAddress();
+    // user가 있을 때만 실행 (AuthContext에서 지갑 연결 확인됨)
+    if (!user) return;
+
+    console.log('Vault useEffect - User:', user);
+
     const savedIdol = localStorage.getItem('selectedIdol');
-    
-    if (!savedWallet) {
-      toast.error("지갑을 먼저 연결해주세요!");
-      navigate('/');
-      return;
-    }
-    
+    console.log('Vault useEffect - Saved Idol:', savedIdol);
+
+    setWalletAddress(user.wallet_address);
+
     if (!savedIdol) {
-      toast.error("먼저 아이돌을 선택해주세요!");
-      navigate('/pick');
-      return;
+      console.log('No idol selected - user can still access vault but some features will be limited');
+      setSelectedIdol(null);
+    } else {
+      try {
+        const parsedIdol = JSON.parse(savedIdol);
+        console.log('Parsed Idol:', parsedIdol);
+        setSelectedIdol(parsedIdol);
+      } catch (error) {
+        console.error('Error parsing saved idol:', error);
+        setSelectedIdol(null);
+      }
     }
-  
-    setWalletAddress(savedWallet);
-    setSelectedIdol(JSON.parse(savedIdol));
     
     // 로컬 스토리지에서 포카 불러오기
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     setPhotoCards(savedCards);
     
     // 수이 코인, 팬 하트, 일일 하트 불러오기 (수퍼어드민 특별 지급)
-    const isAdmin = isSuperAdmin(savedWallet);
+    const isAdmin = isSuperAdmin(user.wallet_address);
     
     const savedSuiCoins = localStorage.getItem('suiCoins');
     if (savedSuiCoins) {
@@ -140,9 +146,7 @@ const Vault = () => {
     }
     
     // 매일 무료 박스 상태 로드
-    if (savedWallet) {
-      loadDailyFreeStatus(savedWallet);
-    }
+    loadDailyFreeStatus(user.wallet_address);
 
     // 고급 접근 권한 로드
     const savedAdvancedAccess = localStorage.getItem('hasAdvancedAccess');
@@ -162,7 +166,7 @@ const Vault = () => {
 
     // 수퍼어드민 특권 자동 적용
     autoApplySuperAdminBenefits();
-  }, [navigate]);
+  }, [navigate, user]);
 
   const loadDailyFreeStatus = async (walletAddress: string) => {
     try {
@@ -181,7 +185,7 @@ const Vault = () => {
     );
   }
   
-  if (!isAuthenticated) {
+  if (!user) {
     return null;
   }
 
@@ -332,11 +336,11 @@ const Vault = () => {
             🗃️ VAULT
           </h1>
           <p className="text-xl text-muted-foreground">
-            {selectedIdol.name}와 함께하는 포토카드 수집 여정
+            {selectedIdol ? `${selectedIdol.name}와 함께하는 포토카드 수집 여정` : '포토카드 수집 여정'}
           </p>
           <div className="flex items-center justify-center gap-4">
             <Badge variant="outline" className="px-4 py-2">
-              🔗 {walletAddress.substring(0, 6)}...{walletAddress.substring(38)}
+              🔗 {walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(38)}` : '지갑 연결 중...'}
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
               💰 {suiCoins.toFixed(2)} SUI
@@ -368,28 +372,45 @@ const Vault = () => {
         </div>
 
         {/* 선택된 아이돌 정보 */}
-        <Card className="p-6 glass-dark border-white/10">
-          <div className="flex items-center gap-6">
-            <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-primary/20">
-              <img 
-                src={selectedIdol.image}
-                alt={selectedIdol.name}
-                className="w-full h-full object-cover"
-              />
+        {selectedIdol ? (
+          <Card className="p-6 glass-dark border-white/10">
+            <div className="flex items-center gap-6">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-primary/20">
+                <img
+                  src={selectedIdol.image}
+                  alt={selectedIdol.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold gradient-text">{selectedIdol.name}</h2>
+                <p className="text-muted-foreground">{selectedIdol.personality}</p>
+              </div>
+              <Button
+                onClick={() => navigate('/rise')}
+                variant="outline"
+                className="border-accent text-accent hover:bg-accent/20"
+              >
+                RISE로 이동 →
+              </Button>
             </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold gradient-text">{selectedIdol.name}</h2>
-              <p className="text-muted-foreground">{selectedIdol.personality}</p>
+          </Card>
+        ) : (
+          <Card className="p-6 glass-dark border-amber-400/30 bg-amber-400/5">
+            <div className="text-center space-y-4">
+              <h2 className="text-xl font-bold text-amber-400">아이돌을 선택해주세요</h2>
+              <p className="text-muted-foreground">
+                포토카드 생성과 일부 기능을 사용하려면 먼저 아이돌을 선택해야 합니다.
+              </p>
+              <Button
+                onClick={() => navigate('/pick')}
+                className="bg-amber-400 hover:bg-amber-500 text-black"
+              >
+                아이돌 선택하러 가기
+              </Button>
             </div>
-            <Button
-              onClick={() => navigate('/rise')}
-              variant="outline"
-              className="border-accent text-accent hover:bg-accent/20"
-            >
-              RISE로 이동 →
-            </Button>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         {/* Vault Tabs */}
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'storage' | 'randombox' | 'collection' | 'generator' | 'marketplace')} className="w-full">
@@ -421,7 +442,9 @@ const Vault = () => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
                       <span>수납된 아이돌</span>
-                      <Badge variant="default">{selectedIdol.name}</Badge>
+                      <Badge variant={selectedIdol ? "default" : "outline"}>
+                        {selectedIdol ? selectedIdol.name : '선택 안됨'}
+                      </Badge>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
                       <span>보유 포토카드</span>
@@ -449,59 +472,93 @@ const Vault = () => {
               <Card className="p-6 glass-dark border-white/10">
                 <div className="space-y-6">
                   <h3 className="text-2xl font-bold gradient-text">최애 프로필</h3>
-                  
-                  <div className="text-center space-y-4">
-                    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-primary/20">
-                      <img 
-                        src={selectedIdol.image}
-                        alt={selectedIdol.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-xl font-bold">{selectedIdol.name}</h4>
-                      <p className="text-muted-foreground">{selectedIdol.personality}</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="p-3 bg-card/50 rounded-lg">
-                        <div className="font-bold text-primary">수집률</div>
-                        <div className="text-xl">{photoCards.length * 5}%</div>
+
+                  {selectedIdol ? (
+                    <div className="text-center space-y-4">
+                      <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-primary/20">
+                        <img
+                          src={selectedIdol.image}
+                          alt={selectedIdol.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      <div className="p-3 bg-card/50 rounded-lg">
-                        <div className="font-bold text-accent">희귀도</div>
-                        <div className="text-xl">
-                          {photoCards.filter(card => card.rarity === 'SSR').length > 0 ? 'SSR' : 
-                           photoCards.filter(card => card.rarity === 'SR').length > 0 ? 'SR' : 
-                           photoCards.filter(card => card.rarity === 'R').length > 0 ? 'R' : 'N'}
+                      <div>
+                        <h4 className="text-xl font-bold">{selectedIdol.name}</h4>
+                        <p className="text-muted-foreground">{selectedIdol.personality}</p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="p-3 bg-card/50 rounded-lg">
+                          <div className="font-bold text-primary">수집률</div>
+                          <div className="text-xl">{Math.min(photoCards.length * 5, 100)}%</div>
+                        </div>
+                        <div className="p-3 bg-card/50 rounded-lg">
+                          <div className="font-bold text-accent">희귀도</div>
+                          <div className="text-xl">
+                            {photoCards.filter(card => card.rarity === 'SSR').length > 0 ? 'SSR' :
+                             photoCards.filter(card => card.rarity === 'SR').length > 0 ? 'SR' :
+                             photoCards.filter(card => card.rarity === 'R').length > 0 ? 'R' : 'N'}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="text-center space-y-4">
+                      <div className="w-32 h-32 mx-auto rounded-full bg-gradient-primary/20 flex items-center justify-center">
+                        <span className="text-4xl">🎭</span>
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold text-muted-foreground">아이돌 미선택</h4>
+                        <p className="text-muted-foreground">아이돌을 선택하면 프로필이 표시됩니다</p>
+                      </div>
+
+                      <Button
+                        onClick={() => navigate('/pick')}
+                        variant="outline"
+                        size="sm"
+                      >
+                        아이돌 선택하기
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </Card>
             </div>
           </TabsContent>
 
             <TabsContent value="generator" className="mt-8">
-              <IdolPhotocardGenerator
-                selectedIdol={selectedIdol}
-                userCoins={suiCoins}
-                fanHearts={fanHearts}
-                hasAdvancedAccess={hasAdvancedAccess}
-                onCostDeduction={(suiCost, heartCost) => {
-                  setSuiCoins(prev => {
-                    const newValue = prev - suiCost;
-                    localStorage.setItem('suiCoins', newValue.toFixed(2));
-                    return newValue;
-                  });
-                  setFanHearts(prev => {
-                    const newValue = prev - heartCost;
-                    localStorage.setItem('fanHearts', newValue.toString());
-                    return newValue;
-                  });
-                }}
-              />
+              {selectedIdol ? (
+                <IdolPhotocardGenerator
+                  selectedIdol={selectedIdol}
+                  userCoins={suiCoins}
+                  fanHearts={fanHearts}
+                  hasAdvancedAccess={hasAdvancedAccess}
+                  onCostDeduction={(suiCost, heartCost) => {
+                    setSuiCoins(prev => {
+                      const newValue = prev - suiCost;
+                      localStorage.setItem('suiCoins', newValue.toFixed(2));
+                      return newValue;
+                    });
+                    setFanHearts(prev => {
+                      const newValue = prev - heartCost;
+                      localStorage.setItem('fanHearts', newValue.toString());
+                      return newValue;
+                    });
+                  }}
+                />
+              ) : (
+                <Card className="p-8 glass-dark border-white/10">
+                  <div className="text-center space-y-4">
+                    <h3 className="text-xl font-bold">아이돌 선택 필요</h3>
+                    <p className="text-muted-foreground">
+                      포토카드를 생성하려면 먼저 아이돌을 선택해주세요.
+                    </p>
+                    <Button onClick={() => navigate('/pick')}>
+                      아이돌 선택하러 가기
+                    </Button>
+                  </div>
+                </Card>
+              )}
             </TabsContent>
 
           <TabsContent value="randombox" className="mt-8">
@@ -518,7 +575,7 @@ const Vault = () => {
           <TabsContent value="collection" className="mt-8">
             <PhotoCardGallery
               photocards={photoCards}
-              selectedIdolId={selectedIdol.id.toString()}
+              selectedIdolId={selectedIdol?.id.toString() || ''}
             />
           </TabsContent>
 
