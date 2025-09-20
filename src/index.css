@@ -1,4 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Dancing+Script:wght@400;500;600;700&display=swap');
+
 @tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* 3D 카드 애니메이션을 위한 CSS */
 .perspective-1000 {
@@ -12,12 +16,6 @@
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Dancing+Script:wght@400;500;600;700&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* Electric neon blue design system inspired by neon signs */
 

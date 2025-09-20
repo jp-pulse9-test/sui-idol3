@@ -10,7 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
-import { Settings } from "lucide-react";
+import { ZkLoginButton } from "@/components/ZkLoginButton";
+import { Settings, Shield } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -148,6 +149,11 @@ const Index = () => {
             size="lg" 
             className="shadow-lg"
           />
+          <ZkLoginButton 
+            variant="outline" 
+            size="lg" 
+            className="shadow-lg"
+          />
           {user && (
             <>
               <Button
@@ -256,6 +262,34 @@ const Index = () => {
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
                 buttonText="미리보기"
               />
+            </div>
+
+            {/* zkLogin 테스트 링크 */}
+            <div className="mt-8 text-center space-y-3">
+              <Button
+                onClick={() => navigate('/zklogin-test')}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Shield className="w-4 h-4" />
+                zkLogin 테스트
+              </Button>
+              <Button
+                onClick={() => navigate('/zklogin-test-official')}
+                variant="outline"
+                className="flex items-center gap-2 bg-blue-600/20 border-blue-400 text-blue-400 hover:bg-blue-600/30"
+              >
+                <Shield className="w-4 h-4" />
+                공식 zkLogin 테스트
+              </Button>
+              <Button
+                onClick={() => navigate('/zklogin-test-working')}
+                variant="outline"
+                className="flex items-center gap-2 bg-green-600/20 border-green-400 text-green-400 hover:bg-green-600/30"
+              >
+                <Shield className="w-4 h-4" />
+                실제 작동 zkLogin 테스트
+              </Button>
             </div>
           </div>
         </section>

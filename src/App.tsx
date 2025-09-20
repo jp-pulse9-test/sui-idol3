@@ -4,7 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WalletProviderWrapper } from "@/providers/WalletProvider";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { zkLoginService } from "@/services/zkLoginService";
+import { zkLoginServiceWorking } from "@/services/zkLoginServiceWorking";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,6 +28,9 @@ import PhotoCard from "./pages/PhotoCard";
 import Collection from "./pages/Collection";
 import Gallery from "./pages/Gallery";
 import Growth from "./pages/Growth";
+import ZkLoginTest from "./pages/ZkLoginTest";
+import ZkLoginTestOfficial from "./pages/ZkLoginTestOfficial";
+import ZkLoginTestWorking from "./pages/ZkLoginTestWorking";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import SettingsPage from "./pages/Settings";
@@ -66,14 +71,28 @@ const AdminButton = () => {
   );
 };
 
-const App = () => (
-  <WalletProviderWrapper>
-    <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
+const App = () => {
+  // zkLogin OAuth 콜백 처리
+  useEffect(() => {
+    const handleZkLoginCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('id_token')) {
+        await zkLoginService.handleOAuthCallback();
+        await zkLoginServiceWorking.handleOAuthCallback();
+      }
+    };
+
+    handleZkLoginCallback();
+  }, []);
+
+  return (
+    <WalletProviderWrapper>
+      <TooltipProvider>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           {/* 새로운 3단계 플로우: Pick → Vault → Rise */}
@@ -97,15 +116,19 @@ const App = () => (
           <Route path="/collection" element={<Collection />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/growth" element={<Growth />} />
+          <Route path="/zklogin-test" element={<ZkLoginTest />} />
+          <Route path="/zklogin-test-official" element={<ZkLoginTestOfficial />} />
+          <Route path="/zklogin-test-working" element={<ZkLoginTestWorking />} />
           <Route path="/settings" element={<SettingsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-        <AdminButton />
-      </AuthProvider>
-    </TooltipProvider>
-  </WalletProviderWrapper>
-);
+          </BrowserRouter>
+          <AdminButton />
+        </AuthProvider>
+      </TooltipProvider>
+    </WalletProviderWrapper>
+  );
+};
 
 export default App;
