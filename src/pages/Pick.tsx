@@ -8,11 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import PersonalityTest from "@/components/PersonalityTest";
 import TournamentBattle from "@/components/TournamentBattle";
 import IdolPreview from "@/components/IdolPreview";
-import { usePhotoCardMinting } from "@/services/photocardMintingReal";
-import { useIdolCardMinting } from "@/services/idolCardMinting";
+import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { useWallet } from "@/hooks/useWallet";
-import { useSuiBalance } from "@/services/suiBalanceServiceNew";
-import { SuiBalanceCard } from "@/components/SuiBalanceCard";
 
 interface IdolPreset {
   id: number;
@@ -50,10 +47,8 @@ const Pick = () => {
   });
   const [isMinting, setIsMinting] = useState(false);
   const navigate = useNavigate();
-  const { mintIdolCard: mintPhotoCard } = usePhotoCardMinting();
-  const { mintIdolCard } = useIdolCardMinting();
+  const { mintIdolCard } = usePhotoCardMinting();
   const { isConnected, walletAddress } = useWallet();
-  const { balance: suiBalance, isLoading: isBalanceLoading, error: balanceError } = useSuiBalance();
 
   // Fetch idols from Supabase
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
@@ -160,11 +155,11 @@ const Pick = () => {
     try {
       // 아이돌 카드 민팅
       await mintIdolCard({
-        idolId: finalWinner.id,
+        id: finalWinner.id,
         name: finalWinner.name,
         personality: finalWinner.personality,
-        imageUrl: finalWinner.profile_image,
-        personaPrompt: finalWinner.persona_prompt,
+        image: finalWinner.profile_image,
+        persona_prompt: finalWinner.persona_prompt,
       });
 
       // Save selection to localStorage
@@ -193,24 +188,13 @@ const Pick = () => {
   if (gamePhase === 'loading') {
     return (
       <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-        <div className="space-y-6 max-w-md mx-auto">
-          <Card className="p-8 glass-dark border-white/10 text-center">
-            <div className="space-y-4">
-              <LoadingSpinner />
-              <h2 className="text-xl font-bold gradient-text">아이돌 데이터 로딩 중...</h2>
-              <p className="text-muted-foreground">잠시만 기다려주세요</p>
-            </div>
-          </Card>
-          
-          {/* SUI 잔액 카드 */}
-          {isConnected && (
-            <SuiBalanceCard 
-              compact={false}
-              showRefreshButton={true}
-              showAllTokens={false}
-            />
-          )}
-        </div>
+        <Card className="p-8 glass-dark border-white/10 text-center">
+          <div className="space-y-4">
+            <LoadingSpinner />
+            <h2 className="text-xl font-bold gradient-text">아이돌 데이터 로딩 중...</h2>
+            <p className="text-muted-foreground">잠시만 기다려주세요</p>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -244,9 +228,6 @@ const Pick = () => {
         onConfirm={handleConfirmPick}
         onBack={handleBackToTournament}
         isMinting={isMinting}
-        suiBalance={suiBalance}
-        isBalanceLoading={isBalanceLoading}
-        balanceError={balanceError}
       />
     );
   }

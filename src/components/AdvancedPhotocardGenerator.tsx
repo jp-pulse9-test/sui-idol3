@@ -7,9 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Camera, Upload, ImageIcon, User, Palette, Sparkles, Zap, ArrowRight, RotateCcw, Coins } from "lucide-react";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { Transaction } from "@mysten/sui/transactions";
+import { Camera, Upload, ImageIcon, User, Palette, Sparkles, Zap, ArrowRight, RotateCcw } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
@@ -24,33 +22,28 @@ interface AdvancedPhotocardGeneratorProps {
   userCoins: number;
   fanHearts: number;
   onCostDeduction: (suiCost: number, heartCost: number) => void;
-  onPhotoCardMinted?: (photoCard: any) => void;
 }
 
 export const AdvancedPhotocardGenerator = ({ 
   selectedIdol, 
   userCoins, 
   fanHearts, 
-  onCostDeduction,
-  onPhotoCardMinted
+  onCostDeduction 
 }: AdvancedPhotocardGeneratorProps) => {
   const [personImage, setPersonImage] = useState<File | null>(null);
   const [materialImage, setMaterialImage] = useState<File | null>(null);
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState("photorealistic");
-  const [weather, setWeather] = useState("none");
-  const [mood, setMood] = useState("none");
-  const [theme, setTheme] = useState("none");
+  const [weather, setWeather] = useState("");
+  const [mood, setMood] = useState("");
+  const [theme, setTheme] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isMinting, setIsMinting] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [generatedCard, setGeneratedCard] = useState<any | null>(null);
   const [showResult, setShowResult] = useState(false);
   
   const personFileRef = useRef<HTMLInputElement>(null);
   const materialFileRef = useRef<HTMLInputElement>(null);
-  
-  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
 
   const advancedCost = { sui: 0.3, hearts: 50 };
 
@@ -144,7 +137,7 @@ export const AdvancedPhotocardGenerator = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: `${prompt}${weather !== 'none' ? ` 날씨: ${weather}.` : ''}${mood !== 'none' ? ` 분위기: ${mood}.` : ''}${theme !== 'none' ? ` 주제: ${theme}.` : ''}`,
+          prompt: `${prompt}${weather ? ` 날씨: ${weather}.` : ''}${mood ? ` 분위기: ${mood}.` : ''}${theme ? ` 주제: ${theme}.` : ''}`,
           style,
           personImageBase64,
           materialImageBase64,
@@ -201,74 +194,6 @@ export const AdvancedPhotocardGenerator = ({
     setWeather('');
     setMood('');
     setTheme('');
-  };
-
-  const handleMintPhotoCard = async () => {
-    if (!generatedCard || !generatedImage) {
-      toast.error("생성된 포토카드가 없습니다.");
-      return;
-    }
-
-    setIsMinting(true);
-    
-    try {
-      // Move 트랜잭션 생성
-      const tx = new Transaction();
-      
-      // 포토카드 민팅 함수 호출
-      tx.moveCall({
-        target: `0x0709fa964224865db203e618c89c101c203d7b6b1ff9a6f13dfae4dccda5cba9::photocard::mint_photocard`,
-        arguments: [
-          tx.pure.string(selectedIdol.name), // idol_name
-          tx.pure.string(generatedCard.concept), // concept
-          tx.pure.string(generatedImage), // image_url (base64)
-          tx.pure.string(prompt), // prompt
-          tx.pure.u8(generatedCard.rarity), // rarity
-          tx.pure.u64(generatedCard.serialNo), // serial_no
-          tx.pure.u64(generatedCard.totalSupply), // total_supply
-          tx.pure.string(style), // style
-          tx.pure.string(weather !== 'none' ? weather : ''), // weather
-          tx.pure.string(mood !== 'none' ? mood : ''), // mood
-          tx.pure.string(theme !== 'none' ? theme : ''), // theme
-        ],
-      });
-
-      // 트랜잭션 실행
-      const result = await signAndExecuteTransaction({
-        transaction: tx,
-        options: {
-          showEffects: true,
-          showObjectChanges: true,
-        },
-      });
-
-      if (result.effects?.status?.status === 'success') {
-        toast.success("포토카드가 성공적으로 민팅되었습니다!");
-        
-        // 민팅된 포토카드 정보를 부모 컴포넌트로 전달
-        const mintedPhotoCard = {
-          ...generatedCard,
-          id: Date.now().toString(),
-          image: generatedImage,
-          mintedAt: new Date().toISOString(),
-          transactionHash: result.digest,
-        };
-        
-        onPhotoCardMinted?.(mintedPhotoCard);
-        
-        // 성공 후 컬렉션으로 이동
-        setTimeout(() => {
-          window.location.hash = 'collection';
-        }, 1500);
-      } else {
-        throw new Error("민팅 실패");
-      }
-    } catch (error) {
-      console.error("민팅 오류:", error);
-      toast.error("포토카드 민팅에 실패했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsMinting(false);
-    }
   };
 
   const handleGoToCollection = () => {
@@ -423,7 +348,7 @@ export const AdvancedPhotocardGenerator = ({
                 <SelectValue placeholder="날씨 선택" />
               </SelectTrigger>
               <SelectContent className="bg-background border border-border">
-                <SelectItem value="none">선택 안함</SelectItem>
+                <SelectItem value="">선택 안함</SelectItem>
                 {weatherOptions.map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}
@@ -442,7 +367,7 @@ export const AdvancedPhotocardGenerator = ({
                 <SelectValue placeholder="분위기 선택" />
               </SelectTrigger>
               <SelectContent className="bg-background border border-border">
-                <SelectItem value="none">선택 안함</SelectItem>
+                <SelectItem value="">선택 안함</SelectItem>
                 {moodOptions.map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}
@@ -461,7 +386,7 @@ export const AdvancedPhotocardGenerator = ({
                 <SelectValue placeholder="주제 선택" />
               </SelectTrigger>
               <SelectContent className="bg-background border border-border">
-                <SelectItem value="none">선택 안함</SelectItem>
+                <SelectItem value="">선택 안함</SelectItem>
                 {themeOptions.map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}
@@ -552,13 +477,13 @@ export const AdvancedPhotocardGenerator = ({
                   
                   <p className="text-sm text-muted-foreground">{generatedCard.concept}</p>
                   
-                  {generatedCard.weather && generatedCard.weather !== 'none' && (
+                  {generatedCard.weather && (
                     <p className="text-xs text-blue-400">날씨: {generatedCard.weather}</p>
                   )}
-                  {generatedCard.mood && generatedCard.mood !== 'none' && (
+                  {generatedCard.mood && (
                     <p className="text-xs text-pink-400">분위기: {generatedCard.mood}</p>
                   )}
-                  {generatedCard.theme && generatedCard.theme !== 'none' && (
+                  {generatedCard.theme && (
                     <p className="text-xs text-green-400">주제: {generatedCard.theme}</p>
                   )}
                   
@@ -592,28 +517,17 @@ export const AdvancedPhotocardGenerator = ({
                 variant="outline" 
                 className="flex-1"
                 size="lg"
-                disabled={isMinting}
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 계속 만들기
               </Button>
               <Button 
-                onClick={handleMintPhotoCard}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                onClick={handleGoToCollection}
+                className="flex-1"
                 size="lg"
-                disabled={isMinting}
               >
-                {isMinting ? (
-                  <>
-                    <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    민팅 중...
-                  </>
-                ) : (
-                  <>
-                    <Coins className="w-4 h-4 mr-2" />
-                    블록체인에 민팅
-                  </>
-                )}
+                <ArrowRight className="w-4 h-4 mr-2" />
+                포카 보관함으로
               </Button>
             </div>
           </div>
