@@ -146,6 +146,7 @@ const Pick = () => {
     
     if (!isConnected) {
       toast.error('지갑을 먼저 연결해주세요!');
+      navigate('/auth');
       return;
     }
 

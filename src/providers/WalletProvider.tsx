@@ -32,7 +32,6 @@ export const WalletProviderWrapper: React.FC<WalletProviderWrapperProps> = ({ ch
         <WalletProvider
           autoConnect={true}
           enableUnsafeBurner={true}
-          features={['sui:signAndExecuteTransactionBlock']}
         >
           {children}
         </WalletProvider>

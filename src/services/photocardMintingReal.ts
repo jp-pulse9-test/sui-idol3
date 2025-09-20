@@ -51,10 +51,6 @@ export const usePhotoCardMinting = () => {
         signAndExecute(
           {
             transaction: txb,
-            options: {
-              showEffects: true,
-              showObjectChanges: true,
-            },
           },
           {
             onSuccess: (result) => {
@@ -125,10 +121,6 @@ export const usePhotoCardMinting = () => {
         signAndExecute(
           {
             transaction: txb,
-            options: {
-              showEffects: true,
-              showObjectChanges: true,
-            },
           },
           {
             onSuccess: (result) => {
