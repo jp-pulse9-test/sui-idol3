@@ -80,6 +80,27 @@ export type Database = {
           },
         ]
       }
+      daily_free_claims: {
+        Row: {
+          claim_date: string
+          created_at: string
+          id: string
+          user_wallet: string
+        }
+        Insert: {
+          claim_date?: string
+          created_at?: string
+          id?: string
+          user_wallet: string
+        }
+        Update: {
+          claim_date?: string
+          created_at?: string
+          id?: string
+          user_wallet?: string
+        }
+        Relationships: []
+      }
       debut_badges: {
         Row: {
           badge_id: string | null
@@ -522,9 +543,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_daily_free_box: {
+        Args: { user_wallet_param: string }
+        Returns: Json
+      }
       get_current_user_wallet: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_daily_free_box_status: {
+        Args: { user_wallet_param: string }
+        Returns: Json
       }
     }
     Enums: {

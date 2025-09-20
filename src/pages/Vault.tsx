@@ -15,6 +15,7 @@ import { applySuperAdminBenefits, autoApplySuperAdminBenefits } from "@/utils/su
 import { secureStorage } from "@/utils/secureStorage";
 import { usePhotoCardMinting } from "@/services/photocardMintingSimple";
 import { useWallet } from "@/hooks/useWallet";
+import { dailyFreeBoxService } from "@/services/dailyFreeBoxService";
 
 interface SelectedIdol {
   id: number;
@@ -53,11 +54,16 @@ const Vault = () => {
   const [suiCoins, setSuiCoins] = useState(1.0);
   const [fanHearts, setFanHearts] = useState(0);
   const [dailyHearts, setDailyHearts] = useState(10);
-  const [dailyFreeAttempts, setDailyFreeAttempts] = useState(3);
+  const [dailyFreeStatus, setDailyFreeStatus] = useState({
+    canClaim: false,
+    remainingSlots: 0,
+    totalClaimsToday: 0,
+    userHasClaimedToday: false,
+    maxDailyClaims: 10
+  });
   const [pityCounters, setPityCounters] = useState({
-    basic: 0,
-    premium: 0,
-    special: 0
+    sr: 0,
+    ssr: 0
   });
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
   const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection'>('storage');
@@ -120,8 +126,10 @@ const Vault = () => {
       localStorage.setItem('dailyHearts', SUPER_ADMIN_DAILY_HEARTS.toString());
     }
     
-    const savedAttempts = localStorage.getItem('dailyFreeAttempts');
-    if (savedAttempts) setDailyFreeAttempts(parseInt(savedAttempts));
+    // 매일 무료 박스 상태 로드
+    if (savedWallet) {
+      loadDailyFreeStatus(savedWallet);
+    }
     
     // 일일 하트 리셋 체크 (매일 자정) - 수퍼어드민은 더 많이 지급
     const lastHeartReset = localStorage.getItem('lastHeartReset');
@@ -137,6 +145,15 @@ const Vault = () => {
     autoApplySuperAdminBenefits();
   }, [navigate]);
 
+  const loadDailyFreeStatus = async (walletAddress: string) => {
+    try {
+      const status = await dailyFreeBoxService.getStatus(walletAddress);
+      setDailyFreeStatus(status);
+    } catch (error) {
+      console.error('Error loading daily free status:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -151,8 +168,12 @@ const Vault = () => {
 
   const handleOpenRandomBox = async (type: "free" | "paid") => {
     // 랜덤박스 개봉 로직
-    if (type === 'free' && dailyFreeAttempts <= 0) {
-      toast.error('오늘의 무료 시도 횟수를 모두 사용했습니다.');
+    if (type === 'free' && !dailyFreeStatus.canClaim) {
+      if (dailyFreeStatus.userHasClaimedToday) {
+        toast.error('이미 오늘 무료 박스를 개봉했습니다.');
+      } else {
+        toast.error('오늘의 무료 박스 한정 수량이 소진되었습니다.');
+      }
       return;
     }
     
@@ -170,6 +191,24 @@ const Vault = () => {
     setIsMinting(true);
 
     try {
+      // 무료 박스인 경우 클레임 처리
+      if (type === 'free') {
+        const claimResult = await dailyFreeBoxService.claimFreeBox(walletAddress);
+        if (!claimResult.success) {
+          toast.error(claimResult.error || '무료 박스 클레임에 실패했습니다.');
+          setIsMinting(false);
+          return;
+        }
+        
+        // 상태 업데이트
+        setDailyFreeStatus(prev => ({
+          ...prev,
+          userHasClaimedToday: true,
+          canClaim: false,
+          totalClaimsToday: claimResult.totalClaimsToday,
+          remainingSlots: claimResult.remainingSlots
+        }));
+      }
       // 랜덤 포카 수량 (1-10개)
       const cardCount = Math.floor(Math.random() * 10) + 1;
       const newPhotoCards: PhotoCard[] = [];
@@ -235,13 +274,7 @@ const Vault = () => {
       setPhotoCards(updatedCards);
       localStorage.setItem('photoCards', JSON.stringify(updatedCards));
 
-      if (type === 'free') {
-        setDailyFreeAttempts(prev => {
-          const newValue = prev - 1;
-          localStorage.setItem('dailyFreeAttempts', newValue.toString());
-          return newValue;
-        });
-      } else {
+      if (type !== 'free') {
         setSuiCoins(prev => {
           const newValue = prev - cost;
           localStorage.setItem('suiCoins', newValue.toFixed(2));
@@ -371,8 +404,10 @@ const Vault = () => {
                       <Badge variant="outline">{fanHearts} ❤️</Badge>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
-                      <span>일일 무료 시도</span>
-                      <Badge variant="outline">{dailyFreeAttempts}/3</Badge>
+                      <span>선착순 무료 박스</span>
+                      <Badge variant="outline">
+                        {dailyFreeStatus.canClaim ? '신청가능' : dailyFreeStatus.userHasClaimedToday ? '완료' : '마감'}
+                      </Badge>
                     </div>
                   </div>
                 </div>
@@ -418,12 +453,12 @@ const Vault = () => {
 
           <TabsContent value="randombox" className="mt-8">
             <RandomBox
-              dailyFreeCount={dailyFreeAttempts}
-              maxDailyFree={3}
+              dailyFreeCount={dailyFreeStatus.totalClaimsToday}
+              maxDailyFree={dailyFreeStatus.maxDailyClaims}
               userCoins={suiCoins}
-              pityCounter={{ sr: pityCounters.premium, ssr: pityCounters.special }}
+              pityCounter={pityCounters}
               onOpenBox={handleOpenRandomBox}
-              isOpening={false}
+              isOpening={isMinting}
             />
           </TabsContent>
 

@@ -109,7 +109,10 @@ export const RandomBox = ({
             💰 보유 코인: {userCoins.toLocaleString()}
           </Badge>
           <Badge variant="secondary" className="px-4 py-2">
-            🎁 오늘 무료: {dailyFreeCount}/{maxDailyFree}
+            🎁 선착순 무료: {dailyFreeCount}/{maxDailyFree}
+          </Badge>
+          <Badge variant="outline" className="px-4 py-2">
+            🏃‍♂️ 남은 자리: {maxDailyFree - dailyFreeCount}
           </Badge>
         </div>
       </div>
@@ -293,7 +296,7 @@ export const RandomBox = ({
             랜덤박스 가이드
           </h4>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• 매일 무료 박스 {maxDailyFree}회 제공</li>
+            <li>• 매일 무료 박스 선착순 {maxDailyFree}명 제공</li>
             <li>• 한 번에 1-10장의 포카 획득 가능</li>
             <li>• 10회 안에 SR 이상, 30회 안에 SSR 보장</li>
             <li>• 프리미엄/울트라 박스는 더 높은 레어 확률</li>
