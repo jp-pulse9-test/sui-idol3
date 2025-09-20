@@ -550,6 +550,7 @@ const Vault = () => {
                       return newValue;
                     });
                   }}
+                  onNavigateToCollection={() => setActiveTab('collection')}
                 />
               ) : (
                 <Card className="p-8 glass-dark border-white/10">

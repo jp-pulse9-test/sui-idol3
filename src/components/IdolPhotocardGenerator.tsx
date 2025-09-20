@@ -25,6 +25,7 @@ interface IdolPhotocardGeneratorProps {
   fanHearts: number;
   hasAdvancedAccess?: boolean;
   onCostDeduction: (suiCost: number, heartCost: number) => void;
+  onNavigateToCollection?: () => void;
 }
 
 interface ConceptOption {
@@ -41,7 +42,8 @@ export const IdolPhotocardGenerator = ({
   userCoins,
   fanHearts,
   hasAdvancedAccess = false,
-  onCostDeduction
+  onCostDeduction,
+  onNavigateToCollection
 }: IdolPhotocardGeneratorProps) => {
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
   const [selectedConcept, setSelectedConcept] = useState<ConceptOption | null>(null);
@@ -236,9 +238,13 @@ export const IdolPhotocardGenerator = ({
   };
 
   const handleGoToCollection = () => {
-    // Assuming there's a parent component that handles tab changes
-    // You might need to pass this as a prop or use a navigation method
-    window.location.hash = 'collection';
+    if (onNavigateToCollection) {
+      onNavigateToCollection();
+    } else {
+      // Fallback: try to switch to collection tab
+      // This will work if the parent component uses hash-based tab switching
+      window.location.hash = 'collection';
+    }
   };
 
   const canAfford = (concept: ConceptOption) => {
