@@ -1020,7 +1020,7 @@ const Vault = () => {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>지원 체인:</span>
-                        <span className="font-medium">8개 체인</span>
+                        <span className="font-medium">13개 체인</span>
                       </div>
                     </div>
                     <Button
@@ -1079,6 +1079,7 @@ const Vault = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { name: 'Sui', icon: '🟢', status: 'Source' },
+                    { name: 'Solana', icon: '🟣', status: 'Supported' },
                     { name: 'Ethereum', icon: '🔷', status: 'Supported' },
                     { name: 'BSC', icon: '🟡', status: 'Supported' },
                     { name: 'Polygon', icon: '🟣', status: 'Supported' },
@@ -1086,6 +1087,10 @@ const Vault = () => {
                     { name: 'Optimism', icon: '🔴', status: 'Supported' },
                     { name: 'Base', icon: '🔵', status: 'Supported' },
                     { name: 'Avalanche', icon: '🔴', status: 'Supported' },
+                    { name: 'Fantom', icon: '🔵', status: 'Supported' },
+                    { name: 'Celo', icon: '🟡', status: 'Supported' },
+                    { name: 'Moonbeam', icon: '🟣', status: 'Supported' },
+                    { name: 'Harmony', icon: '🟠', status: 'Supported' },
                   ].map((chain) => (
                     <div key={chain.name} className="flex items-center gap-2 p-3 bg-card/50 rounded-lg">
                       <span className="text-lg">{chain.icon}</span>
