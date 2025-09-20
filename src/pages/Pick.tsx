@@ -55,6 +55,7 @@ const Pick = () => {
   // Fetch idols from Supabase
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
     try {
+      console.log('Fetching idols from database...');
       const { data, error } = await supabase
         .from('idols')
         .select('*')
@@ -65,6 +66,7 @@ const Pick = () => {
         throw error;
       }
       
+      console.log('Successfully fetched', data?.length || 0, 'idols');
       return data || [];
     } catch (error) {
       console.error('Failed to fetch idols from database:', error);
@@ -122,25 +124,33 @@ const Pick = () => {
     const initializeGame = async () => {
       // Check if user is authenticated before fetching idol data
       if (!isAuthenticated) {
+        console.log('User not authenticated, redirecting to auth');
         toast.error('아이돌 데이터에 접근하려면 지갑 연결이 필요합니다.');
         navigate('/auth');
         return;
       }
 
+      console.log('Starting idol data fetch...');
       let idolData = await fetchIdolsFromDB();
+      console.log('Fetched idol data:', idolData?.length || 0, 'idols');
       
       // If no idols exist, generate them
       if (idolData.length === 0) {
+        console.log('No idols found, generating preset idols...');
         const generated = await generatePresetIdols();
         if (generated) {
+          console.log('Generation completed, refetching data...');
           idolData = await fetchIdolsFromDB();
+          console.log('After generation, idol count:', idolData?.length || 0);
         }
       }
       
       if (idolData.length > 0) {
+        console.log('Setting idols and moving to personality test');
         setIdols(idolData);
         setGamePhase('personality-test');
       } else {
+        console.log('Still no idol data, continuing with empty data');
         toast.error('아이돌 데이터를 불러올 수 없습니다.');
         setGamePhase('personality-test'); // Continue with empty data to prevent infinite loading
       }
@@ -148,7 +158,10 @@ const Pick = () => {
 
     // Only run if authentication state is determined
     if (isAuthenticated !== undefined) {
+      console.log('Authentication state determined:', isAuthenticated);
       initializeGame();
+    } else {
+      console.log('Waiting for authentication state...');
     }
   }, [isAuthenticated, navigate]);
 
