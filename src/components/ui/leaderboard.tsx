@@ -3,7 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Star, Crown, Medal, Heart, Users, TrendingUp } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Trophy, Star, Crown, Medal, Heart, Users, TrendingUp, ImageIcon } from "lucide-react";
 
 interface IdolLeaderboardEntry {
   rank: number;
@@ -20,18 +21,40 @@ interface IdolLeaderboardEntry {
   concept: string;
 }
 
+interface PhotoCard {
+  id: string;
+  idolId: string;
+  idolName: string;
+  rarity: 'N' | 'R' | 'SR' | 'SSR';
+  concept: string;
+  season: string;
+  serialNo: number;
+  totalSupply: number;
+  mintedAt: string;
+  owner: string;
+  isPublic: boolean;
+  imageUrl: string;
+  floorPrice?: number;
+  lastSalePrice?: number;
+  heartsReceived?: number;
+}
+
 interface LeaderboardProps {
   currentIdol?: IdolLeaderboardEntry;
   globalLeaderboard: IdolLeaderboardEntry[];
   categoryLeaderboard: IdolLeaderboardEntry[];
   selectedCategory?: string;
+  allPhotocards?: PhotoCard[];
+  onIdolClick?: (idolId: string) => void;
 }
 
 export const Leaderboard = ({ 
   currentIdol, 
   globalLeaderboard, 
   categoryLeaderboard,
-  selectedCategory 
+  selectedCategory,
+  allPhotocards = [],
+  onIdolClick
 }: LeaderboardProps) => {
   const [activeTab, setActiveTab] = useState("global");
 
@@ -48,94 +71,112 @@ export const Leaderboard = ({
     return "bg-muted/20 text-muted-foreground";
   };
 
-  const getRarityColor = (rarity: number) => {
-    if (rarity >= 4) return "text-yellow-400"; // SSR
-    if (rarity >= 3) return "text-purple-400"; // SR
-    if (rarity >= 2) return "text-blue-400"; // R
-    return "text-gray-400"; // N
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'SSR': return 'border-yellow-400 bg-yellow-400/10';
+      case 'SR': return 'border-purple-400 bg-purple-400/10';
+      case 'R': return 'border-blue-400 bg-blue-400/10';
+      case 'N': return 'border-gray-400 bg-gray-400/10';
+      default: return 'border-gray-400 bg-gray-400/10';
+    }
   };
 
-  const renderIdolEntry = (entry: IdolLeaderboardEntry, isCurrentIdol: boolean = false) => (
-    <Card
-      key={entry.idolId}
-      className={`p-4 border transition-all duration-300 ${
-        isCurrentIdol 
-          ? 'glass-dark border-primary/30 bg-primary/5 ring-1 ring-primary/20' 
-          : 'glass-dark border-white/10 hover:border-white/20'
-      }`}
-    >
-      <div className="flex items-center gap-4">
-        {/* Rank */}
-        <div className="flex items-center gap-2">
-          {getRankIcon(entry.rank)}
-          <Badge className={`${getRankBadgeColor(entry.rank)} font-bold px-3 py-1`}>
-            #{entry.rank}
-          </Badge>
-        </div>
+  const handleIdolClick = (idolId: string, idolName: string) => {
+    onIdolClick?.(idolId);
+  };
 
-        {/* Idol Profile & Info */}
-        <div className="flex-1 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-primary/20 border-2 border-primary/30">
-            <img 
-              src={entry.profileImage} 
-              alt={entry.idolName} 
-              className="w-full h-full object-cover" 
-            />
+  const renderIdolEntry = (entry: IdolLeaderboardEntry, isCurrentIdol: boolean = false) => {
+    const idolPhotocards = allPhotocards.filter(card => card.idolId === entry.idolId && card.isPublic);
+    
+    return (
+      <Card
+        key={entry.idolId}
+        className={`p-4 border transition-all duration-300 cursor-pointer ${
+          isCurrentIdol 
+            ? 'glass-dark border-primary/30 bg-primary/5 ring-1 ring-primary/20' 
+            : 'glass-dark border-white/10 hover:border-white/20 hover:scale-[1.02]'
+        }`}
+        onClick={() => handleIdolClick(entry.idolId, entry.idolName)}
+      >
+        <div className="flex items-center gap-4">
+          {/* Rank */}
+          <div className="flex items-center gap-2">
+            {getRankIcon(entry.rank)}
+            <Badge className={`${getRankBadgeColor(entry.rank)} font-bold px-3 py-1`}>
+              #{entry.rank}
+            </Badge>
           </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-foreground text-lg">{entry.idolName}</span>
-              {isCurrentIdol && <Badge variant="secondary" className="text-xs">내 최애</Badge>}
-              <Badge variant="outline" className="text-xs">{entry.category}</Badge>
+
+          {/* Idol Profile & Info */}
+          <div className="flex-1 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-primary/20 border-2 border-primary/30">
+              <img 
+                src={entry.profileImage} 
+                alt={entry.idolName} 
+                className="w-full h-full object-cover" 
+              />
             </div>
-            <div className="text-sm text-muted-foreground">
-              {entry.personality} · {entry.concept}
-            </div>
-            <div className="flex items-center gap-3 mt-1 text-sm">
-              <div className="flex items-center gap-1">
-                <Users className="w-3 h-3" />
-                <span className="text-primary font-semibold">{entry.totalFans.toLocaleString()}</span>
-                <span className="text-muted-foreground">팬</span>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-foreground text-lg">{entry.idolName}</span>
+                {isCurrentIdol && <Badge variant="secondary" className="text-xs">내 최애</Badge>}
+                <Badge variant="outline" className="text-xs">{entry.category}</Badge>
+                {idolPhotocards.length > 0 && (
+                  <Badge variant="outline" className="text-xs flex items-center gap-1">
+                    <ImageIcon className="w-3 h-3" />
+                    {idolPhotocards.length}
+                  </Badge>
+                )}
               </div>
-              <div className="flex items-center gap-1">
-                <Heart className="w-3 h-3 text-red-400" />
-                <span className="text-red-400 font-semibold">{entry.totalHearts.toLocaleString()}</span>
+              <div className="text-sm text-muted-foreground">
+                {entry.personality} · {entry.concept}
+              </div>
+              <div className="flex items-center gap-3 mt-1 text-sm">
+                <div className="flex items-center gap-1">
+                  <Users className="w-3 h-3" />
+                  <span className="text-primary font-semibold">{entry.totalFans.toLocaleString()}</span>
+                  <span className="text-muted-foreground">팬</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Heart className="w-3 h-3 text-red-400" />
+                  <span className="text-red-400 font-semibold">{entry.totalHearts.toLocaleString()}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Stats */}
-        <div className="hidden md:flex items-center gap-4 text-sm">
-          <div className="text-center">
-            <div className="font-semibold text-foreground">{entry.totalPhotocards.toLocaleString()}</div>
-            <div className="text-muted-foreground text-xs">포토카드</div>
-          </div>
-          <div className="text-center">
-            <div className={`font-semibold ${getRarityColor(entry.averageRarity)}`}>
-              {entry.averageRarity.toFixed(1)}
+          {/* Stats */}
+          <div className="hidden md:flex items-center gap-4 text-sm">
+            <div className="text-center">
+              <div className="font-semibold text-foreground">{entry.totalPhotocards.toLocaleString()}</div>
+              <div className="text-muted-foreground text-xs">포토카드</div>
             </div>
-            <div className="text-muted-foreground text-xs">평균희귀도</div>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center gap-1">
-              <TrendingUp className="w-3 h-3 text-green-400" />
-              <span className="font-semibold text-green-400">+{entry.weeklyGrowth}%</span>
+            <div className="text-center">
+              <div className={`font-semibold ${entry.averageRarity >= 4 ? 'text-yellow-400' : entry.averageRarity >= 3 ? 'text-purple-400' : entry.averageRarity >= 2 ? 'text-blue-400' : 'text-gray-400'}`}>
+                {entry.averageRarity.toFixed(1)}
+              </div>
+              <div className="text-muted-foreground text-xs">평균희귀도</div>
             </div>
-            <div className="text-muted-foreground text-xs">주간성장</div>
+            <div className="text-center">
+              <div className="flex items-center gap-1">
+                <TrendingUp className="w-3 h-3 text-green-400" />
+                <span className="font-semibold text-green-400">+{entry.weeklyGrowth}%</span>
+              </div>
+              <div className="text-muted-foreground text-xs">주간성장</div>
+            </div>
           </div>
-        </div>
 
-        {/* Performance Indicator */}
-        <div className="text-right">
-          <div className="text-sm font-semibold text-foreground">
-            {(entry.totalFans * 0.6 + entry.totalHearts * 0.3 + entry.totalPhotocards * 0.1).toLocaleString()}
+          {/* Performance Indicator */}
+          <div className="text-right">
+            <div className="text-sm font-semibold text-foreground">
+              {(entry.totalFans * 0.6 + entry.totalHearts * 0.3 + entry.totalPhotocards * 0.1).toLocaleString()}
+            </div>
+            <div className="text-xs text-muted-foreground">인기점수</div>
           </div>
-          <div className="text-xs text-muted-foreground">인기점수</div>
         </div>
-      </div>
-    </Card>
-  );
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -145,7 +186,7 @@ export const Leaderboard = ({
           아이돌 리더보드
         </h2>
         <p className="text-muted-foreground">
-          팬 수와 하트 수를 기준으로 한 아이돌 인기 랭킹 · 실시간 업데이트
+          팬 수와 하트 수를 기준으로 한 아이돌 인기 랭킹 · 클릭하면 포토카드 확인 가능
         </p>
       </div>
 
@@ -190,9 +231,55 @@ export const Leaderboard = ({
 
         <TabsContent value="global" className="space-y-3 mt-6">
           <div className="space-y-3">
-            {globalLeaderboard.slice(0, 50).map((entry) => 
-              renderIdolEntry(entry, currentIdol?.idolId === entry.idolId)
-            )}
+            {globalLeaderboard.slice(0, 50).map((entry) => {
+              const idolPhotocards = allPhotocards.filter(card => card.idolId === entry.idolId && card.isPublic);
+              return (
+                <Dialog key={entry.idolId}>
+                  <DialogTrigger asChild>
+                    {renderIdolEntry(entry, currentIdol?.idolId === entry.idolId)}
+                  </DialogTrigger>
+                  {idolPhotocards.length > 0 && (
+                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <ImageIcon className="w-5 h-5" />
+                          {entry.idolName}의 포토카드 ({idolPhotocards.length}장)
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                        {idolPhotocards.map((card) => (
+                          <Card key={card.id} className={`p-3 ${getRarityColor(card.rarity)}`}>
+                            <div className="space-y-2">
+                              <div className="aspect-[3/4] bg-gradient-primary/20 rounded-lg overflow-hidden">
+                                <img 
+                                  src={card.imageUrl} 
+                                  alt={`${card.idolName} ${card.concept}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="text-sm">
+                                <div className="font-semibold">{card.concept}</div>
+                                <div className="text-xs text-muted-foreground">{card.season}</div>
+                                <div className="flex items-center justify-between mt-1">
+                                  <Badge variant="outline" className="text-xs">{card.rarity}</Badge>
+                                  <div className="text-xs text-muted-foreground">#{card.serialNo}</div>
+                                </div>
+                                {card.heartsReceived && card.heartsReceived > 0 && (
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <Heart className="w-3 h-3 text-red-400" />
+                                    <span className="text-xs text-red-400">{card.heartsReceived}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  )}
+                </Dialog>
+              );
+            })}
           </div>
         </TabsContent>
 
@@ -205,9 +292,55 @@ export const Leaderboard = ({
                   카테고리의 아이돌 랭킹입니다
                 </p>
               </div>
-              {categoryLeaderboard.slice(0, 50).map((entry) => 
-                renderIdolEntry(entry, currentIdol?.idolId === entry.idolId)
-              )}
+              {categoryLeaderboard.slice(0, 50).map((entry) => {
+                const idolPhotocards = allPhotocards.filter(card => card.idolId === entry.idolId && card.isPublic);
+                return (
+                  <Dialog key={entry.idolId}>
+                    <DialogTrigger asChild>
+                      {renderIdolEntry(entry, currentIdol?.idolId === entry.idolId)}
+                    </DialogTrigger>
+                    {idolPhotocards.length > 0 && (
+                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2">
+                            <ImageIcon className="w-5 h-5" />
+                            {entry.idolName}의 포토카드 ({idolPhotocards.length}장)
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                          {idolPhotocards.map((card) => (
+                            <Card key={card.id} className={`p-3 ${getRarityColor(card.rarity)}`}>
+                              <div className="space-y-2">
+                                <div className="aspect-[3/4] bg-gradient-primary/20 rounded-lg overflow-hidden">
+                                  <img 
+                                    src={card.imageUrl} 
+                                    alt={`${card.idolName} ${card.concept}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                                <div className="text-sm">
+                                  <div className="font-semibold">{card.concept}</div>
+                                  <div className="text-xs text-muted-foreground">{card.season}</div>
+                                  <div className="flex items-center justify-between mt-1">
+                                    <Badge variant="outline" className="text-xs">{card.rarity}</Badge>
+                                    <div className="text-xs text-muted-foreground">#{card.serialNo}</div>
+                                  </div>
+                                  {card.heartsReceived && card.heartsReceived > 0 && (
+                                    <div className="flex items-center gap-1 mt-1">
+                                      <Heart className="w-3 h-3 text-red-400" />
+                                      <span className="text-xs text-red-400">{card.heartsReceived}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                      </DialogContent>
+                    )}
+                  </Dialog>
+                );
+              })}
             </div>
           ) : (
             <div className="text-center p-8 bg-card/30 rounded-lg">
