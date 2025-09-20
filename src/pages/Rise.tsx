@@ -211,7 +211,7 @@ const Rise = () => {
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl md:text-6xl font-bold gradient-text flex items-center justify-center gap-3">
             <TrendingUp className="w-12 h-12" />
-            📈 RISE - 아이돌 리더보드 & 갤러리 & 마켓플레이스
+            📈 RISE
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             아이돌 인기 순위를 확인하고, 포토카드를 전시하며, 자유롭게 거래하는 공간입니다.
