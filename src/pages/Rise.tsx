@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Leaderboard } from "@/components/ui/leaderboard";
 import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
+import { PublicGallery } from "@/components/ui/public-gallery";
 import { Marketplace } from "@/components/ui/marketplace";
 import { secureStorage } from "@/utils/secureStorage";
 import { TrendingUp, ArrowLeft, Home } from "lucide-react";
@@ -57,6 +58,7 @@ const Rise = () => {
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
+  const [selectedGalleryIdol, setSelectedGalleryIdol] = useState<string>("");
   const [activeTab, setActiveTab] = useState<'leaderboard' | 'gallery' | 'marketplace'>('leaderboard');
 
   // Mock 아이돌 리더보드 데이터 - 실제 구현에서는 API로 대체
@@ -152,9 +154,46 @@ const Rise = () => {
     setWalletAddress(savedWallet);
     setSelectedIdol(JSON.parse(savedIdol));
     
-    // 로컬 스토리지에서 포카 불러오기
+    // 로컬 스토리지에서 모든 포카 불러오기 (공개 갤러리용)
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
-    setPhotoCards(savedCards);
+    
+    // Mock 데이터 추가 (실제로는 서버에서 모든 유저의 공개 포카를 가져옴)
+    const mockPublicCards: PhotoCard[] = [
+      ...savedCards,
+      // 다른 유저들의 mock 데이터
+      {
+        id: 'mock-1',
+        idolId: '1',
+        idolName: '지우',
+        rarity: 'SSR' as const,
+        concept: 'Summer Paradise',
+        season: 'Season 1',
+        serialNo: 1001,
+        totalSupply: 500,
+        mintedAt: new Date(Date.now() - 86400000).toISOString(),
+        owner: '0x1234567890abcdef1234567890abcdef12345678',
+        isPublic: true,
+        imageUrl: '/api/placeholder/300/400',
+        heartsReceived: 124
+      },
+      {
+        id: 'mock-2',
+        idolId: '2',
+        idolName: '하늘',
+        rarity: 'SR' as const,
+        concept: 'Winter Dream',
+        season: 'Season 1',
+        serialNo: 2001,
+        totalSupply: 1000,
+        mintedAt: new Date(Date.now() - 172800000).toISOString(),
+        owner: '0xabcdef1234567890abcdef1234567890abcdef12',
+        isPublic: true,
+        imageUrl: '/api/placeholder/300/400',
+        heartsReceived: 89
+      }
+    ];
+    
+    setPhotoCards(mockPublicCards);
   }, [navigate]);
 
   const currentIdolData = mockIdolLeaderboardData.find(entry => entry.idolId === selectedIdol?.id.toString());
@@ -225,7 +264,7 @@ const Rise = () => {
               🏆 아이돌 리더보드
             </TabsTrigger>
             <TabsTrigger value="gallery" className="data-[state=active]:bg-primary/20">
-              🖼️ 포토카드 갤러리
+              🖼️ 공개 갤러리
             </TabsTrigger>
             <TabsTrigger value="marketplace" className="data-[state=active]:bg-primary/20">
               🛒 마켓플레이스
@@ -242,9 +281,11 @@ const Rise = () => {
           </TabsContent>
 
           <TabsContent value="gallery" className="mt-8">
-            <PhotoCardGallery
-              photocards={photoCards}
-              selectedIdolId={selectedIdol.id.toString()}
+            <PublicGallery
+              allPhotocards={photoCards}
+              selectedIdolId={selectedGalleryIdol}
+              onIdolSelect={setSelectedGalleryIdol}
+              viewMode="grid"
             />
           </TabsContent>
 
