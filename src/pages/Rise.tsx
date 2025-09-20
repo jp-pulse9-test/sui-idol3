@@ -226,28 +226,36 @@ const Rise = () => {
           </div>
         </div>
 
-        {/* 아이돌 & 시즌 정보 */}
+        {/* 내 아이돌 현황 */}
         <Card className="p-6 glass-dark border-white/10">
-          <div className="flex items-center justify-between">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-foreground">내 최애 아이돌</h3>
+              <Badge variant="outline" className="text-accent border-accent/30">
+                🏆 시즌 1 참여 중
+              </Badge>
+            </div>
+            
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-primary/20">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-primary/20 ring-2 ring-primary/20">
                 <img 
                   src={selectedIdol.image}
                   alt={selectedIdol.name}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div>
+              <div className="flex-1">
                 <h2 className="text-2xl font-bold gradient-text">{selectedIdol.name}</h2>
                 <p className="text-muted-foreground">{selectedIdol.personality}</p>
+                <p className="text-sm text-accent mt-1">
+                  현재 {currentIdolData?.rank || 'Unranked'}위 • {currentIdolData?.totalFans.toLocaleString() || '0'}명의 팬
+                </p>
               </div>
             </div>
-            <div className="text-right">
-              <Badge variant="outline" className="text-accent border-accent/30">
-                🏆 시즌 1 진행 중
-              </Badge>
-              <p className="text-sm text-muted-foreground mt-2">
-                매월 아이돌 어워드 시상식
+            
+            <div className="bg-muted/20 rounded-lg p-3">
+              <p className="text-sm text-muted-foreground text-center">
+                💫 매월 말 아이돌 어워드에서 상위 아이돌에게 특별 리워드 지급
               </p>
             </div>
           </div>
