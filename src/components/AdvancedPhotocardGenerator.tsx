@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { usePhotocardStorage } from "@/hooks/usePhotocardStorage";
+import { useWallet } from "@/hooks/useWallet";
 import { toast } from "sonner";
-import { Camera, Upload, ImageIcon, User, Palette, Sparkles, Zap, ArrowRight, RotateCcw, ArrowRightLeft } from "lucide-react";
+import { Camera, Upload, ImageIcon, User, Palette, Sparkles, Zap, ArrowRight, RotateCcw, ArrowRightLeft, Database, Loader2 } from "lucide-react";
 
 interface SelectedIdol {
   id: number;
@@ -30,6 +32,8 @@ export const AdvancedPhotocardGenerator = ({
   fanHearts, 
   onCostDeduction 
 }: AdvancedPhotocardGeneratorProps) => {
+  const { storePhotocard, isLoading: isStoring, error: storageError } = usePhotocardStorage();
+  const { currentAccount } = useWallet();
   const [personImage, setPersonImage] = useState<File | null>(null);
   const [materialImage, setMaterialImage] = useState<File | null>(null);
   const [prompt, setPrompt] = useState("");
@@ -42,6 +46,7 @@ export const AdvancedPhotocardGenerator = ({
   const [generatedCard, setGeneratedCard] = useState<any | null>(null);
   const [isCrossChainModalOpen, setIsCrossChainModalOpen] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [isStoringToWalrus, setIsStoringToWalrus] = useState(false);
   
   const personFileRef = useRef<HTMLInputElement>(null);
   const materialFileRef = useRef<HTMLInputElement>(null);
@@ -199,6 +204,58 @@ export const AdvancedPhotocardGenerator = ({
 
   const handleGoToCollection = () => {
     window.location.hash = 'collection';
+  };
+
+  const handleStoreToWalrus = async () => {
+    if (!currentAccount) {
+      toast.error('지갑을 연결해주세요');
+      return;
+    }
+
+    if (!generatedCard || !generatedImage) {
+      toast.error('저장할 포토카드가 없습니다');
+      return;
+    }
+
+    setIsStoringToWalrus(true);
+
+    try {
+      // 포토카드 메타데이터 생성
+      const metadata = {
+        id: `advanced_photocard_${selectedIdol.id}_${Date.now()}`,
+        idolId: selectedIdol.id,
+        idolName: selectedIdol.name,
+        rarity: 'SSR' as const,
+        concept: `고급 AI 생성 (${style})`,
+        season: 'Advanced',
+        serialNo: generatedCard.serialNo,
+        totalSupply: generatedCard.totalSupply,
+        mintedAt: new Date().toISOString(),
+        owner: currentAccount.address,
+        imageUrl: generatedImage,
+        personaPrompt: selectedIdol.persona_prompt || selectedIdol.personality,
+        prompt: generatedCard.prompt,
+        weather: weather || undefined,
+        mood: mood || undefined,
+        theme: theme || undefined,
+        style: style,
+        isAdvanced: true
+      };
+
+      // Walrus에 저장
+      const result = await storePhotocard(metadata, generatedImage, {
+        epochs: 15, // 고급 포토카드는 더 오래 보관
+        deletable: false, // 포토카드는 삭제 불가
+        account: currentAccount
+      });
+
+      toast.success(`🎉 고급 포토카드가 Walrus에 저장되었습니다! Blob ID: ${result.blobId.slice(0, 8)}...`);
+    } catch (error) {
+      console.error('Walrus 저장 실패:', error);
+      toast.error(`Walrus 저장에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+    } finally {
+      setIsStoringToWalrus(false);
+    }
   };
 
   const canAfford = () => {
@@ -512,32 +569,61 @@ export const AdvancedPhotocardGenerator = ({
             </Card>
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
+            <div className="space-y-3">
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleContinueCreating}
+                  variant="outline" 
+                  className="flex-1"
+                  size="lg"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  계속 만들기
+                </Button>
+                <Button 
+                  onClick={() => setIsCrossChainModalOpen(true)}
+                  variant="outline"
+                  className="px-4"
+                  size="lg"
+                >
+                  <ArrowRightLeft className="w-4 h-4" />
+                </Button>
+                <Button 
+                  onClick={handleGoToCollection}
+                  className="flex-1"
+                  size="lg"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  포카 보관함으로
+                </Button>
+              </div>
+              
+              {/* Walrus 저장 버튼 */}
               <Button 
-                onClick={handleContinueCreating}
-                variant="outline" 
-                className="flex-1"
+                onClick={handleStoreToWalrus}
+                disabled={!currentAccount || isStoringToWalrus || isStoring}
+                variant="secondary"
+                className="w-full"
                 size="lg"
               >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                계속 만들기
+                {isStoringToWalrus || isStoring ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Walrus에 저장 중...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Database className="w-4 h-4" />
+                    Walrus 분산 스토리지에 저장
+                  </div>
+                )}
               </Button>
-              <Button 
-                onClick={() => setIsCrossChainModalOpen(true)}
-                variant="outline"
-                className="px-4"
-                size="lg"
-              >
-                <ArrowRightLeft className="w-4 h-4" />
-              </Button>
-              <Button 
-                onClick={handleGoToCollection}
-                className="flex-1"
-                size="lg"
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                포카 보관함으로
-              </Button>
+              
+              {storageError && (
+                <div className="text-sm text-red-400 text-center">
+                  저장 오류: {storageError}
+                </div>
+              )}
             </div>
           </div>
         </Card>

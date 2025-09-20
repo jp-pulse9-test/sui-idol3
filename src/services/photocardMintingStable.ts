@@ -1,11 +1,11 @@
 import { Transaction } from '@mysten/sui/transactions';
-import { useSignAndExecuteTransaction, useCurrentAccount } from '@mysten/dapp-kit';
+import { useSignAndExecuteTransaction, useCurrentAccount, useSuiClient } from '@mysten/dapp-kit';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-// 포토카드 민팅을 위한 Move 패키지 정보
-const PHOTOCARD_PACKAGE_ID = '0x39d1d59ddc953d4ff0c0f80f868d00bb1718e1d1807db6a3e5745fd4f03f79fe';
+// 포토카드 민팅을 위한 Move 패키지 정보 (배포된 스마트 컨트랙트)
+const PHOTOCARD_PACKAGE_ID = '0xa38012017587cf00e5216360b2ea845151c3f59abbf4029bad02853ca868506a';
 const PHOTOCARD_MODULE = 'photocard';
 
 export interface PhotoCardMintingData {
@@ -24,6 +24,7 @@ export const usePhotoCardMinting = () => {
   const { mutate: signAndExecute, isPending } = useSignAndExecuteTransaction();
   const currentAccount = useCurrentAccount();
   const { user } = useAuth();
+  const client = useSuiClient();
 
   const mintPhotoCard = async (mintingData: PhotoCardMintingData) => {
     if (!currentAccount || !user) {
@@ -50,8 +51,8 @@ export const usePhotoCardMinting = () => {
         ],
       });
 
-      // 가스비 설정 (0.01 SUI)
-      txb.setGasBudget(10000000); // 0.01 SUI = 10,000,000 MIST
+      // 가스비 설정 (0.1 SUI)
+      txb.setGasBudget(100000000); // 0.1 SUI = 100,000,000 MIST
 
       // 트랜잭션 실행
       return new Promise((resolve, reject) => {
@@ -151,8 +152,8 @@ export const usePhotoCardMinting = () => {
         ],
       });
 
-      // 가스비 설정 (0.01 SUI)
-      txb.setGasBudget(10000000); // 0.01 SUI = 10,000,000 MIST
+      // 가스비 설정 (0.1 SUI)
+      txb.setGasBudget(100000000); // 0.1 SUI = 100,000,000 MIST
 
       return new Promise((resolve, reject) => {
         signAndExecute(
@@ -224,9 +225,94 @@ export const usePhotoCardMinting = () => {
     }
   };
 
+  // Display 메타데이터 조회 함수
+  const getPhotoCardDisplay = async (objectId: string) => {
+    try {
+      const object = await client.getObject({
+        id: objectId,
+        options: {
+          showDisplay: true,
+          showContent: true,
+        },
+      });
+      return object;
+    } catch (error) {
+      console.error('포토카드 Display 조회 실패:', error);
+      throw error;
+    }
+  };
+
+  const getIdolCardDisplay = async (objectId: string) => {
+    try {
+      const object = await client.getObject({
+        id: objectId,
+        options: {
+          showDisplay: true,
+          showContent: true,
+        },
+      });
+      return object;
+    } catch (error) {
+      console.error('아이돌 카드 Display 조회 실패:', error);
+      throw error;
+    }
+  };
+
+  // 사용자의 모든 포토카드 조회
+  const getUserPhotoCards = async () => {
+    if (!currentAccount) {
+      throw new Error('지갑이 연결되지 않았습니다.');
+    }
+
+    try {
+      const objects = await client.getOwnedObjects({
+        owner: currentAccount.address,
+        filter: {
+          StructType: `${PHOTOCARD_PACKAGE_ID}::${PHOTOCARD_MODULE}::PhotoCard`,
+        },
+        options: {
+          showDisplay: true,
+          showContent: true,
+        },
+      });
+      return objects.data;
+    } catch (error) {
+      console.error('포토카드 조회 실패:', error);
+      throw error;
+    }
+  };
+
+  // 사용자의 모든 아이돌 카드 조회
+  const getUserIdolCards = async () => {
+    if (!currentAccount) {
+      throw new Error('지갑이 연결되지 않았습니다.');
+    }
+
+    try {
+      const objects = await client.getOwnedObjects({
+        owner: currentAccount.address,
+        filter: {
+          StructType: `${PHOTOCARD_PACKAGE_ID}::${PHOTOCARD_MODULE}::IdolCard`,
+        },
+        options: {
+          showDisplay: true,
+          showContent: true,
+        },
+      });
+      return objects.data;
+    } catch (error) {
+      console.error('아이돌 카드 조회 실패:', error);
+      throw error;
+    }
+  };
+
   return {
     mintPhotoCard,
     mintIdolCard,
+    getPhotoCardDisplay,
+    getIdolCardDisplay,
+    getUserPhotoCards,
+    getUserIdolCards,
     isPending,
   };
 };

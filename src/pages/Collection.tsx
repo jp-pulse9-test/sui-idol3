@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Download, Trash2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MessageCircle, Download, Trash2, Database, Star } from "lucide-react";
 import { toast } from "sonner";
 import ChatModal from "@/components/ChatModal";
+import { SmartContractCollection } from "@/components/SmartContractCollection";
 
 
 interface SavedCard {
@@ -89,6 +91,21 @@ const Collection = () => {
             </Badge>
           </div>
         </div>
+
+        {/* Tabs for different collection types */}
+        <Tabs defaultValue="local" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="local" className="flex items-center gap-2">
+              <Star className="h-4 w-4" />
+              로컬 컬렉션 ({savedCards.length})
+            </TabsTrigger>
+            <TabsTrigger value="blockchain" className="flex items-center gap-2">
+              <Database className="h-4 w-4" />
+              블록체인 컬렉션
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="local" className="mt-6">
 
         {/* Collection Grid */}
         <div className="space-y-6">
@@ -187,27 +204,33 @@ const Collection = () => {
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="text-center space-y-4">
-          <Button
-            onClick={() => navigate('/gender-select')}
-            variant="default"
-            size="lg"
-            className="min-w-48"
-          >
-            ✨ 새 캐릭터 프로필 만들기
-          </Button>
-          
-          <div>
-            <Button
-              onClick={() => navigate('/')}
-              variant="ghost"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              홈으로 돌아가기
-            </Button>
-          </div>
-        </div>
+            {/* Action Buttons */}
+            <div className="text-center space-y-4">
+              <Button
+                onClick={() => navigate('/gender-select')}
+                variant="default"
+                size="lg"
+                className="min-w-48"
+              >
+                ✨ 새 캐릭터 프로필 만들기
+              </Button>
+              
+              <div>
+                <Button
+                  onClick={() => navigate('/')}
+                  variant="ghost"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  홈으로 돌아가기
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="blockchain" className="mt-6">
+            <SmartContractCollection />
+          </TabsContent>
+        </Tabs>
 
         {/* 채팅 모달 */}
         {selectedCharacter && (

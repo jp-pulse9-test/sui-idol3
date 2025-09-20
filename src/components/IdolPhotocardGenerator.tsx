@@ -8,8 +8,13 @@ import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { AdvancedPhotocardGenerator } from "@/components/AdvancedPhotocardGenerator";
 import { CrossChainMinting } from "@/components/CrossChainMinting";
 import { googleGenAI } from "@/services/googleGenAI";
+import { usePhotocardStorage } from "@/hooks/usePhotocardStorage";
+import { useWallet } from "@/hooks/useWallet";
 import { toast } from "sonner";
-import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft } from "lucide-react";
+import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft, Database, Save } from "lucide-react";
+import { WalrusClient, WalrusFile } from "@mysten/walrus";
+import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 
 interface SelectedIdol {
   id: number;
@@ -47,6 +52,8 @@ export const IdolPhotocardGenerator = ({
   onNavigateToCollection
 }: IdolPhotocardGeneratorProps) => {
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
+  const { storePhotocard, isLoading: isStoring, error: storageError } = usePhotocardStorage();
+  const { currentAccount } = useWallet();
   const [selectedConcept, setSelectedConcept] = useState<ConceptOption | null>(null);
   const [selectedSeason, setSelectedSeason] = useState<string>('Season 1');
   const [selectedWeather, setSelectedWeather] = useState<string>('none');
@@ -57,7 +64,16 @@ export const IdolPhotocardGenerator = ({
   const [showResult, setShowResult] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
-
+  const [isStoringToWalrus, setIsStoringToWalrus] = useState(false);
+  const {mutate: signAndExecute} = useSignAndExecuteTransaction();
+  
+  const suiClient = new SuiClient({
+    url: getFullnodeUrl('testnet'),
+    network: 'testnet',
+  });
+  const walrusClient = new WalrusClient(
+    {network: 'testnet', suiClient}
+  );
 
   const conceptOptions: ConceptOption[] = [
     {
@@ -184,6 +200,7 @@ export const IdolPhotocardGenerator = ({
       const generatedImageUrl = imageResult.data!.image_url;
       setGeneratedImageUrl(generatedImageUrl);
 
+      
       // 민팅 데이터 준비
       const conceptDescription = additionalDetails ? `${selectedConcept.name} (${additionalDetails})` : selectedConcept.name;
 
@@ -246,6 +263,91 @@ export const IdolPhotocardGenerator = ({
       // Fallback: try to switch to collection tab
       // This will work if the parent component uses hash-based tab switching
       window.location.hash = 'collection';
+    }
+  };
+
+  const handleStoreToWalrus = async () => {
+    if (!currentAccount) {
+      toast.error('지갑을 연결해주세요');
+      return;
+    }
+
+    if (!generatedCard || !generatedImageUrl) {
+      toast.error('저장할 포토카드가 없습니다');
+      return;
+    }
+
+    setIsStoringToWalrus(true);
+
+    try {
+      // 포토카드 메타데이터 생성
+      const metadata = {
+        id: `photocard_${selectedIdol.id}_${Date.now()}`,
+        idolId: selectedIdol.id,
+        idolName: selectedIdol.name,
+        rarity: generatedCard.rarity,
+        concept: generatedCard.concept,
+        season: generatedCard.season,
+        serialNo: generatedCard.serialNo,
+        totalSupply: generatedCard.totalSupply,
+        mintedAt: new Date().toISOString(),
+        owner: currentAccount.address,
+        imageUrl: generatedImageUrl,
+        personaPrompt: selectedIdol.persona_prompt || selectedIdol.personality,
+        seed: generatedCard.seed,
+        prompt: generatedCard.prompt,
+        weather: selectedWeather !== 'none' ? selectedWeather : undefined,
+        mood: selectedMood !== 'none' ? selectedMood : undefined,
+        theme: selectedTheme !== 'none' ? selectedTheme : undefined,
+        isAdvanced: false
+      };
+
+      const res = await fetch(generatedImageUrl);
+      const blob = await (await res.blob()).arrayBuffer();
+
+      const flow = walrusClient.writeFilesFlow({
+        files: [
+          WalrusFile.from({
+            contents: new Uint8Array(blob),
+            identifier: "photocard.png"
+          })
+        ]
+      });
+
+      await flow.encode();
+
+      const registerTx = flow.register({
+        epochs: 2,
+        deletable: true,
+        owner: currentAccount.address,
+      });
+
+      console.log("Walrus??????")
+
+      signAndExecute({transaction: registerTx},{onSuccess: () => {
+        toast.success('포토카드가 Walrus에 저장되었습니다!');
+        console.log("Walrus!!!!!!!")
+      }, onError: (e)=>{
+        console.log(e)
+      }});
+
+
+      console.log("Walrus!!!!!!!2222")
+
+
+      // Walrus에 저장
+      const result = await storePhotocard(metadata, generatedImageUrl, {
+        epochs: 10, // 포토카드는 오래 보관
+        deletable: false, // 포토카드는 삭제 불가
+        account: currentAccount
+      });
+
+      toast.success(`🎉 포토카드가 Walrus에 저장되었습니다! Blob ID: ${result.blobId.slice(0, 8)}...`);
+    } catch (error) {
+      console.error('Walrus 저장 실패:', error);
+      toast.error(`Walrus 저장에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+    } finally {
+      setIsStoringToWalrus(false);
     }
   };
 
@@ -682,32 +784,61 @@ export const IdolPhotocardGenerator = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
+            <div className="space-y-3">
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleContinueCreating}
+                  variant="outline" 
+                  className="flex-1"
+                  size="lg"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  계속 만들기
+                </Button>
+                <Button 
+                  onClick={() => setIsCrossChainModalOpen(true)}
+                  variant="outline"
+                  className="px-4"
+                  size="lg"
+                >
+                  <ArrowRightLeft className="w-4 h-4" />
+                </Button>
+                <Button 
+                  onClick={handleGoToCollection}
+                  className="flex-1"
+                  size="lg"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  포카 보관함으로
+                </Button>
+              </div>
+              
+              {/* Walrus 저장 버튼 */}
               <Button 
-                onClick={handleContinueCreating}
-                variant="outline" 
-                className="flex-1"
+                onClick={handleStoreToWalrus}
+                disabled={!currentAccount || isStoringToWalrus || isStoring}
+                variant="secondary"
+                className="w-full"
                 size="lg"
               >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                계속 만들기
+                {isStoringToWalrus || isStoring ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Walrus에 저장 중...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Database className="w-4 h-4" />
+                    Walrus 분산 스토리지에 저장
+                  </div>
+                )}
               </Button>
-              <Button 
-                onClick={() => setIsCrossChainModalOpen(true)}
-                variant="outline"
-                className="px-4"
-                size="lg"
-              >
-                <ArrowRightLeft className="w-4 h-4" />
-              </Button>
-              <Button 
-                onClick={handleGoToCollection}
-                className="flex-1"
-                size="lg"
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                포카 보관함으로
-              </Button>
+              
+              {storageError && (
+                <div className="text-sm text-red-400 text-center">
+                  저장 오류: {storageError}
+                </div>
+              )}
             </div>
           </div>
         </Card>

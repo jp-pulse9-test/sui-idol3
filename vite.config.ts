@@ -15,4 +15,12 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    exclude: ['@mysten/walrus-wasm'],
+  },
+  build: {
+    rollupOptions: {
+      external: ['@mysten/walrus-wasm'],
+    },
+  },
 }));

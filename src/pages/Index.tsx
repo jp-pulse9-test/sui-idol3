@@ -10,10 +10,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
-import { Settings, Camera } from "lucide-react";
+import { Settings, Camera, Database } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
+import { WalrusFileUpload } from "@/components/WalrusFileUpload";
+import { WalrusFileDownload } from "@/components/WalrusFileDownload";
+import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
+import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
 
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
@@ -50,6 +54,8 @@ const Index = () => {
     open: boolean;
     type: 'pick' | 'vault' | 'rise' | null;
   }>({ open: false, type: null });
+  const [showWalrusTools, setShowWalrusTools] = useState(false);
+  const [showPhotocardGallery, setShowPhotocardGallery] = useState(false);
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
@@ -159,6 +165,7 @@ const Index = () => {
               >
                 <Camera className="h-4 w-4" />
               </Button>
+              
               <Button
                 onClick={() => navigate('/settings')}
                 variant="ghost"
@@ -305,6 +312,59 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Walrus Tools Section */}
+        {showWalrusTools && (
+          <section className="py-20">
+            <div className="space-y-12">
+              <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
+                <h2 className="text-4xl font-bold gradient-text">Walrus 스토리지 도구</h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  분산 스토리지에 파일을 업로드하고 다운로드하세요
+                </p>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-8">
+                <WalrusFileUpload 
+                  onUploadComplete={(result) => {
+                    toast.success(`파일이 업로드되었습니다! Blob ID: ${result.blobId.slice(0, 8)}...`);
+                  }}
+                />
+                <WalrusFileDownload 
+                  onDownloadComplete={(file) => {
+                    toast.success('파일이 다운로드되었습니다!');
+                  }}
+                />
+              </div>
+
+              <div className="max-w-4xl mx-auto">
+                <WalrusFlowUpload 
+                  onUploadComplete={(files) => {
+                    toast.success(`${files.length}개의 파일이 업로드되었습니다!`);
+                  }}
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Walrus Photocard Gallery Section */}
+        {showPhotocardGallery && (
+          <section className="py-20">
+            <div className="space-y-12">
+              <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
+                <h2 className="text-4xl font-bold gradient-text">저장된 포토카드 갤러리</h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  Walrus 분산 스토리지에 저장된 포토카드 컬렉션을 확인하세요
+                </p>
+              </div>
+
+              <div className="max-w-7xl mx-auto">
+                <WalrusPhotocardGallery />
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* CTA Section */}
         <section className="py-20">

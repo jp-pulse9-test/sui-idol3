@@ -21,6 +21,7 @@
     "@mysten/wallet-adapter-sui-wallet": "^0.3.0",
     "@mysten/wallet-adapter-unsafe-burner": "^0.10.0",
     "@mysten/wallet-standard": "^0.17.0",
+    "@mysten/walrus": "^0.7.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
