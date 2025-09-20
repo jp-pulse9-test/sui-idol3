@@ -14,25 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_key_usage_logs: {
+        Row: {
+          api_key_id: string
+          id: string
+          ip_address: unknown | null
+          success: boolean
+          usage_type: string
+          used_at: string
+          user_agent: string | null
+          user_wallet: string
+        }
+        Insert: {
+          api_key_id: string
+          id?: string
+          ip_address?: unknown | null
+          success?: boolean
+          usage_type: string
+          used_at?: string
+          user_agent?: string | null
+          user_wallet: string
+        }
+        Update: {
+          api_key_id?: string
+          id?: string
+          ip_address?: unknown | null
+          success?: boolean
+          usage_type?: string
+          used_at?: string
+          user_agent?: string | null
+          user_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_key_usage_logs_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_keys: {
         Row: {
           api_key: string
           created_at: string | null
+          encrypted_key: string | null
+          encryption_version: number | null
           id: string
+          last_used_at: string | null
           updated_at: string | null
           user_wallet: string
         }
         Insert: {
           api_key: string
           created_at?: string | null
+          encrypted_key?: string | null
+          encryption_version?: number | null
           id?: string
+          last_used_at?: string | null
           updated_at?: string | null
           user_wallet: string
         }
         Update: {
           api_key?: string
           created_at?: string | null
+          encrypted_key?: string | null
+          encryption_version?: number | null
           id?: string
+          last_used_at?: string | null
           updated_at?: string | null
           user_wallet?: string
         }
