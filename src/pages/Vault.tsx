@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RandomBox } from "@/components/ui/random-box";
 import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { HeartPurchase } from "@/components/HeartPurchase";
+import { IdolPhotocardGenerator } from "@/components/IdolPhotocardGenerator";
 import { Heart } from "lucide-react";
 import { isSuperAdmin, SUPER_ADMIN_INITIAL_SUI_COINS, SUPER_ADMIN_INITIAL_FAN_HEARTS, SUPER_ADMIN_DAILY_HEARTS } from "@/utils/adminWallets";
 import { applySuperAdminBenefits, autoApplySuperAdminBenefits } from "@/utils/superAdminBenefits";
@@ -67,7 +68,7 @@ const Vault = () => {
     ssr: 0
   });
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
-  const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection'>('storage');
+  const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection' | 'generator'>('storage');
   const [isMinting, setIsMinting] = useState(false);
 
   useEffect(() => {
@@ -367,10 +368,13 @@ const Vault = () => {
         </Card>
 
         {/* Vault Tabs */}
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'storage' | 'randombox' | 'collection')} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'storage' | 'randombox' | 'collection' | 'generator')} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 bg-card/50 backdrop-blur-sm">
             <TabsTrigger value="storage" className="data-[state=active]:bg-primary/20">
               🗃️ 최애 수납
+            </TabsTrigger>
+            <TabsTrigger value="generator" className="data-[state=active]:bg-primary/20">
+              📷 포카 생성
             </TabsTrigger>
             <TabsTrigger value="randombox" className="data-[state=active]:bg-primary/20">
               📦 랜덤박스
@@ -450,6 +454,26 @@ const Vault = () => {
                 </div>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="generator" className="mt-8">
+            <IdolPhotocardGenerator
+              selectedIdol={selectedIdol}
+              userCoins={suiCoins}
+              fanHearts={fanHearts}
+              onCostDeduction={(suiCost, heartCost) => {
+                setSuiCoins(prev => {
+                  const newValue = prev - suiCost;
+                  localStorage.setItem('suiCoins', newValue.toFixed(2));
+                  return newValue;
+                });
+                setFanHearts(prev => {
+                  const newValue = prev - heartCost;
+                  localStorage.setItem('fanHearts', newValue.toString());
+                  return newValue;
+                });
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="randombox" className="mt-8">
