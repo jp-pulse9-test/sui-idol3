@@ -2,18 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { secureStorage } from '@/utils/secureStorage';
 import { useWallet } from '@/hooks/useWallet';
-import { useZkLogin } from '@/services/zkLoginService';
 
 interface AuthContextType {
   user: { id: string; wallet_address: string } | null;
   loading: boolean;
   connectWallet: () => Promise<{ error: any }>;
   disconnectWallet: () => Promise<void>;
-  // zkLogin 관련
-  zkLoginUser: any | null;
-  isZkLoginEnabled: boolean;
-  connectZkLogin: () => void;
-  disconnectZkLogin: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,7 +24,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<{ id: string; wallet_address: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const { isConnected, walletAddress, connectWallet: dappKitConnect, disconnectWallet: dappKitDisconnect } = useWallet();
-  const { user: zkLoginUser, login: zkLoginConnect, logout: zkLoginDisconnect } = useZkLogin();
 
   useEffect(() => {
     const checkWalletConnection = async () => {
@@ -121,11 +114,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     connectWallet,
     disconnectWallet,
-    // zkLogin 관련
-    zkLoginUser,
-    isZkLoginEnabled: !!zkLoginUser,
-    connectZkLogin: zkLoginConnect,
-    disconnectZkLogin: zkLoginDisconnect,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

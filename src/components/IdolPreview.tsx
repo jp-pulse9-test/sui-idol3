@@ -10,7 +10,6 @@ import { isSuperAdmin } from "@/utils/adminWallets";
 import { IdolStatsDisplay, generateRandomStats } from "@/components/IdolStatsDisplay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { secureStorage } from "@/utils/secureStorage";
-import { VotingCard } from "@/components/VotingCard";
 
 interface IdolPreset {
   id: number;
@@ -26,20 +25,9 @@ interface IdolPreviewProps {
   onConfirm: () => void;
   onBack: () => void;
   isMinting?: boolean;
-  suiBalance?: bigint | null;
-  isBalanceLoading?: boolean;
-  balanceError?: string | null;
 }
 
-const IdolPreview = ({ 
-  selectedIdol, 
-  onConfirm, 
-  onBack, 
-  isMinting = false,
-  suiBalance,
-  isBalanceLoading = false,
-  balanceError
-}: IdolPreviewProps) => {
+const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: IdolPreviewProps) => {
   const [votingProgress, setVotingProgress] = useState(0);
   const [isVoting, setIsVoting] = useState(false);
   const [hasSufficientCoins, setHasSufficientCoins] = useState(false);
@@ -53,20 +41,13 @@ const IdolPreview = ({
       applySuperAdminBenefits();
     }
     
-    // 실제 SUI 잔액 또는 로컬 스토리지 값 사용
-    if (suiBalance !== null && suiBalance !== undefined) {
-      const realBalance = Number(suiBalance) / 1e9;
-      setCurrentSuiCoins(realBalance);
-      setHasSufficientCoins(realBalance >= 0.15);
-      console.log('🔍 IdolPreview 실제 SUI 잔액:', { realBalance, hasSufficientCoins: realBalance >= 0.15 });
-    } else {
-      // 로컬 스토리지 값 사용 (fallback)
-      const userCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
-      setCurrentSuiCoins(userCoins);
-      setHasSufficientCoins(userCoins >= 0.15);
-      console.log('🔍 IdolPreview 로컬 코인 체크:', { userCoins, hasSufficientCoins: userCoins >= 0.15 });
-    }
-  }, [suiBalance]);
+    // 수이 코인 잔액 체크 (0.15 코인 = 700원)
+    const userCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
+    setCurrentSuiCoins(userCoins);
+    setHasSufficientCoins(userCoins >= 0.15);
+    
+    console.log('🔍 IdolPreview 코인 체크:', { userCoins, hasSufficientCoins: userCoins >= 0.15 });
+  }, []);
 
   const handleVoting = async () => {
     // 실시간으로 코인 재확인
@@ -100,7 +81,7 @@ const IdolPreview = ({
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
-      <div className="max-w-6xl mx-auto space-y-8 pt-8">
+      <div className="max-w-4xl mx-auto space-y-8 pt-8">
         {/* 헤더 */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold gradient-text">
@@ -110,22 +91,6 @@ const IdolPreview = ({
             축하합니다! 심쿵 배틀에서 선택된 당신의 최애를 확인해보세요
           </p>
         </div>
-
-        {/* Tabs */}
-        <Tabs defaultValue="preview" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
-            <TabsTrigger value="preview" className="data-[state=active]:bg-primary/20">
-              👑 아이돌 미리보기
-            </TabsTrigger>
-            <TabsTrigger value="vote" className="data-[state=active]:bg-primary/20">
-              🗳️ 투표하기
-            </TabsTrigger>
-            <TabsTrigger value="mint" className="data-[state=active]:bg-primary/20">
-              🎴 NFT 민팅
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="preview" className="mt-8">
 
         {/* 승리 아이돌 카드 */}
         <div className="text-center">
@@ -168,27 +133,6 @@ const IdolPreview = ({
                 <p className="text-muted-foreground">
                   {selectedIdol.description}
                 </p>
-
-                {/* SUI 잔액 표시 */}
-                <div className="flex items-center justify-center gap-2 p-3 bg-card/50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm font-medium">SUI 잔액:</span>
-                  </div>
-                  {isBalanceLoading ? (
-                    <span className="text-sm text-muted-foreground">로딩 중...</span>
-                  ) : balanceError ? (
-                    <span className="text-sm text-red-500">오류</span>
-                  ) : suiBalance !== null ? (
-                    <span className="text-sm font-bold text-green-500">
-                      {(Number(suiBalance) / 1e9).toFixed(2)} SUI
-                    </span>
-                  ) : (
-                    <span className="text-sm font-bold text-yellow-500">
-                      {currentSuiCoins.toFixed(2)} SUI (로컬)
-                    </span>
-                  )}
-                </div>
               </div>
             </div>
           </Card>
@@ -316,64 +260,21 @@ const IdolPreview = ({
         )}
 
         {/* 다음 단계 안내 */}
-            <Card className="p-6 glass-dark border-white/10 max-w-2xl mx-auto">
-              <div className="text-center space-y-4">
-                <h3 className="text-xl font-bold gradient-text">다음 단계</h3>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div className="p-4 bg-card/50 rounded-lg">
-                    <div className="font-bold text-accent">🗃️ VAULT</div>
-                    <div className="text-muted-foreground">스토리 플레이 & 포카 수집</div>
-                  </div>
-                  <div className="p-4 bg-card/50 rounded-lg">
-                    <div className="font-bold text-secondary">📈 RISE</div>
-                    <div className="text-muted-foreground">리더보드 & 갤러리 & 거래</div>
-                  </div>
-                </div>
+        <Card className="p-6 glass-dark border-white/10 max-w-2xl mx-auto">
+          <div className="text-center space-y-4">
+            <h3 className="text-xl font-bold gradient-text">다음 단계</h3>
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div className="p-4 bg-card/50 rounded-lg">
+                <div className="font-bold text-accent">🗃️ VAULT</div>
+                <div className="text-muted-foreground">스토리 플레이 & 포카 수집</div>
               </div>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="vote" className="mt-8">
-            <div className="flex justify-center">
-              <VotingCard
-                idolId={selectedIdol.id}
-                idolName={selectedIdol.name}
-                idolImage={selectedIdol.profile_image}
-                onVoteComplete={(voteData) => {
-                  toast.success('투표가 완료되었습니다!');
-                }}
-              />
+              <div className="p-4 bg-card/50 rounded-lg">
+                <div className="font-bold text-secondary">📈 RISE</div>
+                <div className="text-muted-foreground">리더보드 & 갤러리 & 거래</div>
+              </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="mint" className="mt-8">
-            <div className="text-center space-y-6">
-              <Card className="p-8 glass-dark border-white/10 max-w-md mx-auto">
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-bold gradient-text">NFT 민팅</h3>
-                    <p className="text-muted-foreground">선택한 아이돌의 NFT를 민팅하세요</p>
-                  </div>
-                  
-                  <div className="flex justify-center gap-4">
-                    <Button onClick={onBack} variant="outline" size="lg">
-                      ← 다시 선택
-                    </Button>
-                    <Button 
-                      onClick={handleVoting} 
-                      variant="default" 
-                      size="lg"
-                      className="btn-modern px-8"
-                      disabled={currentSuiCoins < 0.15 || isMinting}
-                    >
-                      {isMinting ? "🔄 민팅 중..." : "🎴 NFT 민팅하기"}
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </Card>
       </div>
     </div>
   );
