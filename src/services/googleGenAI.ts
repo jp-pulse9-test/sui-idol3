@@ -57,15 +57,15 @@ class GoogleGenAIService {
       try {
         console.log('Attempting to fetch API key from Supabase...');
         const { data, error } = await supabase
-          .from('api_keys')
-          .select('key')
+          .from('api_keys' as any)
+          .select('api_key')
           .eq('service', 'google_genai')
           .eq('is_active', true)
           .single();
 
-        if (!error && data?.key && data.key !== 'your-google-genai-api-key-here') {
-          this.apiKey = data.key;
-          this.genAI = new GoogleGenerativeAI(data.key);
+        if (!error && (data as any)?.api_key && (data as any).api_key !== 'your-google-genai-api-key-here') {
+          this.apiKey = (data as any).api_key;
+          this.genAI = new GoogleGenerativeAI((data as any).api_key);
           this.initialized = true;
           console.log('✅ Google GenAI API key loaded from Supabase api_keys table');
           return;
@@ -285,9 +285,7 @@ Return only the converted prompt with proper face consistency tags.`;
         data: {
           image_url: imageResult.imageUrl,
           seed: Math.floor(Math.random() * 1000000),
-          prompt: imageResult.enhancedPrompt, // Gemini enhanced prompt
-          enhanced_prompt: imageResult.enhancedPrompt,
-          nano_banana_prompt: imageResult.nanoBananaPrompt
+          prompt: imageResult.enhancedPrompt // Gemini enhanced prompt
         }
       };
     } catch (error) {

@@ -204,8 +204,7 @@ export const IdolPhotocardGenerator = ({
         serialNo: mintingData.serialNo,
         totalSupply: mintingData.totalSupply,
         seed: imageResult.data!.seed,
-        prompt: imageResult.data!.prompt, // Gemini 개선된 프롬프트
-        nano_banana_prompt: imageResult.data!.nano_banana_prompt // Nano Banana용 프롬프트
+        prompt: imageResult.data!.prompt // Gemini 개선된 프롬프트
       };
 
       // 실제 민팅 수행
