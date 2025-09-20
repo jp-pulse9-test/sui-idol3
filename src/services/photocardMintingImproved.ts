@@ -3,7 +3,7 @@ import { useSignAndExecuteTransaction, useCurrentAccount, useSuiClient } from '@
 import { toast } from 'sonner';
 
 // 포토카드 민팅을 위한 Move 패키지 정보
-const PHOTOCARD_PACKAGE_ID = '0x51bfb8010e6e72c43578eed4d5a940d8de233a9e2b83c166f8879d029bf41cc7';
+const PHOTOCARD_PACKAGE_ID = '0x0709fa964224865db203e618c89c101c203d7b6b1ff9a6f13dfae4dccda5cba9';
 const PHOTOCARD_MODULE = 'photocard';
 
 export interface PhotoCardMintingData {

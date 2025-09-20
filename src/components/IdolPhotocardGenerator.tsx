@@ -25,6 +25,8 @@ interface IdolPhotocardGeneratorProps {
   fanHearts: number;
   hasAdvancedAccess?: boolean;
   onCostDeduction: (suiCost: number, heartCost: number) => void;
+  onPhotoCardCreated?: (photoCard: any) => void;
+  onPhotoCardMinted?: (photoCard: any) => void;
 }
 
 interface ConceptOption {
@@ -41,7 +43,9 @@ export const IdolPhotocardGenerator = ({
   userCoins,
   fanHearts,
   hasAdvancedAccess = false,
-  onCostDeduction
+  onCostDeduction,
+  onPhotoCardCreated,
+  onPhotoCardMinted
 }: IdolPhotocardGeneratorProps) => {
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
   const [selectedConcept, setSelectedConcept] = useState<ConceptOption | null>(null);
@@ -216,6 +220,16 @@ export const IdolPhotocardGenerator = ({
 
       setGeneratedCard(cardData);
       setShowResult(true);
+
+      // 포토카드 생성 완료 콜백 호출
+      if (onPhotoCardCreated) {
+        onPhotoCardCreated(cardData);
+      }
+
+      // 포토카드 민팅 완료 콜백 호출
+      if (onPhotoCardMinted) {
+        onPhotoCardMinted(cardData);
+      }
 
       toast.success(`🎉 ${selectedIdol.name}의 ${selectedConcept.name} 포토카드가 생성되었습니다!`);
     } catch (error) {

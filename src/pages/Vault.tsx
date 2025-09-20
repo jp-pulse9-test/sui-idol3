@@ -26,6 +26,9 @@ import { useSuiBalance } from "@/services/suiBalanceServiceNew";
 import { SuiBalanceCard } from "@/components/SuiBalanceCard";
 import { useTransactionHistory } from "@/services/transactionHistoryService";
 import { useDataSync } from "@/services/dataSyncService";
+import { useRandomBoxService } from "@/services/randomBoxService";
+import { useMarketplaceService } from "@/services/marketplaceService";
+import { usePhotoCardGalleryService } from "@/services/photocardGalleryService";
 import MultiChainTransfer from "@/components/MultiChainTransfer";
 import CrossChainTransferModal from "@/components/CrossChainTransferModal";
 import { ResponsiveGrid, ResponsiveCard, ResponsiveText, ResponsiveButton, ResponsiveContainer } from "@/components/ResponsiveGrid";
@@ -65,6 +68,11 @@ const Vault = () => {
   const { mintIdolCard } = useIdolCardMinting();
   const { isConnected, walletAddress: currentWalletAddress } = useWallet();
   const { balance: suiBalance, isLoading: isBalanceLoading, error: balanceError, fetchBalance } = useSuiBalance();
+  
+  // 새로운 블록체인 서비스들
+  const { createRandomBox, openRandomBox, initGlobalState, getRandomBoxConfig } = useRandomBoxService();
+  const { createListing, buyPhotoCard, calculatePrice, formatPrice, getMarketplaceStats } = useMarketplaceService();
+  const { getUserPhotoCards, getAllPhotoCards, getPhotoCardStats, searchPhotoCards } = usePhotoCardGalleryService();
   
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
@@ -491,184 +499,91 @@ const Vault = () => {
   }
 
   const handleOpenRandomBox = async (type: "free" | "paid", boxCost?: number) => {
-    // 랜덤박스 개봉 로직
-    if (type === 'free' && !dailyFreeStatus.canClaim) {
-      if (dailyFreeStatus.userHasClaimedToday) {
-        toast.error('이미 오늘 무료 박스를 개봉했습니다.');
-      } else {
-        toast.error('오늘의 무료 박스 한정 수량이 소진되었습니다.');
-      }
+    if (!isConnected) {
+      toast.error('지갑을 먼저 연결해주세요!');
       return;
     }
     
-    const cost = type === 'free' ? 0 : (boxCost || 0.15); // SUI 코인 기준
+    const cost = type === 'free' ? 0 : (boxCost || 0.15);
     const currentBalance = getSuiBalanceValue();
+    
     if (type !== 'free' && currentBalance < cost) {
       toast.error(`SUI 코인이 부족합니다. (보유: ${getDisplaySuiBalance()} SUI, 필요: ${cost} SUI)`);
-      return;
-    }
-
-    if (!isConnected) {
-      toast.error('지갑을 먼저 연결해주세요!');
       return;
     }
 
     setIsMinting(true);
 
     try {
-      // 무료 박스인 경우 클레임 처리
-      if (type === 'free') {
-        const claimResult = await dailyFreeBoxService.claimFreeBox(walletAddress);
-        if (!claimResult.success) {
-          toast.error(claimResult.error || '무료 박스 클레임에 실패했습니다.');
-          setIsMinting(false);
-          return;
-        }
-        
-        // 상태 업데이트
-        setDailyFreeStatus(prev => ({
-          ...prev,
-          userHasClaimedToday: true,
-          canClaim: false,
-          totalClaimsToday: claimResult.totalClaimsToday,
-          remainingSlots: claimResult.remainingSlots
-        }));
-      }
-      // 울트라 박스인 경우 고급 생성 권한 부여
-      if (type === 'paid' && cost >= 0.45) {
-        setHasAdvancedAccess(true);
-        localStorage.setItem('hasAdvancedAccess', 'true');
-        toast.success('🎉 고급 포토카드 생성 권한을 획득했습니다!');
-    }
-
-    // 랜덤 포카 수량 (1-10개)
-    const cardCount = Math.floor(Math.random() * 10) + 1;
-    const newPhotoCards: PhotoCard[] = [];
-    
-    const rarities = ['N', 'R', 'SR', 'SSR'] as const;
-    const rarityWeights = { 'N': 50, 'R': 30, 'SR': 15, 'SSR': 5 };
-    const concepts = ['Summer Dream', 'Winter Story', 'Spring Love', 'Autumn Wind', 'School Look', 'Casual', 'Formal', 'Party', 'Sports', 'Fashion'];
-    const idolNames = ['아이돌 A', '아이돌 B', '아이돌 C', '아이돌 D', '아이돌 E', '아이돌 F', '아이돌 G', '아이돌 H'];
-    const idolImages = [
-      'https://via.placeholder.com/300x400/FF6B6B/FFFFFF?text=Idol+A',
-      'https://via.placeholder.com/300x400/4ECDC4/FFFFFF?text=Idol+B',
-      'https://via.placeholder.com/300x400/45B7D1/FFFFFF?text=Idol+C',
-      'https://via.placeholder.com/300x400/96CEB4/FFFFFF?text=Idol+D',
-      'https://via.placeholder.com/300x400/FFEAA7/000000?text=Idol+E',
-      'https://via.placeholder.com/300x400/DDA0DD/FFFFFF?text=Idol+F',
-      'https://via.placeholder.com/300x400/98D8C8/FFFFFF?text=Idol+G',
-      'https://via.placeholder.com/300x400/F7DC6F/000000?text=Idol+H',
-    ];
-
-    for (let i = 0; i < cardCount; i++) {
-      // 희귀도 가중치 기반 선택
-      const random = Math.random() * 100;
-      let rarity: typeof rarities[number] = 'N';
-      let cumulativeWeight = 0;
+      // 랜덤박스 타입 결정
+      const boxType = type === 'free' ? 'daily' : cost >= 0.45 ? 'legendary' : 'premium';
+      const config = getRandomBoxConfig(boxType);
       
-      for (const [r, weight] of Object.entries(rarityWeights)) {
-        cumulativeWeight += weight;
-        if (random <= cumulativeWeight) {
-          rarity = r as typeof rarities[number];
-          break;
-        }
-      }
+      // 랜덤박스 생성
+      const randomBoxResult = await createRandomBox(
+        boxType,
+        config.price,
+        config.maxClaimsPerDay,
+        config.pityThreshold
+      );
+      
+      // 글로벌 상태 ID (실제로는 컨트랙트에서 가져와야 함)
+      const globalStateId = '0x0000000000000000000000000000000000000000000000000000000000000000';
+      
+      // 랜덤박스 오픈
+      const openResult = await openRandomBox(
+        (randomBoxResult as any).digest || '',
+        globalStateId,
+        cost * 1e9 // SUI를 MIST로 변환
+      );
 
-      const randomConcept = concepts[Math.floor(Math.random() * concepts.length)];
-      const randomIdolIndex = Math.floor(Math.random() * idolNames.length);
-      const randomIdolName = idolNames[randomIdolIndex];
-      const randomIdolImage = idolImages[randomIdolIndex];
-
-        const mintingData = {
-          idolId: randomIdolIndex + 1,
-          idolName: randomIdolName,
-          rarity: rarity,
-          concept: randomConcept,
-          season: 'Season 1',
-          serialNo: Math.floor(Math.random() * 10000) + 1,
-          totalSupply: 5000,
-          imageUrl: randomIdolImage,
-          personaPrompt: `${randomIdolName}의 ${randomConcept} 컨셉`,
+      // 결과 처리
+      if (openResult) {
+        const newCard: PhotoCard = {
+          id: openResult.photocardId,
+          idolId: '1',
+          idolName: 'Random Idol',
+          rarity: openResult.rarity as 'N' | 'R' | 'SR' | 'SSR',
+          concept: 'Random Concept',
+          season: '2024',
+          serialNo: 1,
+          totalSupply: 1000,
+          mintedAt: new Date(openResult.timestamp).toISOString(),
+          owner: currentWalletAddress || '',
+        isPublic: true,
+          imageUrl: 'https://example.com/random-photocard.jpg',
+          floorPrice: openResult.rarity === 'SSR' ? 5.0 : openResult.rarity === 'SR' ? 2.0 : openResult.rarity === 'R' ? 0.8 : 0.2,
+          lastSalePrice: openResult.rarity === 'SSR' ? 4.5 : openResult.rarity === 'SR' ? 1.8 : openResult.rarity === 'R' ? 0.7 : 0.15,
+          heartsReceived: Math.floor(Math.random() * 100),
         };
 
-        // 실제 포토카드 민팅
-        const mintedCard = await mintPhotoCard(mintingData);
+        setPhotoCards(prev => [...prev, newCard]);
         
-        // 트랜잭션 히스토리 기록
-        if (mintedCard.success) {
-          addTransaction({
-            type: 'mint',
-            status: 'success',
-            hash: mintedCard.digest,
-            from: currentWalletAddress || walletAddress,
-            to: currentWalletAddress || walletAddress,
-            amount: cost,
-            tokenId: `pc-${Date.now()}-${i}`,
-            description: `${randomIdolName} ${randomConcept} 포토카드 민팅 (${rarity})`,
-            metadata: {
-              idolName: randomIdolName,
-              concept: randomConcept,
-              rarity: rarity,
-              serialNo: mintingData.serialNo,
-            }
-          });
-          markAsPending();
-        } else {
-          addTransaction({
-            type: 'mint',
-            status: 'failed',
-            from: currentWalletAddress || walletAddress,
-            to: currentWalletAddress || walletAddress,
-            amount: cost,
-            description: `${randomIdolName} ${randomConcept} 포토카드 민팅 실패 (${rarity})`,
-            metadata: {
-              error: '민팅 실패',
-              idolName: randomIdolName,
-              concept: randomConcept,
-              rarity: rarity,
-            }
-          });
+        // 피티 시스템 업데이트
+        setPityCounters(prev => ({
+          sr: openResult.rarity === 'SR' ? 0 : prev.sr + 1,
+          ssr: openResult.rarity === 'SSR' ? 0 : prev.ssr + 1
+        }));
+
+        // SUI 코인 차감 (유료 박스인 경우)
+        if (type !== 'free') {
+          setSuiCoins(prev => Math.max(0, prev - cost));
         }
 
-        // 민팅된 카드 정보를 PhotoCard 형식으로 변환
-      const newPhotoCard: PhotoCard = {
-        id: `pc-${Date.now()}-${i}`,
-        idolId: (randomIdolIndex + 1).toString(),
-        idolName: randomIdolName,
-        rarity: rarity,
-        concept: randomConcept,
-        season: 'Season 1',
-        serialNo: Math.floor(Math.random() * 10000) + 1,
-        totalSupply: 5000,
-        mintedAt: new Date().toISOString(),
-        owner: currentWalletAddress || walletAddress,
-        isPublic: true,
-        imageUrl: randomIdolImage,
-        floorPrice: Math.random() * 5 + 1,
-        lastSalePrice: Math.random() * 8 + 2,
-        heartsReceived: 0
-      };
+        toast.success(`🎉 ${openResult.rarity} 등급 포토카드를 획득했습니다!`);
+        
+        // 트랜잭션 히스토리 추가
+        addTransaction({
+          type: 'mint',
+          amount: cost,
+          status: 'success',
+          description: `랜덤박스에서 ${openResult.rarity} 등급 포토카드 획득`,
+        });
+      }
 
-      newPhotoCards.push(newPhotoCard);
-    }
-
-    // 상태 업데이트
-    const updatedCards = [...photoCards, ...newPhotoCards];
-    setPhotoCards(updatedCards);
-    localStorage.setItem('photoCards', JSON.stringify(updatedCards));
-
-      if (type !== 'free') {
-      setSuiCoins(prev => {
-        const newValue = prev - cost;
-        localStorage.setItem('suiCoins', newValue.toFixed(2));
-        return newValue;
-      });
-    }
-
-      toast.success(`🎉 ${cardCount}장의 포토카드를 민팅했습니다!`);
     } catch (error) {
-      console.error('포토카드 민팅 실패:', error);
-      toast.error('포토카드 민팅에 실패했습니다.');
+      console.error('랜덤박스 오픈 실패:', error);
+      toast.error('랜덤박스 오픈에 실패했습니다.');
     } finally {
       setIsMinting(false);
     }
@@ -941,6 +856,74 @@ const Vault = () => {
                       const newValue = prev - heartCost;
                       localStorage.setItem('fanHearts', newValue.toString());
                       return newValue;
+                    });
+                  }}
+                  onPhotoCardCreated={(photoCard) => {
+                    // 생성된 포토카드를 Vault의 포토카드 목록에 추가
+                    const newPhotoCard: PhotoCard = {
+                      id: `pc-${Date.now()}`,
+                      idolId: selectedIdol.id.toString(),
+                      idolName: selectedIdol.name,
+                      rarity: photoCard.rarity,
+                      concept: photoCard.concept,
+                      season: photoCard.season,
+                      serialNo: photoCard.serialNo,
+                      totalSupply: photoCard.totalSupply,
+                      mintedAt: new Date().toISOString(),
+                      owner: currentWalletAddress || '',
+                      isPublic: true,
+                      imageUrl: photoCard.imageUrl,
+                      floorPrice: photoCard.rarity === 'SSR' ? 5.0 : photoCard.rarity === 'SR' ? 2.0 : photoCard.rarity === 'R' ? 0.8 : 0.2,
+                      lastSalePrice: photoCard.rarity === 'SSR' ? 4.5 : photoCard.rarity === 'SR' ? 1.8 : photoCard.rarity === 'R' ? 0.7 : 0.15,
+                      heartsReceived: 0,
+                    };
+                    
+                    setPhotoCards(prev => {
+                      const updated = [...prev, newPhotoCard];
+                      localStorage.setItem('photoCards', JSON.stringify(updated));
+                      return updated;
+                    });
+                    
+                    // 트랜잭션 히스토리 추가
+                    addTransaction({
+                      type: 'mint',
+                      amount: 0,
+                      status: 'success',
+                      description: `${selectedIdol.name} ${photoCard.concept} 포토카드 생성`,
+                    });
+                  }}
+                  onPhotoCardMinted={(mintedCard) => {
+                    // 민팅된 포토카드를 Vault의 포토카드 목록에 추가
+                    const newPhotoCard: PhotoCard = {
+                      id: `pc-${Date.now()}`,
+                      idolId: selectedIdol.id.toString(),
+                      idolName: selectedIdol.name,
+                      rarity: mintedCard.rarity,
+                      concept: mintedCard.concept,
+                      season: mintedCard.season,
+                      serialNo: mintedCard.serialNo,
+                      totalSupply: mintedCard.totalSupply,
+                      mintedAt: new Date().toISOString(),
+                      owner: currentWalletAddress || '',
+                      isPublic: true,
+                      imageUrl: mintedCard.imageUrl,
+                      floorPrice: mintedCard.rarity === 'SSR' ? 5.0 : mintedCard.rarity === 'SR' ? 2.0 : mintedCard.rarity === 'R' ? 0.8 : 0.2,
+                      lastSalePrice: mintedCard.rarity === 'SSR' ? 4.5 : mintedCard.rarity === 'SR' ? 1.8 : mintedCard.rarity === 'R' ? 0.7 : 0.15,
+                      heartsReceived: 0,
+                    };
+                    
+                    setPhotoCards(prev => {
+                      const updated = [...prev, newPhotoCard];
+                      localStorage.setItem('photoCards', JSON.stringify(updated));
+                      return updated;
+                    });
+                    
+                    // 트랜잭션 히스토리 추가
+                    addTransaction({
+                      type: 'mint',
+                      amount: 0.1,
+                      status: 'success',
+                      description: `AI 포토카드 민팅: ${selectedIdol.name} ${mintedCard.concept}`,
                     });
                   }}
                 />
