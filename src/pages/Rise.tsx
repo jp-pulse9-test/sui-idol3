@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Leaderboard } from "@/components/ui/leaderboard";
-import { Marketplace } from "@/components/ui/marketplace";
 import { secureStorage } from "@/utils/secureStorage";
 import { TrendingUp, ArrowLeft, Home } from "lucide-react";
 
@@ -56,7 +55,7 @@ const Rise = () => {
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
-  const [activeTab, setActiveTab] = useState<'leaderboard' | 'marketplace'>('leaderboard');
+  const [activeTab, setActiveTab] = useState<'leaderboard'>('leaderboard');
 
   // Mock 아이돌 리더보드 데이터 - 실제 구현에서는 API로 대체
   const mockIdolLeaderboardData: IdolLeaderboardEntry[] = [
@@ -255,40 +254,18 @@ const Rise = () => {
         </Card>
 
         {/* 탭 컨텐츠 */}
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'leaderboard' | 'marketplace')} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-card/50 backdrop-blur-sm">
-            <TabsTrigger value="leaderboard" className="data-[state=active]:bg-primary/20">
-              🏆 아이돌 리더보드
-            </TabsTrigger>
-            <TabsTrigger value="marketplace" className="data-[state=active]:bg-primary/20">
-              🛒 마켓플레이스
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="leaderboard" className="mt-8">
-            <Leaderboard
-              currentIdol={currentIdolData}
-              globalLeaderboard={mockIdolLeaderboardData}
-              categoryLeaderboard={mockIdolLeaderboardData.filter(entry => entry.category === "댄스")}
-              selectedCategory="댄스"
-              allPhotocards={photoCards}
-              onIdolClick={(idolId) => {
-                console.log('Clicked idol:', idolId);
-              }}
-            />
-          </TabsContent>
-
-          <TabsContent value="marketplace" className="mt-8">
-            <Marketplace
-              listings={[]} // 실제로는 API에서 가져올 예정
-              priceHistory={[]} // 실제로는 API에서 가져올 예정
-              userWallet={walletAddress}
-              onPurchase={(listingId) => console.log('Purchase:', listingId)}
-              onBid={(listingId, amount) => console.log('Bid:', listingId, amount)}
-              onCreateListing={(photocardId, price, isAuction) => console.log('Create listing:', photocardId, price, isAuction)}
-            />
-          </TabsContent>
-        </Tabs>
+        <div className="mt-8">
+          <Leaderboard
+            currentIdol={currentIdolData}
+            globalLeaderboard={mockIdolLeaderboardData}
+            categoryLeaderboard={mockIdolLeaderboardData.filter(entry => entry.category === "댄스")}
+            selectedCategory="댄스"
+            allPhotocards={photoCards}
+            onIdolClick={(idolId) => {
+              console.log('Clicked idol:', idolId);
+            }}
+          />
+        </div>
 
         {/* Navigation */}
         <div className="flex justify-center space-x-4 pt-8">

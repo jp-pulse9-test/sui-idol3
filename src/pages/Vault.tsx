@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RandomBox } from "@/components/ui/random-box";
 import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
+import { Marketplace } from "@/components/ui/marketplace";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { IdolPhotocardGenerator } from "@/components/IdolPhotocardGenerator";
 import { Heart } from "lucide-react";
@@ -68,7 +69,7 @@ const Vault = () => {
     ssr: 0
   });
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
-  const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection' | 'generator'>('storage');
+  const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection' | 'generator' | 'marketplace'>('storage');
   const [isMinting, setIsMinting] = useState(false);
 
   useEffect(() => {
@@ -368,8 +369,8 @@ const Vault = () => {
         </Card>
 
         {/* Vault Tabs */}
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'storage' | 'randombox' | 'collection' | 'generator')} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-card/50 backdrop-blur-sm">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'storage' | 'randombox' | 'collection' | 'generator' | 'marketplace')} className="w-full">
+          <TabsList className="grid w-full grid-cols-5 bg-card/50 backdrop-blur-sm">
             <TabsTrigger value="storage" className="data-[state=active]:bg-primary/20">
               🗃️ 최애 수납
             </TabsTrigger>
@@ -381,6 +382,9 @@ const Vault = () => {
             </TabsTrigger>
             <TabsTrigger value="collection" className="data-[state=active]:bg-primary/20">
               🎴 포카 보관함
+            </TabsTrigger>
+            <TabsTrigger value="marketplace" className="data-[state=active]:bg-primary/20">
+              🛒 마켓플레이스
             </TabsTrigger>
           </TabsList>
 
@@ -491,6 +495,17 @@ const Vault = () => {
             <PhotoCardGallery
               photocards={photoCards}
               selectedIdolId={selectedIdol.id.toString()}
+            />
+          </TabsContent>
+
+          <TabsContent value="marketplace" className="mt-8">
+            <Marketplace
+              listings={[]} // 실제로는 API에서 가져올 예정
+              priceHistory={[]} // 실제로는 API에서 가져올 예정
+              userWallet={walletAddress}
+              onPurchase={(listingId) => console.log('Purchase:', listingId)}
+              onBid={(listingId, amount) => console.log('Bid:', listingId, amount)}
+              onCreateListing={(photocardId, price, isAuction) => console.log('Create listing:', photocardId, price, isAuction)}
             />
           </TabsContent>
         </Tabs>
