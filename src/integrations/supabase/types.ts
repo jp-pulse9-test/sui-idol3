@@ -555,6 +555,14 @@ export type Database = {
         Args: { user_wallet_param: string }
         Returns: Json
       }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      user_has_activated_key: {
+        Args: { key_to_check: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
