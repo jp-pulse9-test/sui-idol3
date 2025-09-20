@@ -10,6 +10,7 @@ import TournamentBattle from "@/components/TournamentBattle";
 import IdolPreview from "@/components/IdolPreview";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { useWallet } from "@/hooks/useWallet";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 interface IdolPreset {
   id: number;
@@ -49,6 +50,7 @@ const Pick = () => {
   const navigate = useNavigate();
   const { mintIdolCard } = usePhotoCardMinting();
   const { isConnected, walletAddress } = useWallet();
+  const { isAuthenticated } = useAuthGuard('/auth', false);
 
   // Fetch idols from Supabase
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
@@ -95,6 +97,13 @@ const Pick = () => {
   // Initialize game data
   useEffect(() => {
     const initializeGame = async () => {
+      // Check if user is authenticated before fetching idol data
+      if (!isAuthenticated) {
+        toast.error('아이돌 데이터에 접근하려면 지갑 연결이 필요합니다.');
+        navigate('/auth');
+        return;
+      }
+
       let idolData = await fetchIdolsFromDB();
       
       // If no idols exist, generate them
@@ -113,8 +122,11 @@ const Pick = () => {
       }
     };
 
-    initializeGame();
-  }, []);
+    // Only run if authentication state is determined
+    if (isAuthenticated !== undefined) {
+      initializeGame();
+    }
+  }, [isAuthenticated, navigate]);
 
   const handlePersonalityComplete = (scores: { extroversion: number; intuition: number; feeling: number; judging: number }) => {
     setPersonalityData(prev => ({
