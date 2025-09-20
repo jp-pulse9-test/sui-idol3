@@ -1,6 +1,8 @@
 import { Transaction } from '@mysten/sui/transactions';
 import { useSignAndExecuteTransaction, useCurrentAccount } from '@mysten/dapp-kit';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 // 포토카드 민팅을 위한 Move 패키지 정보
 const PHOTOCARD_PACKAGE_ID = '0x39d1d59ddc953d4ff0c0f80f868d00bb1718e1d1807db6a3e5745fd4f03f79fe';
@@ -21,43 +23,17 @@ export interface PhotoCardMintingData {
 export const usePhotoCardMinting = () => {
   const { mutate: signAndExecute, isPending } = useSignAndExecuteTransaction();
   const currentAccount = useCurrentAccount();
+  const { user } = useAuth();
 
   const mintPhotoCard = async (mintingData: PhotoCardMintingData) => {
-    if (!currentAccount) {
+    if (!currentAccount || !user) {
       throw new Error('지갑이 연결되지 않았습니다.');
     }
     
     try {
-      // 개발 중에는 시뮬레이션 모드로 작동
-      console.log('포토카드 민팅 (개발 모드):', mintingData);
+      console.log('포토카드 민팅 시작:', mintingData);
       
-      // 시뮬레이션 대기 시간
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // 민팅된 포토카드 정보를 로컬 스토리지에 저장
-      const mintedPhotoCard = {
-        id: `pc-${Date.now()}`,
-        tokenId: `dev_${Date.now()}`,
-        txDigest: `dev_tx_${Date.now()}`,
-        ...mintingData,
-        mintedAt: new Date().toISOString(),
-        owner: currentAccount.address,
-        isPublic: true,
-        heartsReceived: 0,
-      };
-
-      // 로컬 스토리지에 추가
-      const walletKey = `photoCards_${currentAccount.address}`;
-      const existingCards = JSON.parse(localStorage.getItem(walletKey) || '[]');
-      existingCards.push(mintedPhotoCard);
-      localStorage.setItem(walletKey, JSON.stringify(existingCards));
-
-      toast.success('포토카드가 성공적으로 민팅되었습니다! (개발 모드)');
-      return mintedPhotoCard;
-      
-      /* 실제 블록체인 민팅 코드 (현재 비활성화)
       const txb = new Transaction();
-
       // 포토카드 민팅 트랜잭션 구성
       txb.moveCall({
         target: `${PHOTOCARD_PACKAGE_ID}::${PHOTOCARD_MODULE}::mint_photocard`,
@@ -81,27 +57,35 @@ export const usePhotoCardMinting = () => {
             transaction: txb,
           },
           {
-            onSuccess: (result) => {
+            onSuccess: async (result) => {
               console.log('포토카드 민팅 성공:', result);
-              toast.success('포토카드가 성공적으로 민팅되었습니다!');
               
-              const mintedPhotoCard = {
-                id: `pc-${Date.now()}`,
-                tokenId: result.digest,
-                txDigest: result.digest,
-                ...mintingData,
-                mintedAt: new Date().toISOString(),
-                owner: currentAccount.address,
-                isPublic: true,
-                heartsReceived: 0,
-              };
+              try {
+                // Supabase에 민팅 기록 저장
+                const { data: userVault } = await supabase
+                  .from('vaults')
+                  .select('id')
+                  .eq('user_id', user.id)
+                  .single();
 
-              const walletKey = `photoCards_${currentAccount.address}`;
-              const existingCards = JSON.parse(localStorage.getItem(walletKey) || '[]');
-              existingCards.push(mintedPhotoCard);
-              localStorage.setItem(walletKey, JSON.stringify(existingCards));
+                if (userVault) {
+                  await supabase
+                    .from('debut_cards')
+                    .insert({
+                      vault_id: userVault.id,
+                      token_id: result.digest,
+                      tx_digest: result.digest,
+                      image_url: mintingData.imageUrl,
+                    });
+                }
 
-              resolve(result);
+                toast.success('포토카드가 성공적으로 민팅되었습니다!');
+                resolve(result);
+              } catch (dbError) {
+                console.error('민팅 기록 저장 실패:', dbError);
+                toast.success('포토카드가 민팅되었지만 기록 저장에 실패했습니다.');
+                resolve(result);
+              }
             },
             onError: (error) => {
               console.error('포토카드 민팅 실패:', error);
@@ -111,7 +95,6 @@ export const usePhotoCardMinting = () => {
           }
         );
       });
-      */
     } catch (error) {
       console.error('포토카드 민팅 중 오류:', error);
       toast.error('포토카드 민팅 중 오류가 발생했습니다.');
@@ -126,34 +109,14 @@ export const usePhotoCardMinting = () => {
     image: string;
     persona_prompt: string;
   }) => {
-    if (!currentAccount) {
+    if (!currentAccount || !user) {
       throw new Error('지갑이 연결되지 않았습니다.');
     }
     
     try {
-      // 개발 중에는 시뮬레이션 모드로 작동
-      console.log('아이돌 카드 민팅 (개발 모드):', idolData);
+      console.log('아이돌 카드 민팅 시작:', idolData);
       
-      // 시뮬레이션 대기 시간
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // 아이돌 카드 정보를 로컬 스토리지에 저장
-      const mintedIdolCard = {
-        id: `idol-${Date.now()}`,
-        tokenId: `dev_idol_${Date.now()}`,
-        txDigest: `dev_idol_tx_${Date.now()}`,
-        ...idolData,
-        mintedAt: new Date().toISOString(),
-        owner: currentAccount.address,
-      };
-
-      localStorage.setItem('selectedIdol', JSON.stringify(mintedIdolCard));
-      toast.success('아이돌 카드가 성공적으로 민팅되었습니다! (개발 모드)');
-      return mintedIdolCard;
-      
-      /* 실제 블록체인 민팅 코드 (현재 비활성화)
       const txb = new Transaction();
-
       // 아이돌 카드 민팅 트랜잭션 구성
       txb.moveCall({
         target: `${PHOTOCARD_PACKAGE_ID}::${PHOTOCARD_MODULE}::mint_idol_card`,
@@ -172,21 +135,35 @@ export const usePhotoCardMinting = () => {
             transaction: txb,
           },
           {
-            onSuccess: (result) => {
+            onSuccess: async (result) => {
               console.log('아이돌 카드 민팅 성공:', result);
-              toast.success('아이돌 카드가 성공적으로 민팅되었습니다!');
               
-              const mintedIdolCard = {
-                id: `idol-${Date.now()}`,
-                tokenId: result.digest,
-                txDigest: result.digest,
-                ...idolData,
-                mintedAt: new Date().toISOString(),
-                owner: currentAccount.address,
-              };
+              try {
+                // Supabase에 민팅 기록 저장
+                const { data: userVault } = await supabase
+                  .from('vaults')
+                  .select('id')
+                  .eq('user_id', user.id)
+                  .single();
 
-              localStorage.setItem('selectedIdol', JSON.stringify(mintedIdolCard));
-              resolve(result);
+                if (userVault) {
+                  await supabase
+                    .from('idol_cards')
+                    .insert({
+                      vault_id: userVault.id,
+                      token_id: result.digest,
+                      tx_digest: result.digest,
+                      minted_at: new Date().toISOString(),
+                    });
+                }
+
+                toast.success('아이돌 카드가 성공적으로 민팅되었습니다!');
+                resolve(result);
+              } catch (dbError) {
+                console.error('민팅 기록 저장 실패:', dbError);
+                toast.success('아이돌 카드가 민팅되었지만 기록 저장에 실패했습니다.');
+                resolve(result);
+              }
             },
             onError: (error) => {
               console.error('아이돌 카드 민팅 실패:', error);
@@ -196,7 +173,6 @@ export const usePhotoCardMinting = () => {
           }
         );
       });
-      */
     } catch (error) {
       console.error('아이돌 카드 민팅 중 오류:', error);
       toast.error('아이돌 카드 민팅 중 오류가 발생했습니다.');
