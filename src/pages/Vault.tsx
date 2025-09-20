@@ -320,7 +320,7 @@ const Vault = () => {
         {/* Header */}
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl font-bold gradient-text">
-            🗃️ VAULT - 최애 수납 & 랜덤박스 & 포카 생성
+            🗃️ VAULT
           </h1>
           <p className="text-xl text-muted-foreground">
             {selectedIdol.name}와 함께하는 포토카드 수집 여정
