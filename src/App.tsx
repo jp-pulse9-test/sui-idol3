@@ -29,6 +29,7 @@ import Growth from "./pages/Growth";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import SettingsPage from "./pages/Settings";
+import PhotocardGenerator from "./pages/PhotocardGenerator";
 
 const AdminButton = () => {
   const { user } = useAuth();
@@ -98,6 +99,7 @@ const App = () => (
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/growth" element={<Growth />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/photocard-generator" element={<PhotocardGenerator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>

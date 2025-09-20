@@ -181,6 +181,45 @@ export type Database = {
       }
       idols: {
         Row: {
+          Category: string
+          Concept: string
+          created_at: string | null
+          description: string | null
+          Gender: string
+          id: number
+          name: string
+          persona_prompt: string | null
+          personality: string | null
+          profile_image: string | null
+        }
+        Insert: {
+          Category: string
+          Concept: string
+          created_at?: string | null
+          description?: string | null
+          Gender: string
+          id?: number
+          name: string
+          persona_prompt?: string | null
+          personality?: string | null
+          profile_image?: string | null
+        }
+        Update: {
+          Category?: string
+          Concept?: string
+          created_at?: string | null
+          description?: string | null
+          Gender?: string
+          id?: number
+          name?: string
+          persona_prompt?: string | null
+          personality?: string | null
+          profile_image?: string | null
+        }
+        Relationships: []
+      }
+      idolsx: {
+        Row: {
           created_at: string | null
           description: string
           id: number
@@ -206,36 +245,6 @@ export type Database = {
           persona_prompt?: string
           personality?: string
           profile_image?: string
-        }
-        Relationships: []
-      }
-      idols202: {
-        Row: {
-          Category: string
-          Concept: string
-          created_at: string | null
-          Gender: string
-          id: number
-          Name: string
-          profile_image: string | null
-        }
-        Insert: {
-          Category: string
-          Concept: string
-          created_at?: string | null
-          Gender: string
-          id?: number
-          Name: string
-          profile_image?: string | null
-        }
-        Update: {
-          Category?: string
-          Concept?: string
-          created_at?: string | null
-          Gender?: string
-          id?: number
-          Name?: string
-          profile_image?: string | null
         }
         Relationships: []
       }
@@ -289,6 +298,77 @@ export type Database = {
           },
         ]
       }
+      photocard_keys: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_unlimited: boolean
+          remaining_credits: number
+          serial_key: string
+          total_credits: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_unlimited?: boolean
+          remaining_credits?: number
+          serial_key: string
+          total_credits?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_unlimited?: boolean
+          remaining_credits?: number
+          serial_key?: string
+          total_credits?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      photocard_usage: {
+        Row: {
+          created_at: string
+          credits_used: number
+          generation_type: string | null
+          id: string
+          serial_key: string
+          user_wallet: string
+        }
+        Insert: {
+          created_at?: string
+          credits_used?: number
+          generation_type?: string | null
+          id?: string
+          serial_key: string
+          user_wallet: string
+        }
+        Update: {
+          created_at?: string
+          credits_used?: number
+          generation_type?: string | null
+          id?: string
+          serial_key?: string
+          user_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photocard_usage_serial_key_fkey"
+            columns: ["serial_key"]
+            isOneToOne: false
+            referencedRelation: "photocard_keys"
+            referencedColumns: ["serial_key"]
+          },
+        ]
+      }
       story_sessions: {
         Row: {
           choices_made: Json | null
@@ -333,6 +413,38 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vaults"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_photocard_keys: {
+        Row: {
+          activated_at: string
+          created_at: string
+          id: string
+          serial_key: string
+          user_wallet: string
+        }
+        Insert: {
+          activated_at?: string
+          created_at?: string
+          id?: string
+          serial_key: string
+          user_wallet: string
+        }
+        Update: {
+          activated_at?: string
+          created_at?: string
+          id?: string
+          serial_key?: string
+          user_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_photocard_keys_serial_key_fkey"
+            columns: ["serial_key"]
+            isOneToOne: false
+            referencedRelation: "photocard_keys"
+            referencedColumns: ["serial_key"]
           },
         ]
       }
@@ -393,7 +505,7 @@ export type Database = {
             foreignKeyName: "vaults_idol_id_fkey"
             columns: ["idol_id"]
             isOneToOne: false
-            referencedRelation: "idols"
+            referencedRelation: "idolsx"
             referencedColumns: ["id"]
           },
           {

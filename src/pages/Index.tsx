@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
-import { Settings } from "lucide-react";
+import { Settings, Camera } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -150,6 +150,15 @@ const Index = () => {
           />
           {user && (
             <>
+              <Button
+                onClick={() => navigate('/photocard-generator')}
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+                title="포토카드 생성기"
+              >
+                <Camera className="h-4 w-4" />
+              </Button>
               <Button
                 onClick={() => navigate('/settings')}
                 variant="ghost"
