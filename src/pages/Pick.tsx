@@ -280,8 +280,8 @@ const Pick = () => {
   // Gender select phase
   if (gamePhase === 'gender-select') {
     // Get sample idols for preview
-    const maleIdols = idols.filter(idol => idol.Gender?.toLowerCase() === 'male').slice(0, 3);
-    const femaleIdols = idols.filter(idol => idol.Gender?.toLowerCase() === 'female').slice(0, 3);
+    const maleIdols = idols.filter(idol => idol.Gender === 'Boy').slice(0, 3);
+    const femaleIdols = idols.filter(idol => idol.Gender === 'Girl').slice(0, 3);
 
     return (
       <div className="min-h-screen bg-gradient-background p-4">
