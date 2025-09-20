@@ -10,7 +10,7 @@ interface RandomBoxProps {
   maxDailyFree: number;
   userCoins: number;
   pityCounter: { sr: number; ssr: number };
-  onOpenBox: (type: 'free' | 'paid') => void;
+  onOpenBox: (type: 'free' | 'paid', boxCost?: number) => void;
   isOpening: boolean;
 }
 
@@ -73,7 +73,7 @@ export const RandomBox = ({
     if (boxType.cost === 0 && canOpenFree) {
       onOpenBox('free');
     } else if (boxType.cost > 0 && userCoins >= boxType.cost) {
-      onOpenBox('paid');
+      onOpenBox('paid', boxType.cost);
     }
   }, [canOpenFree, userCoins, onOpenBox]);
 

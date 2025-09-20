@@ -176,7 +176,7 @@ const Vault = () => {
     return null;
   }
 
-  const handleOpenRandomBox = async (type: "free" | "paid") => {
+  const handleOpenRandomBox = async (type: "free" | "paid", boxCost?: number) => {
     // 랜덤박스 개봉 로직
     if (type === 'free' && !dailyFreeStatus.canClaim) {
       if (dailyFreeStatus.userHasClaimedToday) {
@@ -187,7 +187,7 @@ const Vault = () => {
       return;
     }
     
-    const cost = type === 'free' ? 0 : 0.15; // SUI 코인 기준
+    const cost = type === 'free' ? 0 : (boxCost || 0.15); // SUI 코인 기준
     if (type !== 'free' && suiCoins < cost) {
       toast.error('SUI 코인이 부족합니다.');
       return;
@@ -220,7 +220,7 @@ const Vault = () => {
         }));
       }
       // 울트라 박스인 경우 고급 생성 권한 부여
-      if (type === 'paid' && cost === 0.45) {
+      if (type === 'paid' && cost >= 0.45) {
         setHasAdvancedAccess(true);
         localStorage.setItem('hasAdvancedAccess', 'true');
         toast.success('🎉 고급 포토카드 생성 권한을 획득했습니다!');

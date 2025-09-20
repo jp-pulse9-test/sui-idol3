@@ -88,11 +88,50 @@ export const AdvancedPhotocardGenerator = ({
     setIsGenerating(true);
 
     try {
-      // Gemini 2.5 Flash API 호출 (실제 구현 필요)
-      // 현재는 시뮬레이션
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Prepare image data
+      let personImageBase64 = null;
+      let materialImageBase64 = null;
+
+      if (personImage) {
+        personImageBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(personImage);
+        });
+      }
+
+      if (materialImage) {
+        materialImageBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(materialImage);
+        });
+      }
+
+      // Call Supabase Edge Function
+      const response = await fetch('/api/generate-advanced-photocard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt,
+          style,
+          personImageBase64,
+          materialImageBase64,
+          idolName: selectedIdol.name,
+          personality: selectedIdol.personality
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate advanced photocard');
+      }
+
+      const result = await response.json();
       
-      // 샘플 이미지 URL (실제로는 Gemini API 응답)
+      // For demo purposes, use the idol image
+      // In production, this would be the generated image from the API
       setGeneratedImage(selectedIdol.image);
       
       onCostDeduction(advancedCost.sui, advancedCost.hearts);
