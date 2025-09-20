@@ -25,7 +25,8 @@ interface IdolPhotocardGeneratorProps {
   fanHearts: number;
   hasAdvancedAccess?: boolean;
   onCostDeduction: (suiCost: number, heartCost: number) => void;
-  onNavigateToCollection?: () => void;
+  onPhotoCardCreated?: (photoCard: any) => void;
+  onPhotoCardMinted?: (photoCard: any) => void;
 }
 
 interface ConceptOption {
@@ -43,7 +44,8 @@ export const IdolPhotocardGenerator = ({
   fanHearts,
   hasAdvancedAccess = false,
   onCostDeduction,
-  onNavigateToCollection
+  onPhotoCardCreated,
+  onPhotoCardMinted
 }: IdolPhotocardGeneratorProps) => {
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
   const [selectedConcept, setSelectedConcept] = useState<ConceptOption | null>(null);
@@ -206,7 +208,8 @@ export const IdolPhotocardGenerator = ({
         serialNo: mintingData.serialNo,
         totalSupply: mintingData.totalSupply,
         seed: imageResult.data!.seed,
-        prompt: imageResult.data!.prompt // Gemini 개선된 프롬프트
+        prompt: imageResult.data!.prompt, // Gemini 개선된 프롬프트
+        nano_banana_prompt: imageResult.data!.nano_banana_prompt // Nano Banana용 프롬프트
       };
 
       // 실제 민팅 수행
@@ -217,6 +220,16 @@ export const IdolPhotocardGenerator = ({
 
       setGeneratedCard(cardData);
       setShowResult(true);
+
+      // 포토카드 생성 완료 콜백 호출
+      if (onPhotoCardCreated) {
+        onPhotoCardCreated(cardData);
+      }
+
+      // 포토카드 민팅 완료 콜백 호출
+      if (onPhotoCardMinted) {
+        onPhotoCardMinted(cardData);
+      }
 
       toast.success(`🎉 ${selectedIdol.name}의 ${selectedConcept.name} 포토카드가 생성되었습니다!`);
     } catch (error) {
@@ -238,13 +251,9 @@ export const IdolPhotocardGenerator = ({
   };
 
   const handleGoToCollection = () => {
-    if (onNavigateToCollection) {
-      onNavigateToCollection();
-    } else {
-      // Fallback: try to switch to collection tab
-      // This will work if the parent component uses hash-based tab switching
-      window.location.hash = 'collection';
-    }
+    // Assuming there's a parent component that handles tab changes
+    // You might need to pass this as a prop or use a navigation method
+    window.location.hash = 'collection';
   };
 
   const canAfford = (concept: ConceptOption) => {

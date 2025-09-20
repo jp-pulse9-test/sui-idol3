@@ -10,7 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
-import { Settings, Camera } from "lucide-react";
+import { ZkLoginButton } from "@/components/ZkLoginButton";
+import { Settings, Shield, Camera, Wallet, Coins, Crown, Network } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -148,6 +149,11 @@ const Index = () => {
             size="lg" 
             className="shadow-lg"
           />
+          <ZkLoginButton 
+            variant="outline" 
+            size="lg" 
+            className="shadow-lg"
+          />
           {user && (
             <>
               <Button
@@ -275,6 +281,9 @@ const Index = () => {
                 buttonText="갤러리 보기"
               />
             </div>
+
+            
+              
           </div>
         </section>
 
