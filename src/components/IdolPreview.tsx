@@ -3,12 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Crown, Heart, Star, Sparkles, BarChart3, Radar } from "lucide-react";
+import { Crown, Heart, Star, Sparkles, BarChart3, Radar, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { IdolStatsDisplay, generateRandomStats } from "@/components/IdolStatsDisplay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { secureStorage } from "@/utils/secureStorage";
 import { IdolPreset } from "@/types/idol";
+import { useNavigate } from "react-router-dom";
 
 interface IdolPreviewProps {
   selectedIdol: IdolPreset;
@@ -18,6 +19,7 @@ interface IdolPreviewProps {
 }
 
 const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: IdolPreviewProps) => {
+  const navigate = useNavigate();
   const [votingProgress, setVotingProgress] = useState(0);
   const [isVoting, setIsVoting] = useState(false);
   const [hasSufficientCoins, setHasSufficientCoins] = useState(false);
@@ -230,19 +232,33 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
           </div>
         )}
 
-        {/* 다음 단계 안내 */}
+        {/* 다음 단계 버튼 */}
         <Card className="p-6 glass-dark border-white/10 max-w-2xl mx-auto">
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-6">
             <h3 className="text-xl font-bold gradient-text">다음 단계</h3>
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
-              <div className="p-4 bg-card/50 rounded-lg">
-                <div className="font-bold text-accent">🗃️ VAULT</div>
-                <div className="text-muted-foreground">스토리 플레이 & 포카 수집</div>
-              </div>
-              <div className="p-4 bg-card/50 rounded-lg">
-                <div className="font-bold text-secondary">📈 RISE</div>
-                <div className="text-muted-foreground">리더보드 & 갤러리 & 거래</div>
-              </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="h-auto p-6 flex flex-col items-center space-y-3 bg-card/50 hover:bg-accent/20 border-accent/30"
+                onClick={() => navigate('/vault')}
+              >
+                <div className="text-2xl">🗃️</div>
+                <div className="font-bold text-accent text-lg">VAULT</div>
+                <div className="text-muted-foreground text-sm">스토리 플레이 & 포카 수집</div>
+                <ArrowRight className="h-4 w-4 text-accent" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="h-auto p-6 flex flex-col items-center space-y-3 bg-card/50 hover:bg-secondary/20 border-secondary/30"
+                onClick={() => navigate('/rise')}
+              >
+                <div className="text-2xl">📈</div>
+                <div className="font-bold text-secondary text-lg">RISE</div>
+                <div className="text-muted-foreground text-sm">리더보드 & 갤러리 & 거래</div>
+                <ArrowRight className="h-4 w-4 text-secondary" />
+              </Button>
             </div>
           </div>
         </Card>
