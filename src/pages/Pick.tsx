@@ -122,19 +122,29 @@ const Pick = () => {
   // Initialize game data
   useEffect(() => {
     const initializeGame = async () => {
-      // Check if user is authenticated before fetching idol data
+      console.log('Starting idol data fetch...');
+      
+      // 먼저 아이돌 데이터를 가져와보기 (인증 없이도 시도)
+      let idolData = await fetchIdolsFromDB();
+      console.log('Fetched idol data:', idolData?.length || 0, 'idols');
+      
+      // 아이돌 데이터가 충분하다면 바로 진행
+      if (idolData.length >= 10) {
+        console.log('Sufficient idol data found, proceeding to personality test');
+        setIdols(idolData);
+        setGamePhase('personality-test');
+        return;
+      }
+
+      // 데이터가 부족한 경우만 인증 체크
       if (!isAuthenticated) {
         console.log('User not authenticated, redirecting to auth');
         toast.error('아이돌 데이터에 접근하려면 지갑 연결이 필요합니다.');
         navigate('/auth');
         return;
       }
-
-      console.log('Starting idol data fetch...');
-      let idolData = await fetchIdolsFromDB();
-      console.log('Fetched idol data:', idolData?.length || 0, 'idols');
       
-      // If no idols exist, generate them
+      // 인증된 사용자인 경우 데이터 생성 시도
       if (idolData.length === 0) {
         console.log('No idols found, generating preset idols...');
         const generated = await generatePresetIdols();
@@ -156,14 +166,9 @@ const Pick = () => {
       }
     };
 
-    // Only run if authentication state is determined
-    if (isAuthenticated !== undefined) {
-      console.log('Authentication state determined:', isAuthenticated);
-      initializeGame();
-    } else {
-      console.log('Waiting for authentication state...');
-    }
-  }, [isAuthenticated, navigate]);
+    // 인증 상태와 상관없이 일단 시도
+    initializeGame();
+  }, [navigate]); // isAuthenticated 의존성 제거
 
   const handlePersonalityComplete = (scores: { extroversion: number; intuition: number; feeling: number; judging: number }) => {
     setPersonalityData(prev => ({
