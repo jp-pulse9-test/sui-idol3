@@ -44,6 +44,9 @@ export const IdolPhotocardGenerator = ({
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
   const [selectedConcept, setSelectedConcept] = useState<ConceptOption | null>(null);
   const [selectedSeason, setSelectedSeason] = useState<string>('Season 1');
+  const [selectedWeather, setSelectedWeather] = useState<string>('');
+  const [selectedMood, setSelectedMood] = useState<string>('');
+  const [selectedTheme, setSelectedTheme] = useState<string>('');
 
   const conceptOptions: ConceptOption[] = [
     {
@@ -89,6 +92,21 @@ export const IdolPhotocardGenerator = ({
   ];
 
   const seasons = ['Season 1', 'Season 2', 'Winter Special', 'Summer Edition'];
+  
+  const weatherOptions = [
+    '맑음 ☀️', '흐림 ☁️', '비 🌧️', '눈 ❄️', '바람 💨', 
+    '안개 🌫️', '새벽 🌅', '석양 🌇', '달밤 🌙'
+  ];
+  
+  const moodOptions = [
+    '행복한 😊', '차분한 😌', '신비로운 🪄', '로맨틱한 💕', '쿨한 😎',
+    '귀여운 🥰', '성숙한 💼', '몽환적인 ✨', '활기찬 🎉', '우울한 🌧️'
+  ];
+  
+  const themeOptions = [
+    '일상 생활', '여행', '카페', '공원', '해변', '도시', '학교', 
+    '집', '스튜디오', '콘서트', '팬미팅', '쇼핑', '드라이브'
+  ];
 
   const handleGeneratePhotocard = async () => {
     if (!selectedConcept) {
@@ -109,11 +127,18 @@ export const IdolPhotocardGenerator = ({
     }
 
     try {
+      const enhancedPrompt = `${selectedConcept.name} 컨셉의 ${selectedIdol.name}`;
+      const additionalDetails = [
+        selectedWeather && `날씨: ${selectedWeather}`,
+        selectedMood && `분위기: ${selectedMood}`,
+        selectedTheme && `주제: ${selectedTheme}`
+      ].filter(Boolean).join(', ');
+
       const mintingData = {
         idolId: selectedIdol.id,
         idolName: selectedIdol.name,
         rarity: selectedConcept.rarity,
-        concept: selectedConcept.name,
+        concept: additionalDetails ? `${selectedConcept.name} (${additionalDetails})` : selectedConcept.name,
         season: selectedSeason,
         serialNo: Math.floor(Math.random() * 10000) + 1,
         totalSupply: selectedConcept.rarity === 'SSR' ? 500 : selectedConcept.rarity === 'SR' ? 2000 : 5000,
@@ -196,27 +221,94 @@ export const IdolPhotocardGenerator = ({
         </div>
       </Card>
 
-      {/* Season Selection */}
-      <Card className="p-4 glass-dark border-white/10">
-        <div className="space-y-3">
-          <h4 className="font-semibold flex items-center gap-2">
-            <Star className="w-4 h-4" />
-            시즌 선택
-          </h4>
-          <Select value={selectedSeason} onValueChange={setSelectedSeason}>
-            <SelectTrigger className="bg-card/50">
-              <SelectValue placeholder="시즌을 선택하세요" />
-            </SelectTrigger>
-            <SelectContent>
-              {seasons.map((season) => (
-                <SelectItem key={season} value={season}>
-                  {season}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </Card>
+      {/* Season and Options Selection */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <Card className="p-4 glass-dark border-white/10">
+          <div className="space-y-3">
+            <h4 className="font-semibold flex items-center gap-2">
+              <Star className="w-4 h-4" />
+              시즌 선택
+            </h4>
+            <Select value={selectedSeason} onValueChange={setSelectedSeason}>
+              <SelectTrigger className="bg-card/50">
+                <SelectValue placeholder="시즌을 선택하세요" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border z-50">
+                {seasons.map((season) => (
+                  <SelectItem key={season} value={season}>
+                    {season}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+
+        <Card className="p-4 glass-dark border-white/10">
+          <div className="space-y-3">
+            <h4 className="font-semibold flex items-center gap-2">
+              ☀️ 날씨
+            </h4>
+            <Select value={selectedWeather} onValueChange={setSelectedWeather}>
+              <SelectTrigger className="bg-card/50">
+                <SelectValue placeholder="날씨를 선택하세요 (선택사항)" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border z-50">
+                <SelectItem value="">선택 안함</SelectItem>
+                {weatherOptions.map((weather) => (
+                  <SelectItem key={weather} value={weather}>
+                    {weather}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <Card className="p-4 glass-dark border-white/10">
+          <div className="space-y-3">
+            <h4 className="font-semibold flex items-center gap-2">
+              😊 기분/분위기
+            </h4>
+            <Select value={selectedMood} onValueChange={setSelectedMood}>
+              <SelectTrigger className="bg-card/50">
+                <SelectValue placeholder="기분을 선택하세요 (선택사항)" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border z-50">
+                <SelectItem value="">선택 안함</SelectItem>
+                {moodOptions.map((mood) => (
+                  <SelectItem key={mood} value={mood}>
+                    {mood}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+
+        <Card className="p-4 glass-dark border-white/10">
+          <div className="space-y-3">
+            <h4 className="font-semibold flex items-center gap-2">
+              🎨 주제
+            </h4>
+            <Select value={selectedTheme} onValueChange={setSelectedTheme}>
+              <SelectTrigger className="bg-card/50">
+                <SelectValue placeholder="주제를 선택하세요 (선택사항)" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border z-50">
+                <SelectItem value="">선택 안함</SelectItem>
+                {themeOptions.map((theme) => (
+                  <SelectItem key={theme} value={theme}>
+                    {theme}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+      </div>
 
       {/* Concept Selection */}
       <div className="space-y-4">

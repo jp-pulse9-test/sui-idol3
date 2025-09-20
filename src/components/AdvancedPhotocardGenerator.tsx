@@ -34,6 +34,9 @@ export const AdvancedPhotocardGenerator = ({
   const [materialImage, setMaterialImage] = useState<File | null>(null);
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState("photorealistic");
+  const [weather, setWeather] = useState("");
+  const [mood, setMood] = useState("");
+  const [theme, setTheme] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   
@@ -49,6 +52,23 @@ export const AdvancedPhotocardGenerator = ({
     { id: "vintage", name: "빈티지", description: "레트로 감성" },
     { id: "dreamy", name: "드리미", description: "꿈같은 몽환적 분위기" },
     { id: "dramatic", name: "드라마틱", description: "강렬한 대비와 조명" }
+  ];
+
+  const weatherOptions = [
+    '맑은 날씨', '흐린 하늘', '비오는 날', '눈내리는 날', '바람부는 날',
+    '안개낀 날', '새벽 햇살', '황금 석양', '달밤', '폭풍우'
+  ];
+  
+  const moodOptions = [
+    '행복하고 밝은', '차분하고 평온한', '신비롭고 몽환적인', '로맨틱하고 따뜻한',
+    '쿨하고 시크한', '귀엽고 사랑스러운', '성숙하고 우아한', '활기차고 에너지 넘치는',
+    '우울하고 감성적인', '강렬하고 카리스마 있는'
+  ];
+  
+  const themeOptions = [
+    '일상 생활', '여행과 모험', '카페와 브런치', '공원 산책', '해변과 바다',
+    '도시의 밤', '학교 생활', '집에서 휴식', '스튜디오 촬영', '콘서트 무대',
+    '팬미팅', '쇼핑과 패션', '드라이브', '축제와 파티', '자연과 하이킹'
   ];
 
   const handleImageUpload = (type: 'person' | 'material', file: File) => {
@@ -115,12 +135,15 @@ export const AdvancedPhotocardGenerator = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt,
+          prompt: `${prompt}${weather ? ` 날씨: ${weather}.` : ''}${mood ? ` 분위기: ${mood}.` : ''}${theme ? ` 주제: ${theme}.` : ''}`,
           style,
           personImageBase64,
           materialImageBase64,
           idolName: selectedIdol.name,
-          personality: selectedIdol.personality
+          personality: selectedIdol.personality,
+          weather,
+          mood,
+          theme
         }),
       });
 
@@ -282,6 +305,66 @@ export const AdvancedPhotocardGenerator = ({
         </div>
       </Card>
 
+      {/* Weather, Mood, Theme Selection */}
+      <div className="grid md:grid-cols-3 gap-4">
+        <Card className="p-4 glass-dark border-white/10">
+          <div className="space-y-4">
+            <Label>날씨 (선택사항)</Label>
+            <Select value={weather} onValueChange={setWeather}>
+              <SelectTrigger className="bg-card/50">
+                <SelectValue placeholder="날씨 선택" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border">
+                <SelectItem value="">선택 안함</SelectItem>
+                {weatherOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+
+        <Card className="p-4 glass-dark border-white/10">
+          <div className="space-y-4">
+            <Label>기분/분위기 (선택사항)</Label>
+            <Select value={mood} onValueChange={setMood}>
+              <SelectTrigger className="bg-card/50">
+                <SelectValue placeholder="분위기 선택" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border">
+                <SelectItem value="">선택 안함</SelectItem>
+                {moodOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+
+        <Card className="p-4 glass-dark border-white/10">
+          <div className="space-y-4">
+            <Label>주제 (선택사항)</Label>
+            <Select value={theme} onValueChange={setTheme}>
+              <SelectTrigger className="bg-card/50">
+                <SelectValue placeholder="주제 선택" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border">
+                <SelectItem value="">선택 안함</SelectItem>
+                {themeOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+      </div>
+
       {/* Style Selection */}
       <Card className="p-4 glass-dark border-white/10">
         <div className="space-y-4">
@@ -290,7 +373,7 @@ export const AdvancedPhotocardGenerator = ({
             <SelectTrigger className="bg-card/50">
               <SelectValue placeholder="스타일을 선택하세요" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background border border-border">
               {styles.map((styleOption) => (
                 <SelectItem key={styleOption.id} value={styleOption.id}>
                   <div className="flex flex-col">
