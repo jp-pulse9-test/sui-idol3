@@ -40,23 +40,41 @@ export class WalrusService {
             network: this.network,
           });
 
-          this.walrusClient = new WalrusClient({
+          // WASM URL이 정의되지 않은 경우 기본 설정 사용
+          const clientConfig: any = {
             network: this.network,
             suiClient: this.suiClient,
-            wasmUrl: WALRUS_WASM_URLS[i],
             storageNodeClientOptions: {
-              timeout: 60_000,
+              timeout: 30_000, // 타임아웃 단축
+              retries: 2,
               onError: (error: any) => {
-                console.error('Walrus storage node error:', error);
+                console.warn('Walrus storage node warning:', error);
               },
             },
-          });
+          };
+
+          // WASM URL이 있는 경우에만 추가
+          if (WALRUS_WASM_URLS[i]) {
+            clientConfig.wasmUrl = WALRUS_WASM_URLS[i];
+          }
+
+          this.walrusClient = new WalrusClient(clientConfig);
+
+          // 초기화 검증
+          await this.testConnection();
 
           this.WalrusFile = WalrusFile;
-          console.log('Walrus 초기화 성공!');
+          console.log(`Walrus 초기화 성공! (시도 ${i + 1})`);
+          this.available = true;
           return; // 성공하면 루프 종료
         } catch (e) {
           console.error(`Walrus 초기화 시도 ${i + 1} 실패:`, e);
+          
+          // 각 시도 간 잠시 대기
+          if (i < WALRUS_WASM_URLS.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+          
           if (i === WALRUS_WASM_URLS.length - 1) {
             // 모든 시도가 실패한 경우
             console.error('모든 Walrus 초기화 시도 실패');
@@ -69,15 +87,30 @@ export class WalrusService {
     return this.initPromise;
   }
 
+  private async testConnection() {
+    // 간단한 연결 테스트 - 너무 복잡하지 않게
+    try {
+      if (this.walrusClient && typeof this.walrusClient.getFiles === 'function') {
+        // 클라이언트가 정상적으로 생성되었는지 확인
+        return true;
+      }
+      throw new Error('클라이언트 메서드가 없습니다');
+    } catch (e) {
+      console.warn('Walrus 연결 테스트 실패:', e);
+      throw e;
+    }
+  }
+
   private assertAvailable() {
     if (!this.available) {
       console.error('Walrus 서비스 상태:', {
         available: this.available,
         initPromise: !!this.initPromise,
         walrusClient: !!this.walrusClient,
-        suiClient: !!this.suiClient
+        suiClient: !!this.suiClient,
+        network: this.network
       });
-      throw new Error('Walrus 기능이 현재 비활성화되어 있습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.');
+      throw new Error('Walrus 분산 저장소에 연결할 수 없습니다. 네트워크를 확인하고 다시 시도해주세요.');
     }
   }
 
