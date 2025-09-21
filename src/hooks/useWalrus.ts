@@ -64,6 +64,7 @@ export interface UseWalrusReturn {
   // 유틸리티
   reset: () => void;
   clearError: () => void;
+  forceReinit: () => Promise<boolean>;
 }
 
 export function useWalrus(): UseWalrusReturn {
@@ -114,9 +115,24 @@ export function useWalrus(): UseWalrusReturn {
       setUploadProgress({ status: 'success', result });
       return result;
     } catch (err) {
+      console.error('파일 업로드 오류:', err);
       const errorMessage = err instanceof Error ? err.message : '파일 업로드 중 오류가 발생했습니다';
       setError(errorMessage);
       setUploadProgress({ status: 'error', error: errorMessage });
+      
+      // Walrus 초기화 문제인 경우 재시도 제안
+      if (errorMessage.includes('비활성화')) {
+        console.log('Walrus 재초기화를 시도합니다...');
+        try {
+          const reinitSuccess = await walrusService.forceReinit();
+          if (reinitSuccess) {
+            console.log('재초기화 성공, 다시 시도해주세요');
+          }
+        } catch (reinitErr) {
+          console.error('재초기화 실패:', reinitErr);
+        }
+      }
+      
       throw err;
     } finally {
       setIsLoading(false);
@@ -243,6 +259,10 @@ export function useWalrus(): UseWalrusReturn {
     }
   }, [walletSigner]);
 
+  const forceReinit = useCallback(async () => {
+    return walrusService.forceReinit();
+  }, []);
+
   const createUploadFlow = useCallback((files: any[]) => {
     return walrusService.createUploadFlow(files);
   }, []);
@@ -260,5 +280,6 @@ export function useWalrus(): UseWalrusReturn {
     error,
     reset,
     clearError,
+    forceReinit,
   };
 }

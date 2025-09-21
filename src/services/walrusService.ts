@@ -71,7 +71,13 @@ export class WalrusService {
 
   private assertAvailable() {
     if (!this.available) {
-      throw new Error('Walrus 기능이 현재 비활성화되어 있습니다 (WASM 모듈 로딩 실패).');
+      console.error('Walrus 서비스 상태:', {
+        available: this.available,
+        initPromise: !!this.initPromise,
+        walrusClient: !!this.walrusClient,
+        suiClient: !!this.suiClient
+      });
+      throw new Error('Walrus 기능이 현재 비활성화되어 있습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.');
     }
   }
 
@@ -236,11 +242,26 @@ export class WalrusService {
   }
 
   reset() {
+    console.log('Walrus 서비스 리셋 중...');
     try {
       this.walrusClient?.reset?.();
-    } catch {}
+    } catch (e) {
+      console.error('Walrus 클라이언트 리셋 오류:', e);
+    }
     this.initPromise = null;
     this.available = true;
+    this.walrusClient = null;
+    this.suiClient = null;
+    this.WalrusFile = null;
+    console.log('Walrus 서비스 리셋 완료');
+  }
+
+  // 강제 재초기화 메서드 추가
+  async forceReinit() {
+    console.log('Walrus 강제 재초기화 시작...');
+    this.reset();
+    await this.ensureInit();
+    return this.available;
   }
 
   getSuiClient() {
