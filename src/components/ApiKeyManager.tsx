@@ -31,10 +31,9 @@ export const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ walletAddress }) =
       setHasExistingKey(hasKey);
 
       if (hasKey) {
-        const key = await ApiKeyService.getApiKey(walletAddress);
-        if (key) {
-          setApiKey(key);
-        }
+        // For security, we don't retrieve the actual key
+        // Instead, show a masked version to indicate a key exists
+        setApiKey('•••••••••••••••••••••••••••••••••••••••');
       }
     } catch (error) {
       console.error('Error checking API key:', error);

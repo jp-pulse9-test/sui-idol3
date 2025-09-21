@@ -34,33 +34,42 @@ export class ApiKeyService {
   }
 
   /**
-   * Retrieve API key for a user with enhanced security logging
+   * Verify if provided API key matches stored one (secure)
    */
-  static async getApiKey(walletAddress: string): Promise<string | null> {
+  static async verifyApiKey(walletAddress: string, providedKey: string): Promise<boolean> {
     try {
-      // 보안 강화: 최근 사용 시간 업데이트
-      await this.updateLastUsed(walletAddress);
-      
       const { data, error } = await supabase
-        .from('api_keys')
-        .select('api_key')
-        .eq('user_wallet', walletAddress)
-        .single();
+        .rpc('verify_api_key', {
+          user_wallet_param: walletAddress,
+          provided_key: providedKey
+        });
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          console.log('No API key found for wallet:', walletAddress);
-        } else {
-          console.error('Error retrieving API key:', error);
-        }
-        return null;
+        console.error('Error verifying API key:', error);
+        return false;
       }
 
-      return data?.api_key || null;
+      return data === true;
     } catch (error) {
-      console.error('Error in getApiKey:', error);
-      return null;
+      console.error('Error in verifyApiKey:', error);
+      return false;
     }
+  }
+
+  /**
+   * DEPRECATED: Use verifyApiKey instead for security
+   * This method is kept for backward compatibility but should not be used
+   */
+  static async getApiKey(walletAddress: string): Promise<string | null> {
+    console.warn('⚠️ getApiKey is deprecated for security reasons. Use verifyApiKey instead.');
+    
+    // For backward compatibility with existing code, we'll need to handle this
+    // through secure edge functions or client-side storage
+    const hasKey = await this.hasApiKey(walletAddress);
+    if (!hasKey) return null;
+    
+    // Return a placeholder - actual key should be managed differently
+    return 'SECURE_KEY_USE_VERIFY_INSTEAD';
   }
 
   /**
@@ -86,25 +95,21 @@ export class ApiKeyService {
   }
 
   /**
-   * Check if user has an API key
+   * Check if user has an active API key (secure)
    */
   static async hasApiKey(walletAddress: string): Promise<boolean> {
     try {
       const { data, error } = await supabase
-        .from('api_keys')
-        .select('id')
-        .eq('user_wallet', walletAddress)
-        .single();
+        .rpc('has_active_api_key', {
+          user_wallet_param: walletAddress
+        });
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          return false;
-        }
         console.error('Error checking API key existence:', error);
         return false;
       }
 
-      return !!data;
+      return data === true;
     } catch (error) {
       console.error('Error in hasApiKey:', error);
       return false;

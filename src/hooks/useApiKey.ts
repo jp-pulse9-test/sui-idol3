@@ -21,11 +21,13 @@ export const useApiKey = (walletAddress: string | null) => {
     setError(null);
 
     try {
-      const key = await ApiKeyService.getApiKey(walletAddress);
-      setApiKey(key);
+      // For security, we only check if the user has a key
+      // The actual key should not be exposed to the frontend
+      const hasKey = await ApiKeyService.hasApiKey(walletAddress);
+      setApiKey(hasKey ? 'SECURE_KEY_EXISTS' : null);
     } catch (err) {
-      setError('Failed to fetch API key');
-      console.error('Error fetching API key:', err);
+      setError('Failed to check API key status');
+      console.error('Error checking API key:', err);
     } finally {
       setIsLoading(false);
     }

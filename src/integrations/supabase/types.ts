@@ -646,12 +646,20 @@ export type Database = {
         Args: { idol_id: number }
         Returns: Json
       }
+      has_active_api_key: {
+        Args: { user_wallet_param: string }
+        Returns: boolean
+      }
       is_admin_user: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
       user_has_activated_key: {
         Args: { key_to_check: string }
+        Returns: boolean
+      }
+      verify_api_key: {
+        Args: { provided_key: string; user_wallet_param: string }
         Returns: boolean
       }
     }
