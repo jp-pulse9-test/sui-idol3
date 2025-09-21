@@ -153,6 +153,17 @@
 }
 
 @layer components {
+  /* Background gradients */
+  .bg-gradient-background {
+    background: var(--gradient-background);
+  }
+
+  /* Custom fonts */
+  .font-blacksword {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 900;
+  }
+
   /* Glass morphism effects */
   .glass {
     background: rgba(255, 255, 255, 0.08);

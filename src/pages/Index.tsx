@@ -143,7 +143,12 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
+      {/* 임시 디버그 엘리먼트 */}
+      <div className="fixed top-0 left-0 z-50 bg-red-500 text-white p-2">
+        DEBUG: Index 렌더링됨 - User: {user ? 'Logged In' : 'Not Logged'}, Loading: {loading.toString()}
+      </div>
+      
       {/* 좌우 아이돌 그리드 배경 */}
       <IdolGrid side="left" />
       <IdolGrid side="right" />
