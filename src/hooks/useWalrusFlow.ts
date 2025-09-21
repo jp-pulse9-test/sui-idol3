@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { walrusService } from '@/services/walrusService';
-import type { WalrusFile } from '@mysten/walrus';
+// import type { WalrusFile } from '@mysten/walrus';
 import { useWalletSigner } from './useWalletSigner';
 
 export interface FlowStep {
@@ -31,7 +31,7 @@ export interface UseWalrusFlowReturn {
   executeCertify: (account: any) => Promise<string>;
   
   // 플로우 완료
-  completeFlow: () => Promise<WalrusFile[]>;
+  completeFlow: () => Promise<any[]>;
   
   // 플로우 리셋
   resetFlow: () => void;

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { walrusService } from '@/services/walrusService';
-import type { WalrusFile } from '@mysten/walrus';
+// import type { WalrusFile } from '@mysten/walrus';
 import { useWalletSigner } from './useWalletSigner';
 
 export interface UploadProgress {
@@ -36,10 +36,10 @@ export interface UseWalrusReturn {
   ) => Promise<any[]>;
   
   // 파일 다운로드
-  downloadFile: (blobId: string) => Promise<WalrusFile>;
+  downloadFile: (blobId: string) => Promise<any>;
   
   // 여러 파일 다운로드
-  downloadFiles: (blobIds: string[]) => Promise<WalrusFile[]>;
+  downloadFiles: (blobIds: string[]) => Promise<any[]>;
   
   // Blob 읽기
   readBlob: (blobId: string) => Promise<Uint8Array>;
@@ -54,7 +54,7 @@ export interface UseWalrusReturn {
   ) => Promise<any>;
   
   // 브라우저 업로드 플로우
-  createUploadFlow: (files: WalrusFile[]) => any;
+  createUploadFlow: (files: any[]) => any;
   
   // 상태
   uploadProgress: UploadProgress;
@@ -243,7 +243,7 @@ export function useWalrus(): UseWalrusReturn {
     }
   }, [walletSigner]);
 
-  const createUploadFlow = useCallback((files: WalrusFile[]) => {
+  const createUploadFlow = useCallback((files: any[]) => {
     return walrusService.createUploadFlow(files);
   }, []);
 
