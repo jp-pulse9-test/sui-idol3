@@ -84,68 +84,12 @@ const Pick = () => {
     }
   };
 
-  // Generate preset idols if none exist
-  const generatePresetIdols = async (): Promise<boolean> => {
-    try {
-      toast.info('202명의 아이돌 데이터를 생성하고 있습니다... 잠시만 기다려주세요.');
-      
-      const { data, error } = await supabase.functions.invoke('generate-preset-idols');
-      
-      if (error) {
-        console.error('Error generating preset idols:', error);
-        throw error;
-      }
-      
-      toast.success('아이돌 데이터 생성이 완료되었습니다!');
-      return true;
-    } catch (error) {
-      console.error('Failed to generate preset idols:', error);
-      toast.error('아이돌 데이터 생성에 실패했습니다. 샘플 데이터로 진행합니다.');
-      
-      // Create sample idol data as fallback
-      const sampleIdols = Array.from({ length: 10 }, (_, i) => ({
-        name: `아이돌${i + 1}`,
-        Gender: i % 2 === 0 ? 'female' : 'male',
-        Category: 'sample',
-        Concept: 'cute',
-        personality: `성격${i + 1}`,
-        description: `설명${i + 1}`,
-        profile_image: '/placeholder.svg',
-        persona_prompt: `아이돌 ${i + 1}의 페르소나`
-      }));
-      
-      // Insert sample data into database
-      const { error: insertError } = await supabase
-        .from('idols')
-        .insert(sampleIdols);
-        
-      if (insertError) {
-        console.error('Failed to insert sample data:', insertError);
-        return false;
-      }
-      
-      return true;
-    }
-  };
 
   // Initialize game data
   useEffect(() => {
     const initializeGame = async () => {
       console.log('Starting idol data fetch...');
       
-      // 먼저 아이돌 데이터를 가져와보기 (인증 없이도 시도)
-      let idolData = await fetchIdolsFromDB();
-      console.log('Fetched idol data:', idolData?.length || 0, 'idols');
-      
-      // 아이돌 데이터가 충분하다면 바로 진행
-      if (idolData.length >= 10) {
-        console.log('Sufficient idol data found, proceeding to personality test');
-        setIdols(idolData);
-        setGamePhase('personality-test');
-        return;
-      }
-
-      // 데이터가 부족한 경우만 인증 체크
       if (!isAuthenticated) {
         console.log('User not authenticated, redirecting to auth');
         toast.error('아이돌 데이터에 접근하려면 지갑 연결이 필요합니다.');
@@ -153,31 +97,22 @@ const Pick = () => {
         return;
       }
       
-      // 인증된 사용자인 경우 데이터 생성 시도
-      if (idolData.length === 0) {
-        console.log('No idols found, generating preset idols...');
-        const generated = await generatePresetIdols();
-        if (generated) {
-          console.log('Generation completed, refetching data...');
-          idolData = await fetchIdolsFromDB();
-          console.log('After generation, idol count:', idolData?.length || 0);
-        }
-      }
+      const idolData = await fetchIdolsFromDB();
+      console.log('Fetched idol data:', idolData?.length || 0, 'idols');
       
       if (idolData.length > 0) {
         console.log('Setting idols and moving to gender select');
         setIdols(idolData);
         setGamePhase('gender-select');
       } else {
-        console.log('Still no idol data, continuing with empty data');
+        console.log('No idol data found in database');
         toast.error('아이돌 데이터를 불러올 수 없습니다.');
-        setGamePhase('gender-select'); // Continue to gender select even with no data
+        setGamePhase('gender-select');
       }
     };
 
-    // 인증 상태와 상관없이 일단 시도
     initializeGame();
-  }, [navigate]); // isAuthenticated 의존성 제거
+  }, [isAuthenticated, navigate]);
 
   const handleGenderSelect = (gender: 'male' | 'female') => {
     setSelectedGender(gender);
