@@ -128,13 +128,13 @@ export const Marketplace = ({
     const end = new Date(endTime).getTime();
     const diff = end - now;
     
-    if (diff <= 0) return "경매 종료";
+    if (diff <= 0) return "Auction Ended";
     
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     
-    if (hours > 0) return `${hours}시간 ${minutes}분`;
-    return `${minutes}분`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
   };
 
   const formatWalletAddress = (address: string) => {
@@ -192,7 +192,7 @@ export const Marketplace = ({
           {/* Floor Price Indicator */}
           {isFloorPrice && (
             <Badge className="absolute top-12 left-2 bg-green-500/20 text-green-400 border-green-500/30">
-              바닥가
+              Floor Price
             </Badge>
           )}
 
@@ -214,7 +214,7 @@ export const Marketplace = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                {listing.isAuction ? '현재 입찰가' : '즉시구매가'}
+                {listing.isAuction ? 'Current Bid' : 'Buy Now Price'}
               </span>
               <div className="flex items-center gap-1">
                 <DollarSign className="w-3 h-3 text-primary" />
@@ -226,12 +226,12 @@ export const Marketplace = ({
 
             {listing.isAuction && listing.totalBids && (
               <div className="text-xs text-muted-foreground">
-                {listing.totalBids}번의 입찰
+                {listing.totalBids} bids
               </div>
             )}
 
             <div className="text-xs text-muted-foreground">
-              판매자: {formatWalletAddress(listing.seller)}
+              Seller: {formatWalletAddress(listing.seller)}
             </div>
           </div>
 
@@ -243,37 +243,37 @@ export const Marketplace = ({
                     <DialogTrigger asChild>
                       <Button size="sm" className="flex-1" onClick={() => setSelectedListing(listing)}>
                         <TrendingUp className="w-3 h-3 mr-1" />
-                        입찰하기
+                        Place Bid
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-card/95 backdrop-blur-md border-border">
                       <DialogHeader>
-                        <DialogTitle>입찰하기</DialogTitle>
+                        <DialogTitle>Place Bid</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div className="text-center">
                           <img src={listing.imageUrl} alt="" className="w-24 h-32 object-cover mx-auto rounded-lg mb-2" />
                           <p className="font-semibold">{listing.idolName} - {listing.concept}</p>
                           <p className="text-sm text-muted-foreground">
-                            현재 최고가: {listing.currentBid || listing.price} SUI
+                            Current highest bid: {listing.currentBid || listing.price} SUI
                           </p>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-medium">입찰 금액 (SUI)</label>
+                          <label className="text-sm font-medium">Bid Amount (SUI)</label>
                           <Input
                             type="number"
-                            placeholder={`${(listing.currentBid || listing.price) + 0.1} 이상`}
+                            placeholder={`${(listing.currentBid || listing.price) + 0.1} or more`}
                             value={bidAmount}
                             onChange={(e) => setBidAmount(e.target.value)}
                             className="bg-card/50 border-border"
                           />
                         </div>
-                        <Button 
-                          onClick={() => handleBid(listing)} 
+                        <Button
+                          onClick={() => handleBid(listing)}
                           className="w-full"
                           disabled={!bidAmount || Number(bidAmount) <= (listing.currentBid || listing.price)}
                         >
-                          입찰하기
+                          Place Bid
                         </Button>
                       </div>
                     </DialogContent>
@@ -281,7 +281,7 @@ export const Marketplace = ({
                 ) : (
                   <Button size="sm" className="flex-1" onClick={() => handlePurchase(listing)}>
                     <ShoppingCart className="w-3 h-3 mr-1" />
-                    구매하기
+                    Purchase
                   </Button>
                 )}
               </>
@@ -304,7 +304,7 @@ export const Marketplace = ({
             <History className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="font-semibold text-sm">거래 완료</p>
+            <p className="font-semibold text-sm">Trade Completed</p>
             <p className="text-xs text-muted-foreground">
               {new Date(item.soldAt).toLocaleDateString()}
             </p>
@@ -325,10 +325,10 @@ export const Marketplace = ({
       <div className="text-center space-y-4">
         <h2 className="text-3xl font-bold gradient-text flex items-center justify-center gap-2">
           <ShoppingCart className="w-8 h-8" />
-          마켓플레이스
+          Marketplace
         </h2>
         <p className="text-muted-foreground">
-          포토카드를 거래하고 컬렉션을 완성하세요 · 로열티 5%는 자동 배분됩니다
+          Trade photocards and complete your collection · 5% royalty automatically distributed
         </p>
       </div>
 
@@ -337,23 +337,23 @@ export const Marketplace = ({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
             <div className="text-2xl font-bold gradient-text">{listings.length}</div>
-            <div className="text-sm text-muted-foreground">판매 중</div>
+            <div className="text-sm text-muted-foreground">For Sale</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-green-400">{priceHistory.length}</div>
-            <div className="text-sm text-muted-foreground">총 거래</div>
+            <div className="text-sm text-muted-foreground">Total Trades</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-blue-400">
               {listings.filter(l => l.isAuction).length}
             </div>
-            <div className="text-sm text-muted-foreground">경매 중</div>
+            <div className="text-sm text-muted-foreground">In Auction</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-purple-400">
               {Math.min(...listings.map(l => l.price)).toFixed(1)}
             </div>
-            <div className="text-sm text-muted-foreground">최저가 (SUI)</div>
+            <div className="text-sm text-muted-foreground">Minimum Price (SUI)</div>
           </div>
         </div>
       </Card>
@@ -362,10 +362,10 @@ export const Marketplace = ({
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'buy' | 'history')} className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-card/50 backdrop-blur-sm">
           <TabsTrigger value="buy" className="data-[state=active]:bg-primary/20">
-            🛒 구매하기
+            🛒 Buy
           </TabsTrigger>
           <TabsTrigger value="history" className="data-[state=active]:bg-primary/20">
-            📊 거래 내역
+            📊 Trade History
           </TabsTrigger>
         </TabsList>
 
@@ -374,7 +374,7 @@ export const Marketplace = ({
           <Card className="p-4 glass-dark border-white/10">
             <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               <Input
-                placeholder="아이돌명, 컨셉 검색..."
+                placeholder="Search idol name, concept..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-card/50 border-border"
@@ -382,22 +382,22 @@ export const Marketplace = ({
               
               <Select value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
                 <SelectTrigger className="bg-card/50 border-border">
-                  <SelectValue placeholder="정렬" />
+                  <SelectValue placeholder="Sort" />
                 </SelectTrigger>
                 <SelectContent className="bg-card/95 backdrop-blur-md border-border">
-                  <SelectItem value="date">최신순</SelectItem>
-                  <SelectItem value="price">가격순</SelectItem>
-                  <SelectItem value="rarity">레어도순</SelectItem>
-                  <SelectItem value="ending">경매 마감순</SelectItem>
+                  <SelectItem value="date">Latest</SelectItem>
+                  <SelectItem value="price">Price</SelectItem>
+                  <SelectItem value="rarity">Rarity</SelectItem>
+                  <SelectItem value="ending">Auction Ending</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={filterIdol} onValueChange={setFilterIdol}>
                 <SelectTrigger className="bg-card/50 border-border">
-                  <SelectValue placeholder="아이돌" />
+                  <SelectValue placeholder="Idol" />
                 </SelectTrigger>
                 <SelectContent className="bg-card/95 backdrop-blur-md border-border">
-                  <SelectItem value="all">전체 아이돌</SelectItem>
+                  <SelectItem value="all">All Idols</SelectItem>
                   {uniqueIdols.map((idol) => (
                     <SelectItem key={idol} value={idol}>{idol}</SelectItem>
                   ))}
@@ -406,10 +406,10 @@ export const Marketplace = ({
 
               <Select value={filterRarity} onValueChange={setFilterRarity}>
                 <SelectTrigger className="bg-card/50 border-border">
-                  <SelectValue placeholder="레어도" />
+                  <SelectValue placeholder="Rarity" />
                 </SelectTrigger>
                 <SelectContent className="bg-card/95 backdrop-blur-md border-border">
-                  <SelectItem value="all">전체</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   <SelectItem value="SSR">SSR</SelectItem>
                   <SelectItem value="SR">SR</SelectItem>
                   <SelectItem value="R">R</SelectItem>
@@ -418,7 +418,7 @@ export const Marketplace = ({
               </Select>
 
               <Input
-                placeholder="최소 가격"
+                placeholder="Minimum Price"
                 value={priceRange.min}
                 onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
                 className="bg-card/50 border-border"
@@ -426,7 +426,7 @@ export const Marketplace = ({
               />
 
               <Input
-                placeholder="최대 가격"
+                placeholder="Maximum Price"
                 value={priceRange.max}
                 onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
                 className="bg-card/50 border-border"
@@ -444,7 +444,7 @@ export const Marketplace = ({
             <div className="text-center py-12">
               <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
-                조건에 맞는 판매 상품이 없습니다
+                No items match your criteria
               </p>
             </div>
           )}
@@ -459,7 +459,7 @@ export const Marketplace = ({
             <div className="text-center py-12">
               <History className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
-                아직 거래 내역이 없습니다
+                No trade history yet
               </p>
             </div>
           )}

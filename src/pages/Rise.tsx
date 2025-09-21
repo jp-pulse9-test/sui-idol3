@@ -57,76 +57,76 @@ const Rise = () => {
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
   const [activeTab, setActiveTab] = useState<'leaderboard'>('leaderboard');
 
-  // Mock 아이돌 리더보드 데이터 - 실제 구현에서는 API로 대체
+  // Mock idol leaderboard data - to be replaced with API in actual implementation
   const mockIdolLeaderboardData: IdolLeaderboardEntry[] = [
     {
       rank: 1,
       idolId: "1",
-      idolName: "지우",
-      personality: "밝고 활발한",
+      idolName: "Jiwoo",
+      personality: "Bright and energetic",
       profileImage: selectedIdol?.image || "/api/placeholder/120/120",
       totalFans: 15420,
       totalHearts: 98500,
       totalPhotocards: 8400,
       averageRarity: 4.2,
       weeklyGrowth: 12.5,
-      category: "댄스",
+      category: "Dance",
       concept: "Summer Dream"
     },
     {
       rank: 2,
       idolId: selectedIdol?.id.toString() || "2",
-      idolName: selectedIdol?.name || "내 최애",
-      personality: selectedIdol?.personality || "사랑스러운",
+      idolName: selectedIdol?.name || "My Favorite",
+      personality: selectedIdol?.personality || "Lovely",
       profileImage: selectedIdol?.image || "/api/placeholder/120/120",
       totalFans: 12800,
       totalHearts: 76300,
       totalPhotocards: 6700,
       averageRarity: 3.8,
       weeklyGrowth: 8.9,
-      category: "보컬",
+      category: "Vocal",
       concept: "Winter Story"
     },
     {
       rank: 3,
       idolId: "3",
-      idolName: "하늘",
-      personality: "차분하고 우아한",
+      idolName: "Haneul",
+      personality: "Calm and elegant",
       profileImage: "/api/placeholder/120/120",
       totalFans: 11200,
       totalHearts: 65400,
       totalPhotocards: 5900,
       averageRarity: 3.6,
       weeklyGrowth: 5.2,
-      category: "랩",
+      category: "Rap",
       concept: "Spring Love"
     },
     {
       rank: 4,
       idolId: "4",
-      idolName: "별",
-      personality: "매력적이고 카리스마",
+      idolName: "Byeol",
+      personality: "Charming and charismatic",
       profileImage: "/api/placeholder/120/120",
       totalFans: 9800,
       totalHearts: 58200,
       totalPhotocards: 5100,
       averageRarity: 3.4,
       weeklyGrowth: 7.1,
-      category: "댄스",
+      category: "Dance",
       concept: "Autumn Wind"
     },
     {
       rank: 5,
       idolId: "5",
-      idolName: "달",
-      personality: "신비롭고 세련된",
+      idolName: "Dal",
+      personality: "Mysterious and sophisticated",
       profileImage: "/api/placeholder/120/120",
       totalFans: 8900,
       totalHearts: 52100,
       totalPhotocards: 4600,
       averageRarity: 3.2,
       weeklyGrowth: 3.8,
-      category: "보컬",
+      category: "Vocal",
       concept: "Night Dream"
     }
   ];
@@ -136,13 +136,13 @@ const Rise = () => {
     const savedIdol = localStorage.getItem('selectedIdol');
     
     if (!savedWallet) {
-      toast.error("지갑을 먼저 연결해주세요!");
+      toast.error("Please connect your wallet first!");
       navigate('/');
       return;
     }
     
     if (!savedIdol) {
-      toast.error("먼저 아이돌을 선택해주세요!");
+      toast.error("Please select an idol first!");
       navigate('/pick');
       return;
     }
@@ -150,17 +150,17 @@ const Rise = () => {
     setWalletAddress(savedWallet);
     setSelectedIdol(JSON.parse(savedIdol));
     
-    // 로컬 스토리지에서 포카 불러오기
+    // Load photocards from local storage
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     
-    // Mock 데이터 설정
+    // Set up mock data
     const mockPublicCards: PhotoCard[] = [
       ...savedCards,
-      // Mock 데이터
+      // Mock data
       {
         id: 'mock-1',
         idolId: '1',
-        idolName: '지우',
+        idolName: 'Jiwoo',
         rarity: 'SSR' as const,
         concept: 'Summer Paradise',
         season: 'Season 1',
@@ -175,7 +175,7 @@ const Rise = () => {
       {
         id: 'mock-2',
         idolId: '2',
-        idolName: '하늘',
+        idolName: 'Haneul',
         rarity: 'SR' as const,
         concept: 'Winter Dream',
         season: 'Season 1',
@@ -196,7 +196,7 @@ const Rise = () => {
 
   if (!selectedIdol) {
     return <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">로딩 중...</div>
+      <div className="text-center">Loading...</div>
     </div>;
   }
 
@@ -210,29 +210,29 @@ const Rise = () => {
             📈 RISE
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            아이돌 인기 순위를 확인하고, 포토카드를 전시하며, 자유롭게 거래하는 공간입니다.
+            Check idol popularity rankings, display photocards, and trade freely.
           </p>
           
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Badge variant="outline" className="px-4 py-2">
-              👑 {selectedIdol.name}님의 최애
+              👑 {selectedIdol.name}'s Favorite
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
-              🎴 {photoCards.length}장 보유
+              🎴 {photoCards.length} Cards Owned
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
-              🏆 {currentIdolData?.rank || 'Unranked'}위
+              🏆 Rank #{currentIdolData?.rank || 'Unranked'}
             </Badge>
           </div>
         </div>
 
-        {/* 내 아이돌 현황 */}
+        {/* My Idol Status */}
         <Card className="p-6 glass-dark border-white/10">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">내 최애 아이돌</h3>
+              <h3 className="text-lg font-semibold text-foreground">My Favorite Idol</h3>
               <Badge variant="outline" className="text-accent border-accent/30">
-                🏆 시즌 1 참여 중
+                🏆 Participating in Season 1
               </Badge>
             </div>
             
@@ -248,26 +248,26 @@ const Rise = () => {
                 <h2 className="text-2xl font-bold gradient-text">{selectedIdol.name}</h2>
                 <p className="text-muted-foreground">{selectedIdol.personality}</p>
                 <p className="text-sm text-accent mt-1">
-                  현재 {currentIdolData?.rank || 'Unranked'}위 • {currentIdolData?.totalFans.toLocaleString() || '0'}명의 팬
+                  Currently Rank #{currentIdolData?.rank || 'Unranked'} • {currentIdolData?.totalFans.toLocaleString() || '0'} fans
                 </p>
               </div>
             </div>
             
             <div className="bg-muted/20 rounded-lg p-3">
               <p className="text-sm text-muted-foreground text-center">
-                💫 매월 말 아이돌 어워드에서 상위 아이돌에게 특별 리워드 지급
+                💫 Special rewards given to top idols at the monthly Idol Awards
               </p>
             </div>
           </div>
         </Card>
 
-        {/* 탭 컨텐츠 */}
+        {/* Tab Content */}
         <div className="mt-8">
           <Leaderboard
             currentIdol={currentIdolData}
             globalLeaderboard={mockIdolLeaderboardData}
-            categoryLeaderboard={mockIdolLeaderboardData.filter(entry => entry.category === "댄스")}
-            selectedCategory="댄스"
+            categoryLeaderboard={mockIdolLeaderboardData.filter(entry => entry.category === "Dance")}
+            selectedCategory="Dance"
             allPhotocards={photoCards}
             onIdolClick={(idolId) => {
               // Navigate to marketplace with idol filter
@@ -284,7 +284,7 @@ const Rise = () => {
             className="flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            볼트로 돌아가기
+            Back to Vault
           </Button>
           <Button
             variant="outline"
@@ -292,7 +292,7 @@ const Rise = () => {
             className="flex items-center gap-2"
           >
             <Home className="w-4 h-4" />
-            홈으로
+            Home
           </Button>
         </div>
       </div>

@@ -114,7 +114,7 @@ export const Leaderboard = ({
                 e.stopPropagation();
                 handleIdolClick(entry.idolId, entry.idolName);
               }}
-              title="마켓플레이스에서 포토카드 보기"
+              title="View photocards in marketplace"
             >
               <img 
                 src={entry.profileImage} 
@@ -130,11 +130,11 @@ export const Leaderboard = ({
                     e.stopPropagation();
                     handleIdolClick(entry.idolId, entry.idolName);
                   }}
-                  title="마켓플레이스에서 포토카드 보기"
+                  title="View photocards in marketplace"
                 >
                   {entry.idolName}
                 </span>
-                {isCurrentIdol && <Badge variant="secondary" className="text-xs">내 최애</Badge>}
+                {isCurrentIdol && <Badge variant="secondary" className="text-xs">My Bias</Badge>}
                 <Badge variant="outline" className="text-xs">{entry.category}</Badge>
                 {idolPhotocards.length > 0 && (
                   <Badge 
@@ -144,7 +144,7 @@ export const Leaderboard = ({
                       e.stopPropagation();
                       handleIdolClick(entry.idolId, entry.idolName);
                     }}
-                    title="마켓플레이스에서 포토카드 보기"
+                    title="View photocards in marketplace"
                   >
                     <ImageIcon className="w-3 h-3" />
                     {idolPhotocards.length}
@@ -157,7 +157,7 @@ export const Leaderboard = ({
                   e.stopPropagation();
                   handleIdolClick(entry.idolId, entry.idolName);
                 }}
-                title="마켓플레이스에서 포토카드 보기"
+                title="View photocards in marketplace"
               >
                 {entry.personality} · {entry.concept}
               </div>
@@ -165,7 +165,7 @@ export const Leaderboard = ({
                 <div className="flex items-center gap-1">
                   <Users className="w-3 h-3" />
                   <span className="text-primary font-semibold">{entry.totalFans.toLocaleString()}</span>
-                  <span className="text-muted-foreground">팬</span>
+                  <span className="text-muted-foreground">fans</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Heart className="w-3 h-3 text-red-400" />
@@ -183,23 +183,23 @@ export const Leaderboard = ({
                 e.stopPropagation();
                 handleIdolClick(entry.idolId, entry.idolName);
               }}
-              title="마켓플레이스에서 포토카드 보기"
+              title="View photocards in marketplace"
             >
               <div className="font-semibold text-foreground">{entry.totalPhotocards.toLocaleString()}</div>
-              <div className="text-muted-foreground text-xs">포토카드</div>
+              <div className="text-muted-foreground text-xs">photocards</div>
             </div>
             <div className="text-center">
               <div className={`font-semibold ${entry.averageRarity >= 4 ? 'text-yellow-400' : entry.averageRarity >= 3 ? 'text-purple-400' : entry.averageRarity >= 2 ? 'text-blue-400' : 'text-gray-400'}`}>
                 {entry.averageRarity.toFixed(1)}
               </div>
-              <div className="text-muted-foreground text-xs">평균희귀도</div>
+              <div className="text-muted-foreground text-xs">avg rarity</div>
             </div>
             <div className="text-center">
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3 text-green-400" />
                 <span className="font-semibold text-green-400">+{entry.weeklyGrowth}%</span>
               </div>
-              <div className="text-muted-foreground text-xs">주간성장</div>
+              <div className="text-muted-foreground text-xs">weekly growth</div>
             </div>
           </div>
 
@@ -208,7 +208,7 @@ export const Leaderboard = ({
             <div className="text-sm font-semibold text-foreground">
               {(entry.totalFans * 0.6 + entry.totalHearts * 0.3 + entry.totalPhotocards * 0.1).toLocaleString()}
             </div>
-            <div className="text-xs text-muted-foreground">인기점수</div>
+            <div className="text-xs text-muted-foreground">popularity score</div>
           </div>
         </div>
       </Card>
@@ -220,10 +220,10 @@ export const Leaderboard = ({
       <div className="text-center space-y-4">
         <h2 className="text-3xl font-bold gradient-text flex items-center justify-center gap-2">
           <Trophy className="w-8 h-8" />
-          아이돌 리더보드
+          Idol Leaderboard
         </h2>
         <p className="text-muted-foreground">
-          팬 수와 하트 수를 기준으로 한 아이돌 인기 랭킹 · 프로필, 이름, 포토카드 수를 클릭하면 마켓플레이스로 이동
+          Idol popularity ranking based on fan count and hearts · Click profile, name, or photocard count to go to marketplace
         </p>
       </div>
 
@@ -231,15 +231,15 @@ export const Leaderboard = ({
       {currentIdol && (
         <Card className="p-6 glass-dark border-primary/20 bg-primary/5">
           <div className="space-y-3">
-            <h3 className="text-lg font-bold gradient-text">내 최애 아이돌 랭킹</h3>
+            <h3 className="text-lg font-bold gradient-text">My Bias Idol Ranking</h3>
             {renderIdolEntry(currentIdol, true)}
             <div className="mt-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">다음 랭크까지</span>
+                <span className="text-muted-foreground">To next rank</span>
                 <span className="text-primary font-semibold">
                   {currentIdol.rank > 1 ? 
-                    `${(globalLeaderboard[currentIdol.rank - 2]?.totalFans || 0) - currentIdol.totalFans} 팬` 
-                    : "1위 유지!"
+                    `${(globalLeaderboard[currentIdol.rank - 2]?.totalFans || 0) - currentIdol.totalFans} fans` 
+                    : "Stay #1!"
                   }
                 </span>
               </div>
@@ -259,10 +259,10 @@ export const Leaderboard = ({
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-card/50 backdrop-blur-sm">
           <TabsTrigger value="global" className="data-[state=active]:bg-primary/20">
-            🌍 전체 랭킹
+            🌍 Global Ranking
           </TabsTrigger>
           <TabsTrigger value="category" className="data-[state=active]:bg-primary/20">
-            📂 카테고리별 랭킹
+            📂 Category Ranking
           </TabsTrigger>
         </TabsList>
 
@@ -280,7 +280,7 @@ export const Leaderboard = ({
                       <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                           <ImageIcon className="w-5 h-5" />
-                          {entry.idolName}의 포토카드 ({idolPhotocards.length}장)
+                          {entry.idolName}'s Photocards ({idolPhotocards.length} cards)
                         </DialogTitle>
                       </DialogHeader>
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
@@ -326,7 +326,7 @@ export const Leaderboard = ({
               <div className="text-center p-4 bg-card/30 rounded-lg">
                 <p className="text-sm text-muted-foreground">
                   <Badge variant="outline" className="mr-2">{selectedCategory}</Badge>
-                  카테고리의 아이돌 랭킹입니다
+                  category idol ranking
                 </p>
               </div>
               {categoryLeaderboard.slice(0, 50).map((entry) => {
@@ -341,7 +341,7 @@ export const Leaderboard = ({
                         <DialogHeader>
                           <DialogTitle className="flex items-center gap-2">
                             <ImageIcon className="w-5 h-5" />
-                            {entry.idolName}의 포토카드 ({idolPhotocards.length}장)
+                            {entry.idolName}'s Photocards ({idolPhotocards.length} cards)
                           </DialogTitle>
                         </DialogHeader>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
@@ -383,7 +383,7 @@ export const Leaderboard = ({
             <div className="text-center p-8 bg-card/30 rounded-lg">
               <Star className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
-                카테고리를 선택하면 해당 카테고리의 아이돌 랭킹을 확인할 수 있습니다
+                Select a category to view idol rankings for that category
               </p>
             </div>
           )}
@@ -394,23 +394,23 @@ export const Leaderboard = ({
       <Card className="p-6 glass-dark border-accent/20 bg-accent/5">
         <div className="text-center space-y-3">
           <Badge variant="outline" className="text-accent border-accent/30">
-            🏆 시즌 1 진행 중
+            🏆 Season 1 In Progress
           </Badge>
-          <h3 className="text-lg font-bold">월간 아이돌 어워드</h3>
+          <h3 className="text-lg font-bold">Monthly Idol Awards</h3>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="space-y-1">
               <div className="text-2xl">👑</div>
-              <div className="font-semibold">1위</div>
+              <div className="font-semibold">1st Place</div>
               <div className="text-muted-foreground">Hall of Fame</div>
             </div>
             <div className="space-y-1">
               <div className="text-2xl">⭐</div>
-              <div className="font-semibold">2-5위</div>
+              <div className="font-semibold">2nd-5th Place</div>
               <div className="text-muted-foreground">Rising Star</div>
             </div>
             <div className="space-y-1">
               <div className="text-2xl">💎</div>
-              <div className="font-semibold">6-20위</div>
+              <div className="font-semibold">6th-20th Place</div>
               <div className="text-muted-foreground">Popular Choice</div>
             </div>
           </div>

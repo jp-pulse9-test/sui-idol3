@@ -20,18 +20,20 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
   const [heartEffect, setHeartEffect] = useState<'left' | 'right' | null>(null);
 
   useEffect(() => {
-    // 아이돌 데이터가 충분하지 않은 경우 처리
+    // Handle case when there's insufficient idol data
     if (!idols || idols.length < 2) {
       console.log('Not enough idols for tournament:', idols?.length || 0);
       return;
     }
 
-    // 16명 랜덤 선택하여 토너먼트 시작 (부족하면 사용 가능한 만큼만)
+
+
+    // Start tournament by randomly selecting 16 idols (or as many as available if insufficient)
     const shuffled = [...idols].sort(() => Math.random() - 0.5);
     const availableCount = Math.min(16, idols.length);
     const selected = shuffled.slice(0, availableCount);
     
-    // 유효한 아이돌만 필터링
+    // Filter only valid idols
     const validIdols = selected.filter(idol => idol && idol.profile_image && idol.name);
     
     if (validIdols.length < 2) {
@@ -45,7 +47,7 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
   }, [idols]);
 
   const handleChoice = (selectedIdol: IdolPreset, side: 'left' | 'right') => {
-    // 하트 이펙트
+    // Heart effect
     setHeartEffect(side);
     setTimeout(() => setHeartEffect(null), 1000);
 
@@ -54,27 +56,27 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
     const currentIndex = currentRound.indexOf(currentPair[0]);
     const nextRound = [...currentRound];
     
-    // 승자를 다음 라운드로
+    // Move winner to next round
     nextRound.splice(currentIndex, 2, selectedIdol);
     
-    // 현재 라운드 완료 체크
+    // Check if current round is complete
     if (currentIndex + 2 >= currentRound.length) {
-      // 라운드 완료
+      // Round complete
       const pairsRemaining = Math.floor(nextRound.length / 2);
       
       if (pairsRemaining === 1) {
-        // 토너먼트 완료
+        // Tournament complete
         onComplete(selectedIdol);
         return;
       } else {
-        // 다음 라운드 시작
+        // Start next round
         const filteredNextRound = nextRound.filter(idol => idol && idol.profile_image).slice(0, pairsRemaining);
         setCurrentRound(filteredNextRound);
         setCurrentPair([filteredNextRound[0], filteredNextRound[1]]);
         setRoundNumber(prev => prev + 1);
       }
     } else {
-      // 다음 매치
+      // Next match
       const nextPairIndex = currentIndex + 2;
       if (nextPairIndex + 1 < currentRound.length && 
           currentRound[nextPairIndex] && 
@@ -88,16 +90,16 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
   const getTournamentRoundName = () => {
     const remaining = currentRound.length;
     switch (remaining) {
-      case 16: return "16강";
-      case 8: return "8강";
-      case 4: return "준결승";
-      case 2: return "결승";
-      default: return `${remaining}강`;
+      case 16: return "Round of 16";
+      case 8: return "Quarterfinals";
+      case 4: return "Semifinals";
+      case 2: return "Finals";
+      default: return `Round of ${remaining}`;
     }
   };
 
   const getCurrentProgress = () => {
-    const totalMatches = 15; // 16강 토너먼트의 총 매치 수
+    const totalMatches = 15; // Total number of matches in round of 16 tournament
     const completedMatches = 16 - currentRound.length + Math.floor((16 - currentRound.length) / 2);
     return (completedMatches / totalMatches) * 100;
   };
@@ -106,10 +108,10 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
     return <div className="min-h-screen bg-gradient-background flex items-center justify-center">
       <Card className="p-8 glass-dark border-white/10 text-center">
         <div className="space-y-4">
-          <h2 className="text-xl font-bold gradient-text">토너먼트를 시작할 수 없습니다</h2>
-          <p className="text-muted-foreground">충분한 아이돌 데이터가 없습니다.</p>
+          <h2 className="text-xl font-bold gradient-text">Cannot start tournament</h2>
+          <p className="text-muted-foreground">Insufficient idol data available.</p>
           <Button onClick={onBack} variant="outline">
-            돌아가기
+            Go Back
           </Button>
         </div>
       </Card>
@@ -119,16 +121,16 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-6xl mx-auto space-y-8 pt-8">
-        {/* 헤더 */}
+        {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-4">
             <Button onClick={onBack} variant="ghost" size="sm">
-              ← 성향테스트로
+              ← Back to Personality Test
             </Button>
             <h1 className="text-4xl font-bold gradient-text">
-              💕 심쿵 배틀
+              💕 Heart Battle
             </h1>
-            <div className="w-20" /> {/* 균형을 위한 빈 공간 */}
+            <div className="w-20" /> {/* Empty space for balance */}
           </div>
           
           <div className="flex items-center justify-center gap-6">
@@ -137,18 +139,18 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
             </Badge>
             <Progress value={getCurrentProgress()} className="w-48" />
             <Badge variant="secondary" className="px-4 py-2">
-              {Math.floor((16 - currentRound.length) / 2) + 1} / 8 라운드
+              {Math.floor((16 - currentRound.length) / 2) + 1} / 8 Round
             </Badge>
           </div>
           
           <p className="text-muted-foreground">
-            더 심쿵하는 아이돌을 선택해주세요
+            Choose the idol that makes your heart flutter more
           </p>
         </div>
 
-        {/* 배틀 카드 */}
+        {/* Battle Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* 왼쪽 아이돌 */}
+          {/* Left Idol */}
           <Card 
             className={`relative p-6 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-500 ${
               heartEffect === 'left' ? 'scale-105 border-pink-500/50 shadow-pink-500/25 shadow-xl' : ''
@@ -173,10 +175,10 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
               <div className="text-center space-y-2">
                 <h3 className="text-2xl font-bold gradient-text">{currentPair[0].name}</h3>
                 <Badge variant="outline" className="mb-2">
-                  {currentPair[0].personality}
+                  {currentPair[0].personality || '❌ No personality'}
                 </Badge>
                 <p className="text-muted-foreground text-sm">
-                  {currentPair[0].description}
+                  {currentPair[0].description || '❌ No description'}
                 </p>
               </div>
               
@@ -185,19 +187,19 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
                 size="lg" 
                 className="w-full border-pink-500/50 text-pink-400 hover:bg-pink-500/20"
               >
-                💕 선택
+                💕 Choose
               </Button>
             </div>
           </Card>
 
-          {/* VS 구분선 */}
+          {/* VS Divider */}
           <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 md:block hidden">
             <div className="w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center shadow-lg">
               <Zap className="w-8 h-8 text-white" />
             </div>
           </div>
 
-          {/* 오른쪽 아이돌 */}
+          {/* Right Idol */}
           <Card 
             className={`relative p-6 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-500 ${
               heartEffect === 'right' ? 'scale-105 border-pink-500/50 shadow-pink-500/25 shadow-xl' : ''
@@ -222,10 +224,10 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
               <div className="text-center space-y-2">
                 <h3 className="text-2xl font-bold gradient-text">{currentPair[1].name}</h3>
                 <Badge variant="outline" className="mb-2">
-                  {currentPair[1].personality}
+                  {currentPair[1].personality || '❌ No personality'}
                 </Badge>
                 <p className="text-muted-foreground text-sm">
-                  {currentPair[1].description}
+                  {currentPair[1].description || '❌ No description'}
                 </p>
               </div>
               
@@ -234,24 +236,24 @@ const TournamentBattle = ({ idols, onComplete, onBack }: TournamentBattleProps) 
                 size="lg" 
                 className="w-full border-pink-500/50 text-pink-400 hover:bg-pink-500/20"
               >
-                💕 선택
+                💕 Choose
               </Button>
             </div>
           </Card>
         </div>
 
-        {/* 토너먼트 브래킷 미니맵 */}
+        {/* Tournament Bracket Minimap */}
         <Card className="p-4 glass-dark border-white/10 max-w-2xl mx-auto">
           <div className="text-center space-y-2">
-            <h3 className="font-bold text-sm text-muted-foreground">토너먼트 진행상황</h3>
+            <h3 className="font-bold text-sm text-muted-foreground">Tournament Progress</h3>
             <div className="flex items-center justify-center gap-2 text-xs">
-              <span className={currentRound.length >= 16 ? 'text-primary' : 'text-muted-foreground'}>16강</span>
+              <span className={currentRound.length >= 16 ? 'text-primary' : 'text-muted-foreground'}>Round of 16</span>
               <span>→</span>
-              <span className={currentRound.length <= 8 && currentRound.length > 4 ? 'text-primary' : 'text-muted-foreground'}>8강</span>
+              <span className={currentRound.length <= 8 && currentRound.length > 4 ? 'text-primary' : 'text-muted-foreground'}>Quarterfinals</span>
               <span>→</span>
-              <span className={currentRound.length <= 4 && currentRound.length > 2 ? 'text-primary' : 'text-muted-foreground'}>준결승</span>
+              <span className={currentRound.length <= 4 && currentRound.length > 2 ? 'text-primary' : 'text-muted-foreground'}>Semifinals</span>
               <span>→</span>
-              <span className={currentRound.length <= 2 ? 'text-primary' : 'text-muted-foreground'}>결승</span>
+              <span className={currentRound.length <= 2 ? 'text-primary' : 'text-muted-foreground'}>Finals</span>
             </div>
           </div>
         </Card>

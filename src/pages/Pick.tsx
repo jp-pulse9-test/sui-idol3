@@ -10,26 +10,32 @@ import TournamentBattle from "@/components/TournamentBattle";
 import IdolPreview from "@/components/IdolPreview";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { useWallet } from "@/hooks/useWallet";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { IdolPreset, PublicIdolData } from "@/types/idol";
+import { useSuiBalance } from "@/services/suiBalanceServiceNew";
+
+interface IdolPreset {
+  id: number;
+  name: string;
+  personality: string;
+  description: string;
+  profile_image: string;
+  persona_prompt: string;
+}
 
 type GamePhase = 'loading' | 'gender-select' | 'personality-test' | 'tournament' | 'result' | 'preview' | 'minting';
 
 interface PersonalityTestData {
   gender: 'male' | 'female' | '';
   testType: 'quick' | 'skip' | 'oneclick';
-  extroversion: number; // E/I
-  intuition: number;    // N/S  
-  feeling: number;      // F/T
-  judging: number;      // J/P
+  extroversion: number;
+  intuition: number;
+  feeling: number;
+  judging: number;
   selectedAnswers: number[];
 }
 
 const Pick = () => {
   const [gamePhase, setGamePhase] = useState<GamePhase>('loading');
   const [idols, setIdols] = useState<IdolPreset[]>([]);
-  const [selectedGender, setSelectedGender] = useState<'male' | 'female' | ''>('');
-  const [filteredIdols, setFilteredIdols] = useState<IdolPreset[]>([]);
   const [finalWinner, setFinalWinner] = useState<IdolPreset | null>(null);
   const [personalityData, setPersonalityData] = useState<PersonalityTestData>({
     gender: '',
@@ -41,157 +47,153 @@ const Pick = () => {
     selectedAnswers: []
   });
   const [isMinting, setIsMinting] = useState(false);
+
   const navigate = useNavigate();
   const { mintIdolCard } = usePhotoCardMinting();
   const { isConnected, walletAddress } = useWallet();
-  const { isAuthenticated } = useAuthGuard('/auth', false);
+  const { balance: suiBalance, isLoading: isBalanceLoading, error: balanceError } = useSuiBalance();
 
-  // Fetch idols from Supabase using secure function
+  // Fetch idols from Supabase idols table
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {
     try {
-      console.log('Fetching idols from database...');
+      console.log('🔍 Fetching idols from idols table...');
+
       const { data, error } = await supabase
-        .rpc('get_public_idols');
-      
+        .from('idols')
+        .select('id, name, personality, description, profile_image, persona_prompt');
+
       if (error) {
-        console.error('Error fetching idols:', error);
+        console.error('❌ Database query error:', error);
         throw error;
       }
-      
-      console.log('Successfully fetched idols:', data?.length);
-      
+
       if (!data || data.length === 0) {
-        console.log('No idols found in database');
+        console.log('⚠️ No idols found in database');
         return [];
       }
-      
-      // Transform the data to match IdolPreset interface
-      return data.map((idol: PublicIdolData): IdolPreset => ({
+
+      console.log('✅ Successfully fetched idols:', data.length);
+      console.log('📊 Sample idol data:', data[0]);
+
+      return data.map((idol: any): IdolPreset => ({
         id: idol.id,
         name: idol.name,
-        Gender: idol.gender,
-        Category: idol.category,
-        Concept: idol.concept,
-        description: '', // Not available in public function for security
-        personality: '', // Not available in public function for security
+        personality: idol.personality || '',
+        description: idol.description || '',
         profile_image: idol.profile_image || '',
-        persona_prompt: '' // Not available in public function for security
+        persona_prompt: idol.persona_prompt || ''
       }));
+
     } catch (error) {
-      console.error('Failed to fetch idols from database:', error);
-      toast.error('아이돌 데이터를 불러오는데 실패했습니다.');
+      console.error('❌ Failed to fetch idols:', error);
+                              toast.error('Error occurred during RLS policy creation');
       return [];
     }
   };
 
-  // Generate preset idols if none exist
-  const generatePresetIdols = async (): Promise<boolean> => {
+  // Insert sample data if table is empty
+  const insertSampleData = async () => {
     try {
-      toast.info('202명의 아이돌 데이터를 생성하고 있습니다... 잠시만 기다려주세요.');
-      
-      const { data, error } = await supabase.functions.invoke('generate-preset-idols');
-      
-      if (error) {
-        console.error('Error generating preset idols:', error);
-        throw error;
-      }
-      
-      toast.success('아이돌 데이터 생성이 완료되었습니다!');
-      return true;
-    } catch (error) {
-      console.error('Failed to generate preset idols:', error);
-      toast.error('아이돌 데이터 생성에 실패했습니다. 샘플 데이터로 진행합니다.');
-      
-      // Create sample idol data as fallback
-      const sampleIdols = Array.from({ length: 10 }, (_, i) => ({
-        name: `아이돌${i + 1}`,
-        Gender: i % 2 === 0 ? 'female' : 'male',
-        Category: 'sample',
-        Concept: 'cute',
-        personality: `성격${i + 1}`,
-        description: `설명${i + 1}`,
-        profile_image: '/placeholder.svg',
-        persona_prompt: `아이돌 ${i + 1}의 페르소나`
-      }));
-      
-      // Insert sample data into database
-      const { error: insertError } = await supabase
+      console.log('🏗️ Inserting sample data to idols table...');
+
+      const sampleData = [
+        {
+          name: 'Seojun',
+          Gender: 'Male',
+          Category: 'Main Vocalist',
+          Concept: 'Charismatic',
+          personality: 'Charismatic',
+          description: 'A leader with intense charm who dominates the stage. A perfectionist with a warm heart.',
+          profile_image: '/placeholder-male-1.jpg',
+          persona_prompt: 'You are Seojun. A charismatic and perfectionist K-POP idol who shows warm and sincere affection to fans.'
+        },
+        {
+          name: 'Haeun',
+          Gender: 'Female',
+          Category: 'Main Dancer',
+          Concept: 'Bright',
+          personality: 'Bright and positive',
+          description: 'An energetic bundle of joy who makes everyone happy with her sunshine-like smile. Pure and passionate charm.',
+          profile_image: '/placeholder-female-1.jpg',
+          persona_prompt: 'You are Haeun. A bright and positive K-POP idol who delivers happy energy to fans.'
+        },
+        {
+          name: 'Minho',
+          Gender: 'Male',
+          Category: 'Lead Rapper',
+          Concept: 'Mysterious',
+          personality: 'Mysterious',
+          description: 'An artist with unpredictable deep charm. A boy whose emotional and philosophical aspects stand out.',
+          profile_image: '/placeholder-male-2.jpg',
+          persona_prompt: 'You are Minho. A mysterious K-POP idol with deep emotions.'
+        },
+        {
+          name: 'Yoona',
+          Gender: 'Female',
+          Category: 'Visual',
+          Concept: 'Elegant',
+          personality: 'Elegant and sophisticated',
+          description: 'Perfect visual combining classic beauty with modern sensibility. Hidden strength within elegance.',
+          profile_image: '/placeholder-female-2.jpg',
+          persona_prompt: 'You are Yoona. An elegant and sophisticated K-POP idol who combines classic charm with modern sensibility.'
+        },
+        {
+          name: 'Taemin',
+          Gender: 'Male',
+          Category: 'Main Dancer',
+          Concept: 'Artistic',
+          personality: 'Creative and artistic',
+          description: 'A performer who turns the stage into artwork with original ideas and outstanding artistic sense.',
+          profile_image: '/placeholder-male-3.jpg',
+          persona_prompt: 'You are Taemin. A creative and artistic K-POP idol who captivates fans with unique worldview and outstanding performance.'
+        }
+      ];
+
+      console.log('Inserting data:', sampleData);
+
+      const { data, error } = await supabase
         .from('idols')
-        .insert(sampleIdols);
-        
-      if (insertError) {
-        console.error('Failed to insert sample data:', insertError);
+        .insert(sampleData)
+        .select();
+
+      if (error) {
+        console.error('❌ Failed to insert sample data:', error);
+        toast.error(`Data insertion failed: ${error.message}`);
         return false;
       }
-      
+
+      console.log('✅ Sample data inserted successfully:', data);
+      toast.success(`✅ ${data.length} idol data entries successfully inserted!`);
       return true;
+
+    } catch (error) {
+      console.error('❌ Error inserting sample data:', error);
+      toast.error('An error occurred during data insertion.');
+      return false;
     }
   };
 
-  // Initialize game data
+  // Initialize idol data from database ONLY
   useEffect(() => {
-    const initializeGame = async () => {
-      console.log('Starting idol data fetch...');
-      
-      // 먼저 아이돌 데이터를 가져와보기 (인증 없이도 시도)
-      let idolData = await fetchIdolsFromDB();
-      console.log('Fetched idol data:', idolData?.length || 0, 'idols');
-      
-      // 아이돌 데이터가 충분하다면 바로 진행
-      if (idolData.length >= 10) {
-        console.log('Sufficient idol data found, proceeding to personality test');
+    const initializeIdols = async () => {
+      console.log('🚀 Fetching idols from database (idols table only)...');
+
+      // Try to fetch from database
+      const idolData = await fetchIdolsFromDB();
+
+      if (idolData.length > 0) {
+        console.log('✅ Idols loaded from database:', idolData.length);
         setIdols(idolData);
         setGamePhase('personality-test');
-        return;
-      }
-
-      // 데이터가 부족한 경우만 인증 체크
-      if (!isAuthenticated) {
-        console.log('User not authenticated, redirecting to auth');
-        toast.error('아이돌 데이터에 접근하려면 지갑 연결이 필요합니다.');
-        navigate('/auth');
-        return;
-      }
-      
-      // 인증된 사용자인 경우 데이터 생성 시도
-      if (idolData.length === 0) {
-        console.log('No idols found, generating preset idols...');
-        const generated = await generatePresetIdols();
-        if (generated) {
-          console.log('Generation completed, refetching data...');
-          idolData = await fetchIdolsFromDB();
-          console.log('After generation, idol count:', idolData?.length || 0);
-        }
-      }
-      
-      if (idolData.length > 0) {
-        console.log('Setting idols and moving to gender select');
-        setIdols(idolData);
-        setGamePhase('gender-select');
       } else {
-        console.log('Still no idol data, continuing with empty data');
-        toast.error('아이돌 데이터를 불러올 수 없습니다.');
-        setGamePhase('gender-select'); // Continue to gender select even with no data
+        console.error('❌ No idols found in database');
+        // Stay in loading state - DO NOT use fallback data
+        // User must fix database issue
       }
     };
 
-    // 인증 상태와 상관없이 일단 시도
-    initializeGame();
-  }, [navigate]); // isAuthenticated 의존성 제거
-
-  const handleGenderSelect = (gender: 'male' | 'female') => {
-    setSelectedGender(gender);
-    setPersonalityData(prev => ({ ...prev, gender }));
-    
-    // Filter idols by selected gender
-    const filtered = idols.filter(idol => 
-      idol.Gender && idol.Gender.toLowerCase() === gender
-    );
-    setFilteredIdols(filtered);
-    
-    console.log(`Selected ${gender}, filtered ${filtered.length} idols`);
-    setGamePhase('personality-test');
-  };
+    initializeIdols();
+  }, []);
 
   const handlePersonalityComplete = (scores: { extroversion: number; intuition: number; feeling: number; judging: number }) => {
     setPersonalityData(prev => ({
@@ -201,12 +203,12 @@ const Pick = () => {
     setGamePhase('tournament');
   };
 
-  const handleBackToGender = () => {
-    setGamePhase('gender-select');
-  };
-
   const handlePersonalitySkip = () => {
     setGamePhase('tournament');
+  };
+
+  const handleBackToPersonality = () => {
+    setGamePhase('personality-test');
   };
 
   const handleTournamentComplete = (winner: IdolPreset) => {
@@ -214,8 +216,8 @@ const Pick = () => {
     setGamePhase('preview');
   };
 
-  const handleBackToPersonality = () => {
-    setGamePhase('personality-test');
+  const handleBackToTournament = () => {
+    setGamePhase('tournament');
   };
 
   const handleConfirmPick = async () => {
@@ -254,106 +256,142 @@ const Pick = () => {
       toast.success('IdolCard NFT 민팅이 완료되었습니다!');
       setTimeout(() => navigate('/vault'), 2000);
     } catch (error) {
-      console.error('민팅 실패:', error);
-      toast.error('민팅에 실패했습니다. 다시 시도해주세요.');
+      console.error('Confirmation failed:', error);
+      toast.error('Confirmation failed. Please try again.');
     } finally {
       setIsMinting(false);
     }
   };
 
-  // Loading screen
+  // Loading screen - Database connection required
   if (gamePhase === 'loading') {
     return (
       <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-        <Card className="p-8 glass-dark border-white/10 text-center">
+        <Card className="p-8 glass-dark border-white/10 text-center max-w-2xl">
           <div className="space-y-4">
             <LoadingSpinner />
-            <h2 className="text-xl font-bold gradient-text">아이돌 데이터 로딩 중...</h2>
-            <p className="text-muted-foreground">잠시만 기다려주세요</p>
+            <h2 className="text-xl font-bold gradient-text">Loading from idols table...</h2>
+            <p className="text-muted-foreground">Database connection required</p>
+
+            <div className="mt-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg text-left">
+              <h3 className="font-bold text-red-400 mb-2">⚠️ Database Required</h3>
+              <p className="text-sm text-red-300">
+                This application requires data from the 'idols' table in Supabase.
+                Sample/fallback data is NOT allowed.
+              </p>
+            </div>
+
+            <div className="mt-6 space-y-2">
+              <Button
+                onClick={async () => {
+                  console.log('🧪 Testing Supabase connection...');
+                  
+                  // 1. 기본 연결 테스트 - auth 상태 확인
+                  try {
+                    console.log('1. Testing basic Supabase connection...');
+                    const { data: { session }, error: authError } = await supabase.auth.getSession();
+                    
+                    if (authError) {
+                      console.log('Auth error (this is OK for anonymous access):', authError);
+                    }
+                    
+                    console.log('✅ Basic Supabase connection OK');
+                    toast.success('Basic Supabase connection OK');
+                  } catch (err) {
+                    console.error('❌ Connection test failed:', err);
+                    toast.error('Connection test failed: ' + (err as Error).message);
+                    return;
+                  }
+
+                  // 2. idols 테이블 확인
+                  console.log('2. Testing idols table...');
+                  const { data, error } = await supabase
+                    .from('idols')
+                    .select('id, name, personality, description, profile_image');
+
+                  console.log('🧪 Query result:', { data, error });
+
+                  if (error) {
+                    console.error('❌ idols table error:', error);
+                    console.error('Error details:', JSON.stringify(error, null, 2));
+                    
+                    // RLS 정책 문제일 가능성
+                    if (error.message.includes('RLS') || error.message.includes('policy') || error.message.includes('permission') || error.code === 'PGRST116') {
+                      toast.error('🔒 RLS policy issue detected! SQL solution provided in console.');
+                      console.log('� RLS Policy Issue - This is the most common problem!');
+                    }
+
+                    // 테이블이 없을 가능성
+                    if (error.message.includes('does not exist') || error.message.includes('relation')) {
+                      toast.error('idols table does not exist. Create the table first.');
+                    }
+
+                    // Show SQL to create and populate table
+                    const sql = `
+-- ⚠️ REQUIRED: Run this SQL in Supabase SQL Editor
+
+-- 1. First, check if RLS policies exist
+SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual 
+FROM pg_policies 
+WHERE tablename = 'idols';
+
+-- 2. Drop existing policies if any (to recreate)
+DROP POLICY IF EXISTS "Allow public read access" ON public.idols;
+
+-- 3. Create proper RLS policy for public read access
+CREATE POLICY "Allow public read access" ON public.idols
+  FOR SELECT 
+  TO public
+  USING (true);
+
+-- 4. Make sure RLS is enabled
+ALTER TABLE public.idols ENABLE ROW LEVEL SECURITY;
+
+-- 5. Grant necessary permissions
+GRANT SELECT ON public.idols TO anon;
+GRANT SELECT ON public.idols TO authenticated;
+
+-- 6. Verify the table and data
+SELECT * FROM public.idols LIMIT 5;
+                    `;
+                    console.log(sql);
+                    toast.info('Check console for SQL to fix RLS policies');
+                  } else if (data && data.length > 0) {
+                    toast.success(`✅ Found ${data.length} idols in database`);
+                    console.log('Idol data:', data);
+
+                    // Reload page to fetch data
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 1000);
+                  } else {
+                    toast.warning('Table exists but is empty. Insert data using SQL above.');
+                  }
+                }}
+                variant="destructive"
+                size="lg"
+                className="w-full"
+              >
+                🔍 Test Database Connection
+              </Button>
+
+              <Button
+                onClick={async () => {
+                  console.log('🔄 Attempting to insert data to idols table...');
+                  const inserted = await insertSampleData();
+                  if (inserted) {
+                    window.location.reload();
+                  }
+                }}
+                variant="outline"
+                size="lg"
+                className="w-full"
+              >
+                📝 Insert Data to idols Table
+              </Button>
+            </div>
           </div>
         </Card>
-      </div>
-    );
-  }
-
-  // Gender select phase
-  if (gamePhase === 'gender-select') {
-    // Get sample idols for preview
-    const maleIdols = idols.filter(idol => idol.Gender?.toLowerCase() === 'male').slice(0, 3);
-    const femaleIdols = idols.filter(idol => idol.Gender?.toLowerCase() === 'female').slice(0, 3);
-
-    return (
-      <div className="min-h-screen bg-gradient-background p-4">
-        <div className="max-w-4xl mx-auto space-y-8 pt-12">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold gradient-text mb-8">
-              💫 성별 선택
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              어떤 아이돌과 함께하고 싶나요?
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* 소년 선택 */}
-            <Card 
-              className="p-8 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-300 hover:scale-105"
-              onClick={() => handleGenderSelect('male')}
-            >
-              <div className="text-center space-y-6">
-                <div className="text-6xl mb-4">👦</div>
-                <h2 className="text-2xl font-bold gradient-text">소년 아이돌</h2>
-                <p className="text-muted-foreground">매력적인 소년 아이돌들과 함께해요</p>
-                
-                {/* Preview images */}
-                <div className="flex justify-center gap-2 mt-4">
-                  {maleIdols.map((idol, index) => (
-                    <div key={idol.id} className="w-12 h-12 rounded-full overflow-hidden bg-gradient-primary/20">
-                      <img 
-                        src={idol.profile_image} 
-                        alt={idol.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-                
-                <Button variant="outline" size="lg" className="w-full mt-4">
-                  소년 선택
-                </Button>
-              </div>
-            </Card>
-
-            {/* 소녀 선택 */}
-            <Card 
-              className="p-8 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-300 hover:scale-105"
-              onClick={() => handleGenderSelect('female')}
-            >
-              <div className="text-center space-y-6">
-                <div className="text-6xl mb-4">👧</div>
-                <h2 className="text-2xl font-bold gradient-text">소녀 아이돌</h2>
-                <p className="text-muted-foreground">사랑스러운 소녀 아이돌들과 함께해요</p>
-                
-                {/* Preview images */}
-                <div className="flex justify-center gap-2 mt-4">
-                  {femaleIdols.map((idol, index) => (
-                    <div key={idol.id} className="w-12 h-12 rounded-full overflow-hidden bg-gradient-primary/20">
-                      <img 
-                        src={idol.profile_image} 
-                        alt={idol.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-                
-                <Button variant="outline" size="lg" className="w-full mt-4">
-                  소녀 선택
-                </Button>
-              </div>
-            </Card>
-          </div>
-        </div>
       </div>
     );
   }
@@ -361,19 +399,19 @@ const Pick = () => {
   // Personality test phase
   if (gamePhase === 'personality-test') {
     return (
-      <PersonalityTest 
+      <PersonalityTest
         onComplete={handlePersonalityComplete}
         onSkip={handlePersonalitySkip}
-        onBack={handleBackToGender}
+        onBack={() => navigate('/')}
       />
     );
   }
 
-  // Tournament battle phase  
+  // Tournament battle phase
   if (gamePhase === 'tournament') {
     return (
       <TournamentBattle
-        idols={filteredIdols.length > 0 ? filteredIdols : idols}
+        idols={idols}
         onComplete={handleTournamentComplete}
         onBack={handleBackToPersonality}
       />
@@ -386,7 +424,7 @@ const Pick = () => {
       <IdolPreview
         selectedIdol={finalWinner}
         onConfirm={handleConfirmPick}
-        onBack={handleBackToPersonality}
+        onBack={handleBackToTournament}
         isMinting={isMinting}
       />
     );
@@ -396,9 +434,9 @@ const Pick = () => {
   return (
     <div className="min-h-screen bg-gradient-background flex items-center justify-center">
       <div className="text-center">
-        <h2 className="text-xl font-bold">게임 상태 오류</h2>
+        <h2 className="text-xl font-bold">Game State Error</h2>
         <Button onClick={() => navigate('/')} className="mt-4">
-          홈으로 돌아가기
+          Go Home
         </Button>
       </div>
     </div>

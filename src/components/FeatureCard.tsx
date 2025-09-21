@@ -10,7 +10,7 @@ interface FeatureCardProps {
   buttonText?: string;
 }
 
-export const FeatureCard = ({ title, description, icon, onClick, gradient, buttonText = "시작하기" }: FeatureCardProps) => {
+export const FeatureCard = ({ title, description, icon, onClick, gradient, buttonText = "Start" }: FeatureCardProps) => {
   return (
     <Card className={`p-8 glass-dark border-white/10 card-hover group ${gradient || ''} relative overflow-hidden`}>
       <div className="flex flex-col items-center text-center space-y-6">

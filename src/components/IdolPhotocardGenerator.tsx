@@ -78,40 +78,40 @@ export const IdolPhotocardGenerator = ({
   const conceptOptions: ConceptOption[] = [
     {
       id: 'casual',
-      name: '캐주얼 일상',
-      description: '편안하고 자연스러운 일상 모습',
+      name: 'Casual Daily',
+      description: 'Comfortable and natural everyday look',
       cost: { sui: 0.05, hearts: 10 },
       rarity: 'R',
       icon: '👕'
     },
     {
       id: 'stage',
-      name: '무대 퍼포먼스',
-      description: '화려한 무대 위의 모습',
+      name: 'Stage Performance',
+      description: 'Glamorous appearance on stage',
       cost: { sui: 0.1, hearts: 20 },
       rarity: 'SR',
       icon: '🎤'
     },
     {
       id: 'fansign',
-      name: '팬사인회',
-      description: '팬들과의 특별한 만남',
+      name: 'Fan Meet',
+      description: 'Special moments with fans',
       cost: { sui: 0.08, hearts: 15 },
       rarity: 'SR',
       icon: '✍️'
     },
     {
       id: 'photoshoot',
-      name: '화보 촬영',
-      description: '전문적이고 아름다운 화보',
+      name: 'Photo Shoot',
+      description: 'Professional and beautiful pictorial',
       cost: { sui: 0.15, hearts: 30 },
       rarity: 'SSR',
       icon: '📸'
     },
     {
       id: 'special',
-      name: '스페셜 이벤트',
-      description: '한정판 특별 컨셉',
+      name: 'Special Event',
+      description: 'Limited edition special concept',
       cost: { sui: 0.2, hearts: 50 },
       rarity: 'SSR',
       icon: '⭐'
@@ -121,52 +121,52 @@ export const IdolPhotocardGenerator = ({
   const seasons = ['Season 1', 'Season 2', 'Winter Special', 'Summer Edition'];
   
   const weatherOptions = [
-    '맑음 ☀️', '흐림 ☁️', '비 🌧️', '눈 ❄️', '바람 💨', 
-    '안개 🌫️', '새벽 🌅', '석양 🌇', '달밤 🌙'
+    'Sunny ☀️', 'Cloudy ☁️', 'Rainy 🌧️', 'Snowy ❄️', 'Windy 💨',
+    'Foggy 🌫️', 'Dawn 🌅', 'Sunset 🌇', 'Moonlit Night 🌙'
   ];
   
   const moodOptions = [
-    '행복한 😊', '차분한 😌', '신비로운 🪄', '로맨틱한 💕', '쿨한 😎',
-    '귀여운 🥰', '성숙한 💼', '몽환적인 ✨', '활기찬 🎉', '우울한 🌧️'
+    'Happy 😊', 'Calm 😌', 'Mysterious 🪄', 'Romantic 💕', 'Cool 😎',
+    'Cute 🥰', 'Mature 💼', 'Dreamy ✨', 'Energetic 🎉', 'Melancholy 🌧️'
   ];
   
   const themeOptions = [
-    '일상 생활', '여행', '카페', '공원', '해변', '도시', '학교', 
-    '집', '스튜디오', '콘서트', '팬미팅', '쇼핑', '드라이브'
+    'Daily Life', 'Travel', 'Cafe', 'Park', 'Beach', 'City', 'School',
+    'Home', 'Studio', 'Concert', 'Fan Meeting', 'Shopping', 'Drive'
   ];
 
   const handleGeneratePhotocard = async () => {
     if (!selectedConcept) {
-      toast.error('컨셉을 선택해주세요!');
+      toast.error('Please select a concept!');
       return;
     }
 
     const { sui: suiCost, hearts: heartCost } = selectedConcept.cost;
 
     if (userCoins < suiCost) {
-      toast.error('SUI 코인이 부족합니다!');
+      toast.error('Insufficient SUI coins!');
       return;
     }
 
     if (fanHearts < heartCost) {
-      toast.error('팬 하트가 부족합니다!');
+      toast.error('Insufficient fan hearts!');
       return;
     }
 
     setIsGenerating(true);
 
     try {
-      // 추가 디테일 정보 구성
+      // Compose additional detail information
       const additionalDetails = [
         selectedWeather && selectedWeather !== 'none' && selectedWeather,
         selectedMood && selectedMood !== 'none' && selectedMood,
         selectedTheme && selectedTheme !== 'none' && selectedTheme
       ].filter(Boolean).join(', ');
 
-      // Google GenAI를 사용하여 이미지 생성 (아이돌 프로필 이미지를 참조로 사용)
-      toast.info('🎨 AI가 포토카드를 생성하고 있습니다...');
+      // Generate image using Google GenAI (using idol profile image as reference)
+      toast.info('🎨 AI is generating photocard...');
 
-      // 아이돌 프로필 이미지 URL (profile_image가 있으면 사용, 없으면 image 사용)
+      // Idol profile image URL (use profile_image if available, otherwise use image)
       const profileImageUrl = selectedIdol.profile_image || selectedIdol.image;
       console.log('🖼️ Profile image URL being used:', profileImageUrl);
       console.log('🎭 Selected idol data:', {
@@ -176,13 +176,13 @@ export const IdolPhotocardGenerator = ({
         profile_image: selectedIdol.profile_image
       });
 
-      // 참조 이미지가 없으면 경고
+      // Warning if no reference image
       if (!profileImageUrl) {
         console.warn('⚠️ WARNING: No profile image available for idol - consistency cannot be guaranteed');
-        toast.warning('참조 이미지가 없어 아이돌 일관성이 보장되지 않을 수 있습니다.');
+        toast.warning('Idol consistency may not be guaranteed without reference image.');
       } else {
         console.log('✅ Reference image available - will maintain idol consistency');
-        toast.info('🎭 아이돌 참조 이미지를 사용하여 일관성을 유지합니다.');
+        toast.info('🎭 Using idol reference image to maintain consistency.');
       }
 
       const imageResult = await googleGenAI.generatePhotocard(
@@ -194,14 +194,14 @@ export const IdolPhotocardGenerator = ({
       );
 
       if (!imageResult.success) {
-        throw new Error(imageResult.error || '이미지 생성에 실패했습니다.');
+        throw new Error(imageResult.error || 'Failed to generate image.');
       }
 
       const generatedImageUrl = imageResult.data!.image_url;
       setGeneratedImageUrl(generatedImageUrl);
 
       
-      // 민팅 데이터 준비
+      // Prepare minting data
       const conceptDescription = additionalDetails ? `${selectedConcept.name} (${additionalDetails})` : selectedConcept.name;
 
       const mintingData = {
@@ -212,7 +212,7 @@ export const IdolPhotocardGenerator = ({
         season: selectedSeason,
         serialNo: Math.floor(Math.random() * 10000) + 1,
         totalSupply: selectedConcept.rarity === 'SSR' ? 500 : selectedConcept.rarity === 'SR' ? 2000 : 5000,
-        imageUrl: generatedImageUrl, // 생성된 이미지 URL 사용
+        imageUrl: generatedImageUrl, // Use generated image URL
         personaPrompt: selectedIdol.persona_prompt || selectedIdol.personality,
       };
 
@@ -221,26 +221,26 @@ export const IdolPhotocardGenerator = ({
         concept: conceptDescription,
         rarity: selectedConcept.rarity,
         season: selectedSeason,
-        image: generatedImageUrl, // 생성된 이미지 URL 사용
+        image: generatedImageUrl, // Use generated image URL
         serialNo: mintingData.serialNo,
         totalSupply: mintingData.totalSupply,
         seed: imageResult.data!.seed,
-        prompt: imageResult.data!.prompt // Gemini 개선된 프롬프트
+        prompt: imageResult.data!.prompt // Gemini enhanced prompt
       };
 
-      // 실제 민팅 수행
+      // Perform actual minting
       await mintPhotoCard(mintingData);
 
-      // 비용 차감
+      // Deduct costs
       onCostDeduction(suiCost, heartCost);
 
       setGeneratedCard(cardData);
       setShowResult(true);
 
-      toast.success(`🎉 ${selectedIdol.name}의 ${selectedConcept.name} 포토카드가 생성되었습니다!`);
+      toast.success(`🎉 ${selectedIdol.name}'s ${selectedConcept.name} photocard has been created!`);
     } catch (error) {
-      console.error('포토카드 생성 실패:', error);
-      toast.error(`포토카드 생성에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      console.error('Photocard generation failed:', error);
+      toast.error(`Photocard generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsGenerating(false);
     }
@@ -268,19 +268,19 @@ export const IdolPhotocardGenerator = ({
 
   const handleStoreToWalrus = async () => {
     if (!currentAccount) {
-      toast.error('지갑을 연결해주세요');
+      toast.error('Please connect your wallet');
       return;
     }
 
     if (!generatedCard || !generatedImageUrl) {
-      toast.error('저장할 포토카드가 없습니다');
+      toast.error('No photocard to save');
       return;
     }
 
     setIsStoringToWalrus(true);
 
     try {
-      // 포토카드 메타데이터 생성
+      // Generate photocard metadata
       const metadata = {
         id: `photocard_${selectedIdol.id}_${Date.now()}`,
         idolId: selectedIdol.id,
@@ -325,7 +325,7 @@ export const IdolPhotocardGenerator = ({
       console.log("Walrus??????")
 
       signAndExecute({transaction: registerTx},{onSuccess: () => {
-        toast.success('포토카드가 Walrus에 저장되었습니다!');
+        toast.success('Photocard saved to Walrus!');
         console.log("Walrus!!!!!!!")
       }, onError: (e)=>{
         console.log(e)
@@ -335,17 +335,17 @@ export const IdolPhotocardGenerator = ({
       console.log("Walrus!!!!!!!2222")
 
 
-      // Walrus에 저장
+      // Save to Walrus
       const result = await storePhotocard(metadata, generatedImageUrl, {
         epochs: 10, // 포토카드는 오래 보관
         deletable: false, // 포토카드는 삭제 불가
         account: currentAccount
       });
 
-      toast.success(`🎉 포토카드가 Walrus에 저장되었습니다! Blob ID: ${result.blobId.slice(0, 8)}...`);
+      toast.success(`🎉 Photocard saved to Walrus! Blob ID: ${result.blobId.slice(0, 8)}...`);
     } catch (error) {
-      console.error('Walrus 저장 실패:', error);
-      toast.error(`Walrus 저장에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      console.error('Walrus save failed:', error);
+      toast.error(`Failed to save to Walrus: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsStoringToWalrus(false);
     }
@@ -370,20 +370,20 @@ export const IdolPhotocardGenerator = ({
       <div className="text-center space-y-4">
         <h3 className="text-2xl font-bold gradient-text flex items-center justify-center gap-2">
           <Camera className="w-6 h-6" />
-          내 아이돌 포토카드 생성
+          My Idol Photocard Generator
         </h3>
         <p className="text-muted-foreground">
-          {selectedIdol.name}의 특별한 순간을 포토카드로 만들어보세요
+          Create special moments of {selectedIdol.name} as photocards
         </p>
 
         {/* Reference Image Preview */}
         <div className="flex items-center justify-center">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">참조 이미지</p>
+            <p className="text-sm text-muted-foreground mb-2">Reference Image</p>
             <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-primary/30">
               <img
                 src={selectedIdol.profile_image || selectedIdol.image}
-                alt={`${selectedIdol.name} 프로필`}
+                alt={`${selectedIdol.name} Profile`}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -395,12 +395,12 @@ export const IdolPhotocardGenerator = ({
 
       <Tabs defaultValue="basic" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="basic">기본 생성</TabsTrigger>
+          <TabsTrigger value="basic">Basic Generation</TabsTrigger>
           <TabsTrigger value="advanced" disabled={!hasAdvancedAccess}>
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4" />
-              고급 생성
-              {!hasAdvancedAccess && <span className="text-xs">(권한 필요)</span>}
+              Advanced Generation
+              {!hasAdvancedAccess && <span className="text-xs">(Access Required)</span>}
             </div>
           </TabsTrigger>
         </TabsList>
@@ -416,13 +416,13 @@ export const IdolPhotocardGenerator = ({
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="text-xs text-white">참조 이미지</span>
+                  <span className="text-xs text-white">Reference Image</span>
                 </div>
               </div>
               <div className="flex-1">
                 <h4 className="text-lg font-bold gradient-text">{selectedIdol.name}</h4>
                 <p className="text-sm text-muted-foreground">{selectedIdol.personality}</p>
-                <p className="text-xs text-green-400 mt-1">✓ 이 얼굴을 기반으로 AI가 생성합니다</p>
+                <p className="text-xs text-green-400 mt-1">✓ AI generates based on this face</p>
               </div>
               <div className="text-right space-y-1">
                 <Badge variant="outline" className="text-xs">
@@ -441,11 +441,11 @@ export const IdolPhotocardGenerator = ({
               <div className="space-y-3">
                 <h4 className="font-semibold flex items-center gap-2">
                   <Star className="w-4 h-4" />
-                  시즌 선택
+                  Season Selection
                 </h4>
                 <Select value={selectedSeason} onValueChange={setSelectedSeason}>
                   <SelectTrigger className="bg-card/50">
-                    <SelectValue placeholder="시즌을 선택하세요" />
+                    <SelectValue placeholder="Select a season" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border border-border z-50">
                     {seasons.map((season) => (
@@ -461,14 +461,14 @@ export const IdolPhotocardGenerator = ({
             <Card className="p-4 glass-dark border-white/10">
               <div className="space-y-3">
                 <h4 className="font-semibold flex items-center gap-2">
-                  ☀️ 날씨
+                  ☀️ Weather
                 </h4>
                 <Select value={selectedWeather} onValueChange={setSelectedWeather}>
                   <SelectTrigger className="bg-card/50">
-                    <SelectValue placeholder="날씨를 선택하세요 (선택사항)" />
+                    <SelectValue placeholder="Select weather (optional)" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="none">선택 안함</SelectItem>
+                    <SelectItem value="none">Not Selected</SelectItem>
                     {weatherOptions.map((weather) => (
                       <SelectItem key={weather} value={weather}>
                         {weather}
@@ -484,14 +484,14 @@ export const IdolPhotocardGenerator = ({
             <Card className="p-4 glass-dark border-white/10">
               <div className="space-y-3">
                 <h4 className="font-semibold flex items-center gap-2">
-                  😊 기분/분위기
+                  😊 Mood/Atmosphere
                 </h4>
                 <Select value={selectedMood} onValueChange={setSelectedMood}>
                   <SelectTrigger className="bg-card/50">
-                    <SelectValue placeholder="기분을 선택하세요 (선택사항)" />
+                    <SelectValue placeholder="Select mood (optional)" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="none">선택 안함</SelectItem>
+                    <SelectItem value="none">Not Selected</SelectItem>
                     {moodOptions.map((mood) => (
                       <SelectItem key={mood} value={mood}>
                         {mood}
@@ -505,14 +505,14 @@ export const IdolPhotocardGenerator = ({
             <Card className="p-4 glass-dark border-white/10">
               <div className="space-y-3">
                 <h4 className="font-semibold flex items-center gap-2">
-                  🎨 주제
+                  🎨 Theme
                 </h4>
                 <Select value={selectedTheme} onValueChange={setSelectedTheme}>
                   <SelectTrigger className="bg-card/50">
-                    <SelectValue placeholder="주제를 선택하세요 (선택사항)" />
+                    <SelectValue placeholder="Select theme (optional)" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="none">선택 안함</SelectItem>
+                    <SelectItem value="none">Not Selected</SelectItem>
                     {themeOptions.map((theme) => (
                       <SelectItem key={theme} value={theme}>
                         {theme}
@@ -528,7 +528,7 @@ export const IdolPhotocardGenerator = ({
           <div className="space-y-4">
             <h4 className="font-semibold flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
-              컨셉 선택
+              Concept Selection
             </h4>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {conceptOptions.map((concept) => {
@@ -588,7 +588,7 @@ export const IdolPhotocardGenerator = ({
             <div className="space-y-4">
               {selectedConcept && (
                 <div className="text-center space-y-2">
-                  <h4 className="font-semibold text-primary">선택된 컨셉</h4>
+                  <h4 className="font-semibold text-primary">Selected Concept</h4>
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-2xl">{selectedConcept.icon}</span>
                     <span className="font-bold">{selectedConcept.name}</span>
@@ -612,17 +612,17 @@ export const IdolPhotocardGenerator = ({
                 {isGenerating ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    AI 이미지 생성 중...
+                    Generating AI image...
                   </div>
                 ) : isPending ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin">⭐</div>
-                    포토카드 민팅 중...
+                    Minting photocard...
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
                     <Camera className="w-4 h-4" />
-                    포토카드 생성하기
+                    Generate Photocard
                   </div>
                 )}
               </Button>
@@ -635,15 +635,15 @@ export const IdolPhotocardGenerator = ({
             <div className="space-y-2">
               <h4 className="font-semibold text-accent flex items-center gap-2">
                 <Heart className="w-4 h-4" />
-                포토카드 생성 가이드
+                Photocard Generation Guide
               </h4>
               <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• 내 아이돌 전용 포토카드를 AI로 생성</li>
-                <li>• 높은 등급일수록 더 희귀하고 아름다운 포토카드</li>
-                <li>• 시즌별로 다른 스타일의 포토카드 제작 가능</li>
-                <li>• 생성된 포토카드는 컬렉션에서 확인 가능</li>
-                <li>• 팬 하트는 다른 사람 포카에 하트를 받으면 획득</li>
-                <li>• AI 생성에는 약 10-30초가 소요됩니다</li>
+                <li>• Generate exclusive photocards for your idol using AI</li>
+                <li>• Higher rarity creates more rare and beautiful photocards</li>
+                <li>• Create different styles of photocards by season</li>
+                <li>• Generated photocards can be viewed in collection</li>
+                <li>• Fan hearts are earned when others like your photocards</li>
+                <li>• AI generation takes approximately 10-30 seconds</li>
               </ul>
             </div>
           </Card>
@@ -661,9 +661,9 @@ export const IdolPhotocardGenerator = ({
             <Card className="p-8 glass-dark border-amber-400/30 bg-amber-400/5">
               <div className="text-center space-y-4">
                 <Zap className="w-16 h-16 mx-auto text-amber-400" />
-                <h3 className="text-xl font-bold text-amber-400">고급 생성 권한 필요</h3>
+                <h3 className="text-xl font-bold text-amber-400">Advanced Generation Access Required</h3>
                 <p className="text-muted-foreground">
-                  울트라 박스를 개봉하여 고급 포토카드 생성 권한을 획득하세요!
+                  Open Ultra Boxes to gain advanced photocard generation access!
                 </p>
                 <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
                   Gemini 2.5 Flash AI 고급 생성
@@ -681,10 +681,10 @@ export const IdolPhotocardGenerator = ({
             <div className="text-center">
               <h3 className="text-2xl font-bold text-green-400 flex items-center justify-center gap-2">
                 <Sparkles className="w-6 h-6" />
-                포토카드 생성 완료!
+                Photocard Generation Complete!
               </h3>
               <p className="text-muted-foreground mt-2">
-                새로운 포토카드가 성공적으로 생성되었습니다
+                New photocard has been successfully generated
               </p>
             </div>
 
@@ -697,7 +697,7 @@ export const IdolPhotocardGenerator = ({
                     <div className="p-4">
                       <h4 className="text-lg font-semibold text-blue-400 mb-3 flex items-center gap-2">
                         <Sparkles className="w-5 h-5" />
-                        Gemini 향상된 프롬프트
+                        Gemini Enhanced Prompt
                       </h4>
                       <div className="bg-background/50 rounded-lg p-3 border border-blue-500/20">
                         <p className="text-sm text-muted-foreground leading-relaxed">
@@ -714,7 +714,7 @@ export const IdolPhotocardGenerator = ({
                     <div className="p-4">
                       <h4 className="text-lg font-semibold text-green-400 mb-3 flex items-center gap-2">
                         <Zap className="w-5 h-5" />
-                        Nano Banana 최적화 프롬프트
+                        Nano Banana Optimized Prompt
                       </h4>
                       <div className="bg-background/50 rounded-lg p-3 border border-green-500/20">
                         <p className="text-sm text-muted-foreground leading-relaxed">
@@ -722,7 +722,7 @@ export const IdolPhotocardGenerator = ({
                         </p>
                       </div>
                       <div className="mt-2 text-xs text-green-400/70">
-                        💡 이 프롬프트는 Stable Diffusion/Nano Banana API에 최적화되었습니다.
+                        💡 This prompt is optimized for Stable Diffusion/Nano Banana API.
                       </div>
                     </div>
                   </Card>
@@ -740,8 +740,8 @@ export const IdolPhotocardGenerator = ({
                       alt={generatedCard.idolName}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        console.error('이미지 로드 실패:', e);
-                        toast.error('생성된 이미지를 로드할 수 없습니다.');
+                        console.error('Image load failed:', e);
+                        toast.error('Cannot load generated image.');
                       }}
                     />
                   ) : (
@@ -793,7 +793,7 @@ export const IdolPhotocardGenerator = ({
                   size="lg"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
-                  계속 만들기
+                  Continue Creating
                 </Button>
                 <Button 
                   onClick={() => setIsCrossChainModalOpen(true)}
@@ -809,7 +809,7 @@ export const IdolPhotocardGenerator = ({
                   size="lg"
                 >
                   <ArrowRight className="w-4 h-4 mr-2" />
-                  포카 보관함으로
+                  Go to Collection
                 </Button>
               </div>
               
@@ -824,19 +824,19 @@ export const IdolPhotocardGenerator = ({
                 {isStoringToWalrus || isStoring ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Walrus에 저장 중...
+                    Saving to Walrus...
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
                     <Database className="w-4 h-4" />
-                    Walrus 분산 스토리지에 저장
+                    Save to Walrus Distributed Storage
                   </div>
                 )}
               </Button>
               
               {storageError && (
                 <div className="text-sm text-red-400 text-center">
-                  저장 오류: {storageError}
+                  Storage error: {storageError}
                 </div>
               )}
             </div>

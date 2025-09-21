@@ -18,52 +18,52 @@ interface Question {
 const questions: Question[] = [
   {
     id: 1,
-    question: "선호하는 헤어스타일은?",
+    question: "What hairstyle do you prefer?",
     options: [
-      { text: "깔끔한 단발", value: "short", emoji: "✂️" },
-      { text: "부드러운 웨이브", value: "wave", emoji: "🌊" },
-      { text: "시크한 장발", value: "long", emoji: "💫" },
-      { text: "독특한 컬러", value: "colorful", emoji: "🎨" }
+      { text: "Clean short hair", value: "short", emoji: "✂️" },
+      { text: "Soft waves", value: "wave", emoji: "🌊" },
+      { text: "Chic long hair", value: "long", emoji: "💫" },
+      { text: "Unique color", value: "colorful", emoji: "🎨" }
     ]
   },
   {
     id: 2,
-    question: "매력적인 눈매는?",
+    question: "What eye shape is attractive?",
     options: [
-      { text: "큰 동그란 눈", value: "round", emoji: "👀" },
-      { text: "날카로운 눈매", value: "sharp", emoji: "⚡" },
-      { text: "웃는 눈", value: "smiling", emoji: "😊" },
-      { text: "신비로운 눈매", value: "mysterious", emoji: "🌙" }
+      { text: "Big round eyes", value: "round", emoji: "👀" },
+      { text: "Sharp eyes", value: "sharp", emoji: "⚡" },
+      { text: "Smiling eyes", value: "smiling", emoji: "😊" },
+      { text: "Mysterious eyes", value: "mysterious", emoji: "🌙" }
     ]
   },
   {
     id: 3,
-    question: "선호하는 체형은?",
+    question: "What body type do you prefer?",
     options: [
-      { text: "슬림한 체형", value: "slim", emoji: "🎋" },
-      { text: "탄탄한 근육질", value: "athletic", emoji: "💪" },
-      { text: "부드러운 곡선", value: "soft", emoji: "🌸" },
-      { text: "키가 큰 편", value: "tall", emoji: "🗼" }
+      { text: "Slim build", value: "slim", emoji: "🎋" },
+      { text: "Athletic build", value: "athletic", emoji: "💪" },
+      { text: "Soft curves", value: "soft", emoji: "🌸" },
+      { text: "Tall", value: "tall", emoji: "🗼" }
     ]
   },
   {
     id: 4,
-    question: "선호하는 스타일은?",
+    question: "What style do you prefer?",
     options: [
-      { text: "깔끔한 정장", value: "formal", emoji: "🤵" },
-      { text: "캐주얼 편안함", value: "casual", emoji: "👕" },
-      { text: "힙한 스트릿", value: "street", emoji: "🧢" },
-      { text: "로맨틱 플로럴", value: "romantic", emoji: "🌺" }
+      { text: "Clean formal wear", value: "formal", emoji: "🤵" },
+      { text: "Casual comfort", value: "casual", emoji: "👕" },
+      { text: "Hip street style", value: "street", emoji: "🧢" },
+      { text: "Romantic floral", value: "romantic", emoji: "🌺" }
     ]
   },
   {
     id: 5,
-    question: "매력적인 표정은?",
+    question: "What expression is attractive?",
     options: [
-      { text: "밝은 미소", value: "bright", emoji: "😄" },
-      { text: "섹시한 윙크", value: "wink", emoji: "😉" },
-      { text: "차분한 미소", value: "calm", emoji: "😌" },
-      { text: "장난스러운 표정", value: "playful", emoji: "😋" }
+      { text: "Bright smile", value: "bright", emoji: "😄" },
+      { text: "Sexy wink", value: "wink", emoji: "😉" },
+      { text: "Calm smile", value: "calm", emoji: "😌" },
+      { text: "Playful expression", value: "playful", emoji: "😋" }
     ]
   }
 ];
@@ -80,16 +80,16 @@ export const AppearanceTest = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // 외모 취향 분석 완료
+      // Appearance preference analysis completed
       const appearanceProfile = calculateAppearanceProfile(newAnswers);
       localStorage.setItem('appearanceProfile', JSON.stringify(appearanceProfile));
-      toast.success("외모 취향 분석이 완료되었습니다!");
+      toast.success("Appearance preference analysis completed!");
       navigate('/result-analysis');
     }
   };
 
   const calculateAppearanceProfile = (answers: string[]) => {
-    // 외모 취향 분석 로직
+    // Appearance preference analysis logic
     const profile = {
       hair: answers[0],
       eyes: answers[1], 
@@ -102,15 +102,15 @@ export const AppearanceTest = () => {
   };
 
   const determineAppearanceType = (answers: string[]) => {
-    // 답변 조합으로 외모 취향 타입 결정
+    // Determine appearance preference type based on answer combinations
     const typeMap: { [key: string]: string } = {
-      "cute": "귀여운 타입",
-      "sexy": "섹시한 타입", 
-      "charismatic": "카리스마 타입",
-      "natural": "자연스러운 타입"
+      "cute": "Cute Type",
+      "sexy": "Sexy Type", 
+      "charismatic": "Charismatic Type",
+      "natural": "Natural Type"
     };
 
-    // 간단한 분류 로직 (실제로는 더 복잡한 알고리즘 사용)
+    // Simple classification logic (more complex algorithms used in actual implementation)
     if (answers.includes("round") && answers.includes("bright")) {
       return typeMap.cute;
     } else if (answers.includes("sharp") && answers.includes("wink")) {
@@ -128,9 +128,9 @@ export const AppearanceTest = () => {
     <div className="min-h-screen bg-gradient-background p-4">
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">2. 외형 성향 분석</h1>
+          <h1 className="text-4xl font-bold gradient-text">2. Appearance Preference Analysis</h1>
           <p className="text-muted-foreground">
-            질문 {currentQuestion + 1} / {questions.length}
+            Question {currentQuestion + 1} / {questions.length}
           </p>
           <Progress value={progress} className="w-full" />
         </div>
@@ -164,7 +164,7 @@ export const AppearanceTest = () => {
             variant="ghost"
             className="text-muted-foreground hover:text-foreground"
           >
-            이전 단계로
+            Previous Step
           </Button>
         </div>
       </div>
