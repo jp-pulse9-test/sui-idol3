@@ -12,11 +12,15 @@ const googleApiKey = Deno.env.get('GOOGLE_AI_API_KEY')!
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-interface IdolData {
+interface SafeIdolData {
   name: string
   personality: string
   description: string
   profile_image: string
+  // persona_prompt는 제외 - 민감한 IP 정보
+}
+
+interface FullIdolData extends SafeIdolData {
   persona_prompt: string
 }
 
@@ -26,9 +30,8 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting idol generation process...')
+    console.log('Starting secure idol generation process...')
     
-    // 한국 K-pop 스타일 이름들과 성향들
     const koreanNames = [
       "지민", "태형", "정국", "석진", "호석", "남준", "윤기",
       "민지", "하니", "다니엘", "해린", "혜인",
@@ -66,7 +69,7 @@ serve(async (req) => {
       "인디", "팝", "락", "발라드", "댄스", "힙합", "재즈", "포크"
     ]
 
-    let generatedIdols: IdolData[] = []
+    let generatedIdols: FullIdolData[] = []
     
     // 202명의 아이돌 데이터 생성
     for (let i = 0; i < 202; i++) {
@@ -78,19 +81,18 @@ serve(async (req) => {
         // 이름에 번호 추가해서 유니크하게 만들기
         const uniqueName = `${randomName}${String(i + 1).padStart(3, '0')}`
         
-        // Gemini 2.5를 사용해서 상세한 성격과 페르소나 생성
         const personaResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${googleApiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{
               parts: [{
-                text: `한국 K-pop 아이돌 "${uniqueName}"의 상세한 캐릭터를 만들어주세요.
-                기본 성향: ${randomPersonality}
-                컨셉: ${randomConcept}
-                
-                다음 형식으로 응답해주세요:
-                성격설명: (3-4문장으로 구체적인 성격 특징)
+                text: `한국 K-pop 아이돌 "${uniqueName}"의 상세한 캐릭터를 만들어주세요.\n
+                기본 성향: ${randomPersonality}\n
+                컨셉: ${randomConcept}\n
+                \n
+                다음 형식으로 응답해주세요:\n
+                성격설명: (3-4문장으로 구체적인 성격 특징)\n
                 페르소나: (팬들과 대화할 때 사용할 말투와 캐릭터 설정, 200자 내외)`
               }]
             }],
@@ -111,48 +113,11 @@ serve(async (req) => {
         const description = personalityMatch ? personalityMatch[1].trim() : `${randomPersonality} 성격의 매력적인 K-pop 아이돌입니다.`
         const personaPrompt = personaMatch ? personaMatch[1].trim() : `안녕하세요! 저는 ${uniqueName}이에요. ${randomPersonality} 성격으로 팬 여러분과 즐겁게 대화하고 싶어요!`
         
-        // Vertex AI를 통한 실제 이미지 생성
-        const imagePrompt = `Professional K-pop idol portrait: ${randomPersonality} personality, ${randomConcept} concept, beautiful Korean idol, perfect makeup, stylish outfit, studio lighting, photorealistic, high quality, detailed facial features`
-        
-        let profileImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${uniqueName}` // 기본 이미지
-        
-        try {
-          const imageResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${googleApiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{
-                  text: `Create a detailed image description for: ${imagePrompt}. Return only a single, comprehensive image description optimized for AI image generation.`
-                }]
-              }],
-              generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 200
-              }
-            })
-          })
-          
-          if (imageResponse.ok) {
-            const responseData = await imageResponse.json()
-            const enhancedPrompt = responseData.candidates?.[0]?.content?.parts?.[0]?.text
-            
-            if (enhancedPrompt) {
-              console.log(`Enhanced image prompt for ${uniqueName}: ${enhancedPrompt}`)
-              // 향후 실제 이미지 생성 API 연동 시 사용할 프롬프트 저장
-            }
-          }
-          
-        } catch (error) {
-          console.error(`Image prompt generation failed for ${uniqueName}:`, error)
-        }
-        
-        // 다양한 아바타 스타일 사용
         const avatarStyles = ['adventurer', 'avataaars', 'bottts', 'croodles', 'personas']
         const randomStyle = avatarStyles[Math.floor(Math.random() * avatarStyles.length)]
-        profileImage = `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${uniqueName}&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80`
+        const profileImage = `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${uniqueName}&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80`
         
-        const idolData: IdolData = {
+        const idolData: FullIdolData = {
           name: uniqueName,
           personality: `${randomPersonality} • ${randomConcept}`,
           description: description,
@@ -187,13 +152,14 @@ serve(async (req) => {
 
     console.log(`Generated ${generatedIdols.length} idols, inserting into database...`)
 
-    // 데이터베이스에 일괄 삽입 (배치로 나누어서)
+    // 보안: 데이터베이스에 전체 데이터 삽입 (Service Role 사용)
     const batchSize = 50
     let insertedCount = 0
     
     for (let i = 0; i < generatedIdols.length; i += batchSize) {
       const batch = generatedIdols.slice(i, i + batchSize)
       
+      // 전체 데이터 삽입 (민감한 정보 포함)
       const { data, error } = await supabase
         .from('idols')
         .insert(batch)
@@ -208,11 +174,21 @@ serve(async (req) => {
       console.log(`Inserted batch ${Math.floor(i/batchSize) + 1}, total: ${insertedCount}/${generatedIdols.length}`)
     }
 
+    // 보안: 응답에는 민감한 정보 제외하고 안전한 데이터만 반환
+    const safeResponse: SafeIdolData[] = generatedIdols.slice(0, 3).map(idol => ({
+      name: idol.name,
+      personality: idol.personality,
+      description: idol.description,
+      profile_image: idol.profile_image,
+      // persona_prompt 제외 - 민감한 IP
+    }))
+
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: `Successfully generated and inserted ${insertedCount} idols`,
-        sample: generatedIdols.slice(0, 3) // 처음 3명 샘플 반환
+        sample: safeResponse, // 민감한 정보가 제거된 안전한 샘플만 반환
+        note: "Sensitive persona data protected - available only to authenticated users"
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

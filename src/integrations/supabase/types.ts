@@ -678,6 +678,10 @@ export type Database = {
           profile_image: string
         }[]
       }
+      get_safe_idol_data: {
+        Args: { idol_id: number }
+        Returns: Json
+      }
       is_admin_user: {
         Args: Record<PropertyKey, never>
         Returns: boolean
