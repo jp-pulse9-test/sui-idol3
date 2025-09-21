@@ -12,9 +12,6 @@ import { usePhotocardStorage } from "@/hooks/usePhotocardStorage";
 import { useWallet } from "@/hooks/useWallet";
 import { toast } from "sonner";
 import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft, Database, Save } from "lucide-react";
-import { WalrusClient, WalrusFile } from "@mysten/walrus";
-import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 
 interface SelectedIdol {
   id: number;
@@ -65,15 +62,6 @@ export const IdolPhotocardGenerator = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [isStoringToWalrus, setIsStoringToWalrus] = useState(false);
-  const {mutate: signAndExecute} = useSignAndExecuteTransaction();
-  
-  const suiClient = new SuiClient({
-    url: getFullnodeUrl('testnet'),
-    network: 'testnet',
-  });
-  const walrusClient = new WalrusClient(
-    {network: 'testnet', suiClient}
-  );
 
   const conceptOptions: ConceptOption[] = [
     {
@@ -305,34 +293,8 @@ export const IdolPhotocardGenerator = ({
       const res = await fetch(generatedImageUrl);
       const blob = await (await res.blob()).arrayBuffer();
 
-      const flow = walrusClient.writeFilesFlow({
-        files: [
-          WalrusFile.from({
-            contents: new Uint8Array(blob),
-            identifier: "photocard.png"
-          })
-        ]
-      });
+      // Walrus direct flow disabled due to WASM resolution issue. Using storePhotocard() only.
 
-      await flow.encode();
-
-      const registerTx = flow.register({
-        epochs: 2,
-        deletable: true,
-        owner: currentAccount.address,
-      });
-
-      console.log("Walrus??????")
-
-      signAndExecute({transaction: registerTx},{onSuccess: () => {
-        toast.success('포토카드가 Walrus에 저장되었습니다!');
-        console.log("Walrus!!!!!!!")
-      }, onError: (e)=>{
-        console.log(e)
-      }});
-
-
-      console.log("Walrus!!!!!!!2222")
 
 
       // Walrus에 저장

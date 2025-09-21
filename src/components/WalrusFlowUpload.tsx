@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useWalrusFlow } from '@/hooks/useWalrusFlow';
 import { useWallet } from '@/hooks/useWallet';
-import { WalrusFile } from '@mysten/walrus';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,7 +22,7 @@ import {
 import { toast } from 'sonner';
 
 interface WalrusFlowUploadProps {
-  onUploadComplete?: (files: WalrusFile[]) => void;
+  onUploadComplete?: (files: any[]) => void;
   className?: string;
 }
 

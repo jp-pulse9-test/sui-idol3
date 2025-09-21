@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { walrusService } from '@/services/walrusService';
-import { WalrusFile } from '@mysten/walrus';
+import type { WalrusFile } from '@mysten/walrus';
 import { useWalletSigner } from './useWalletSigner';
 
 export interface FlowStep {
