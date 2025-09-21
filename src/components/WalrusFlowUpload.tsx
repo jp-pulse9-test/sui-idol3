@@ -117,11 +117,11 @@ export function WalrusFlowUpload({ onUploadComplete, className }: WalrusFlowUplo
         fileContent = content;
       }
 
-      const walrusFile = WalrusFile.from({
+      const walrusFile = {
         contents: fileContent,
         identifier: identifier.trim(),
         tags: parseTags(tags),
-      });
+      };
 
       await startFlow([walrusFile]);
       toast.success('업로드 플로우가 시작되었습니다');

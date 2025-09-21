@@ -17,7 +17,7 @@ export interface UseWalrusFlowReturn {
   isFlowActive: boolean;
   
   // 플로우 시작
-  startFlow: (files: WalrusFile[]) => Promise<void>;
+  startFlow: (files: any[]) => Promise<void>;
   
   // 각 단계 실행
   executeEncode: () => Promise<void>;
@@ -80,7 +80,7 @@ export function useWalrusFlow(): UseWalrusFlowReturn {
     setFlow(null);
   }, []);
 
-  const startFlow = useCallback(async (files: WalrusFile[]) => {
+  const startFlow = useCallback(async (files: any[]) => {
     try {
       setError(null);
       setIsFlowActive(true);
