@@ -41,26 +41,26 @@ export const RandomBox = ({
   const boxTypes: BoxType[] = [
     {
       id: 'standard',
-      name: '스탠다드 박스',
+      name: 'Standard Box',
       cost: 0,
       icon: '📦',
-      description: '매일 무료로 열 수 있는 기본 박스',
+      description: 'Basic box that can be opened for free daily',
       rates: { N: 70, R: 25, SR: 4, SSR: 1 }
     },
     {
       id: 'premium',
-      name: '프리미엄 박스',
+      name: 'Premium Box',
       cost: 0.15,
       icon: '✨',
-      description: '더 높은 레어 확률의 프리미엄 박스 (0.15 SUI)',
+      description: 'Premium box with higher rare probability (0.15 SUI)',
       rates: { N: 50, R: 35, SR: 12, SSR: 3 }
     },
     {
       id: 'ultra',
-      name: '울트라 박스',
+      name: 'Ultra Box',
       cost: 0.45,
       icon: '💎',
-      description: '전문가용 포카 생성 권한 획득 (고급 AI 기능 포함)',
+      description: 'Pro photocard generation access (advanced AI features included)',
       rates: { N: 30, R: 40, SR: 20, SSR: 10 }
     }
   ];
@@ -98,21 +98,21 @@ export const RandomBox = ({
       <div className="text-center space-y-4">
         <h2 className="text-3xl font-bold gradient-text flex items-center justify-center gap-2">
           <Gift className="w-8 h-8" />
-          랜덤박스
+          Random Box
         </h2>
         <p className="text-muted-foreground">
-          포토카드를 획득할 수 있는 특별한 상자를 열어보세요
+          Open special boxes to obtain photocards
         </p>
         
         <div className="flex items-center justify-center gap-4">
           <Badge variant="outline" className="px-4 py-2">
-            💰 보유 코인: {userCoins.toLocaleString()}
+            💰 Coins Owned: {userCoins.toLocaleString()}
           </Badge>
           <Badge variant="secondary" className="px-4 py-2">
-            🎁 선착순 무료: {dailyFreeCount}/{maxDailyFree}
+            🎁 Daily Free: {dailyFreeCount}/{maxDailyFree}
           </Badge>
           <Badge variant="outline" className="px-4 py-2">
-            🏃‍♂️ 남은 자리: {maxDailyFree - dailyFreeCount}
+            🏃‍♂️ Remaining: {maxDailyFree - dailyFreeCount}
           </Badge>
         </div>
       </div>
@@ -122,33 +122,33 @@ export const RandomBox = ({
         <div className="space-y-4">
           <h3 className="text-lg font-bold gradient-text flex items-center gap-2">
             <Star className="w-5 h-5" />
-            피티 시스템
+            Pity System
           </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-purple-400">SR 보장까지</span>
-                <span className="font-semibold">{srPityRemaining}회</span>
+                <span className="text-purple-400">Until SR Guaranteed</span>
+                <span className="font-semibold">{srPityRemaining} pulls</span>
               </div>
               <Progress 
                 value={((10 - srPityRemaining) / 10) * 100} 
                 className="h-2"
               />
               <p className="text-xs text-muted-foreground">
-                10회 안에 SR 이상 보장
+                SR or higher guaranteed within 10 pulls
               </p>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-yellow-400">SSR 보장까지</span>
-                <span className="font-semibold">{ssrPityRemaining}회</span>
+                <span className="text-yellow-400">Until SSR Guaranteed</span>
+                <span className="font-semibold">{ssrPityRemaining} pulls</span>
               </div>
               <Progress 
                 value={((30 - ssrPityRemaining) / 30) * 100} 
                 className="h-2"
               />
               <p className="text-xs text-muted-foreground">
-                30회 안에 SSR 보장
+                SSR guaranteed within 30 pulls
               </p>
             </div>
           </div>
@@ -187,7 +187,7 @@ export const RandomBox = ({
                 <div className="text-center">
                   {box.cost === 0 ? (
                     <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-lg px-4 py-2">
-                      🎁 무료
+                      🎁 FREE
                     </Badge>
                   ) : (
                      <Badge variant="outline" className="text-lg px-4 py-2 flex items-center gap-1 mx-auto w-fit">
@@ -211,24 +211,24 @@ export const RandomBox = ({
                   {isOpening ? (
                     <div className="flex items-center gap-2">
                       <div className="animate-spin">⭐</div>
-                      개봉 중...
+                      Opening...
                     </div>
                   ) : box.cost === 0 ? (
                     canOpenFree ? (
                       <div className="flex items-center gap-2">
                         <Gift className="w-4 h-4" />
-                        무료로 열기
+                        Open for Free
                       </div>
                     ) : (
-                      "오늘 무료 횟수 소진"
+                      "Daily free limit reached"
                     )
                   ) : userCoins >= box.cost ? (
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4" />
-                      구매하고 열기
+                      Purchase and Open
                     </div>
                    ) : (
-                     "SUI 부족"
+                     "Insufficient SUI"
                    )}
                 </Button>
 
@@ -248,12 +248,12 @@ export const RandomBox = ({
           <div className="text-center space-y-6">
             <div className="text-6xl animate-bounce">📦</div>
             <h3 className="text-2xl font-bold gradient-text">
-              박스를 개봉하고 있습니다...
+              Opening the box...
             </h3>
             <div className="space-y-2">
               <Progress value={75} className="w-full max-w-md mx-auto" />
               <p className="text-sm text-muted-foreground">
-                새로운 포토카드가 곧 나타납니다!
+                New photocards will appear soon!
               </p>
             </div>
             <div className="flex justify-center space-x-2">
@@ -274,14 +274,14 @@ export const RandomBox = ({
         <div className="space-y-2">
           <h4 className="font-semibold text-accent flex items-center gap-2">
             <Star className="w-4 h-4" />
-            랜덤박스 가이드
+            Random Box Guide
           </h4>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• 매일 무료 박스 선착순 {maxDailyFree}명 제공</li>
-            <li>• 한 번에 1-10장의 포카 획득 가능</li>
-            <li>• 10회 안에 SR 이상, 30회 안에 SSR 보장</li>
-            <li>• 프리미엄/울트라 박스는 더 높은 레어 확률</li>
-            <li>• 포카에 하트를 받으면 팬 포인트 증가</li>
+            <li>• Daily free boxes available for first {maxDailyFree} users</li>
+            <li>• Get 1-10 photocards per opening</li>
+            <li>• SR+ guaranteed within 10 pulls, SSR within 30 pulls</li>
+            <li>• Premium/Ultra boxes have higher rare probability</li>
+            <li>• Receiving hearts on photocards increases fan points</li>
           </ul>
         </div>
       </Card>

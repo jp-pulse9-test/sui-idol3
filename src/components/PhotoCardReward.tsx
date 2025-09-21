@@ -70,7 +70,7 @@ export const PhotoCardReward: React.FC<PhotoCardRewardProps> = ({
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('ko-KR', {
+    return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -87,11 +87,11 @@ export const PhotoCardReward: React.FC<PhotoCardRewardProps> = ({
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center space-x-2">
               <Sparkles className="w-6 h-6 text-yellow-500" />
-              <h2 className="text-xl font-bold">포토카드 획득!</h2>
+              <h2 className="text-xl font-bold">Photocard Obtained!</h2>
               <Sparkles className="w-6 h-6 text-yellow-500" />
             </div>
             <p className="text-sm text-muted-foreground">
-              특별한 순간이 포토카드로 기록되었습니다
+              Special moments have been recorded as photocards
             </p>
           </div>
 
@@ -112,7 +112,7 @@ export const PhotoCardReward: React.FC<PhotoCardRewardProps> = ({
                         onClick={handleReveal}
                         className="bg-white/20 hover:bg-white/30 text-white"
                       >
-                        카드 뒤집기
+                        Flip Card
                       </Button>
                     )}
                   </div>
@@ -147,7 +147,7 @@ export const PhotoCardReward: React.FC<PhotoCardRewardProps> = ({
                       </h3>
                       
                       <div className="space-y-1 text-xs text-muted-foreground">
-                        <div>경로: {photoCard.choicePath}</div>
+                        <div>Path: {photoCard.choicePath}</div>
                         <div>{formatDate(photoCard.earnedAt)}</div>
                       </div>
 
@@ -167,10 +167,10 @@ export const PhotoCardReward: React.FC<PhotoCardRewardProps> = ({
           {isFlipped && (
             <div className={`text-center p-3 rounded-lg ${style.bg} animate-fade-in`}>
               <p className={`text-sm ${style.text} font-medium`}>
-                {photoCard.rarity === 'SSR' && '✨ 극히 드문 순간이 담긴 특별한 카드입니다!'}
-                {photoCard.rarity === 'SR' && '🌟 특별한 순간이 담긴 귀한 카드입니다!'}
-                {photoCard.rarity === 'R' && '💎 소중한 순간이 담긴 카드입니다!'}
-                {photoCard.rarity === 'N' && '📸 일상의 아름다운 순간이 담긴 카드입니다!'}
+                {photoCard.rarity === 'SSR' && '✨ A special card capturing an extremely rare moment!'}
+                {photoCard.rarity === 'SR' && '🌟 A precious card capturing a special moment!'}
+                {photoCard.rarity === 'R' && '💎 A card capturing a treasured moment!'}
+                {photoCard.rarity === 'N' && '📸 A card capturing a beautiful moment from daily life!'}
               </p>
             </div>
           )}
@@ -181,17 +181,17 @@ export const PhotoCardReward: React.FC<PhotoCardRewardProps> = ({
               <div className="flex space-x-2">
                 <Button onClick={handleSave} className="flex-1">
                   <Download className="w-4 h-4 mr-2" />
-                  컬렉션에 저장
+                  Save to Collection
                 </Button>
                 <Button variant="outline" className="flex-1">
                   <Share2 className="w-4 h-4 mr-2" />
-                  공유하기
+                  Share
                 </Button>
               </div>
               
               <Button variant="ghost" onClick={onClose} className="w-full">
                 <Eye className="w-4 h-4 mr-2" />
-                컬렉션 보러가기
+                View Collection
               </Button>
             </div>
           )}

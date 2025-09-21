@@ -5,9 +5,9 @@ export interface IdolPreset {
   description?: string; // Optional for security
   profile_image: string;
   persona_prompt?: string; // Optional for security
-  Gender?: string;
-  Category?: string;
-  Concept?: string;
+  gender?: string;
+  category?: string;
+  concept?: string;
 }
 
 export interface PublicIdolData {

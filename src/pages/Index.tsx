@@ -14,17 +14,16 @@ import { Settings, Camera, Database } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
-// Walrus 컴포넌트들을 임시로 비활성화 (WASM 오류 해결용)
-// import { WalrusFileUpload } from "@/components/WalrusFileUpload";
-// import { WalrusFileDownload } from "@/components/WalrusFileDownload";
-// import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
-// import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
+import { WalrusFileUpload } from "@/components/WalrusFileUpload";
+import { WalrusFileDownload } from "@/components/WalrusFileDownload";
+import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
+import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
 
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
 import maleIdolFaces from "@/assets/male-idol-faces.jpg";
 
-// 배경 아이돌 그리드 컴포넌트
+// Background idol grid component
 const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
   const backgroundImage = side === 'left' ? maleIdolFaces : idolFacesGrid;
   
@@ -58,9 +57,6 @@ const Index = () => {
   const [showWalrusTools, setShowWalrusTools] = useState(false);
   const [showPhotocardGallery, setShowPhotocardGallery] = useState(false);
 
-  // 초기화 디버깅 
-  console.log('Index 컴포넌트 렌더링됨:', { user, loading, isWalletConnected });
-
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
     if (savedWallet) {
@@ -79,9 +75,9 @@ const Index = () => {
       setWalletAddress("");
     }
     
-    // 수퍼어드민 특권 자동 적용
+    // Automatically apply super admin privileges
     if (user?.wallet_address) {
-      // 관리자 기능 제거됨
+      // Admin features removed
     }
   }, [user]);
 
@@ -93,7 +89,7 @@ const Index = () => {
     disconnectWallet();
     setIsWalletConnected(false);
     setWalletAddress("");
-    toast.success("지갑 연결이 해제되었습니다.");
+    toast.success("Wallet disconnected successfully.");
   };
 
   const handleStartJourney = () => {
@@ -102,7 +98,7 @@ const Index = () => {
 
   const handleVaultAccess = () => {
     if (!user) {
-      toast.error("Vault 이용을 위해 Sui 지갑 연결이 필요합니다!");
+      toast.error("Sui wallet connection required for Vault access!");
       navigate('/auth');
       return;
     }
@@ -111,7 +107,7 @@ const Index = () => {
 
   const handleRiseAccess = () => {
     if (!user) {
-      toast.error("Rise 이용을 위해 Sui 지갑 연결이 필요합니다!");
+      toast.error("Sui wallet connection required for Rise access!");
       navigate('/auth');
       return;
     }
@@ -121,7 +117,7 @@ const Index = () => {
   const handleSignOut = async () => {
     await disconnectWallet();
     disconnectWalletLocal();
-    toast.success("로그아웃되었습니다.");
+    toast.success("Logged out successfully.");
   };
 
   const openPreview = (type: 'pick' | 'vault' | 'rise') => {
@@ -144,14 +140,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 relative overflow-hidden">
-      {/* 좌우 아이돌 그리드 배경 */}
+    <div className="min-h-screen bg-gradient-background relative overflow-hidden">
+      {/* Left and right idol grid background */}
       <IdolGrid side="left" />
       <IdolGrid side="right" />
       
-      {/* 메인 콘텐츠 */}
+      {/* Main content */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
-        {/* 상단 인증 및 지갑 연결 영역 */}
+        {/* Top authentication and wallet connection area */}
         <div className="fixed top-4 right-4 z-20 flex gap-2">
           <WalletConnectButton 
             variant="premium" 
@@ -165,7 +161,7 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 className="text-muted-foreground hover:text-foreground"
-                title="포토카드 생성기"
+                title="Photocard Generator"
               >
                 <Camera className="h-4 w-4" />
               </Button>
@@ -185,17 +181,17 @@ const Index = () => {
 
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-12 bg-black/60 backdrop-blur-xl p-16 rounded-3xl border border-gray-400/20 shadow-2xl">
+          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
             <div className="space-y-8">
-              <h1 className="text-7xl md:text-9xl font-black tracking-tight text-white">
+              <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
                 Sui:Idol³
               </h1>
               <div className="space-y-4">
-                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                  가상아이돌 스토리 플랫폼
+                <h2 className="text-3xl md:text-4xl font-bold gradient-text">
+                  Virtual Idol Story Platform
                 </h2>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                  성향 분석으로 나와 잘 맞는 아이돌을 찾고, 랜덤박스로 포토카드를 수집하며, 리더보드에서 다른 팬들과 경쟁하는 완전한 팬덤 경험.
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  Complete fandom experience: find your perfect idol through personality analysis, collect photocards with random boxes, and compete with other fans on the leaderboard.
                 </p>
               </div>
             </div>
@@ -205,34 +201,34 @@ const Index = () => {
                 onClick={handleStartJourney}
                 variant="default"
                 size="xl"
-                className="min-w-80 text-2xl py-6 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                🎮 나의 아이돌 PICK 하러가기
+                🎮 PICK My Idol Now
               </Button>
-              <p className="text-lg text-gray-400">
-                Pick은 체험, Vault는 수집, Rise는 경쟁과 거래!
+              <p className="text-lg text-muted-foreground">
+                Pick for experience, Vault for collection, Rise for competition and trading!
               </p>
-              <p className="text-base text-gray-500">
-                심쿵 배틀로 최애를 고르고 → 랜덤박스로 포카 만들고 → 리더보드와 마켓에서 빛나세요.
+              <p className="text-base text-muted-foreground">
+                Choose your bias through heart-fluttering battles → Create photocards with random boxes → Shine on the leaderboard and marketplace.
               </p>
               
               {!user && (
-                <div className="mt-4 p-4 bg-cyan-900/20 rounded-lg border border-cyan-500/30">
-                  <p className="text-sm text-gray-300 text-center">
-                    💡 지갑 연결 없이도 바로 체험 가능! Vault부터 본격 수집과 거래 시작
+                <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
+                  <p className="text-sm text-muted-foreground text-center">
+                    💡 Try instantly without wallet connection! Start real collecting and trading from Vault
                   </p>
                 </div>
               )}
             </div>
             
-            {/* 시즌 정보 */}
+            {/* Season information */}
             <div className="mt-12 p-8 glass rounded-2xl border border-white/10 shadow-lg">
               <div className="text-center space-y-4">
-                <h3 className="text-2xl font-bold gradient-text">2025 AI심쿵챌린지</h3>
+                <h3 className="text-2xl font-bold gradient-text">2025 AI Heart Challenge</h3>
                 <p className="text-5xl font-black text-foreground">101</p>
-                <p className="text-lg text-muted-foreground">SEASON 1, 당신의 픽으로 탄생하는 K-POP 아이돌</p>
+                <p className="text-lg text-muted-foreground">SEASON 1, K-POP idols born from your picks</p>
                 <p className="text-base text-muted-foreground">
-                  최애의 성장과 추억을 만드는 특별한 여정
+                  A special journey creating growth and memories with your bias
                 </p>
               </div>
             </div>
@@ -245,36 +241,36 @@ const Index = () => {
             <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
               <h2 className="text-4xl font-bold gradient-text">Pick · Vault · Rise</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                선택하고, 수집하고, 경쟁하는 3단계 팬덤 경험
+                3-step fandom experience: Choose, Collect, and Compete
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
                 title="🎯 PICK"
-                description="3가지 방식 성향 분석 후 16강 심쿵 배틀로 운명의 아이돌 선택. 각 아이돌은 고유한 매력과 개성을 가진 AI 캐릭터입니다."
+                description="Choose your destined idol through 3 personality analyses and round of 16 heart-fluttering battles. Each idol is an AI character with unique charm and personality."
                 icon={mbtiIcon}
                 onClick={() => openPreview('pick')}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
-                buttonText="미리보기"
+                buttonText="Preview"
               />
               
               <FeatureCard
                 title="🗃️ VAULT"
-                description="최애를 안전하게 수납하고 랜덤박스로 포토카드를 수집하세요. 희귀한 카드일수록 더 높은 가치를 가집니다."
+                description="Store your bias safely and collect photocards with random boxes. The rarer the card, the higher its value."
                 icon={photocardIcon}
                 onClick={() => openPreview('vault')}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
-                buttonText="미리보기"
+                buttonText="Preview"
               />
               
                <FeatureCard
                  title="📈 RISE"
-                 description="아이돌 리더보드에서 인기 순위를 확인하고 마켓플레이스에서 자유롭게 거래하세요."
+                 description="Check popularity rankings on the idol leaderboard and trade freely in the marketplace."
                 icon={tournamentIcon}
                 onClick={() => openPreview('rise')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
-                buttonText="미리보기"
+                buttonText="Preview"
               />
               
             </div>
@@ -287,7 +283,7 @@ const Index = () => {
             <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
               <div className="space-y-4">
                 <h2 className="text-4xl font-bold gradient-text">
-                  Pick · Vault · Rise · Gallery 플로우
+                  Pick · Vault · Rise · Gallery Flow
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8 mt-8">
                   <div className="text-center space-y-4">
@@ -295,21 +291,21 @@ const Index = () => {
                       🎯
                     </div>
                     <h3 className="text-xl font-bold text-primary">PICK</h3>
-                    <p className="text-foreground">성향 분석 → 심쿵 배틀 → 최애 민팅</p>
+                    <p className="text-foreground">Personality analysis → Heart battles → Bias minting</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       🗃️
                     </div>
                     <h3 className="text-xl font-bold text-accent">VAULT</h3>
-                    <p className="text-foreground">최애 수납 → 랜덤박스 → 포카 수집</p>
+                    <p className="text-foreground">Bias storage → Random box → Photocard collection</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       📈
                     </div>
                     <h3 className="text-xl font-bold text-secondary">RISE</h3>
-                    <p className="text-foreground">리더보드 → 갤러리 → 거래소</p>
+                    <p className="text-foreground">Leaderboard → Gallery → Marketplace</p>
                   </div>
                 </div>
               </div>
@@ -322,41 +318,31 @@ const Index = () => {
           <section className="py-20">
             <div className="space-y-12">
               <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-                <h2 className="text-4xl font-bold gradient-text">Walrus 스토리지 도구</h2>
+                <h2 className="text-4xl font-bold gradient-text">Walrus Storage Tools</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  분산 스토리지에 파일을 업로드하고 다운로드하세요
+                  Upload and download files to distributed storage
                 </p>
               </div>
 
               <div className="grid lg:grid-cols-2 gap-8">
-                {/* 임시로 주석 처리 - WASM 오류 해결용 */}
-                {/* <WalrusFileUpload 
+                <WalrusFileUpload 
                   onUploadComplete={(result) => {
-                    toast.success(`파일이 업로드되었습니다! Blob ID: ${result.blobId.slice(0, 8)}...`);
+                    toast.success(`File uploaded! Blob ID: ${result.blobId.slice(0, 8)}...`);
                   }}
                 />
                 <WalrusFileDownload 
                   onDownloadComplete={(file) => {
-                    toast.success('파일이 다운로드되었습니다!');
+                    toast.success('File downloaded successfully!');
                   }}
-                /> */}
-                <div className="p-8 text-center border border-gray-600 rounded-lg">
-                  <p className="text-gray-400">Walrus 도구는 임시로 비활성화됨</p>
-                </div>
-                <div className="p-8 text-center border border-gray-600 rounded-lg">
-                  <p className="text-gray-400">WASM 모듈 오류 해결 중</p>
-                </div>
+                />
               </div>
 
               <div className="max-w-4xl mx-auto">
-                {/* <WalrusFlowUpload 
+                <WalrusFlowUpload 
                   onUploadComplete={(files) => {
-                    toast.success(`${files.length}개의 파일이 업로드되었습니다!`);
+                    toast.success(`${files.length} files uploaded successfully!`);
                   }}
-                /> */}
-                <div className="p-8 text-center border border-gray-600 rounded-lg">
-                  <p className="text-gray-400">Walrus Flow 업로드 임시 비활성화</p>
-                </div>
+                />
               </div>
             </div>
           </section>
@@ -367,17 +353,14 @@ const Index = () => {
           <section className="py-20">
             <div className="space-y-12">
               <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-                <h2 className="text-4xl font-bold gradient-text">저장된 포토카드 갤러리</h2>
+                <h2 className="text-4xl font-bold gradient-text">Saved Photocard Gallery</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  Walrus 분산 스토리지에 저장된 포토카드 컬렉션을 확인하세요
+                  Check your photocard collection saved in Walrus distributed storage
                 </p>
               </div>
 
               <div className="max-w-7xl mx-auto">
-                {/* <WalrusPhotocardGallery /> */}
-                <div className="p-8 text-center border border-gray-600 rounded-lg">
-                  <p className="text-gray-400">포토카드 갤러리 임시 비활성화 - WASM 모듈 오류 해결 중</p>
-                </div>
+                <WalrusPhotocardGallery />
               </div>
             </div>
           </section>
@@ -388,10 +371,10 @@ const Index = () => {
           <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
             <div className="space-y-4">
               <h2 className="text-4xl font-bold gradient-text">
-               바로 즐겨! Pick에서 심쿵 픽
+               Enjoy Now! Heart-fluttering Pick at Pick
               </h2>
               <p className="text-xl text-foreground max-w-2xl mx-auto">
-                 내가 PICK한 아이돌, 포카는 랜박으로, 자랑은 리더보드로!
+                 My PICK idol, photocards from random box, show off on the leaderboard!
                </p>
             </div>
             
@@ -402,7 +385,7 @@ const Index = () => {
                 size="xl"
                 className="min-w-64 text-xl py-4"
               >
-                🌟 성향 분석으로 최애 PICK하기 🌟
+                🌟 PICK Your Bias with Personality Analysis 🌟
               </Button>
             </div>
           </div>
@@ -419,7 +402,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
           <p className="text-muted-foreground">
-            © 2024 Sui:Idol³. K-POP 팬덤 플랫폼 · Made with 💖 by Lovable
+            © 2024 Sui:Idol³. K-POP Fandom Platform · Made with 💖 by Lovable
           </p>
         </footer>
       </div>

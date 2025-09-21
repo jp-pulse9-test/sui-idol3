@@ -79,7 +79,7 @@ export const PhotoCardGallery = ({
       const matchesIdol = !selectedIdolId || card.idolId === selectedIdolId;
       const matchesTab = activeTab === 'catalog' || (activeTab === 'owned' && isOwner);
       
-      // 크로스체인 필터링
+      // Cross-chain filtering
       const crossChainInfo = crossChainService.isCrossChainPhotocard(card.id);
       const matchesCrossChain = filterCrossChain === 'all' || 
                                (filterCrossChain === 'crosschain' && crossChainInfo) ||
@@ -219,15 +219,15 @@ export const PhotoCardGallery = ({
     <div className="space-y-6">
       <div className="text-center space-y-4">
         <h2 className="text-3xl font-bold gradient-text">
-          📸 포토카드 갤러리
+          📸 Photocard Gallery
         </h2>
         {selectedIdolId ? (
           <p className="text-muted-foreground">
-            선택한 아이돌의 포토카드 컬렉션
+            Selected idol's photocard collection
           </p>
         ) : (
           <p className="text-muted-foreground">
-            모든 아이돌의 포토카드를 둘러보세요
+            Explore photocards from all idols
           </p>
         )}
       </div>
@@ -237,14 +237,14 @@ export const PhotoCardGallery = ({
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
           <div>
             <div className="text-2xl font-bold gradient-text">{stats.total}</div>
-            <div className="text-sm text-muted-foreground">총 발행량</div>
+            <div className="text-sm text-muted-foreground">Total Supply</div>
           </div>
           {Object.entries(stats.byRarity).map(([rarity, count]) => (
             <div key={rarity}>
               <div className={`text-2xl font-bold ${rarityColors[rarity as keyof typeof rarityColors].split(' ')[1]}`}>
                 {count}
               </div>
-              <div className="text-sm text-muted-foreground">{rarity} 등급</div>
+              <div className="text-sm text-muted-foreground">{rarity} grade</div>
             </div>
           ))}
         </div>
@@ -256,7 +256,7 @@ export const PhotoCardGallery = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="아이돌명, 컨셉 검색..."
+              placeholder="Search idol name, concept..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-card/50 border-border"
@@ -265,23 +265,23 @@ export const PhotoCardGallery = ({
           
           <Select value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
             <SelectTrigger className="bg-card/50 border-border">
-              <SelectValue placeholder="정렬 기준" />
+              <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent className="bg-card/95 backdrop-blur-md border-border">
-              <SelectItem value="hearts">하트순</SelectItem>
-              <SelectItem value="rarity">레어도순</SelectItem>
-              <SelectItem value="date">최신순</SelectItem>
-              <SelectItem value="price">가격순</SelectItem>
-              <SelectItem value="serial">시리얼순</SelectItem>
+              <SelectItem value="hearts">Hearts</SelectItem>
+              <SelectItem value="rarity">Rarity</SelectItem>
+              <SelectItem value="date">Latest</SelectItem>
+              <SelectItem value="price">Price</SelectItem>
+              <SelectItem value="serial">Serial</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={filterRarity} onValueChange={setFilterRarity}>
             <SelectTrigger className="bg-card/50 border-border">
-              <SelectValue placeholder="레어도 필터" />
+              <SelectValue placeholder="Rarity filter" />
             </SelectTrigger>
             <SelectContent className="bg-card/95 backdrop-blur-md border-border">
-              <SelectItem value="all">전체 레어도</SelectItem>
+              <SelectItem value="all">All rarities</SelectItem>
               <SelectItem value="SSR">SSR</SelectItem>
               <SelectItem value="SR">SR</SelectItem>
               <SelectItem value="R">R</SelectItem>
@@ -291,10 +291,10 @@ export const PhotoCardGallery = ({
 
           <Select value={filterConcept} onValueChange={setFilterConcept}>
             <SelectTrigger className="bg-card/50 border-border">
-              <SelectValue placeholder="컨셉 필터" />
+              <SelectValue placeholder="Concept filter" />
             </SelectTrigger>
             <SelectContent className="bg-card/95 backdrop-blur-md border-border">
-              <SelectItem value="all">전체 컨셉</SelectItem>
+              <SelectItem value="all">All concepts</SelectItem>
               {uniqueConcepts.map(concept => (
                 <SelectItem key={concept} value={concept}>{concept}</SelectItem>
               ))}
@@ -303,12 +303,12 @@ export const PhotoCardGallery = ({
 
           <Select value={filterCrossChain} onValueChange={setFilterCrossChain}>
             <SelectTrigger className="bg-card/50 border-border">
-              <SelectValue placeholder="크로스체인 필터" />
+              <SelectValue placeholder="Cross-chain filter" />
             </SelectTrigger>
             <SelectContent className="bg-card/95 backdrop-blur-md border-border">
-              <SelectItem value="all">전체</SelectItem>
-              <SelectItem value="crosschain">크로스체인만</SelectItem>
-              <SelectItem value="sui">Sui 전용</SelectItem>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="crosschain">Cross-chain only</SelectItem>
+              <SelectItem value="sui">Sui only</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -318,10 +318,10 @@ export const PhotoCardGallery = ({
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'catalog' | 'owned')} className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-card/50 backdrop-blur-sm">
           <TabsTrigger value="catalog" className="data-[state=active]:bg-primary/20">
-            📚 카탈로그
+            📚 Catalog
           </TabsTrigger>
           <TabsTrigger value="owned" className="data-[state=active]:bg-primary/20" disabled={!isOwner}>
-            💎 내 소장품
+            💎 My Collection
           </TabsTrigger>
         </TabsList>
 
@@ -339,7 +339,7 @@ export const PhotoCardGallery = ({
             <div className="text-center py-12">
               <Filter className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
-                조건에 맞는 포토카드가 없습니다
+                No photocards match the criteria
               </p>
             </div>
           )}
@@ -353,7 +353,7 @@ export const PhotoCardGallery = ({
             <div className="text-center py-12">
               <div className="text-6xl mb-4">💎</div>
               <p className="text-muted-foreground">
-                아직 소장한 포토카드가 없습니다
+                No photocards in collection yet
               </p>
             </div>
           )}
