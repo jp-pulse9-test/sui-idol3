@@ -35,8 +35,46 @@ export interface PhotocardStorageResult {
 }
 
 export class PhotocardStorageService {
+  private static readonly LOCAL_STORAGE_KEY = 'sui_idol_photocards';
+
   /**
-   * 포토카드를 Walrus에 저장합니다
+   * 로컬 스토리지에 포토카드 저장 (Walrus 백업)
+   */
+  private saveToLocalStorage(metadata: PhotocardMetadata): void {
+    try {
+      const stored = localStorage.getItem(PhotocardStorageService.LOCAL_STORAGE_KEY);
+      const photocards: PhotocardMetadata[] = stored ? JSON.parse(stored) : [];
+      
+      // 기존 포토카드가 있으면 업데이트, 없으면 추가
+      const existingIndex = photocards.findIndex(p => p.id === metadata.id);
+      if (existingIndex >= 0) {
+        photocards[existingIndex] = metadata;
+      } else {
+        photocards.push(metadata);
+      }
+      
+      localStorage.setItem(PhotocardStorageService.LOCAL_STORAGE_KEY, JSON.stringify(photocards));
+      console.log('포토카드가 로컬 스토리지에 저장되었습니다:', metadata.id);
+    } catch (error) {
+      console.error('로컬 스토리지 저장 실패:', error);
+    }
+  }
+
+  /**
+   * 로컬 스토리지에서 포토카드 불러오기
+   */
+  private loadFromLocalStorage(): PhotocardMetadata[] {
+    try {
+      const stored = localStorage.getItem(PhotocardStorageService.LOCAL_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('로컬 스토리지 로드 실패:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 포토카드를 Walrus에 저장합니다 (실패시 로컬 스토리지 백업)
    */
   async storePhotocard(
     metadata: PhotocardMetadata,
@@ -49,17 +87,16 @@ export class PhotocardStorageService {
   ): Promise<PhotocardStorageResult> {
     const { epochs = 5, deletable = false, account } = options;
 
-    try {
-      // 이미지 URL을 메타데이터에 포함
-      const metadataWithImage = {
-        ...metadata,
-        imageUrl: typeof imageData === 'string' ? imageData : metadata.imageUrl
-      };
+    // 이미지 URL을 메타데이터에 포함
+    const metadataWithImage = {
+      ...metadata,
+      imageUrl: typeof imageData === 'string' ? imageData : metadata.imageUrl
+    };
 
-      // 포토카드 메타데이터를 JSON으로 변환
+    try {
+      // 먼저 Walrus에 저장 시도
       const metadataJson = JSON.stringify(metadataWithImage, null, 2);
       
-      // 메타데이터만 Walrus에 업로드
       const result = await walrusService.uploadFile(metadataJson, {
         identifier: `photocard_${metadata.id}_metadata.json`,
         tags: {
@@ -79,25 +116,49 @@ export class PhotocardStorageService {
         account
       });
 
+      // Walrus 저장 성공시 로컬에도 백업
+      this.saveToLocalStorage(metadataWithImage);
+
       return {
         blobId: result.blobId,
         metadata: {
           ...metadataWithImage,
-          // Walrus 저장 정보 추가
           storageInfo: {
             metadataBlobId: result.blobId,
-            imageBlobId: null, // 이미지는 URL로 참조
+            imageBlobId: null,
             imageUrl: typeof imageData === 'string' ? imageData : null,
             storedAt: new Date().toISOString(),
             epochs,
-            deletable
+            deletable,
+            storageType: 'walrus'
           }
         } as PhotocardMetadata & { storageInfo: any },
         storageUrl: `walrus://${result.blobId}`
       };
     } catch (error) {
-      console.error('포토카드 저장 실패:', error);
-      throw new Error(`포토카드 저장에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      console.warn('Walrus 저장 실패, 로컬 스토리지로 폴백:', error);
+      
+      // Walrus 실패시 로컬 스토리지에 저장
+      const localMetadata = {
+        ...metadataWithImage,
+        storageInfo: {
+          metadataBlobId: null,
+          imageBlobId: null,
+          imageUrl: typeof imageData === 'string' ? imageData : null,
+          storedAt: new Date().toISOString(),
+          epochs,
+          deletable,
+          storageType: 'local'
+        }
+      } as PhotocardMetadata & { storageInfo: any };
+
+      this.saveToLocalStorage(localMetadata);
+
+      return {
+        blobId: `local_${metadata.id}`,
+        metadata: localMetadata,
+        storageUrl: `local://${metadata.id}`
+      };
     }
   }
 
@@ -267,10 +328,30 @@ export class PhotocardStorageService {
   }
 
   /**
-   * 사용자의 모든 포토카드를 불러옵니다
+   * 사용자의 모든 포토카드를 불러옵니다 (Walrus + 로컬 스토리지)
    */
   async getUserPhotocards(owner: string): Promise<PhotocardMetadata[]> {
-    return this.searchPhotocardsByTag('owner', owner);
+    try {
+      // 먼저 Walrus에서 시도
+      const walrusPhotocards = await this.searchPhotocardsByTag('owner', owner);
+      
+      // 로컬 스토리지에서도 불러오기
+      const localPhotocards = this.loadFromLocalStorage().filter(p => p.owner === owner);
+      
+      // 중복 제거 (ID 기준)
+      const allPhotocards = [...walrusPhotocards];
+      localPhotocards.forEach(local => {
+        if (!allPhotocards.find(p => p.id === local.id)) {
+          allPhotocards.push(local);
+        }
+      });
+      
+      return allPhotocards;
+    } catch (error) {
+      console.warn('Walrus에서 포토카드 로드 실패, 로컬 스토리지만 사용:', error);
+      // Walrus 실패시 로컬 스토리지만 사용
+      return this.loadFromLocalStorage().filter(p => p.owner === owner);
+    }
   }
 
   /**
