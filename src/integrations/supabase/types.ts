@@ -576,6 +576,13 @@ export type Database = {
             foreignKeyName: "vaults_idol_id_fkey"
             columns: ["idol_id"]
             isOneToOne: false
+            referencedRelation: "idols_basic_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vaults_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
             referencedRelation: "idolsx"
             referencedColumns: ["id"]
           },
@@ -590,41 +597,53 @@ export type Database = {
       }
     }
     Views: {
-      idols_public: {
+      idols_basic_public: {
         Row: {
-          Category: string | null
-          Concept: string | null
           created_at: string | null
-          description: string | null
-          Gender: string | null
           id: number | null
           name: string | null
-          persona_prompt: string | null
-          personality: string | null
           profile_image: string | null
         }
         Insert: {
-          Category?: string | null
-          Concept?: never
           created_at?: string | null
-          description?: never
-          Gender?: string | null
           id?: number | null
           name?: string | null
-          persona_prompt?: never
-          personality?: never
           profile_image?: string | null
         }
         Update: {
-          Category?: string | null
-          Concept?: never
           created_at?: string | null
-          description?: never
-          Gender?: string | null
           id?: number | null
           name?: string | null
-          persona_prompt?: never
-          personality?: never
+          profile_image?: string | null
+        }
+        Relationships: []
+      }
+      idols_public: {
+        Row: {
+          category: string | null
+          concept: string | null
+          created_at: string | null
+          gender: string | null
+          id: number | null
+          name: string | null
+          profile_image: string | null
+        }
+        Insert: {
+          category?: string | null
+          concept?: string | null
+          created_at?: string | null
+          gender?: string | null
+          id?: number | null
+          name?: string | null
+          profile_image?: string | null
+        }
+        Update: {
+          category?: string | null
+          concept?: string | null
+          created_at?: string | null
+          gender?: string | null
+          id?: number | null
+          name?: string | null
           profile_image?: string | null
         }
         Relationships: []
