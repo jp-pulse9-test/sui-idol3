@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { photocardStorageService, type PhotocardMetadata, type PhotocardStorageResult } from '@/services/photocardStorageService';
-import type { SuiAccount } from '@mysten/dapp-kit';
 
 export interface UsePhotocardStorageReturn {
   // 포토카드 저장
@@ -10,7 +9,7 @@ export interface UsePhotocardStorageReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: SuiAccount;
+      account: any;
     }
   ) => Promise<PhotocardStorageResult>;
   
@@ -23,14 +22,14 @@ export interface UsePhotocardStorageReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: SuiAccount;
+      account: any;
     }
   ) => Promise<PhotocardStorageResult[]>;
   
   // 포토카드 로드
   loadPhotocard: (blobId: string) => Promise<{
     metadata: PhotocardMetadata;
-    imageData: Uint8Array;
+    imageData: Uint8Array | string | null;
   }>;
   
   // 메타데이터만 저장
@@ -39,7 +38,7 @@ export interface UsePhotocardStorageReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: SuiAccount;
+      account: any;
     }
   ) => Promise<{ blobId: string; metadata: PhotocardMetadata }>;
   
@@ -78,7 +77,7 @@ export function usePhotocardStorage(): UsePhotocardStorageReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: SuiAccount;
+      account: any;
     }
   ) => {
     setIsLoading(true);
@@ -105,7 +104,7 @@ export function usePhotocardStorage(): UsePhotocardStorageReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) => {
     setIsLoading(true);
@@ -145,7 +144,7 @@ export function usePhotocardStorage(): UsePhotocardStorageReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) => {
     setIsLoading(true);

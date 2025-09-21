@@ -1,6 +1,4 @@
 import { walrusService } from './walrusService';
-import type { Signer } from '@mysten/sui/transactions';
-import type { SuiAccount } from '@mysten/dapp-kit';
 
 export interface PhotocardMetadata {
   id: string;
@@ -46,7 +44,7 @@ export class PhotocardStorageService {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: SuiAccount;
+      account: any;
     }
   ): Promise<PhotocardStorageResult> {
     const { epochs = 5, deletable = false, account } = options;
@@ -112,20 +110,10 @@ export class PhotocardStorageService {
   }> {
     try {
       // Blob에서 파일들 읽기
-      const blob = await walrusService.getBlob({ blobId });
-      const files = await blob.files();
-
-      // 메타데이터 파일 찾기
-      const metadataFile = files.find(file => 
-        file.getIdentifier()?.includes('metadata.json')
-      );
-
-      if (!metadataFile) {
-        throw new Error('포토카드 메타데이터를 찾을 수 없습니다');
-      }
-
-      // 메타데이터 파싱
-      const metadataJson = await metadataFile.text();
+      const blob = await walrusService.readBlob(blobId);
+      // Blob을 텍스트로 읽기 (메타데이터가 JSON으로 저장됨)
+      const decoder = new TextDecoder();
+      const metadataJson = decoder.decode(blob);
       const metadata = JSON.parse(metadataJson) as PhotocardMetadata & { storageInfo?: any };
 
       // 이미지 데이터는 메타데이터의 imageUrl에서 가져오기
@@ -152,7 +140,7 @@ export class PhotocardStorageService {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ): Promise<PhotocardStorageResult[]> {
     const results: PhotocardStorageResult[] = [];
@@ -182,10 +170,10 @@ export class PhotocardStorageService {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ): Promise<{ blobId: string; metadata: PhotocardMetadata }> {
-    const { epochs = 5, deletable = false, signer } = options;
+    const { epochs = 5, deletable = false, account } = options;
 
     try {
       const metadataJson = JSON.stringify(metadata, null, 2);
@@ -206,7 +194,7 @@ export class PhotocardStorageService {
         },
         epochs,
         deletable,
-        signer
+        account
       });
 
       return {

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { walrusService } from '@/services/walrusService';
-import type { Signer } from '@mysten/sui/transactions';
+import type { SuiSignAndExecuteTransactionMethod } from '@mysten/wallet-standard';
 import { WalrusFile } from '@mysten/walrus';
 
 export interface UploadProgress {
@@ -19,7 +19,7 @@ export interface UseWalrusReturn {
       tags?: Record<string, string>;
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) => Promise<any>;
   
@@ -33,7 +33,7 @@ export interface UseWalrusReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) => Promise<any[]>;
   
@@ -52,7 +52,7 @@ export interface UseWalrusReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) => Promise<any>;
   
@@ -94,7 +94,7 @@ export function useWalrus(): UseWalrusReturn {
       tags?: Record<string, string>;
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) => {
     setIsLoading(true);
@@ -124,7 +124,7 @@ export function useWalrus(): UseWalrusReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) => {
     setIsLoading(true);
@@ -198,7 +198,7 @@ export function useWalrus(): UseWalrusReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) => {
     setIsLoading(true);

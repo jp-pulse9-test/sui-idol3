@@ -109,8 +109,16 @@ export function WalrusFlowUpload({ onUploadComplete, className }: WalrusFlowUplo
         content = textContent;
       }
 
+      // string을 Uint8Array로 변환
+      let fileContent: Uint8Array | Blob;
+      if (typeof content === 'string') {
+        fileContent = new TextEncoder().encode(content);
+      } else {
+        fileContent = content;
+      }
+
       const walrusFile = WalrusFile.from({
-        contents: content,
+        contents: fileContent,
         identifier: identifier.trim(),
         tags: parseTags(tags),
       });
@@ -142,7 +150,7 @@ export function WalrusFlowUpload({ onUploadComplete, className }: WalrusFlowUplo
         epochs,
         owner: currentAccount.address,
         deletable,
-        signer: currentAccount,
+        account: currentAccount,
       });
       toast.success(`등록이 완료되었습니다: ${digest.slice(0, 8)}...`);
     } catch (err) {

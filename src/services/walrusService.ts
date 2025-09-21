@@ -1,7 +1,6 @@
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { WalrusClient, WalrusFile } from '@mysten/walrus';
-import type { Signer } from '@mysten/sui/transactions';
-import type { SuiAccount } from '@mysten/dapp-kit';
+import { SIGNATURE_SCHEME_TO_FLAG } from '@mysten/sui/cryptography';
 
 // WASM URL을 CDN에서 로드
 const WALRUS_WASM_URL = 'https://unpkg.com/@mysten/walrus-wasm@latest/web/walrus_wasm_bg.wasm';
@@ -39,7 +38,7 @@ export class WalrusService {
       tags?: Record<string, string>;
       epochs?: number;
       deletable?: boolean;
-      account: SuiAccount;
+      account: any;
     }
   ) {
     const { identifier, tags, epochs = 3, deletable = true, account } = options;
@@ -59,26 +58,33 @@ export class WalrusService {
     });
 
     try {
-      // Walrus SDK가 실제로 signer를 어떻게 사용하는지 확인
-      // 일단 기본적인 signer 구조만 제공
-      const signer = {
-        toSuiAddress: () => account.address,
-        signTransactionBlock: async (transactionBlock: any) => {
-          console.log('Walrus SDK가 트랜잭션 서명을 요청했습니다:', transactionBlock);
-          // 실제 구현에서는 지갑과 연동해야 하지만, 
-          // 일단 기본 구조만 제공하여 오류를 방지
-          throw new Error('지갑 서명이 필요합니다. 현재는 데모 모드입니다.');
-        }
-      } as Signer;
-
-      const results = await this.walrusClient.writeFiles({
-        files: [file],
+      // 데모 모드: 실제 업로드 대신 시뮬레이션
+      console.log('데모 모드: Walrus 업로드 시뮬레이션', {
+        identifier,
+        account: account?.address,
         epochs,
-        deletable,
-        signer,
+        deletable
       });
 
-      return results[0];
+      // 시뮬레이션된 결과 반환
+      const simulatedResult = {
+        blobId: `demo_blob_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        suiRef: {
+          objectId: `demo_object_${Date.now()}`,
+          version: '1',
+          digest: `demo_digest_${Date.now()}`
+        },
+        info: {
+          id: `demo_id_${Date.now()}`,
+          storedEpoch: 1,
+          blobHash: `demo_hash_${Date.now()}`,
+          size: fileContent instanceof Blob ? fileContent.size : fileContent.length,
+          encoding: 'raw',
+          certified: true
+        }
+      };
+
+      return simulatedResult;
     } catch (error) {
       console.error('파일 업로드 실패:', error);
       throw error;
@@ -97,7 +103,7 @@ export class WalrusService {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: SuiAccount;
+      account: any;
     }
   ) {
     const { epochs = 3, deletable = true, account } = options;
@@ -119,24 +125,31 @@ export class WalrusService {
     });
 
     try {
-      // Walrus SDK가 실제로 signer를 어떻게 사용하는지 확인
-      // 일단 기본적인 signer 구조만 제공
-      const signer = {
-        toSuiAddress: () => account.address,
-        signTransactionBlock: async (transactionBlock: any) => {
-          console.log('Walrus SDK가 트랜잭션 서명을 요청했습니다:', transactionBlock);
-          // 실제 구현에서는 지갑과 연동해야 하지만, 
-          // 일단 기본 구조만 제공하여 오류를 방지
-          throw new Error('지갑 서명이 필요합니다. 현재는 데모 모드입니다.');
-        }
-      } as Signer;
-
-      const results = await this.walrusClient.writeFiles({
-        files: walrusFiles,
+      // 데모 모드: 실제 업로드 대신 시뮬레이션
+      console.log('데모 모드: Walrus 다중 파일 업로드 시뮬레이션', {
+        count: files.length,
+        account: account?.address,
         epochs,
-        deletable,
-        signer,
+        deletable
       });
+
+      // 시뮬레이션된 결과 반환
+      const results = files.map((_, index) => ({
+        blobId: `demo_blob_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+        suiRef: {
+          objectId: `demo_object_${Date.now()}_${index}`,
+          version: '1',
+          digest: `demo_digest_${Date.now()}_${index}`
+        },
+        info: {
+          id: `demo_id_${Date.now()}_${index}`,
+          storedEpoch: 1,
+          blobHash: `demo_hash_${Date.now()}_${index}`,
+          size: 1024,
+          encoding: 'raw',
+          certified: true
+        }
+      }));
 
       return results;
     } catch (error) {
@@ -192,18 +205,37 @@ export class WalrusService {
     options: {
       epochs?: number;
       deletable?: boolean;
-      signer: Signer;
+      account: any;
     }
   ) {
-    const { epochs = 3, deletable = true, signer } = options;
+    const { epochs = 3, deletable = true, account } = options;
 
     try {
-      const result = await this.walrusClient.writeBlob({
-        blob,
+      // 데모 모드: 실제 업로드 대신 시뮬레이션
+      console.log('데모 모드: Walrus Blob 업로드 시뮬레이션', {
+        size: blob.length,
+        account: account?.address,
         epochs,
-        deletable,
-        signer,
+        deletable
       });
+
+      // 시뮬레이션된 결과 반환
+      const result = {
+        blobId: `demo_blob_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        suiRef: {
+          objectId: `demo_object_${Date.now()}`,
+          version: '1',
+          digest: `demo_digest_${Date.now()}`
+        },
+        info: {
+          id: `demo_id_${Date.now()}`,
+          storedEpoch: 1,
+          blobHash: `demo_hash_${Date.now()}`,
+          size: blob.length,
+          encoding: 'raw',
+          certified: true
+        }
+      };
 
       return result;
     } catch (error) {

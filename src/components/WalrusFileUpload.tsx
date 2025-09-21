@@ -90,7 +90,7 @@ export function WalrusFileUpload({ onUploadComplete, className }: WalrusFileUplo
         tags: parseTags(tags),
         epochs,
         deletable,
-        signer: currentAccount,
+        account: currentAccount,
       });
 
       toast.success('파일이 성공적으로 업로드되었습니다!');
