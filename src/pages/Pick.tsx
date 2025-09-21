@@ -51,7 +51,7 @@ const Pick = () => {
     try {
       console.log('Fetching idols from database...');
       const { data, error } = await supabase
-        .rpc('get_public_idols');
+        .rpc('get_public_idol_data');
       
       if (error) {
         console.error('Error fetching idols:', error);
