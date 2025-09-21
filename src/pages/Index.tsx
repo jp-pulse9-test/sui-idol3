@@ -14,10 +14,11 @@ import { Settings, Camera, Database } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
-import { WalrusFileUpload } from "@/components/WalrusFileUpload";
-import { WalrusFileDownload } from "@/components/WalrusFileDownload";
-import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
-import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
+// Walrus 컴포넌트들을 임시로 비활성화 (WASM 오류 해결용)
+// import { WalrusFileUpload } from "@/components/WalrusFileUpload";
+// import { WalrusFileDownload } from "@/components/WalrusFileDownload";
+// import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
+// import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
 
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
@@ -328,7 +329,8 @@ const Index = () => {
               </div>
 
               <div className="grid lg:grid-cols-2 gap-8">
-                <WalrusFileUpload 
+                {/* 임시로 주석 처리 - WASM 오류 해결용 */}
+                {/* <WalrusFileUpload 
                   onUploadComplete={(result) => {
                     toast.success(`파일이 업로드되었습니다! Blob ID: ${result.blobId.slice(0, 8)}...`);
                   }}
@@ -337,15 +339,24 @@ const Index = () => {
                   onDownloadComplete={(file) => {
                     toast.success('파일이 다운로드되었습니다!');
                   }}
-                />
+                /> */}
+                <div className="p-8 text-center border border-gray-600 rounded-lg">
+                  <p className="text-gray-400">Walrus 도구는 임시로 비활성화됨</p>
+                </div>
+                <div className="p-8 text-center border border-gray-600 rounded-lg">
+                  <p className="text-gray-400">WASM 모듈 오류 해결 중</p>
+                </div>
               </div>
 
               <div className="max-w-4xl mx-auto">
-                <WalrusFlowUpload 
+                {/* <WalrusFlowUpload 
                   onUploadComplete={(files) => {
                     toast.success(`${files.length}개의 파일이 업로드되었습니다!`);
                   }}
-                />
+                /> */}
+                <div className="p-8 text-center border border-gray-600 rounded-lg">
+                  <p className="text-gray-400">Walrus Flow 업로드 임시 비활성화</p>
+                </div>
               </div>
             </div>
           </section>
@@ -363,7 +374,10 @@ const Index = () => {
               </div>
 
               <div className="max-w-7xl mx-auto">
-                <WalrusPhotocardGallery />
+                {/* <WalrusPhotocardGallery /> */}
+                <div className="p-8 text-center border border-gray-600 rounded-lg">
+                  <p className="text-gray-400">포토카드 갤러리 임시 비활성화 - WASM 모듈 오류 해결 중</p>
+                </div>
               </div>
             </div>
           </section>
