@@ -1,5 +1,6 @@
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { WalrusClient, WalrusFile } from '@mysten/walrus';
+import { Transaction } from '@mysten/sui/transactions';
 
 // WASM URL을 CDN에서 로드
 const WALRUS_WASM_URL = 'https://unpkg.com/@mysten/walrus-wasm@latest/web/walrus_wasm_bg.wasm';
@@ -28,7 +29,7 @@ export class WalrusService {
   }
 
   /**
-   * 파일을 Walrus에 업로드합니다 (현재는 시뮬레이션)
+   * 파일을 Walrus에 업로드합니다
    */
   async uploadFile(
     content: Uint8Array | Blob | string,
@@ -37,66 +38,60 @@ export class WalrusService {
       tags?: Record<string, string>;
       epochs?: number;
       deletable?: boolean;
-      account: any;
+      account?: any;
+      signTransaction?: (transaction: Transaction) => Promise<any>;
     }
   ) {
-    const { identifier, tags, epochs = 3, deletable = true, account } = options;
+    const { identifier, tags, epochs = 3, deletable = true, account, signTransaction } = options;
+
+    if (!account || !signTransaction) {
+      throw new Error('지갑 연결이 필요합니다');
+    }
 
     // string을 Uint8Array로 변환
-    let fileContent: Uint8Array | Blob;
+    let fileContent: Uint8Array;
     if (typeof content === 'string') {
       fileContent = new TextEncoder().encode(content);
+    } else if (content instanceof Blob) {
+      fileContent = new Uint8Array(await content.arrayBuffer());
     } else {
       fileContent = content;
     }
 
     try {
-      // 현재는 시뮬레이션 - 실제 Walrus SDK 연동을 위해서는 지갑 서명이 필요
-      console.log('Walrus 업로드 요청:', {
+      console.log('Walrus 파일 업로드 시작:', {
         identifier,
         account: account?.address,
         epochs,
         deletable,
-        contentSize: fileContent instanceof Blob ? fileContent.size : fileContent.length
+        contentSize: fileContent.length
       });
 
-      // 시뮬레이션된 결과 반환 (실제 구현에서는 walrusClient.writeFiles 사용)
-      const simulatedResult = {
-        blobId: `walrus_blob_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        suiRef: {
-          objectId: `walrus_object_${Date.now()}`,
-          version: '1',
-          digest: `walrus_digest_${Date.now()}`
-        },
-        info: {
-          id: `walrus_id_${Date.now()}`,
-          storedEpoch: 1,
-          blobHash: `walrus_hash_${Date.now()}`,
-          size: fileContent instanceof Blob ? fileContent.size : fileContent.length,
-          encoding: 'raw',
-          certified: true
-        }
-      };
+      // WalrusFile 객체 생성
+      const walrusFile = WalrusFile.from({
+        contents: fileContent,
+        identifier: identifier || `file_${Date.now()}`,
+        tags: tags || {},
+      });
 
-      // TODO: 실제 Walrus SDK 호출
-      // const file = WalrusFile.from({
-      //   contents: fileContent,
-      //   identifier,
-      //   tags,
-      // });
-      // 
-      // const results = await this.walrusClient.writeFiles({
-      //   files: [file],
-      //   epochs,
-      //   deletable,
-      //   signer, // 실제 Signer 구현 필요
-      // });
-      // 
-      // return results[0];
+      // 간단한 Signer 객체 구현 (Walrus SDK 호환)
+      const signer = {
+        signTransaction,
+        getAddress: () => account.address,
+      } as any;
 
-      return simulatedResult;
+      // Walrus에 파일 업로드
+      const results = await this.walrusClient.writeFiles({
+        files: [walrusFile],
+        epochs,
+        deletable,
+        signer,
+      });
+
+      console.log('Walrus 업로드 성공:', results[0]);
+      return results[0];
     } catch (error) {
-      console.error('파일 업로드 실패:', error);
+      console.error('Walrus 파일 업로드 실패:', error);
       throw error;
     }
   }
@@ -113,40 +108,62 @@ export class WalrusService {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: any;
+      account?: any;
+      signTransaction?: (transaction: Transaction) => Promise<any>;
     }
   ) {
-    const { epochs = 3, deletable = true, account } = options;
+    const { epochs = 3, deletable = true, account, signTransaction } = options;
+
+    if (!account || !signTransaction) {
+      throw new Error('지갑 연결이 필요합니다');
+    }
 
     try {
-      console.log('Walrus 다중 파일 업로드 요청:', {
+      console.log('Walrus 다중 파일 업로드 시작:', {
         count: files.length,
         account: account?.address,
         epochs,
         deletable
       });
 
-      // 시뮬레이션된 결과 반환
-      const results = files.map((_, index) => ({
-        blobId: `walrus_blob_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
-        suiRef: {
-          objectId: `walrus_object_${Date.now()}_${index}`,
-          version: '1',
-          digest: `walrus_digest_${Date.now()}_${index}`
-        },
-        info: {
-          id: `walrus_id_${Date.now()}_${index}`,
-          storedEpoch: 1,
-          blobHash: `walrus_hash_${Date.now()}_${index}`,
-          size: 1024,
-          encoding: 'raw',
-          certified: true
-        }
-      }));
+      // WalrusFile 객체들 생성
+      const walrusFiles = await Promise.all(
+        files.map(async (file, index) => {
+          let content: Uint8Array;
+          if (typeof file.content === 'string') {
+            content = new TextEncoder().encode(file.content);
+          } else if (file.content instanceof Blob) {
+            content = new Uint8Array(await file.content.arrayBuffer());
+          } else {
+            content = file.content;
+          }
 
+          return WalrusFile.from({
+            contents: content,
+            identifier: file.identifier || `file_${Date.now()}_${index}`,
+            tags: file.tags || {},
+          });
+        })
+      );
+
+      // 간단한 Signer 객체 구현 (Walrus SDK 호환)
+      const signer = {
+        signTransaction,
+        getAddress: () => account.address,
+      } as any;
+
+      // Walrus에 파일들 업로드
+      const results = await this.walrusClient.writeFiles({
+        files: walrusFiles,
+        epochs,
+        deletable,
+        signer,
+      });
+
+      console.log('Walrus 다중 업로드 성공:', results);
       return results;
     } catch (error) {
-      console.error('파일들 업로드 실패:', error);
+      console.error('Walrus 파일들 업로드 실패:', error);
       throw error;
     }
   }
@@ -198,40 +215,49 @@ export class WalrusService {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: any;
+      account?: any;
+      signTransaction?: (transaction: Transaction) => Promise<any>;
     }
   ) {
-    const { epochs = 3, deletable = true, account } = options;
+    const { epochs = 3, deletable = true, account, signTransaction } = options;
+
+    if (!account || !signTransaction) {
+      throw new Error('지갑 연결이 필요합니다');
+    }
 
     try {
-      console.log('Walrus Blob 업로드 요청:', {
+      console.log('Walrus Blob 업로드 시작:', {
         size: blob.length,
         account: account?.address,
         epochs,
         deletable
       });
 
-      // 시뮬레이션된 결과 반환
-      const result = {
-        blobId: `walrus_blob_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        suiRef: {
-          objectId: `walrus_object_${Date.now()}`,
-          version: '1',
-          digest: `walrus_digest_${Date.now()}`
-        },
-        info: {
-          id: `walrus_id_${Date.now()}`,
-          storedEpoch: 1,
-          blobHash: `walrus_hash_${Date.now()}`,
-          size: blob.length,
-          encoding: 'raw',
-          certified: true
-        }
-      };
+      // WalrusFile 객체 생성
+      const walrusFile = WalrusFile.from({
+        contents: blob,
+        identifier: `blob_${Date.now()}`,
+        tags: {},
+      });
 
-      return result;
+      // 간단한 Signer 객체 구현 (Walrus SDK 호환)
+      const signer = {
+        signTransaction,
+        getAddress: () => account.address,
+      } as any;
+
+      // Walrus에 Blob 업로드
+      const results = await this.walrusClient.writeFiles({
+        files: [walrusFile],
+        epochs,
+        deletable,
+        signer,
+      });
+
+      console.log('Walrus Blob 업로드 성공:', results[0]);
+      return results[0];
     } catch (error) {
-      console.error('Blob 업로드 실패:', error);
+      console.error('Walrus Blob 업로드 실패:', error);
       throw error;
     }
   }

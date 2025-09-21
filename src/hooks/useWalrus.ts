@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { walrusService } from '@/services/walrusService';
 import { WalrusFile } from '@mysten/walrus';
+import { useWalletSigner } from './useWalletSigner';
 
 export interface UploadProgress {
   status: 'idle' | 'uploading' | 'success' | 'error';
@@ -13,12 +14,11 @@ export interface UseWalrusReturn {
   // 파일 업로드
   uploadFile: (
     content: Uint8Array | Blob | string,
-    options: {
+    options?: {
       identifier?: string;
       tags?: Record<string, string>;
       epochs?: number;
       deletable?: boolean;
-      account: any;
     }
   ) => Promise<any>;
   
@@ -29,10 +29,9 @@ export interface UseWalrusReturn {
       identifier?: string;
       tags?: Record<string, string>;
     }>,
-    options: {
+    options?: {
       epochs?: number;
       deletable?: boolean;
-      account: any;
     }
   ) => Promise<any[]>;
   
@@ -48,10 +47,9 @@ export interface UseWalrusReturn {
   // Blob 업로드
   uploadBlob: (
     blob: Uint8Array,
-    options: {
+    options?: {
       epochs?: number;
       deletable?: boolean;
-      account: any;
     }
   ) => Promise<any>;
   
@@ -74,6 +72,7 @@ export function useWalrus(): UseWalrusReturn {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { createSigner, isReady } = useWalletSigner();
 
   const clearError = useCallback(() => {
     setError(null);
@@ -93,15 +92,23 @@ export function useWalrus(): UseWalrusReturn {
       tags?: Record<string, string>;
       epochs?: number;
       deletable?: boolean;
-      account: any;
-    }
+    } = {}
   ) => {
+    if (!isReady) {
+      throw new Error('지갑이 연결되지 않았습니다');
+    }
+
     setIsLoading(true);
     setUploadProgress({ status: 'uploading' });
     setError(null);
 
     try {
-      const result = await walrusService.uploadFile(content, options);
+      const signer = createSigner();
+      const result = await walrusService.uploadFile(content, {
+        ...options,
+        account: signer.account,
+        signTransaction: signer.signTransaction,
+      });
       setUploadProgress({ status: 'success', result });
       return result;
     } catch (err) {
@@ -112,7 +119,7 @@ export function useWalrus(): UseWalrusReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isReady, createSigner]);
 
   const uploadFiles = useCallback(async (
     files: Array<{
@@ -123,15 +130,23 @@ export function useWalrus(): UseWalrusReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: any;
-    }
+    } = {}
   ) => {
+    if (!isReady) {
+      throw new Error('지갑이 연결되지 않았습니다');
+    }
+
     setIsLoading(true);
     setUploadProgress({ status: 'uploading' });
     setError(null);
 
     try {
-      const results = await walrusService.uploadFiles(files, options);
+      const signer = createSigner();
+      const results = await walrusService.uploadFiles(files, {
+        ...options,
+        account: signer.account,
+        signTransaction: signer.signTransaction,
+      });
       setUploadProgress({ status: 'success', result: results });
       return results;
     } catch (err) {
@@ -142,7 +157,7 @@ export function useWalrus(): UseWalrusReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isReady, createSigner]);
 
   const downloadFile = useCallback(async (blobId: string) => {
     setIsLoading(true);
@@ -197,15 +212,23 @@ export function useWalrus(): UseWalrusReturn {
     options: {
       epochs?: number;
       deletable?: boolean;
-      account: any;
-    }
+    } = {}
   ) => {
+    if (!isReady) {
+      throw new Error('지갑이 연결되지 않았습니다');
+    }
+
     setIsLoading(true);
     setUploadProgress({ status: 'uploading' });
     setError(null);
 
     try {
-      const result = await walrusService.uploadBlob(blob, options);
+      const signer = createSigner();
+      const result = await walrusService.uploadBlob(blob, {
+        ...options,
+        account: signer.account,
+        signTransaction: signer.signTransaction,
+      });
       setUploadProgress({ status: 'success', result });
       return result;
     } catch (err) {
@@ -216,7 +239,7 @@ export function useWalrus(): UseWalrusReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isReady, createSigner]);
 
   const createUploadFlow = useCallback((files: WalrusFile[]) => {
     return walrusService.createUploadFlow(files);
