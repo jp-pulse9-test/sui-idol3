@@ -57,6 +57,9 @@ const Index = () => {
   const [showWalrusTools, setShowWalrusTools] = useState(false);
   const [showPhotocardGallery, setShowPhotocardGallery] = useState(false);
 
+  // 초기화 디버깅 
+  console.log('Index 컴포넌트 렌더링됨:', { user, loading, isWalletConnected });
+
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
     if (savedWallet) {

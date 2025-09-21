@@ -72,7 +72,9 @@ export function useWalrus(): UseWalrusReturn {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { createSigner, isReady } = useWalletSigner();
+  
+  // 지갑 서명 훅 사용 - 조건부가 아닌 항상 호출
+  const walletSigner = useWalletSigner();
 
   const clearError = useCallback(() => {
     setError(null);
@@ -94,7 +96,7 @@ export function useWalrus(): UseWalrusReturn {
       deletable?: boolean;
     } = {}
   ) => {
-    if (!isReady) {
+    if (!walletSigner.isReady) {
       throw new Error('지갑이 연결되지 않았습니다');
     }
 
@@ -103,7 +105,7 @@ export function useWalrus(): UseWalrusReturn {
     setError(null);
 
     try {
-      const signer = createSigner();
+      const signer = walletSigner.createSigner();
       const result = await walrusService.uploadFile(content, {
         ...options,
         account: signer.account,
@@ -119,7 +121,7 @@ export function useWalrus(): UseWalrusReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [isReady, createSigner]);
+  }, [walletSigner]);
 
   const uploadFiles = useCallback(async (
     files: Array<{
@@ -132,7 +134,7 @@ export function useWalrus(): UseWalrusReturn {
       deletable?: boolean;
     } = {}
   ) => {
-    if (!isReady) {
+    if (!walletSigner.isReady) {
       throw new Error('지갑이 연결되지 않았습니다');
     }
 
@@ -141,7 +143,7 @@ export function useWalrus(): UseWalrusReturn {
     setError(null);
 
     try {
-      const signer = createSigner();
+      const signer = walletSigner.createSigner();
       const results = await walrusService.uploadFiles(files, {
         ...options,
         account: signer.account,
@@ -157,7 +159,7 @@ export function useWalrus(): UseWalrusReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [isReady, createSigner]);
+  }, [walletSigner]);
 
   const downloadFile = useCallback(async (blobId: string) => {
     setIsLoading(true);
@@ -214,7 +216,7 @@ export function useWalrus(): UseWalrusReturn {
       deletable?: boolean;
     } = {}
   ) => {
-    if (!isReady) {
+    if (!walletSigner.isReady) {
       throw new Error('지갑이 연결되지 않았습니다');
     }
 
@@ -223,7 +225,7 @@ export function useWalrus(): UseWalrusReturn {
     setError(null);
 
     try {
-      const signer = createSigner();
+      const signer = walletSigner.createSigner();
       const result = await walrusService.uploadBlob(blob, {
         ...options,
         account: signer.account,
@@ -239,7 +241,7 @@ export function useWalrus(): UseWalrusReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [isReady, createSigner]);
+  }, [walletSigner]);
 
   const createUploadFlow = useCallback((files: WalrusFile[]) => {
     return walrusService.createUploadFlow(files);

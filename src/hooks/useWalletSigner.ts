@@ -30,9 +30,12 @@ export function useWalletSigner() {
     };
   };
 
+  // 안전한 체크 - 새창에서도 문제없도록
+  const isReady = !!currentAccount && typeof signTransaction === 'function';
+
   return {
     createSigner,
-    isReady: !!currentAccount,
+    isReady,
     account: currentAccount,
   };
 }

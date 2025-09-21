@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WalletProviderWrapper } from "@/providers/WalletProvider";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import AppSuspense from "@/components/AppSuspense";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
@@ -64,9 +66,11 @@ const AdminButton = () => {
 };
 
 const App = () => (
-  <WalletProviderWrapper>
-    <TooltipProvider>
-      <AuthProvider>
+  <ErrorBoundary>
+    <AppSuspense>
+      <WalletProviderWrapper>
+        <TooltipProvider>
+          <AuthProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -102,9 +106,11 @@ const App = () => (
           </Routes>
         </BrowserRouter>
         <AdminButton />
-      </AuthProvider>
-    </TooltipProvider>
-  </WalletProviderWrapper>
+          </AuthProvider>
+        </TooltipProvider>
+      </WalletProviderWrapper>
+    </AppSuspense>
+  </ErrorBoundary>
 );
 
 export default App;
