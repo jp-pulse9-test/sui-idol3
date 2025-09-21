@@ -143,12 +143,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
-      {/* 임시 디버그 엘리먼트 */}
-      <div className="fixed top-0 left-0 z-50 bg-red-500 text-white p-2">
-        DEBUG: Index 렌더링됨 - User: {user ? 'Logged In' : 'Not Logged'}, Loading: {loading.toString()}
-      </div>
-      
+    <div className="min-h-screen bg-gray-900 relative overflow-hidden">
       {/* 좌우 아이돌 그리드 배경 */}
       <IdolGrid side="left" />
       <IdolGrid side="right" />
@@ -189,16 +184,16 @@ const Index = () => {
 
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
+          <div className="text-center space-y-12 bg-black/60 backdrop-blur-xl p-16 rounded-3xl border border-gray-400/20 shadow-2xl">
             <div className="space-y-8">
-              <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
+              <h1 className="text-7xl md:text-9xl font-black tracking-tight text-white">
                 Sui:Idol³
               </h1>
               <div className="space-y-4">
-                <h2 className="text-3xl md:text-4xl font-bold gradient-text">
+                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
                   가상아이돌 스토리 플랫폼
                 </h2>
-                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                   성향 분석으로 나와 잘 맞는 아이돌을 찾고, 랜덤박스로 포토카드를 수집하며, 리더보드에서 다른 팬들과 경쟁하는 완전한 팬덤 경험.
                 </p>
               </div>
@@ -209,20 +204,20 @@ const Index = () => {
                 onClick={handleStartJourney}
                 variant="default"
                 size="xl"
-                className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="min-w-80 text-2xl py-6 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 🎮 나의 아이돌 PICK 하러가기
               </Button>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-gray-400">
                 Pick은 체험, Vault는 수집, Rise는 경쟁과 거래!
               </p>
-              <p className="text-base text-muted-foreground">
+              <p className="text-base text-gray-500">
                 심쿵 배틀로 최애를 고르고 → 랜덤박스로 포카 만들고 → 리더보드와 마켓에서 빛나세요.
               </p>
               
               {!user && (
-                <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
-                  <p className="text-sm text-muted-foreground text-center">
+                <div className="mt-4 p-4 bg-cyan-900/20 rounded-lg border border-cyan-500/30">
+                  <p className="text-sm text-gray-300 text-center">
                     💡 지갑 연결 없이도 바로 체험 가능! Vault부터 본격 수집과 거래 시작
                   </p>
                 </div>
