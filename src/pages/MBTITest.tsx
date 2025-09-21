@@ -176,22 +176,22 @@ export const MBTITest = () => {
 
   const generateDescription = (mbti: string) => {
     const descriptions: { [key: string]: string } = {
-      'ENFJ': 'As an extroverted and emotionally rich person, you deeply empathize with idols' heartfelt emotional expressions.',
-      'ENFP': 'Being free-spirited and creative, you're drawn to idols who show unexpected charm and endless possibilities.',
+      'ENFJ': 'As an extroverted and emotionally rich person, you deeply empathize with idols heartfelt emotional expressions.',
+      'ENFP': 'Being free-spirited and creative, you are drawn to idols who show unexpected charm and endless possibilities.',
       'ENTJ': 'With strong leadership qualities, you prefer charismatic idols who dominate the stage.',
-      'ENTP': 'Being innovative, you're attracted to idols who present new attempts and original content.',
+      'ENTP': 'Being innovative, you are attracted to idols who present new attempts and original content.',
       'ESFJ': 'Being social and caring, you like idols who value communication with fans.',
-      'ESFP': 'Being lively and spontaneous, you're drawn to bright and energetic idols.',
+      'ESFP': 'Being lively and spontaneous, you are drawn to bright and energetic idols.',
       'ESTJ': 'Being realistic and systematic, you prefer idols who show professional skills and perfect performances.',
-      'ESTP': 'Being adventurous and practical, you're interested in idols who show various charms and adaptability.',
-      'INFJ': 'Being idealistic, you're drawn to idols with deep emotions and authenticity.',
+      'ESTP': 'Being adventurous and practical, you are interested in idols who show various charms and adaptability.',
+      'INFJ': 'Being idealistic, you are drawn to idols with deep emotions and authenticity.',
       'INFP': 'Being emotional and individualistic, you like idols with unique charm and their own distinctive style.',
       'INTJ': 'Being strategic and perfectionist, you prefer idols who combine excellent skills with originality.',
-      'INTP': 'Being logical and analytical, you're drawn to idols with excellent skills and intellectual charm.',
+      'INTP': 'Being logical and analytical, you are drawn to idols with excellent skills and intellectual charm.',
       'ISFJ': 'Being cautious and devoted, you like idols with warm and human charm.',
-      'ISFP': 'Being artistic and peaceful, you're drawn to idols with natural and pure charm.',
+      'ISFP': 'Being artistic and peaceful, you are drawn to idols with natural and pure charm.',
       'ISTJ': 'Being reliable and meticulous, you prefer idols who show stable and consistent charm.',
-      'ISTP': 'Being practical and calm, you're attracted to idols who are skilled yet humble.'
+      'ISTP': 'Being practical and calm, you are attracted to idols who are skilled yet humble.'
     };
     return descriptions[mbti] || 'You have unique and special preferences.';
   };

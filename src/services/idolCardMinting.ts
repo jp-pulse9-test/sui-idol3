@@ -65,10 +65,13 @@ export const useIdolCardMinting = () => {
       try {
         result = await signAndExecute({
           transaction: txb,
-          options: {
-            showEffects: true,
-            showObjectChanges: true,
+        }, {
+          onSuccess: (data) => {
+            console.log('Transaction successful:', data);
           },
+          onError: (error) => {
+            console.error('Transaction failed:', error);
+          }
         });
         console.log('IdolCard 민팅 결과 (signAndExecute):', result);
       } catch (signError) {
@@ -78,14 +81,8 @@ export const useIdolCardMinting = () => {
         if (suiClient && currentAccount) {
           try {
             const txbBytes = await txb.build({ client: suiClient });
-            result = await suiClient.executeTransactionBlock({
-              transactionBlock: txbBytes,
-              signature: await currentAccount.signTransactionBlock(txbBytes),
-              options: {
-                showEffects: true,
-                showObjectChanges: true,
-              },
-            });
+            // 대안 방법은 현재 지원되지 않으므로 제거
+            throw new Error('Primary signing method failed');
             console.log('IdolCard 민팅 결과 (SuiClient):', result);
           } catch (clientError) {
             console.error('SuiClient 실행 실패:', clientError);

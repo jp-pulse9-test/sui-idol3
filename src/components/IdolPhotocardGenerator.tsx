@@ -12,8 +12,7 @@ import { usePhotocardStorage } from "@/hooks/usePhotocardStorage";
 import { useWallet } from "@/hooks/useWallet";
 import { toast } from "sonner";
 import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft, Database, Save } from "lucide-react";
-import { WalrusClient, WalrusFile } from "@mysten/walrus";
-import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+import { walrusService } from "@/services/walrusService";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 
 interface SelectedIdol {
@@ -67,13 +66,6 @@ export const IdolPhotocardGenerator = ({
   const [isStoringToWalrus, setIsStoringToWalrus] = useState(false);
   const {mutate: signAndExecute} = useSignAndExecuteTransaction();
   
-  const suiClient = new SuiClient({
-    url: getFullnodeUrl('testnet'),
-    network: 'testnet',
-  });
-  const walrusClient = new WalrusClient(
-    {network: 'testnet', suiClient}
-  );
 
   const conceptOptions: ConceptOption[] = [
     {
@@ -305,44 +297,14 @@ export const IdolPhotocardGenerator = ({
       const res = await fetch(generatedImageUrl);
       const blob = await (await res.blob()).arrayBuffer();
 
-      const flow = walrusClient.writeFilesFlow({
-        files: [
-          WalrusFile.from({
-            contents: new Uint8Array(blob),
-            identifier: "photocard.png"
-          })
-        ]
-      });
-
-      await flow.encode();
-
-      const registerTx = flow.register({
-        epochs: 2,
-        deletable: true,
-        owner: currentAccount.address,
-      });
-
-      console.log("Walrus??????")
-
-      signAndExecute({transaction: registerTx},{onSuccess: () => {
-        toast.success('Photocard saved to Walrus!');
-        console.log("Walrus!!!!!!!")
-      }, onError: (e)=>{
-        console.log(e)
-      }});
-
-
-      console.log("Walrus!!!!!!!2222")
-
-
       // Save to Walrus
-      const result = await storePhotocard(metadata, generatedImageUrl, {
+      const walrusResult = await storePhotocard(metadata, generatedImageUrl, {
         epochs: 10, // 포토카드는 오래 보관
         deletable: false, // 포토카드는 삭제 불가
         account: currentAccount
       });
 
-      toast.success(`🎉 Photocard saved to Walrus! Blob ID: ${result.blobId.slice(0, 8)}...`);
+      toast.success(`🎉 Photocard saved to Walrus! Blob ID: ${walrusResult.blobId.slice(0, 8)}...`);
     } catch (error) {
       console.error('Walrus save failed:', error);
       toast.error(`Failed to save to Walrus: ${error instanceof Error ? error.message : 'Unknown error'}`);

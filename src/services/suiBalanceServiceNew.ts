@@ -63,7 +63,16 @@ class SuiBalanceService {
   async getCoinMetadata(coinType: string): Promise<CoinMetadata | null> {
     try {
       const metadata = await this.client.getCoinMetadata({ coinType });
-      return metadata;
+      if (metadata) {
+        return {
+          decimals: metadata.decimals,
+          name: metadata.name,
+          symbol: metadata.symbol,
+          description: metadata.description,
+          iconUrl: metadata.iconUrl || null
+        };
+      }
+      return null;
     } catch (error) {
       console.error(`Failed to get metadata for ${coinType}:`, error);
       return null;
