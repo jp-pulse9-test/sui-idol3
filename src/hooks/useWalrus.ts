@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { walrusService } from '@/services/walrusService';
-import type { SuiSignAndExecuteTransactionMethod } from '@mysten/wallet-standard';
 import { WalrusFile } from '@mysten/walrus';
 
 export interface UploadProgress {

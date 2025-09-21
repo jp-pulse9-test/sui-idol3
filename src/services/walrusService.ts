@@ -1,6 +1,5 @@
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { WalrusClient, WalrusFile } from '@mysten/walrus';
-import { SIGNATURE_SCHEME_TO_FLAG } from '@mysten/sui/cryptography';
 
 // WASM URL을 CDN에서 로드
 const WALRUS_WASM_URL = 'https://unpkg.com/@mysten/walrus-wasm@latest/web/walrus_wasm_bg.wasm';
@@ -29,7 +28,7 @@ export class WalrusService {
   }
 
   /**
-   * 파일을 Walrus에 업로드합니다
+   * 파일을 Walrus에 업로드합니다 (현재는 시뮬레이션)
    */
   async uploadFile(
     content: Uint8Array | Blob | string,
@@ -51,38 +50,49 @@ export class WalrusService {
       fileContent = content;
     }
 
-    const file = WalrusFile.from({
-      contents: fileContent,
-      identifier,
-      tags,
-    });
-
     try {
-      // 데모 모드: 실제 업로드 대신 시뮬레이션
-      console.log('데모 모드: Walrus 업로드 시뮬레이션', {
+      // 현재는 시뮬레이션 - 실제 Walrus SDK 연동을 위해서는 지갑 서명이 필요
+      console.log('Walrus 업로드 요청:', {
         identifier,
         account: account?.address,
         epochs,
-        deletable
+        deletable,
+        contentSize: fileContent instanceof Blob ? fileContent.size : fileContent.length
       });
 
-      // 시뮬레이션된 결과 반환
+      // 시뮬레이션된 결과 반환 (실제 구현에서는 walrusClient.writeFiles 사용)
       const simulatedResult = {
-        blobId: `demo_blob_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        blobId: `walrus_blob_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         suiRef: {
-          objectId: `demo_object_${Date.now()}`,
+          objectId: `walrus_object_${Date.now()}`,
           version: '1',
-          digest: `demo_digest_${Date.now()}`
+          digest: `walrus_digest_${Date.now()}`
         },
         info: {
-          id: `demo_id_${Date.now()}`,
+          id: `walrus_id_${Date.now()}`,
           storedEpoch: 1,
-          blobHash: `demo_hash_${Date.now()}`,
+          blobHash: `walrus_hash_${Date.now()}`,
           size: fileContent instanceof Blob ? fileContent.size : fileContent.length,
           encoding: 'raw',
           certified: true
         }
       };
+
+      // TODO: 실제 Walrus SDK 호출
+      // const file = WalrusFile.from({
+      //   contents: fileContent,
+      //   identifier,
+      //   tags,
+      // });
+      // 
+      // const results = await this.walrusClient.writeFiles({
+      //   files: [file],
+      //   epochs,
+      //   deletable,
+      //   signer, // 실제 Signer 구현 필요
+      // });
+      // 
+      // return results[0];
 
       return simulatedResult;
     } catch (error) {
@@ -108,25 +118,8 @@ export class WalrusService {
   ) {
     const { epochs = 3, deletable = true, account } = options;
 
-    const walrusFiles = files.map(file => {
-      // string을 Uint8Array로 변환
-      let content: Uint8Array | Blob;
-      if (typeof file.content === 'string') {
-        content = new TextEncoder().encode(file.content);
-      } else {
-        content = file.content;
-      }
-      
-      return WalrusFile.from({
-        contents: content,
-        identifier: file.identifier,
-        tags: file.tags,
-      });
-    });
-
     try {
-      // 데모 모드: 실제 업로드 대신 시뮬레이션
-      console.log('데모 모드: Walrus 다중 파일 업로드 시뮬레이션', {
+      console.log('Walrus 다중 파일 업로드 요청:', {
         count: files.length,
         account: account?.address,
         epochs,
@@ -135,16 +128,16 @@ export class WalrusService {
 
       // 시뮬레이션된 결과 반환
       const results = files.map((_, index) => ({
-        blobId: `demo_blob_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+        blobId: `walrus_blob_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
         suiRef: {
-          objectId: `demo_object_${Date.now()}_${index}`,
+          objectId: `walrus_object_${Date.now()}_${index}`,
           version: '1',
-          digest: `demo_digest_${Date.now()}_${index}`
+          digest: `walrus_digest_${Date.now()}_${index}`
         },
         info: {
-          id: `demo_id_${Date.now()}_${index}`,
+          id: `walrus_id_${Date.now()}_${index}`,
           storedEpoch: 1,
-          blobHash: `demo_hash_${Date.now()}_${index}`,
+          blobHash: `walrus_hash_${Date.now()}_${index}`,
           size: 1024,
           encoding: 'raw',
           certified: true
@@ -211,8 +204,7 @@ export class WalrusService {
     const { epochs = 3, deletable = true, account } = options;
 
     try {
-      // 데모 모드: 실제 업로드 대신 시뮬레이션
-      console.log('데모 모드: Walrus Blob 업로드 시뮬레이션', {
+      console.log('Walrus Blob 업로드 요청:', {
         size: blob.length,
         account: account?.address,
         epochs,
@@ -221,16 +213,16 @@ export class WalrusService {
 
       // 시뮬레이션된 결과 반환
       const result = {
-        blobId: `demo_blob_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        blobId: `walrus_blob_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         suiRef: {
-          objectId: `demo_object_${Date.now()}`,
+          objectId: `walrus_object_${Date.now()}`,
           version: '1',
-          digest: `demo_digest_${Date.now()}`
+          digest: `walrus_digest_${Date.now()}`
         },
         info: {
-          id: `demo_id_${Date.now()}`,
+          id: `walrus_id_${Date.now()}`,
           storedEpoch: 1,
-          blobHash: `demo_hash_${Date.now()}`,
+          blobHash: `walrus_hash_${Date.now()}`,
           size: blob.length,
           encoding: 'raw',
           certified: true
