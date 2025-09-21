@@ -1,7 +1,11 @@
 import type { Transaction } from '@mysten/sui/transactions';
 
-// WASM URL을 CDN에서 로드 (번들 의존성 최소화)
-const WALRUS_WASM_URL = 'https://unpkg.com/@mysten/walrus-wasm@latest/web/walrus_wasm_bg.wasm';
+// WASM URL을 CDN에서 로드 (번들 의존성 최소화) - 여러 백업 URL 사용
+const WALRUS_WASM_URLS = [
+  'https://unpkg.com/@mysten/walrus-wasm@latest/web/walrus_wasm_bg.wasm',
+  'https://cdn.jsdelivr.net/npm/@mysten/walrus-wasm@latest/web/walrus_wasm_bg.wasm',
+  undefined // 기본 로딩 시도
+];
 
 export class WalrusService {
   private suiClient: any;
@@ -19,35 +23,46 @@ export class WalrusService {
     if (this.initPromise) return this.initPromise;
 
     this.initPromise = (async () => {
-      try {
-        // 동적 임포트로 런타임에만 로드 (초기 렌더 충돌 방지)
-        const sui = await import('@mysten/sui/client');
-        const walrus = await import('@mysten/walrus');
+      // 여러 WASM URL 시도
+      for (let i = 0; i < WALRUS_WASM_URLS.length; i++) {
+        try {
+          console.log(`Walrus 초기화 시도 ${i + 1}/${WALRUS_WASM_URLS.length}...`);
+          
+          // 동적 임포트로 런타임에만 로드 (초기 렌더 충돌 방지)
+          const sui = await import('@mysten/sui/client');
+          const walrus = await import('@mysten/walrus');
 
-        const { getFullnodeUrl, SuiClient } = sui as any;
-        const { WalrusClient, WalrusFile } = walrus as any;
+          const { getFullnodeUrl, SuiClient } = sui as any;
+          const { WalrusClient, WalrusFile } = walrus as any;
 
-        this.suiClient = new SuiClient({
-          url: getFullnodeUrl(this.network),
-          network: this.network,
-        });
+          this.suiClient = new SuiClient({
+            url: getFullnodeUrl(this.network),
+            network: this.network,
+          });
 
-        this.walrusClient = new WalrusClient({
-          network: this.network,
-          suiClient: this.suiClient,
-          wasmUrl: WALRUS_WASM_URL,
-          storageNodeClientOptions: {
-            timeout: 60_000,
-            onError: (error: any) => {
-              console.error('Walrus storage node error:', error);
+          this.walrusClient = new WalrusClient({
+            network: this.network,
+            suiClient: this.suiClient,
+            wasmUrl: WALRUS_WASM_URLS[i],
+            storageNodeClientOptions: {
+              timeout: 60_000,
+              onError: (error: any) => {
+                console.error('Walrus storage node error:', error);
+              },
             },
-          },
-        });
+          });
 
-        this.WalrusFile = WalrusFile;
-      } catch (e) {
-        console.error('Walrus 초기화 실패:', e);
-        this.available = false;
+          this.WalrusFile = WalrusFile;
+          console.log('Walrus 초기화 성공!');
+          return; // 성공하면 루프 종료
+        } catch (e) {
+          console.error(`Walrus 초기화 시도 ${i + 1} 실패:`, e);
+          if (i === WALRUS_WASM_URLS.length - 1) {
+            // 모든 시도가 실패한 경우
+            console.error('모든 Walrus 초기화 시도 실패');
+            this.available = false;
+          }
+        }
       }
     })();
 
