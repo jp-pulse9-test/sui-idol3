@@ -18,7 +18,6 @@ import { WalrusFileUpload } from "@/components/WalrusFileUpload";
 import { WalrusFileDownload } from "@/components/WalrusFileDownload";
 import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
 import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
-import { IdolChatInterface } from "@/components/IdolChatInterface";
 
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
@@ -57,17 +56,6 @@ const Index = () => {
   }>({ open: false, type: null });
   const [showWalrusTools, setShowWalrusTools] = useState(false);
   const [showPhotocardGallery, setShowPhotocardGallery] = useState(false);
-  const [showDemoChat, setShowDemoChat] = useState(false);
-  
-  const demoIdol = {
-    id: 'demo-idol',
-    name: '지우',
-    personality: 'ENFP - 열정적이고 창의적인 아티스트',
-    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
-    level: 3,
-    badges: ['신인', '체험판'],
-    voiceId: 'xi3rF0t7dg7uN2M0WUhr'
-  };
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
@@ -247,45 +235,30 @@ const Index = () => {
           </div>
         </section>
 
-        {/* 심쿵톡 메인 섹션 - 간결한 픽셀 디자인 */}
+        {/* 심쿵톡 메인 섹션 - 간결한 디자인 */}
         <section className="py-20">
-          <div className="text-center space-y-6 glass p-12">
+          <div className="text-center space-y-6 glass p-12 rounded-2xl">
             <div className="space-y-4">
-              <Badge className="bg-primary text-primary-foreground font-pixel text-sm px-4 py-2">
+              <Badge className="bg-primary text-primary-foreground font-semibold text-sm px-4 py-2">
                 💖 NEW
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-pixel gradient-text">
+              <h2 className="text-4xl md:text-5xl font-bold gradient-text">
                 AI 아이돌 심쿵톡
               </h2>
-              <p className="text-lg font-mono text-foreground max-w-xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-xl mx-auto">
                 24/7 실시간 채팅 · 음성 통화 · AI 학습
               </p>
               <Button
-                onClick={() => setShowDemoChat(!showDemoChat)}
+                onClick={() => navigate('/demo-chat')}
                 variant="default"
                 size="lg"
-                className="font-pixel text-base px-8 py-4 mt-4"
+                className="font-semibold text-base px-8 py-4 mt-4"
               >
-                💖 {showDemoChat ? '대화 종료' : '무료 체험'}
+                💖 무료 체험하기
               </Button>
             </div>
           </div>
         </section>
-
-        {/* 심쿵톡 대화창 (백드롭 포함) */}
-        {showDemoChat && (
-          <>
-            {/* 어두운 배경 오버레이 */}
-            <div className="fixed inset-0 bg-black/90 z-40" />
-            
-            {/* 대화창 */}
-            <IdolChatInterface 
-              idol={demoIdol}
-              isOpen={showDemoChat}
-              onClose={() => setShowDemoChat(false)}
-            />
-          </>
-        )}
 
         {/* Features Section */}
         <section className="py-20">

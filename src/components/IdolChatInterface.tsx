@@ -575,12 +575,57 @@ ${genreContext}
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* DOS 스타일 컴퓨터 프레임 */}
-      <div className="relative w-full max-w-4xl">
-        {/* 모니터 스크린 - DOS Black & White */}
-        <Card className="w-full aspect-[4/3] flex flex-col bg-black border-4 border-gray-700 relative overflow-hidden rounded-lg shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{
+      background: 'linear-gradient(135deg, #2a1a3a 0%, #1a1a2e 50%, #16213e 100%)'
+    }}>
+      {/* 90년대 구형 컴퓨터 프레임 - 베이지색 플라스틱 케이스 */}
+      <div className="relative w-full max-w-5xl" style={{
+        filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.7))'
+      }}>
+        {/* 컴퓨터 본체 케이스 */}
+        <div className="relative p-8 rounded-xl" style={{
+          background: 'linear-gradient(145deg, #d4c5a9 0%, #c4b59a 50%, #b0a082 100%)',
+          boxShadow: 'inset 0 2px 8px rgba(255,255,255,0.4), inset 0 -2px 8px rgba(0,0,0,0.3), 0 20px 40px rgba(0,0,0,0.5)'
+        }}>
+          {/* 컴퓨터 케이스 그릴 디테일 */}
+          <div className="absolute top-4 left-8 right-8 h-12 flex gap-1">
+            {[...Array(20)].map((_, i) => (
+              <div key={i} className="flex-1 h-full bg-black/10 rounded-sm" style={{
+                boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.2)'
+              }} />
+            ))}
+          </div>
           
+          {/* 브랜드 로고 영역 */}
+          <div className="absolute top-4 right-12 px-4 py-1 bg-black/20 rounded" style={{
+            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.3)'
+          }}>
+            <span className="text-xs font-mono text-gray-700 font-bold tracking-wider">AIDOL-98</span>
+          </div>
+
+          {/* 베젤 */}
+          <div className="absolute inset-8 top-20 border-4 rounded pointer-events-none" style={{
+            borderColor: '#a89578',
+            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+          }} />
+          
+          {/* CRT 모니터 스크린 */}
+          <div className="relative mt-16">
+            <Card className="w-full aspect-[4/3] flex flex-col bg-black border-8 rounded-lg relative overflow-hidden" style={{
+              borderColor: '#1a1a1a',
+              boxShadow: 'inset 0 0 80px rgba(100,150,100,0.1), inset 0 8px 16px rgba(0,0,0,0.8)'
+            }}>
+              {/* CRT 곡면 효과 */}
+              <div className="absolute inset-0 pointer-events-none z-10" style={{
+                background: 'radial-gradient(ellipse at center, transparent 0%, transparent 70%, rgba(0,0,0,0.3) 100%)',
+                borderRadius: '8px'
+              }} />
+              
+              {/* 스캔라인 */}
+              <div className="absolute inset-0 pointer-events-none z-10 opacity-10" style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px)',
+              }} />
+
           {/* 헤더 - DOS 스타일 */}
           <div className="relative z-20 flex items-center justify-between px-6 py-3 border-b-2 border-white bg-black">
             <div className="flex items-center gap-3">
@@ -790,7 +835,17 @@ ${genreContext}
               </>
             )}
           </div>
-        </Card>
+            </Card>
+            
+            {/* 컴퓨터 케이스 하단 - 전원 버튼 */}
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-4">
+              <div className="w-16 h-6 rounded-full border-2 border-black/30 bg-gradient-to-b from-gray-700 to-gray-600 shadow-lg flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-lg shadow-green-400/50" />
+              </div>
+              <div className="w-16 h-6 rounded-full border-2 border-black/30 bg-gradient-to-b from-gray-700 to-gray-600 shadow-lg" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

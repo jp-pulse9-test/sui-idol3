@@ -33,6 +33,7 @@ import Auth from "./pages/Auth";
 import SettingsPage from "./pages/Settings";
 import PhotocardGenerator from "./pages/PhotocardGenerator";
 import My from "./pages/My";
+const DemoChat = lazy(() => import("./pages/DemoChat"));
 
 const AdminButton = () => {
   const { user } = useAuth();
@@ -77,8 +78,9 @@ const App = () => (
           <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
-          {/* My 페이지는 지갑 연결 또는 데모 모드에서만 접근 가능 */}
           <Route path="/my" element={<My />} />
+          <Route path="/demo-chat" element={<DemoChat />} />
+          
           {/* 새로운 3단계 플로우: Pick → Vault → Rise */}
           <Route path="/pick" element={<Pick />} />
           <Route path="/vault" element={<Vault />} />
