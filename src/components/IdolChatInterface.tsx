@@ -17,6 +17,7 @@ interface Message {
   timestamp: Date;
   emotion?: 'happy' | 'excited' | 'shy' | 'neutral';
   choices?: string[];
+  imageUrl?: string;
 }
 
 type GenreType = 'mystery-thriller' | 'apocalypse-survival' | 'highteen-romance' | 'bromance' | 'girls-romance' | 'historical-romance' | null;
@@ -51,8 +52,10 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [relationshipScore, setRelationshipScore] = useState(0);
   const [selectedGenre, setSelectedGenre] = useState<GenreType>(null);
   const [showGenreSelect, setShowGenreSelect] = useState(true);
+  const [messageCount, setMessageCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isDemoMode = !user;
 
   useEffect(() => {
     if (isOpen && user) {
@@ -251,6 +254,12 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const sendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
 
+    // 체험판 10번 제한
+    if (isDemoMode && messageCount >= 10) {
+      toast.error("체험판은 10번까지만 대화할 수 있습니다. 계속하려면 로그인해주세요!");
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       sender: 'user',
@@ -261,6 +270,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
     setIsTyping(true);
+    setMessageCount(prev => prev + 1);
 
     await saveChatLog(userMessage);
 
@@ -315,13 +325,28 @@ ${genreContext}
             .filter(c => c.length > 0)
         : [];
 
+      // 이미지 생성
+      let imageUrl: string | undefined;
+      try {
+        const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
+          body: {
+            storyContext: storyContent,
+            genre: selectedGenre
+          }
+        });
+        imageUrl = imageData?.imageUrl;
+      } catch (imgError) {
+        console.error('이미지 생성 실패:', imgError);
+      }
+
       const idolMessage: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'idol',
         content: storyContent,
         timestamp: new Date(),
         emotion: detectEmotion(storyContent),
-        choices: choices.length > 0 ? choices : undefined
+        choices: choices.length > 0 ? choices : undefined,
+        imageUrl
       };
 
       setMessages(prev => [...prev, idolMessage]);
@@ -354,9 +379,125 @@ ${genreContext}
     return 'neutral';
   };
 
-  const handleChoiceClick = (choice: string) => {
-    setInputMessage(choice);
-    setTimeout(() => sendMessage(), 100);
+  const handleChoiceClick = async (choice: string) => {
+    if (!choice.trim() || isTyping) return;
+
+    // 체험판 10번 제한
+    if (isDemoMode && messageCount >= 10) {
+      toast.error("체험판은 10번까지만 대화할 수 있습니다. 계속하려면 로그인해주세요!");
+      return;
+    }
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      sender: 'user',
+      content: choice.trim(),
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage("");
+    setIsTyping(true);
+    setMessageCount(prev => prev + 1);
+
+    await saveChatLog(userMessage);
+
+    try {
+      const conversationHistory = messages.slice(-10).map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.content
+      }));
+
+      const genreInfo = GENRES.find(g => g.id === selectedGenre);
+      const genreContext = genreInfo ? `
+장르: ${genreInfo.name} ${genreInfo.emoji}
+장르 설정: ${genreInfo.description}` : '';
+
+      const systemPrompt = `당신은 K-POP 아이돌 ${idol.name}입니다.
+성격: ${idol.personality}
+${genreContext}
+
+당신은 팬과 함께 웹 소설을 쓰고 있습니다.
+규칙:
+1. 자극적이고 흥미로운 상황을 계속 제시하세요
+2. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안하세요
+3. 각 옵션은 30자 이내로 간결하게
+4. 기승전결 없이 계속 긴장감 있는 전개를 유지하세요
+5. 150자 내외로 상황 설명
+6. 반드시 다음 형식으로 응답하세요:
+
+[이야기]
+(여기에 상황 전개)
+
+[선택지]
+1. (첫 번째 선택지)
+2. (두 번째 선택지)
+3. (세 번째 선택지)`;
+
+      const { data, error } = await supabase.functions.invoke('generate-character-chat', {
+        body: {
+          prompt: `${systemPrompt}\n\n대화 기록:\n${conversationHistory.map(m => `${m.role}: ${m.content}`).join('\n')}\n\n팬: ${userMessage.content}\n\n${idol.name}:`
+        }
+      });
+
+      if (error) throw error;
+
+      const response = data.response || "미안해요... 잠깐 생각이 안 나네요. 다시 말해줄래요? 😅";
+      const storyMatch = response.match(/\[이야기\]([\s\S]*?)(?:\[선택지\]|$)/);
+      const choicesMatch = response.match(/\[선택지\]([\s\S]*)/);
+      
+      const storyContent = storyMatch ? storyMatch[1].trim() : response;
+      const choices = choicesMatch 
+        ? choicesMatch[1].split('\n')
+            .map(c => c.replace(/^\d+\.\s*/, '').trim())
+            .filter(c => c.length > 0)
+        : [];
+
+      // 이미지 생성
+      let imageUrl: string | undefined;
+      try {
+        const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
+          body: {
+            storyContext: storyContent,
+            genre: selectedGenre
+          }
+        });
+        imageUrl = imageData?.imageUrl;
+      } catch (imgError) {
+        console.error('이미지 생성 실패:', imgError);
+      }
+
+      const idolMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        sender: 'idol',
+        content: storyContent,
+        timestamp: new Date(),
+        emotion: detectEmotion(storyContent),
+        choices: choices.length > 0 ? choices : undefined,
+        imageUrl
+      };
+
+      setMessages(prev => [...prev, idolMessage]);
+      await saveChatLog(idolMessage);
+      
+      if (isVoiceMode) {
+        await playIdolVoice(storyContent);
+      }
+
+      // 관계 점수 업데이트
+      const positiveKeywords = ['좋아', '사랑', '멋있', '예쁘', '최고', '고마워', '응원'];
+      const isPositive = positiveKeywords.some(kw => userMessage.content.includes(kw));
+      if (isPositive) {
+        const newScore = Math.min(100, relationshipScore + Math.floor(Math.random() * 5) + 2);
+        saveRelationshipScore(newScore);
+      }
+
+    } catch (error) {
+      console.error('메시지 전송 실패:', error);
+      toast.error("메시지 전송에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const playIdolVoice = async (text: string) => {
@@ -440,6 +581,11 @@ ${genreContext}
                   />
                 </div>
                 <span className="text-xs text-muted-foreground">{relationshipScore}%</span>
+                {isDemoMode && (
+                  <Badge variant="outline" className="ml-2 text-xs">
+                    {messageCount}/10
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -472,17 +618,28 @@ ${genreContext}
                     <AvatarFallback>{idol.name[0]}</AvatarFallback>
                   </Avatar>
                 )}
-                <div
-                  className={`max-w-[70%] p-4 rounded-2xl ${
-                    msg.sender === 'user'
-                      ? 'bg-gradient-to-br from-pink-500 to-purple-500 text-white'
-                      : 'bg-muted border border-border'
-                  }`}
-                >
-                  <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
-                  <p className="text-xs opacity-70 mt-2">
-                    {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
+                <div className="space-y-2 max-w-[70%]">
+                  {msg.imageUrl && msg.sender === 'idol' && (
+                    <div className="rounded-2xl overflow-hidden border border-border">
+                      <img 
+                        src={msg.imageUrl} 
+                        alt="Story scene" 
+                        className="w-full h-auto"
+                      />
+                    </div>
+                  )}
+                  <div
+                    className={`p-4 rounded-2xl ${
+                      msg.sender === 'user'
+                        ? 'bg-gradient-to-br from-pink-500 to-purple-500 text-white'
+                        : 'bg-muted border border-border'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
+                    <p className="text-xs opacity-70 mt-2">
+                      {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
