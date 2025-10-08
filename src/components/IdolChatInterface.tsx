@@ -576,118 +576,103 @@ ${genreContext}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* 1세대 애플 컴퓨터 프레임 - 베이지색 플라스틱 */}
-      <div className="relative w-full max-w-4xl" style={{
-        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.5))'
-      }}>
-        {/* 컴퓨터 본체 */}
-        <div className="bg-[#e8dcc4] p-8 border-8 border-[#d4c5a9]" style={{
-          boxShadow: 'inset 0 4px 8px rgba(0,0,0,0.15), inset 0 -4px 8px rgba(255,255,255,0.3)'
-        }}>
-          {/* 베젤 라인 */}
-          <div className="absolute inset-8 border-4 border-[#c4b59a] pointer-events-none" />
+      {/* DOS 스타일 컴퓨터 프레임 */}
+      <div className="relative w-full max-w-4xl">
+        {/* 모니터 스크린 - DOS Black & White */}
+        <Card className="w-full aspect-[4/3] flex flex-col bg-black border-4 border-gray-700 relative overflow-hidden rounded-lg shadow-2xl">
           
-          {/* 모니터 스크린 영역 */}
-          <Card className="w-full aspect-[4/3] flex flex-col bg-[#1a3a1a] border-4 border-black relative overflow-hidden" style={{
-            boxShadow: 'inset 0 0 60px rgba(50,200,50,0.2), inset 0 4px 12px rgba(0,0,0,0.6)'
-          }}>
-            {/* CRT 녹색 글로우 */}
-            <div className="absolute inset-0 pointer-events-none z-10" style={{
-              background: 'radial-gradient(ellipse at center, transparent 0%, rgba(50,255,50,0.03) 50%, rgba(0,0,0,0.5) 100%)'
-            }} />
-            
-            {/* 스캔라인 효과 */}
-            <div className="absolute inset-0 pointer-events-none z-10 opacity-20" style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)',
-            }} />
-          {/* 헤더 - 애플 스타일 */}
-          <div className="relative z-20 flex items-center justify-between p-4 border-b-2 border-[#00ff00]/30 bg-black/40">
+          {/* 헤더 - DOS 스타일 */}
+          <div className="relative z-20 flex items-center justify-between px-6 py-3 border-b-2 border-white bg-black">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 border-2 border-[#00ff00]">
-                <img src={idol.image} alt={idol.name} className="w-full h-full object-cover" />
+              <div className="w-8 h-8 border-2 border-white bg-white">
+                <img src={idol.image} alt={idol.name} className="w-full h-full object-cover grayscale" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-mono text-base text-[#00ff00] uppercase tracking-wider">{idol.name}</h3>
-                  <span className="text-[#00ff00] text-xs font-mono">●</span>
+                <div className="flex items-center gap-3">
+                  <h3 className="font-mono text-sm text-white uppercase tracking-wider font-bold">{idol.name}</h3>
+                  <span className="text-white text-xs font-mono">█</span>
                   {selectedGenre && (
-                    <span className="text-[#00ff00] text-xs font-mono">
-                      {GENRES.find(g => g.id === selectedGenre)?.emoji}
+                    <span className="text-white text-xs font-mono bg-white text-black px-2 py-0.5">
+                      {GENRES.find(g => g.id === selectedGenre)?.name}
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-[#00ff00]/70 font-mono mt-0.5">{idol.personality}</p>
+                <p className="text-xs text-gray-400 font-mono mt-1">{idol.personality}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[#00ff00] text-xs font-mono">LOVE:</span>
-                  <div className="w-20 bg-black border border-[#00ff00]/50 h-1.5">
+                  <span className="text-white text-xs font-mono">RELATIONSHIP:</span>
+                  <div className="w-24 bg-gray-800 border border-white h-2">
                     <div 
-                      className="bg-[#00ff00] h-full transition-all duration-500"
+                      className="bg-white h-full transition-all duration-500"
                       style={{ width: `${relationshipScore}%` }}
                     />
                   </div>
-                  <span className="text-xs text-[#00ff00] font-mono">{relationshipScore}%</span>
+                  <span className="text-xs text-white font-mono">{relationshipScore}%</span>
                   {isDemoMode && (
-                    <span className="ml-2 text-xs text-[#00ff00]/70 font-mono">
+                    <span className="ml-2 text-xs text-gray-400 font-mono">
                       [{messageCount}/10]
                     </span>
                   )}
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleVoiceMode}
-                className={isVoiceMode ? "text-[#00ff00] bg-[#00ff00]/20 hover:bg-[#00ff00]/30" : "text-[#00ff00]/50 hover:text-[#00ff00] hover:bg-[#00ff00]/10"}
+                className={`border-2 ${isVoiceMode ? "border-white bg-white text-black" : "border-white text-white hover:bg-white hover:text-black"}`}
               >
-                {isVoiceMode ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+                {isVoiceMode ? <Mic className="w-3 h-3" /> : <MicOff className="w-3 h-3" />}
               </Button>
-              <Button variant="ghost" size="sm" onClick={onClose} className="text-[#00ff00] hover:bg-[#00ff00]/20">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={onClose} 
+                className="border-2 border-white text-white hover:bg-white hover:text-black"
+              >
                 <X className="w-4 h-4" />
               </Button>
             </div>
           </div>
 
-          {/* 메시지 영역 - 애플 모니터 스타일 */}
-          <ScrollArea className="relative z-20 flex-1 p-4 bg-black/50">
-            <div className="space-y-3 font-mono text-sm">
+          {/* 메시지 영역 - DOS 스타일 */}
+          <ScrollArea className="relative z-20 flex-1 p-6 bg-black">
+            <div className="space-y-4 font-mono text-sm">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'idol' && !msg.error && (
-                  <span className="text-[#00ff00] mr-2">▶</span>
+                  <span className="text-white mr-2 font-bold">{'>'}</span>
                 )}
                 <div className="space-y-2 max-w-[80%]">
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
-                    <div className="border-2 border-[#00ff00]/50 p-1 bg-black">
+                    <div className="border-4 border-white p-2 bg-white">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 
-                        className="w-full h-auto"
-                        style={{ filter: 'contrast(1.2) brightness(0.9)' }}
+                        className="w-full h-auto grayscale contrast-125"
                       />
                     </div>
                   )}
                   <div
-                    className={`p-3 border-2 ${
+                    className={`p-4 border-2 ${
                       msg.error
-                        ? 'border-red-500 bg-red-950/30 text-red-400'
+                        ? 'border-white bg-gray-800 text-white'
                         : msg.sender === 'user'
-                        ? 'border-[#00ff00] bg-[#00ff00]/10 text-[#00ff00]'
-                        : 'border-[#00ff00]/50 bg-black/60 text-[#00ff00]'
+                        ? 'border-white bg-white text-black'
+                        : 'border-gray-600 bg-gray-900 text-white'
                     }`}
                   >
                     {msg.error ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs">ERROR: MSG FAILED</p>
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs">ERROR: MESSAGE FAILED</p>
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => retryMessage(msg.content)}
-                          className="text-red-400 hover:bg-red-900/30 h-6 px-2 text-xs"
+                          className="border-2 border-white text-white hover:bg-white hover:text-black h-8 px-3 text-xs"
                         >
                           <RefreshCw className="w-3 h-3 mr-1" />
                           RETRY
@@ -695,8 +680,8 @@ ${genreContext}
                       </div>
                     ) : (
                       <>
-                        <p className="text-xs leading-relaxed whitespace-pre-line">{msg.content}</p>
-                        <p className="text-[10px] opacity-50 mt-1.5">
+                        <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
+                        <p className="text-xs opacity-50 mt-2">
                           {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </>
@@ -704,20 +689,20 @@ ${genreContext}
                   </div>
                 </div>
                 {msg.sender === 'user' && !msg.error && (
-                  <span className="text-[#00ff00] ml-2">◀</span>
+                  <span className="text-white ml-2 font-bold">{'<'}</span>
                 )}
               </div>
             ))}
 
-            {/* 선택지 표시 (아이돌 메시지 직후) - 애플 스타일 */}
+            {/* 선택지 표시 - DOS 스타일 */}
             {messages.length > 0 && messages[messages.length - 1].sender === 'idol' && messages[messages.length - 1].choices && (
               <div className="flex justify-end">
-                <div className="flex flex-col gap-2 w-full max-w-md">
+                <div className="flex flex-col gap-3 w-full max-w-md">
                   {messages[messages.length - 1].choices!.map((choice, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleChoiceClick(choice)}
-                      className="border-2 border-[#00ff00] bg-[#00ff00]/10 text-[#00ff00] p-2 text-left hover:bg-[#00ff00]/20 transition-all font-mono text-xs"
+                      className="border-2 border-white bg-white text-black p-3 text-left hover:bg-black hover:text-white transition-all font-mono text-sm font-medium"
                     >
                       [{idx + 1}] {choice}
                     </button>
@@ -726,18 +711,19 @@ ${genreContext}
               </div>
             )}
             
-            {/* 장르 선택 버튼 (첫 메시지 후에만 표시) - 애플 스타일 */}
+            {/* 장르 선택 버튼 - DOS 스타일 */}
             {!selectedGenre && messages.length > 0 && (
               <div className="flex justify-start">
-                <div className="grid grid-cols-2 gap-2 max-w-md w-full">
+                <div className="grid grid-cols-2 gap-3 max-w-lg w-full">
                   {GENRES.map((genre, idx) => (
                     <button
                       key={genre.id}
                       onClick={() => handleGenreSelect(genre.id as GenreType)}
-                      className="border-2 border-[#00ff00]/70 bg-black/60 text-[#00ff00] p-3 text-left hover:bg-[#00ff00]/10 transition-all"
+                      className="border-2 border-gray-600 bg-gray-900 text-white p-4 text-left hover:bg-gray-700 transition-all"
                     >
-                      <div className="font-mono text-xs">
-                        <div>[{idx + 1}] {genre.emoji} {genre.name}</div>
+                      <div className="font-mono text-sm">
+                        <div className="font-bold mb-1">[{idx + 1}] {genre.emoji} {genre.name}</div>
+                        <div className="text-xs text-gray-400">{genre.description}</div>
                       </div>
                     </button>
                   ))}
@@ -747,12 +733,12 @@ ${genreContext}
             
             {isTyping && (
               <div className="flex justify-start">
-                <span className="text-[#00ff00] mr-2">▶</span>
-                <div className="border-2 border-[#00ff00]/50 bg-black/60 p-3 text-[#00ff00]">
-                  <div className="flex space-x-1">
-                    <div className="w-1.5 h-1.5 bg-[#00ff00] animate-bounce" />
-                    <div className="w-1.5 h-1.5 bg-[#00ff00] animate-bounce" style={{ animationDelay: '0.1s' }} />
-                    <div className="w-1.5 h-1.5 bg-[#00ff00] animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <span className="text-white mr-2 font-bold">{'>'}</span>
+                <div className="border-2 border-gray-600 bg-gray-900 p-4 text-white">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-white animate-bounce" />
+                    <div className="w-2 h-2 bg-white animate-bounce" style={{ animationDelay: '0.1s' }} />
+                    <div className="w-2 h-2 bg-white animate-bounce" style={{ animationDelay: '0.2s' }} />
                   </div>
                 </div>
               </div>
@@ -761,51 +747,50 @@ ${genreContext}
             </div>
           </ScrollArea>
 
-          {/* 입력 영역 - 애플 스타일 */}
-          <div className="relative z-20 p-4 border-t-2 border-[#00ff00]/30 bg-black/40">
+          {/* 입력 영역 - DOS 스타일 */}
+          <div className="relative z-20 px-6 py-4 border-t-2 border-white bg-black">
             {isDemoMode && messageCount >= 10 ? (
-              <div className="text-center space-y-2">
-                <p className="text-xs font-mono text-[#00ff00]">DEMO LIMIT REACHED [10/10]</p>
-                <p className="text-[10px] font-mono text-[#00ff00]/70">CONNECT WALLET TO CONTINUE</p>
+              <div className="text-center space-y-3">
+                <p className="text-sm font-mono text-white font-bold">DEMO LIMIT REACHED [10/10]</p>
+                <p className="text-xs font-mono text-gray-400">CONNECT WALLET TO CONTINUE</p>
                 <Button 
-                  className="bg-[#00ff00] hover:bg-[#00ff00]/80 text-black font-mono text-xs mt-2"
+                  className="bg-white hover:bg-gray-200 text-black font-mono text-sm font-bold mt-2 border-2 border-white"
                   onClick={() => window.location.href = '/auth'}
                 >
-                  <Wallet className="w-3 h-3 mr-2" />
-                  CONNECT
+                  <Wallet className="w-4 h-4 mr-2" />
+                  CONNECT WALLET
                 </Button>
               </div>
             ) : (
               <>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder={selectedGenre ? "> INPUT MSG..." : "> SELECT GENRE..."}
+                    placeholder={selectedGenre ? "C:\\> TYPE MESSAGE..." : "C:\\> SELECT GENRE FIRST..."}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && !isTyping && selectedGenre) {
                         sendMessage();
                       }
                     }}
-                    className="flex-1 bg-black border-2 border-[#00ff00]/50 text-[#00ff00] placeholder:text-[#00ff00]/30 font-mono text-xs"
+                    className="flex-1 bg-black border-2 border-white text-white placeholder:text-gray-500 font-mono text-sm"
                     disabled={isTyping || !selectedGenre}
                   />
                   <Button 
                     onClick={sendMessage} 
                     disabled={isTyping || !inputMessage.trim() || !selectedGenre}
-                    className="bg-[#00ff00] hover:bg-[#00ff00]/80 text-black font-mono text-xs px-4"
+                    className="bg-white hover:bg-gray-200 text-black font-mono text-sm px-6 border-2 border-white font-bold"
                   >
-                    <Send className="w-3 h-3" />
+                    <Send className="w-4 h-4" />
                   </Button>
                 </div>
-                <p className="text-[10px] text-[#00ff00]/50 mt-2 text-center font-mono">
-                  AI LEARNING ACTIVE
+                <p className="text-xs text-gray-400 mt-3 text-center font-mono">
+                  AI LEARNING ACTIVE - ALL CONVERSATIONS SAVED
                 </p>
               </>
             )}
           </div>
-          </Card>
-        </div>
+        </Card>
       </div>
     </div>
   );
