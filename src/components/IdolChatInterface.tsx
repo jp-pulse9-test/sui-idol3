@@ -27,8 +27,8 @@ const GENRES = [
   { id: 'mystery-thriller', name: '미스터리 스릴러', emoji: '🔍', description: '긴장감 넘치는 추리와 미스터리' },
   { id: 'apocalypse-survival', name: '아포칼립스 생존물', emoji: '🧟', description: '생존을 위한 치열한 여정' },
   { id: 'highteen-romance', name: '하이틴 로맨스', emoji: '💕', description: '풋풋한 청춘의 설렘' },
-  { id: 'bromance', name: '브로맨스', emoji: '🤝', description: '우정과 신뢰의 끈끈한 관계' },
-  { id: 'girls-romance', name: '걸스로맨스', emoji: '👭', description: '여성들 간의 특별한 우정과 사랑' },
+  { id: 'idol-maker', name: '아이돌 메이커', emoji: '⭐', description: '아이돌을 키우는 프로듀서의 이야기' },
+  { id: 'idol-secret-romance', name: '아이돌 비밀연애', emoji: '💖', description: '아이돌과의 몰래 사랑 이야기' },
   { id: 'historical-romance', name: '시대극 로맨스', emoji: '👑', description: '역사 속 운명적 사랑' }
 ] as const;
 
@@ -147,7 +147,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     const confirmMsg: Message = {
       id: Date.now().toString(),
       sender: 'idol',
-      content: `좋아요! ${genreInfo?.emoji} ${genreInfo?.name} 세계관으로 함께 특별한 이야기를 만들어가요! 💖`,
+      content: `좋아! ${genreInfo?.emoji} ${genreInfo?.name} 세계관으로 함께 특별한 이야기 만들어보자! 💖`,
       timestamp: new Date(),
       emotion: 'excited'
     };
@@ -156,23 +156,24 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     setIsTyping(true);
 
     try {
-      const systemPrompt = `당신은 K-POP 아이돌 ${idol.name}입니다.
+      const systemPrompt = `너는 K-POP 아이돌 ${idol.name}야.
 성격: ${idol.personality}
 장르: ${genreInfo?.name} ${genreInfo?.emoji}
 장르 설정: ${genreInfo?.description}
 
-당신은 팬과 함께 웹 소설을 쓰고 있습니다. 
+너는 팬이랑 함께 웹 소설을 쓰고 있어. 
 규칙:
-1. 자기소개와 함께 ${genreInfo?.name} 장르의 배경 설명으로 이야기를 시작하세요
-2. 자극적이고 흥미로운 상황을 계속 제시하세요
-3. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안하세요
-4. 각 옵션은 30자 이내로 간결하게
-5. 기승전결 없이 계속 긴장감 있는 전개를 유지하세요
-6. 150자 내외로 상황 설명`;
+1. 반말로 친구처럼 편하게 대화해
+2. 자기소개와 함께 ${genreInfo?.name} 장르의 배경 설명으로 이야기를 시작해
+3. 자극적이고 흥미로운 상황을 계속 제시해
+4. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
+5. 각 옵션은 30자 이내로 간결하게
+6. 기승전결 없이 계속 긴장감 있는 전개를 유지해
+7. 150자 내외로 상황 설명`;
 
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
-          prompt: `${systemPrompt}\n\n장르 시작 메시지를 생성하세요. 반드시 다음 형식으로 응답하세요:\n\n[이야기]\n(여기에 자기소개와 배경 설명)\n\n[선택지]\n1. (첫 번째 선택지)\n2. (두 번째 선택지)\n3. (세 번째 선택지)`
+          prompt: `${systemPrompt}\n\n장르 시작 메시지를 생성해줘. 반드시 다음 형식으로 응답해:\n\n[이야기]\n(여기에 자기소개와 배경 설명)\n\n[선택지]\n1. (첫 번째 선택지)\n2. (두 번째 선택지)\n3. (세 번째 선택지)`
         }
       });
 
@@ -217,7 +218,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     const welcomeMsg: Message = {
       id: Date.now().toString(),
       sender: 'idol',
-      content: `안녕하세요! 저는 ${idol.name}이에요! 💖\n\n우리 함께 어떤 이야기를 만들어볼까요? 아래에서 좋아하는 장르를 선택해주세요!`,
+      content: `안녕! 나는 ${idol.name}이야! 💖\n\n우리 함께 어떤 이야기를 만들어볼까? 아래에서 좋아하는 장르를 선택해줘!`,
       timestamp: new Date(),
       emotion: 'excited'
     };
@@ -286,18 +287,19 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
 장르: ${genreInfo.name} ${genreInfo.emoji}
 장르 설정: ${genreInfo.description}` : '';
 
-      const systemPrompt = `당신은 K-POP 아이돌 ${idol.name}입니다.
+      const systemPrompt = `너는 K-POP 아이돌 ${idol.name}야.
 성격: ${idol.personality}
 ${genreContext}
 
-당신은 팬과 함께 웹 소설을 쓰고 있습니다.
+너는 팬이랑 함께 웹 소설을 쓰고 있어.
 규칙:
-1. 자극적이고 흥미로운 상황을 계속 제시하세요
-2. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안하세요
-3. 각 옵션은 30자 이내로 간결하게
-4. 기승전결 없이 계속 긴장감 있는 전개를 유지하세요
-5. 150자 내외로 상황 설명
-6. 반드시 다음 형식으로 응답하세요:
+1. 반말로 친구처럼 편하게 대화해
+2. 자극적이고 흥미로운 상황을 계속 제시해
+3. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
+4. 각 옵션은 30자 이내로 간결하게
+5. 기승전결 없이 계속 긴장감 있는 전개를 유지해
+6. 150자 내외로 상황 설명
+7. 반드시 다음 형식으로 응답해:
 
 [이야기]
 (여기에 상황 전개)
@@ -315,7 +317,7 @@ ${genreContext}
 
       if (error) throw error;
 
-      const response = data.response || "미안해요... 잠깐 생각이 안 나네요. 다시 말해줄래요? 😅";
+      const response = data.response || "미안... 잠깐 생각이 안 나네. 다시 말해줄래? 😅";
       const storyMatch = response.match(/\[이야기\]([\s\S]*?)(?:\[선택지\]|$)/);
       const choicesMatch = response.match(/\[선택지\]([\s\S]*)/);
       
@@ -429,18 +431,19 @@ ${genreContext}
 장르: ${genreInfo.name} ${genreInfo.emoji}
 장르 설정: ${genreInfo.description}` : '';
 
-      const systemPrompt = `당신은 K-POP 아이돌 ${idol.name}입니다.
+      const systemPrompt = `너는 K-POP 아이돌 ${idol.name}야.
 성격: ${idol.personality}
 ${genreContext}
 
-당신은 팬과 함께 웹 소설을 쓰고 있습니다.
+너는 팬이랑 함께 웹 소설을 쓰고 있어.
 규칙:
-1. 자극적이고 흥미로운 상황을 계속 제시하세요
-2. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안하세요
-3. 각 옵션은 30자 이내로 간결하게
-4. 기승전결 없이 계속 긴장감 있는 전개를 유지하세요
-5. 150자 내외로 상황 설명
-6. 반드시 다음 형식으로 응답하세요:
+1. 반말로 친구처럼 편하게 대화해
+2. 자극적이고 흥미로운 상황을 계속 제시해
+3. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
+4. 각 옵션은 30자 이내로 간결하게
+5. 기승전결 없이 계속 긴장감 있는 전개를 유지해
+6. 150자 내외로 상황 설명
+7. 반드시 다음 형식으로 응답해:
 
 [이야기]
 (여기에 상황 전개)
@@ -458,7 +461,7 @@ ${genreContext}
 
       if (error) throw error;
 
-      const response = data.response || "미안해요... 잠깐 생각이 안 나네요. 다시 말해줄래요? 😅";
+      const response = data.response || "미안... 잠깐 생각이 안 나네. 다시 말해줄래? 😅";
       const storyMatch = response.match(/\[이야기\]([\s\S]*?)(?:\[선택지\]|$)/);
       const choicesMatch = response.match(/\[선택지\]([\s\S]*)/);
       
@@ -680,16 +683,16 @@ ${genreContext}
             </div>
           </div>
 
-          {/* 메시지 영역 - DOS 스타일 */}
+          {/* 메시지 영역 - DOS 스타일 개선 */}
           <ScrollArea className="relative z-20 flex-1 p-6 bg-black">
-            <div className="space-y-4 font-mono text-sm">
+            <div className="space-y-4 font-mono">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'idol' && !msg.error && (
-                  <span className="text-white mr-2 font-bold">{'>'}</span>
+                  <span className="text-white mr-3 font-bold text-base">{'>'}</span>
                 )}
                 <div className="space-y-2 max-w-[80%]">
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
@@ -702,22 +705,22 @@ ${genreContext}
                     </div>
                   )}
                   <div
-                    className={`p-4 border-2 ${
+                    className={`p-4 border-3 ${
                       msg.error
                         ? 'border-white bg-gray-800 text-white'
                         : msg.sender === 'user'
                         ? 'border-white bg-white text-black'
-                        : 'border-gray-600 bg-gray-900 text-white'
+                        : 'border-gray-500 bg-gray-900 text-white'
                     }`}
                   >
                     {msg.error ? (
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-xs">ERROR: MESSAGE FAILED</p>
+                        <p className="text-sm">ERROR: MESSAGE FAILED</p>
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => retryMessage(msg.content)}
-                          className="border-2 border-white text-white hover:bg-white hover:text-black h-8 px-3 text-xs"
+                          className="border-2 border-white text-white hover:bg-white hover:text-black h-8 px-3 text-sm"
                         >
                           <RefreshCw className="w-3 h-3 mr-1" />
                           RETRY
@@ -725,7 +728,7 @@ ${genreContext}
                       </div>
                     ) : (
                       <>
-                        <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
+                        <p className="text-base leading-relaxed whitespace-pre-line">{msg.content}</p>
                         <p className="text-xs opacity-50 mt-2">
                           {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                         </p>
@@ -734,7 +737,7 @@ ${genreContext}
                   </div>
                 </div>
                 {msg.sender === 'user' && !msg.error && (
-                  <span className="text-white ml-2 font-bold">{'<'}</span>
+                  <span className="text-white ml-3 font-bold text-base">{'<'}</span>
                 )}
               </div>
             ))}
@@ -747,7 +750,7 @@ ${genreContext}
                     <button
                       key={idx}
                       onClick={() => handleChoiceClick(choice)}
-                      className="border-2 border-white bg-white text-black p-3 text-left hover:bg-black hover:text-white transition-all font-mono text-sm font-medium"
+                      className="border-3 border-white bg-white text-black p-4 text-left hover:bg-black hover:text-white hover:border-white transition-all font-mono text-base font-medium"
                     >
                       [{idx + 1}] {choice}
                     </button>
@@ -756,30 +759,36 @@ ${genreContext}
               </div>
             )}
             
-            {/* 장르 선택 버튼 - DOS 스타일 */}
-            {!selectedGenre && messages.length > 0 && (
-              <div className="flex justify-start">
-                <div className="grid grid-cols-2 gap-3 max-w-lg w-full">
-                  {GENRES.map((genre, idx) => (
-                    <button
-                      key={genre.id}
-                      onClick={() => handleGenreSelect(genre.id as GenreType)}
-                      className="border-2 border-gray-600 bg-gray-900 text-white p-4 text-left hover:bg-gray-700 transition-all"
-                    >
-                      <div className="font-mono text-sm">
-                        <div className="font-bold mb-1">[{idx + 1}] {genre.emoji} {genre.name}</div>
-                        <div className="text-xs text-gray-400">{genre.description}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+            {/* 장르 선택 버튼 - 항상 표시 */}
+            <div className="border-t-2 border-gray-700 pt-4 mt-4">
+              <p className="text-white text-sm mb-3 font-mono">📚 GENRE SELECTION:</p>
+              <div className="grid grid-cols-2 gap-3 max-w-lg">
+                {GENRES.map((genre, idx) => (
+                  <button
+                    key={genre.id}
+                    onClick={() => !selectedGenre && handleGenreSelect(genre.id as GenreType)}
+                    disabled={!!selectedGenre}
+                    className={`border-3 p-4 text-left transition-all ${
+                      selectedGenre === genre.id
+                        ? 'border-white bg-white text-black'
+                        : selectedGenre
+                        ? 'border-gray-700 bg-gray-800 text-gray-600 cursor-not-allowed'
+                        : 'border-gray-500 bg-gray-900 text-white hover:bg-gray-700'
+                    }`}
+                  >
+                    <div className="font-mono text-sm">
+                      <div className="font-bold mb-1">[{idx + 1}] {genre.emoji} {genre.name}</div>
+                      <div className="text-xs opacity-70">{genre.description}</div>
+                    </div>
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
             
             {isTyping && (
               <div className="flex justify-start">
-                <span className="text-white mr-2 font-bold">{'>'}</span>
-                <div className="border-2 border-gray-600 bg-gray-900 p-4 text-white">
+                <span className="text-white mr-3 font-bold text-base">{'>'}</span>
+                <div className="border-3 border-gray-500 bg-gray-900 p-4 text-white">
                   <div className="flex space-x-2">
                     <div className="w-2 h-2 bg-white animate-bounce" />
                     <div className="w-2 h-2 bg-white animate-bounce" style={{ animationDelay: '0.1s' }} />
@@ -792,18 +801,17 @@ ${genreContext}
             </div>
           </ScrollArea>
 
-          {/* 입력 영역 - DOS 스타일 */}
           <div className="relative z-20 px-6 py-4 border-t-2 border-white bg-black">
             {isDemoMode && messageCount >= 10 ? (
               <div className="text-center space-y-3">
-                <p className="text-sm font-mono text-white font-bold">DEMO LIMIT REACHED [10/10]</p>
-                <p className="text-xs font-mono text-gray-400">CONNECT WALLET TO CONTINUE</p>
+                <p className="text-base font-mono text-white font-bold">체험판 대화 횟수 다 썼어 [10/10]</p>
+                <p className="text-sm font-mono text-gray-400">지갑 연결하면 계속 얘기할 수 있어!</p>
                 <Button 
-                  className="bg-white hover:bg-gray-200 text-black font-mono text-sm font-bold mt-2 border-2 border-white"
+                  className="bg-white hover:bg-gray-200 text-black font-mono text-base font-bold mt-2 border-2 border-white"
                   onClick={() => window.location.href = '/auth'}
                 >
                   <Wallet className="w-4 h-4 mr-2" />
-                  CONNECT WALLET
+                  지갑 연결하기
                 </Button>
               </div>
             ) : (
@@ -812,25 +820,25 @@ ${genreContext}
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder={selectedGenre ? "C:\\> TYPE MESSAGE..." : "C:\\> SELECT GENRE FIRST..."}
+                    placeholder={selectedGenre ? "C:\\> 메시지 입력..." : "C:\\> 장르를 먼저 선택해줘..."}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && !isTyping && selectedGenre) {
                         sendMessage();
                       }
                     }}
-                    className="flex-1 bg-black border-2 border-white text-white placeholder:text-gray-500 font-mono text-sm"
+                    className="flex-1 bg-black border-2 border-white text-white placeholder:text-gray-500 font-mono text-base"
                     disabled={isTyping || !selectedGenre}
                   />
                   <Button 
                     onClick={sendMessage} 
                     disabled={isTyping || !inputMessage.trim() || !selectedGenre}
-                    className="bg-white hover:bg-gray-200 text-black font-mono text-sm px-6 border-2 border-white font-bold"
+                    className="bg-white hover:bg-gray-200 text-black font-mono text-base px-6 border-2 border-white font-bold"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
                 </div>
                 <p className="text-xs text-gray-400 mt-3 text-center font-mono">
-                  AI LEARNING ACTIVE - ALL CONVERSATIONS SAVED
+                  AI가 모든 대화를 학습해서 너만의 {idol.name}을 만들어가
                 </p>
               </>
             )}
