@@ -16,6 +16,7 @@ interface Message {
   content: string;
   timestamp: Date;
   emotion?: 'happy' | 'excited' | 'shy' | 'neutral';
+  choices?: string[];
 }
 
 type GenreType = 'mystery-thriller' | 'apocalypse-survival' | 'highteen-romance' | 'bromance' | 'girls-romance' | 'historical-romance' | null;
@@ -132,19 +133,74 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     setRelationshipScore(score);
   };
 
-  const handleGenreSelect = (genreId: GenreType) => {
+  const handleGenreSelect = async (genreId: GenreType) => {
     setSelectedGenre(genreId);
     localStorage.setItem(`genre_${idol.id}`, genreId as string);
     
     const genreInfo = GENRES.find(g => g.id === genreId);
     const confirmMsg: Message = {
-      id: (Date.now() + 1).toString(),
+      id: Date.now().toString(),
       sender: 'idol',
       content: `좋아요! ${genreInfo?.emoji} ${genreInfo?.name} 세계관으로 함께 특별한 이야기를 만들어가요! 💖`,
       timestamp: new Date(),
       emotion: 'excited'
     };
     setMessages(prev => [...prev, confirmMsg]);
+    
+    setIsTyping(true);
+
+    try {
+      const systemPrompt = `당신은 K-POP 아이돌 ${idol.name}입니다.
+성격: ${idol.personality}
+장르: ${genreInfo?.name} ${genreInfo?.emoji}
+장르 설정: ${genreInfo?.description}
+
+당신은 팬과 함께 웹 소설을 쓰고 있습니다. 
+규칙:
+1. 자기소개와 함께 ${genreInfo?.name} 장르의 배경 설명으로 이야기를 시작하세요
+2. 자극적이고 흥미로운 상황을 계속 제시하세요
+3. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안하세요
+4. 각 옵션은 30자 이내로 간결하게
+5. 기승전결 없이 계속 긴장감 있는 전개를 유지하세요
+6. 150자 내외로 상황 설명`;
+
+      const { data, error } = await supabase.functions.invoke('generate-character-chat', {
+        body: {
+          prompt: `${systemPrompt}\n\n장르 시작 메시지를 생성하세요. 반드시 다음 형식으로 응답하세요:\n\n[이야기]\n(여기에 자기소개와 배경 설명)\n\n[선택지]\n1. (첫 번째 선택지)\n2. (두 번째 선택지)\n3. (세 번째 선택지)`
+        }
+      });
+
+      if (error) throw error;
+
+      const response = data.response || "";
+      const storyMatch = response.match(/\[이야기\]([\s\S]*?)(?:\[선택지\]|$)/);
+      const choicesMatch = response.match(/\[선택지\]([\s\S]*)/);
+      
+      const storyContent = storyMatch ? storyMatch[1].trim() : response;
+      const choices = choicesMatch 
+        ? choicesMatch[1].split('\n')
+            .map(c => c.replace(/^\d+\.\s*/, '').trim())
+            .filter(c => c.length > 0)
+        : [];
+
+      const storyMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        sender: 'idol',
+        content: storyContent,
+        timestamp: new Date(),
+        emotion: 'excited',
+        choices: choices.length > 0 ? choices : undefined
+      };
+
+      setMessages(prev => [...prev, storyMsg]);
+      await saveChatLog(storyMsg);
+
+    } catch (error) {
+      console.error('배경 설명 생성 실패:', error);
+      toast.error("이야기를 시작하는데 실패했습니다.");
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const sendGenreSelectionMessage = () => {
@@ -211,22 +267,28 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
       const genreInfo = GENRES.find(g => g.id === selectedGenre);
       const genreContext = genreInfo ? `
 장르: ${genreInfo.name} ${genreInfo.emoji}
-장르 설정: ${genreInfo.description}
-이 장르의 특성을 대화에 자연스럽게 녹여내세요.` : '';
+장르 설정: ${genreInfo.description}` : '';
 
       const systemPrompt = `당신은 K-POP 아이돌 ${idol.name}입니다.
 성격: ${idol.personality}
 ${genreContext}
 
-이전 대화 기록을 바탕으로 팬과의 독점적이고 친밀한 관계를 형성하세요.
+당신은 팬과 함께 웹 소설을 쓰고 있습니다.
 규칙:
-1. ${idol.name}의 성격에 맞게 응답
-2. 팬과의 과거 대화를 기억하고 참조
-3. 감정적이고 따뜻한 대화
-4. 선택된 장르의 분위기를 반영
-5. 100자 내외로 간결하게
-6. 이모지 1-2개 사용
-7. 팬을 특별하게 대우`;
+1. 자극적이고 흥미로운 상황을 계속 제시하세요
+2. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안하세요
+3. 각 옵션은 30자 이내로 간결하게
+4. 기승전결 없이 계속 긴장감 있는 전개를 유지하세요
+5. 150자 내외로 상황 설명
+6. 반드시 다음 형식으로 응답하세요:
+
+[이야기]
+(여기에 상황 전개)
+
+[선택지]
+1. (첫 번째 선택지)
+2. (두 번째 선택지)
+3. (세 번째 선택지)`;
 
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
@@ -236,12 +298,24 @@ ${genreContext}
 
       if (error) throw error;
 
+      const response = data.response || "미안해요... 잠깐 생각이 안 나네요. 다시 말해줄래요? 😅";
+      const storyMatch = response.match(/\[이야기\]([\s\S]*?)(?:\[선택지\]|$)/);
+      const choicesMatch = response.match(/\[선택지\]([\s\S]*)/);
+      
+      const storyContent = storyMatch ? storyMatch[1].trim() : response;
+      const choices = choicesMatch 
+        ? choicesMatch[1].split('\n')
+            .map(c => c.replace(/^\d+\.\s*/, '').trim())
+            .filter(c => c.length > 0)
+        : [];
+
       const idolMessage: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'idol',
-        content: data.response || "미안해요... 잠깐 생각이 안 나네요. 다시 말해줄래요? 😅",
+        content: storyContent,
         timestamp: new Date(),
-        emotion: detectEmotion(data.response)
+        emotion: detectEmotion(storyContent),
+        choices: choices.length > 0 ? choices : undefined
       };
 
       setMessages(prev => [...prev, idolMessage]);
@@ -268,6 +342,11 @@ ${genreContext}
     if (text.includes('ㅎㅎ') || text.includes('😊')) return 'happy';
     if (text.includes('...') || text.includes('😳')) return 'shy';
     return 'neutral';
+  };
+
+  const handleChoiceClick = (choice: string) => {
+    setInputMessage(choice);
+    setTimeout(() => sendMessage(), 100);
   };
 
   const toggleVoiceMode = () => {
@@ -360,6 +439,24 @@ ${genreContext}
                 </div>
               </div>
             ))}
+
+            {/* 선택지 표시 (아이돌 메시지 직후) */}
+            {messages.length > 0 && messages[messages.length - 1].sender === 'idol' && messages[messages.length - 1].choices && (
+              <div className="flex justify-center animate-in fade-in slide-in-from-bottom-2">
+                <div className="flex flex-col gap-2 w-full max-w-md">
+                  {messages[messages.length - 1].choices!.map((choice, idx) => (
+                    <Button
+                      key={idx}
+                      onClick={() => handleChoiceClick(choice)}
+                      variant="outline"
+                      className="justify-start text-left h-auto py-3 px-4 hover:bg-pink-500/10 hover:border-pink-500/50 transition-all"
+                    >
+                      <span className="text-sm">{choice}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {/* 장르 선택 버튼 (첫 메시지 후에만 표시) */}
             {!selectedGenre && messages.length > 0 && (
