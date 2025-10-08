@@ -184,11 +184,11 @@ const Index = () => {
           <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
             <div className="space-y-8">
               <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
-                Sui:Idol³
+                AIDOL
               </h1>
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold gradient-text">
-                  가상 아이돌 스토리 플랫폼
+                  AI 아이돌 팬덤 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   완벽한 팬덤 경험: 성격 분석으로 나만의 아이돌 찾기, 랜덤박스로 포토카드 수집, 리더보드에서 다른 팬들과 경쟁하기.
