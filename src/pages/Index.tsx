@@ -191,7 +191,7 @@ const Index = () => {
                   AI 아이돌 팬덤 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  완벽한 팬덤 경험: 성격 분석으로 나만의 아이돌 찾기, 랜덤박스로 포토카드 수집, 리더보드에서 다른 팬들과 경쟁하기.
+                  성격 테스트로 나만의 아이돌을 찾고, AI 심쿵톡으로 24/7 대화하며, 포토카드를 수집하고 거래하세요.
                 </p>
               </div>
             </div>
@@ -203,14 +203,8 @@ const Index = () => {
                 size="xl"
                 className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                🎮 지금 내 아이돌 뽑기
+                💖 내 성향에 맞는 최애는?
               </Button>
-              <p className="text-lg text-muted-foreground">
-                픽은 체험용, 볼트는 수집용, 라이즈는 경쟁과 거래용!
-              </p>
-              <p className="text-base text-muted-foreground">
-                심쿵 배틀로 최애 선택 → 랜덤박스로 포토카드 생성 → 리더보드와 마켓플레이스에서 빛나기.
-              </p>
               
               {!user && (
                 <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
@@ -263,17 +257,17 @@ const Index = () => {
         {/* Features Section */}
         <section className="py-20">
           <div className="space-y-12">
-            <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-              <h2 className="text-4xl font-bold gradient-text">픽 · 볼트 · 라이즈</h2>
+            <div className="text-center space-y-4 glass p-8 rounded-xl">
+              <h2 className="text-4xl font-bold gradient-text">PICK · VAULT · RISE</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                3단계 팬덤 경험: 선택하고, 수집하고, 경쟁하기
+                아이돌 발견 → 포토카드 수집 → 팬덤 경쟁
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
-                title="🎯 픽"
-                description="3가지 성격 분석과 16강 심쿵 배틀을 통해 운명의 아이돌을 선택하세요. 각 아이돌은 독특한 매력과 성격을 가진 AI 캐릭터입니다."
+                title="🎯 PICK"
+                description="성격 테스트와 16강 심쿵 배틀로 운명의 아이돌 발견"
                 icon={mbtiIcon}
                 onClick={() => openPreview('pick')}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
@@ -281,8 +275,8 @@ const Index = () => {
               />
               
               <FeatureCard
-                title="🗃️ 볼트"
-                description="최애를 안전하게 보관하고 랜덤박스로 포토카드를 수집하세요. 희귀할수록 가치가 높아집니다."
+                title="🗃️ VAULT"
+                description="랜덤박스로 희귀 포토카드 수집 및 보관"
                 icon={photocardIcon}
                 onClick={() => openPreview('vault')}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
@@ -290,8 +284,8 @@ const Index = () => {
               />
               
                <FeatureCard
-                 title="📈 라이즈"
-                 description="아이돌 리더보드에서 인기 순위를 확인하고 마켓플레이스에서 자유롭게 거래하세요."
+                 title="📈 RISE"
+                 description="리더보드 순위 확인 및 마켓플레이스 거래"
                 icon={tournamentIcon}
                 onClick={() => openPreview('rise')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
@@ -302,41 +296,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Process Section */}
-        <section className="py-20">
-          <div className="space-y-12">
-            <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
-              <div className="space-y-4">
-                <h2 className="text-4xl font-bold gradient-text">
-                  픽 · 볼트 · 라이즈 · 갤러리 흐름
-                </h2>
-                <div className="grid md:grid-cols-3 gap-8 mt-8">
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      🎯
-                    </div>
-                    <h3 className="text-xl font-bold text-primary">픽</h3>
-                    <p className="text-foreground">성격 분석 → 심쿵 배틀 → 최애 민팅</p>
-                  </div>
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      🗃️
-                    </div>
-                    <h3 className="text-xl font-bold text-accent">볼트</h3>
-                    <p className="text-foreground">최애 보관 → 랜덤박스 → 포토카드 수집</p>
-                  </div>
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      📈
-                    </div>
-                    <h3 className="text-xl font-bold text-secondary">라이즈</h3>
-                    <p className="text-foreground">리더보드 → 갤러리 → 마켓플레이스</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Walrus Tools Section */}
         {showWalrusTools && (
@@ -391,27 +350,33 @@ const Index = () => {
           </section>
         )}
 
-        {/* CTA Section */}
+        {/* Final CTA Section */}
         <section className="py-20">
-          <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
-            <div className="space-y-4">
-              <h2 className="text-4xl font-bold gradient-text">
-               Enjoy Now! Heart-fluttering Pick at Pick
+          <div className="text-center space-y-8 glass p-16 rounded-2xl">
+            <div className="space-y-6">
+              <h2 className="text-5xl md:text-6xl font-bold gradient-text">
+                나만의 최애를 찾아보세요
               </h2>
-              <p className="text-xl text-foreground max-w-2xl mx-auto">
-                 My PICK idol, photocards from random box, show off on the leaderboard!
-               </p>
+              <p className="text-2xl text-foreground max-w-3xl mx-auto leading-relaxed">
+                AI 성격 분석으로 시작하는 특별한 팬덤 여정
+              </p>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                아이돌 발견부터 심쿵톡, 포토카드 수집, 팬덤 활동까지 모든 것이 한 곳에
+              </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col gap-6 items-center pt-6">
               <Button
                 onClick={handleStartJourney}
-                variant="premium"
+                variant="default"
                 size="xl"
-                className="min-w-64 text-xl py-4"
+                className="min-w-80 text-2xl py-8 bg-gradient-primary hover:bg-gradient-secondary text-white font-bold shadow-2xl hover:shadow-3xl transition-all duration-300"
               >
-                🌟 PICK Your Bias with Personality Analysis 🌟
+                💖 최애 찾으러 가기
               </Button>
+              <p className="text-base text-muted-foreground">
+                지금 시작하면 무료 체험 가능!
+              </p>
             </div>
           </div>
         </section>
