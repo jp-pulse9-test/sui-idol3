@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { WalletConnectButton } from '@/components/WalletConnectButton';
+import { IdolChatInterface } from '@/components/IdolChatInterface';
 import { useWallet } from '@/hooks/useWallet';
 import { 
   ArrowLeft, 
@@ -26,7 +27,8 @@ import {
   Eye,
   EyeOff,
   ExternalLink,
-  Download
+  Download,
+  MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -68,6 +70,7 @@ const My = () => {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [activityFilter, setActivityFilter] = useState<'all' | 'mint' | 'trade' | 'rank'>('all');
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     if (!isConnected) {
@@ -299,14 +302,25 @@ const My = () => {
                         ))}
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate('/pick')}
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      PICK으로
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant="premium"
+                        size="sm"
+                        onClick={() => setShowChat(true)}
+                        className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        심쿵톡
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate('/pick')}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        PICK으로
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -526,6 +540,20 @@ const My = () => {
           </div>
         </div>
       </div>
+
+      {/* 심쿵톡 인터페이스 */}
+      {selectedIdol && (
+        <IdolChatInterface
+          idol={{
+            id: selectedIdol.id,
+            name: selectedIdol.name,
+            image: selectedIdol.image,
+            personality: selectedIdol.personality
+          }}
+          isOpen={showChat}
+          onClose={() => setShowChat(false)}
+        />
+      )}
     </div>
   );
 };
