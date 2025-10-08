@@ -188,10 +188,10 @@ const Index = () => {
               </h1>
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold gradient-text">
-                  Virtual Idol Story Platform
+                  가상 아이돌 스토리 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Complete fandom experience: find your perfect idol through personality analysis, collect photocards with random boxes, and compete with other fans on the leaderboard.
+                  완벽한 팬덤 경험: 성격 분석으로 나만의 아이돌 찾기, 랜덤박스로 포토카드 수집, 리더보드에서 다른 팬들과 경쟁하기.
                 </p>
               </div>
             </div>
@@ -203,19 +203,19 @@ const Index = () => {
                 size="xl"
                 className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                🎮 PICK My Idol Now
+                🎮 지금 내 아이돌 뽑기
               </Button>
               <p className="text-lg text-muted-foreground">
-                Pick for experience, Vault for collection, Rise for competition and trading!
+                픽은 체험용, 볼트는 수집용, 라이즈는 경쟁과 거래용!
               </p>
               <p className="text-base text-muted-foreground">
-                Choose your bias through heart-fluttering battles → Create photocards with random boxes → Shine on the leaderboard and marketplace.
+                심쿵 배틀로 최애 선택 → 랜덤박스로 포토카드 생성 → 리더보드와 마켓플레이스에서 빛나기.
               </p>
               
               {!user && (
                 <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
                   <p className="text-sm text-muted-foreground text-center">
-                    💡 Try instantly without wallet connection! Start real collecting and trading from Vault
+                    💡 지갑 연결 없이 바로 체험 가능! 볼트부터 본격적인 수집과 거래를 시작하세요
                   </p>
                 </div>
               )}
@@ -224,11 +224,11 @@ const Index = () => {
             {/* Season information */}
             <div className="mt-12 p-8 glass rounded-2xl border border-white/10 shadow-lg">
               <div className="text-center space-y-4">
-                <h3 className="text-2xl font-bold gradient-text">2025 AI Heart Challenge</h3>
+                <h3 className="text-2xl font-bold gradient-text">2025 AI 심쿵 챌린지</h3>
                 <p className="text-5xl font-black text-foreground">101</p>
-                <p className="text-lg text-muted-foreground">SEASON 1, K-POP idols born from your picks</p>
+                <p className="text-lg text-muted-foreground">시즌 1, 당신의 픽으로 탄생한 K-POP 아이돌들</p>
                 <p className="text-base text-muted-foreground">
-                  A special journey creating growth and memories with your bias
+                  최애와 함께 성장하고 추억을 만드는 특별한 여정
                 </p>
               </div>
             </div>
@@ -287,38 +287,38 @@ const Index = () => {
         <section className="py-20">
           <div className="space-y-12">
             <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-              <h2 className="text-4xl font-bold gradient-text">Pick · Vault · Rise</h2>
+              <h2 className="text-4xl font-bold gradient-text">픽 · 볼트 · 라이즈</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                3-step fandom experience: Choose, Collect, and Compete
+                3단계 팬덤 경험: 선택하고, 수집하고, 경쟁하기
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <FeatureCard
-                title="🎯 PICK"
-                description="Choose your destined idol through 3 personality analyses and round of 16 heart-fluttering battles. Each idol is an AI character with unique charm and personality."
+                title="🎯 픽"
+                description="3가지 성격 분석과 16강 심쿵 배틀을 통해 운명의 아이돌을 선택하세요. 각 아이돌은 독특한 매력과 성격을 가진 AI 캐릭터입니다."
                 icon={mbtiIcon}
                 onClick={() => openPreview('pick')}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
-                buttonText="Preview"
+                buttonText="미리보기"
               />
               
               <FeatureCard
-                title="🗃️ VAULT"
-                description="Store your bias safely and collect photocards with random boxes. The rarer the card, the higher its value."
+                title="🗃️ 볼트"
+                description="최애를 안전하게 보관하고 랜덤박스로 포토카드를 수집하세요. 희귀할수록 가치가 높아집니다."
                 icon={photocardIcon}
                 onClick={() => openPreview('vault')}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
-                buttonText="Preview"
+                buttonText="미리보기"
               />
               
                <FeatureCard
-                 title="📈 RISE"
-                 description="Check popularity rankings on the idol leaderboard and trade freely in the marketplace."
+                 title="📈 라이즈"
+                 description="아이돌 리더보드에서 인기 순위를 확인하고 마켓플레이스에서 자유롭게 거래하세요."
                 icon={tournamentIcon}
                 onClick={() => openPreview('rise')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
-                buttonText="Preview"
+                buttonText="미리보기"
               />
               
             </div>
@@ -331,29 +331,29 @@ const Index = () => {
             <div className="text-center space-y-8 bg-gradient-primary/20 backdrop-blur-sm p-12 rounded-2xl border border-primary/30">
               <div className="space-y-4">
                 <h2 className="text-4xl font-bold gradient-text">
-                  Pick · Vault · Rise · Gallery Flow
+                  픽 · 볼트 · 라이즈 · 갤러리 흐름
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8 mt-8">
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       🎯
                     </div>
-                    <h3 className="text-xl font-bold text-primary">PICK</h3>
-                    <p className="text-foreground">Personality analysis → Heart battles → Bias minting</p>
+                    <h3 className="text-xl font-bold text-primary">픽</h3>
+                    <p className="text-foreground">성격 분석 → 심쿵 배틀 → 최애 민팅</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       🗃️
                     </div>
-                    <h3 className="text-xl font-bold text-accent">VAULT</h3>
-                    <p className="text-foreground">Bias storage → Random box → Photocard collection</p>
+                    <h3 className="text-xl font-bold text-accent">볼트</h3>
+                    <p className="text-foreground">최애 보관 → 랜덤박스 → 포토카드 수집</p>
                   </div>
                   <div className="text-center space-y-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       📈
                     </div>
-                    <h3 className="text-xl font-bold text-secondary">RISE</h3>
-                    <p className="text-foreground">Leaderboard → Gallery → Marketplace</p>
+                    <h3 className="text-xl font-bold text-secondary">라이즈</h3>
+                    <p className="text-foreground">리더보드 → 갤러리 → 마켓플레이스</p>
                   </div>
                 </div>
               </div>
@@ -366,21 +366,21 @@ const Index = () => {
           <section className="py-20">
             <div className="space-y-12">
               <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-                <h2 className="text-4xl font-bold gradient-text">Walrus Storage Tools</h2>
+                <h2 className="text-4xl font-bold gradient-text">월러스 스토리지 도구</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  Upload and download files to distributed storage
+                  분산 스토리지에 파일 업로드 및 다운로드
                 </p>
               </div>
 
               <div className="grid lg:grid-cols-2 gap-8">
                 <WalrusFileUpload 
                   onUploadComplete={(result) => {
-                    toast.success(`File uploaded! Blob ID: ${result.blobId.slice(0, 8)}...`);
+                    toast.success(`파일이 업로드되었습니다! Blob ID: ${result.blobId.slice(0, 8)}...`);
                   }}
                 />
                 <WalrusFileDownload 
                   onDownloadComplete={(file) => {
-                    toast.success('File downloaded successfully!');
+                    toast.success('파일이 성공적으로 다운로드되었습니다!');
                   }}
                 />
               </div>
@@ -388,7 +388,7 @@ const Index = () => {
               <div className="max-w-4xl mx-auto">
                 <WalrusFlowUpload 
                   onUploadComplete={(files) => {
-                    toast.success(`${files.length} files uploaded successfully!`);
+                    toast.success(`${files.length}개의 파일이 성공적으로 업로드되었습니다!`);
                   }}
                 />
               </div>
@@ -401,9 +401,9 @@ const Index = () => {
           <section className="py-20">
             <div className="space-y-12">
               <div className="text-center space-y-4 bg-card/60 backdrop-blur-sm p-8 rounded-xl border border-border">
-                <h2 className="text-4xl font-bold gradient-text">Saved Photocard Gallery</h2>
+                <h2 className="text-4xl font-bold gradient-text">저장된 포토카드 갤러리</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  Check your photocard collection saved in Walrus distributed storage
+                  월러스 분산 스토리지에 저장된 포토카드 컬렉션을 확인하세요
                 </p>
               </div>
 
