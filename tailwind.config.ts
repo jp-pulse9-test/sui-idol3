@@ -62,9 +62,9 @@ export default {
         },
       },
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
-        dancing: ['Dancing Script', 'cursive'],
-        blacksword: ['Blacksword', 'serif'],
+        pixel: ['Press Start 2P', 'monospace'],
+        mono: ['VT323', 'monospace'],
+        blacksword: ['Press Start 2P', 'monospace'],
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',

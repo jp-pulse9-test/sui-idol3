@@ -18,6 +18,7 @@ import { WalrusFileUpload } from "@/components/WalrusFileUpload";
 import { WalrusFileDownload } from "@/components/WalrusFileDownload";
 import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
 import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
+import { IdolChatInterface } from "@/components/IdolChatInterface";
 
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
@@ -56,6 +57,17 @@ const Index = () => {
   }>({ open: false, type: null });
   const [showWalrusTools, setShowWalrusTools] = useState(false);
   const [showPhotocardGallery, setShowPhotocardGallery] = useState(false);
+  const [showDemoChat, setShowDemoChat] = useState(false);
+  
+  const demoIdol = {
+    id: 'demo-idol',
+    name: '지우',
+    personality: 'ENFP - 열정적이고 창의적인 아티스트',
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
+    level: 3,
+    badges: ['신인', '체험판'],
+    voiceId: 'xi3rF0t7dg7uN2M0WUhr'
+  };
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
@@ -269,16 +281,24 @@ const Index = () => {
                 </div>
               </div>
               <Button
-                onClick={() => {
-                  // 지갑 연결 없이 바로 체험 모드로 이동
-                  navigate('/my?demo=true');
-                }}
+                onClick={() => setShowDemoChat(!showDemoChat)}
                 variant="premium"
                 size="xl"
                 className="min-w-80 text-2xl py-8 mt-6 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-semibold border-0 shadow-2xl hover:shadow-3xl transition-all duration-300"
               >
-                💖 심쿵톡 맛보기 (무료 체험)
+                💖 {showDemoChat ? '심쿵톡 닫기' : '심쿵톡 맛보기 (무료 체험)'}
               </Button>
+            
+            {/* 샘플 대화 창 */}
+            {showDemoChat && (
+              <div className="mt-8">
+                <IdolChatInterface 
+                  idol={demoIdol}
+                  isOpen={showDemoChat}
+                  onClose={() => setShowDemoChat(false)}
+                />
+              </div>
+            )}
             </div>
           </div>
         </section>

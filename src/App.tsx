@@ -77,6 +77,7 @@ const App = () => (
           <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          {/* My 페이지는 지갑 연결 또는 데모 모드에서만 접근 가능 */}
           <Route path="/my" element={<My />} />
           {/* 새로운 3단계 플로우: Pick → Vault → Rise */}
           <Route path="/pick" element={<Pick />} />

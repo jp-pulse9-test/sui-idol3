@@ -87,7 +87,9 @@ const My = () => {
   };
 
   useEffect(() => {
+    // 데모 모드가 아니고 지갑도 연결 안 되어 있으면 메인으로
     if (!isDemoMode && !isConnected) {
+      toast.error('지갑 연결이 필요합니다');
       navigate('/');
       return;
     }
@@ -242,7 +244,7 @@ const My = () => {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 뒤로
               </Button>
-              <h1 className="text-2xl font-bold">내 금고, 내 최애</h1>
+              <h1 className="text-2xl font-bold">내 보관함, 내 최애</h1>
             </div>
             
             <div className="flex items-center gap-2">
@@ -351,7 +353,7 @@ const My = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="w-5 h-5 text-blue-500" />
-                  오늘 포카, 오늘 수납!
+                  내 보관함
                 </CardTitle>
               </CardHeader>
               <CardContent>
