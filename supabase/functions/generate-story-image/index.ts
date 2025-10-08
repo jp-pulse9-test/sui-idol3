@@ -32,7 +32,7 @@ serve(async (req) => {
 
     const styleGuide = genreStyles[genre as keyof typeof genreStyles] || 'cinematic, highly detailed';
 
-    const imagePrompt = `Create a realistic scene: ${storyContext}. Style: ${styleGuide}, K-drama aesthetic, professional photography, 4K quality`;
+    const imagePrompt = `Create a realistic scene: ${storyContext}. Style: ${styleGuide}, K-drama aesthetic, professional photography, 4K quality. IMPORTANT: NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image. Pure visual scene only.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

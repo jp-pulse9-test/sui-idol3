@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { X, Send, Mic, MicOff, Heart, MessageCircle, Phone, BookOpen } from "lucide-react";
+import { X, Send, Mic, MicOff, Heart, MessageCircle, Phone, BookOpen, RefreshCw, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,6 +18,7 @@ interface Message {
   emotion?: 'happy' | 'excited' | 'shy' | 'neutral';
   choices?: string[];
   imageUrl?: string;
+  error?: boolean;
 }
 
 type GenreType = 'mystery-thriller' | 'apocalypse-survival' | 'highteen-romance' | 'bromance' | 'girls-romance' | 'historical-romance' | null;
@@ -256,7 +257,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
 
     // 체험판 10번 제한
     if (isDemoMode && messageCount >= 10) {
-      toast.error("체험판은 10번까지만 대화할 수 있습니다. 계속하려면 로그인해주세요!");
+      toast.error("체험판은 10번까지만 대화할 수 있습니다. 지갑을 연결하여 계속 대화하세요!");
       return;
     }
 
@@ -366,10 +367,25 @@ ${genreContext}
 
     } catch (error) {
       console.error('메시지 전송 실패:', error);
-      toast.error("메시지 전송에 실패했습니다. 다시 시도해주세요.");
+      toast.error("메시지 전송에 실패했습니다.");
+      
+      // 실패한 메시지 표시
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        sender: 'idol',
+        content: userMessage.content,
+        timestamp: new Date(),
+        error: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
     }
+  };
+
+  const retryMessage = async (messageContent: string) => {
+    setInputMessage(messageContent);
+    await sendMessage();
   };
 
   const detectEmotion = (text: string): 'happy' | 'excited' | 'shy' | 'neutral' => {
@@ -384,7 +400,7 @@ ${genreContext}
 
     // 체험판 10번 제한
     if (isDemoMode && messageCount >= 10) {
-      toast.error("체험판은 10번까지만 대화할 수 있습니다. 계속하려면 로그인해주세요!");
+      toast.error("체험판은 10번까지만 대화할 수 있습니다. 지갑을 연결하여 계속 대화하세요!");
       return;
     }
 
@@ -494,7 +510,17 @@ ${genreContext}
 
     } catch (error) {
       console.error('메시지 전송 실패:', error);
-      toast.error("메시지 전송에 실패했습니다. 다시 시도해주세요.");
+      toast.error("메시지 전송에 실패했습니다.");
+      
+      // 실패한 메시지 표시
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        sender: 'idol',
+        content: userMessage.content,
+        timestamp: new Date(),
+        error: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
     }
@@ -550,9 +576,12 @@ ${genreContext}
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-3xl h-[700px] flex flex-col bg-gradient-to-b from-card to-card/95 border-2 border-pink-500/30 shadow-2xl">
+      <Card className="w-full max-w-3xl h-[700px] flex flex-col bg-[#fffef5] dark:bg-card border-2 border-primary/20 shadow-2xl" style={{
+        backgroundImage: `repeating-linear-gradient(transparent, transparent 28px, #e0dfc8 28px, #e0dfc8 29px)`,
+        backgroundSize: '100% 29px'
+      }}>
         {/* 헤더 */}
-        <div className="flex items-center justify-between p-6 border-b border-border bg-gradient-to-r from-pink-500/10 to-purple-500/10">
+        <div className="flex items-center justify-between p-6 border-b-2 border-primary/30 bg-white/80 dark:bg-card/80 backdrop-blur-sm">
           <div className="flex items-center gap-4">
             <Avatar className="w-14 h-14 ring-2 ring-pink-500/50">
               <AvatarImage src={idol.image} alt={idol.name} />
@@ -612,15 +641,15 @@ ${genreContext}
                 key={msg.id}
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2`}
               >
-                {msg.sender === 'idol' && (
+                {msg.sender === 'idol' && !msg.error && (
                   <Avatar className="w-8 h-8 mr-2">
                     <AvatarImage src={idol.image} />
                     <AvatarFallback>{idol.name[0]}</AvatarFallback>
                   </Avatar>
                 )}
                 <div className="space-y-2 max-w-[70%]">
-                  {msg.imageUrl && msg.sender === 'idol' && (
-                    <div className="rounded-2xl overflow-hidden border border-border">
+                  {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
+                    <div className="rounded-lg overflow-hidden border-2 border-primary/20">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 
@@ -629,16 +658,38 @@ ${genreContext}
                     </div>
                   )}
                   <div
-                    className={`p-4 rounded-2xl ${
-                      msg.sender === 'user'
-                        ? 'bg-gradient-to-br from-pink-500 to-purple-500 text-white'
-                        : 'bg-muted border border-border'
+                    className={`p-4 ${
+                      msg.error
+                        ? 'bg-destructive/10 border-2 border-destructive/50 rounded-lg'
+                        : msg.sender === 'user'
+                        ? 'bg-gradient-to-br from-pink-500 to-purple-500 text-white rounded-lg'
+                        : 'bg-white/90 dark:bg-muted/90 border-l-4 border-primary rounded-r-lg shadow-sm'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
-                    <p className="text-xs opacity-70 mt-2">
-                      {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
+                    {msg.error ? (
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm text-destructive">메시지 전송 실패</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => retryMessage(msg.content)}
+                          className="border-destructive/50 hover:bg-destructive/20"
+                        >
+                          <RefreshCw className="w-3 h-3 mr-1" />
+                          재전송
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm leading-relaxed whitespace-pre-line font-handwriting" style={{ 
+                          fontFamily: msg.sender === 'idol' ? "'Nanum Pen Script', cursive" : 'inherit',
+                          lineHeight: '1.8'
+                        }}>{msg.content}</p>
+                        <p className="text-xs opacity-70 mt-2">
+                          {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -701,31 +752,48 @@ ${genreContext}
         </ScrollArea>
 
         {/* 입력 영역 */}
-        <div className="p-6 border-t border-border bg-gradient-to-r from-pink-500/5 to-purple-500/5">
-          <div className="flex gap-3">
-            <Input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder={selectedGenre ? `${idol.name}에게 메시지를 보내세요...` : "장르를 선택해주세요..."}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && !isTyping && selectedGenre) {
-                  sendMessage();
-                }
-              }}
-              className="flex-1 bg-background border-border"
-              disabled={isTyping || !selectedGenre}
-            />
-            <Button 
-              onClick={sendMessage} 
-              disabled={isTyping || !inputMessage.trim() || !selectedGenre}
-              className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            💖 AI가 모든 대화를 학습하여 당신만의 {idol.name}을(를) 만들어갑니다
-          </p>
+        <div className="p-6 border-t-2 border-primary/30 bg-white/80 dark:bg-card/80 backdrop-blur-sm">
+          {isDemoMode && messageCount >= 10 ? (
+            <div className="text-center space-y-3">
+              <p className="text-sm font-medium text-primary">체험판 대화 횟수를 모두 사용했습니다</p>
+              <p className="text-xs text-muted-foreground">지갑을 연결하여 계속 대화하세요!</p>
+              <p className="text-xs text-muted-foreground">기존 내용을 저장하려면 {idol.name} 포토카드 민팅 + 일기장 패키지를 결제하세요</p>
+              <Button 
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                onClick={() => window.location.href = '/auth'}
+              >
+                <Wallet className="w-4 h-4 mr-2" />
+                지갑 연결하기
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="flex gap-3">
+                <Input
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder={selectedGenre ? `${idol.name}에게 메시지를 보내세요...` : "장르를 선택해주세요..."}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !isTyping && selectedGenre) {
+                      sendMessage();
+                    }
+                  }}
+                  className="flex-1 bg-white dark:bg-background border-primary/30"
+                  disabled={isTyping || !selectedGenre}
+                />
+                <Button 
+                  onClick={sendMessage} 
+                  disabled={isTyping || !inputMessage.trim() || !selectedGenre}
+                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                💖 AI가 모든 대화를 학습하여 당신만의 {idol.name}을(를) 만들어갑니다
+              </p>
+            </>
+          )}
         </div>
       </Card>
     </div>
