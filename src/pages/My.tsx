@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -62,6 +62,8 @@ interface SelectedIdol {
 
 const My = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isDemoMode = searchParams.get('demo') === 'true';
   const { isConnected, walletAddress } = useWallet();
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
@@ -72,25 +74,41 @@ const My = () => {
   const [activityFilter, setActivityFilter] = useState<'all' | 'mint' | 'trade' | 'rank'>('all');
   const [showChat, setShowChat] = useState(false);
 
+  // 데모 모드용 샘플 아이돌
+  const demoIdol: SelectedIdol = {
+    id: 'demo-idol',
+    name: '지우',
+    personality: 'ENFP - 열정적이고 창의적인 아티스트',
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
+    level: 3,
+    badges: ['신인', '체험판']
+  };
+
   useEffect(() => {
-    if (!isConnected) {
+    if (!isDemoMode && !isConnected) {
       navigate('/');
       return;
     }
     loadUserData();
-  }, [isConnected, navigate]);
+  }, [isConnected, isDemoMode, navigate]);
 
   const loadUserData = async () => {
     try {
-      // 선택된 아이돌 로드
-      const savedIdol = localStorage.getItem('selectedIdol');
-      if (savedIdol) {
-        const idol = JSON.parse(savedIdol);
-        setSelectedIdol({
-          ...idol,
-          level: 5,
-          badges: ['데뷔', '팬클럽 100+']
-        });
+      // 데모 모드인 경우 샘플 아이돌 사용
+      if (isDemoMode) {
+        setSelectedIdol(demoIdol);
+        setShowChat(true); // 데모 모드에서는 바로 채팅 화면 표시
+      } else {
+        // 선택된 아이돌 로드
+        const savedIdol = localStorage.getItem('selectedIdol');
+        if (savedIdol) {
+          const idol = JSON.parse(savedIdol);
+          setSelectedIdol({
+            ...idol,
+            level: 5,
+            badges: ['데뷔', '팬클럽 100+']
+          });
+        }
       }
 
       // 포토카드 로드
@@ -178,7 +196,7 @@ const My = () => {
     activityFilter === 'all' || activity.type === activityFilter
   );
 
-  if (!isConnected) {
+  if (!isDemoMode && !isConnected) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center">

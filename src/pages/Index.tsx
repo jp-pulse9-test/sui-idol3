@@ -270,18 +270,14 @@ const Index = () => {
               </div>
               <Button
                 onClick={() => {
-                  if (!user) {
-                    toast.error("지갑 연결 후 아이돌을 뽑아주세요!");
-                    navigate('/auth');
-                    return;
-                  }
-                  navigate('/my');
+                  // 지갑 연결 없이 바로 체험 모드로 이동
+                  navigate('/my?demo=true');
                 }}
                 variant="premium"
                 size="xl"
                 className="min-w-80 text-2xl py-8 mt-6 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-semibold border-0 shadow-2xl hover:shadow-3xl transition-all duration-300"
               >
-                💖 심쿵톡 시작하기
+                💖 심쿵톡 맛보기 (무료 체험)
               </Button>
             </div>
           </div>
