@@ -60,6 +60,12 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   }, [isOpen, user]);
 
   useEffect(() => {
+    if (isOpen && !selectedGenre && messages.length === 0) {
+      sendGenreSelectionMessage();
+    }
+  }, [isOpen, selectedGenre, messages]);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
@@ -116,6 +122,8 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     if (saved) {
       setSelectedGenre(saved as GenreType);
       setShowGenreSelect(false);
+    } else {
+      setShowGenreSelect(false); // 장르 선택 화면 제거, 대화로 진행
     }
   };
 
@@ -127,18 +135,23 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const handleGenreSelect = (genreId: GenreType) => {
     setSelectedGenre(genreId);
     localStorage.setItem(`genre_${idol.id}`, genreId as string);
-    setShowGenreSelect(false);
-    sendWelcomeMessage(genreId);
+    
+    const genreInfo = GENRES.find(g => g.id === genreId);
+    const confirmMsg: Message = {
+      id: (Date.now() + 1).toString(),
+      sender: 'idol',
+      content: `좋아요! ${genreInfo?.emoji} ${genreInfo?.name} 세계관으로 함께 특별한 이야기를 만들어가요! 💖`,
+      timestamp: new Date(),
+      emotion: 'excited'
+    };
+    setMessages(prev => [...prev, confirmMsg]);
   };
 
-  const sendWelcomeMessage = (genre: GenreType = selectedGenre) => {
-    const genreInfo = GENRES.find(g => g.id === genre);
-    const genreContext = genreInfo ? ` ${genreInfo.emoji} ${genreInfo.name} 세계관에서` : '';
-    
+  const sendGenreSelectionMessage = () => {
     const welcomeMsg: Message = {
       id: Date.now().toString(),
       sender: 'idol',
-      content: `안녕하세요!${genreContext} 저는 ${idol.name}이에요! 💖 당신과 함께${genreContext} 특별한 이야기를 만들어가고 싶어요! 무엇이든 편하게 얘기해주세요~`,
+      content: `안녕하세요! 저는 ${idol.name}이에요! 💖\n\n우리 함께 어떤 이야기를 만들어볼까요? 아래에서 좋아하는 장르를 선택해주세요!`,
       timestamp: new Date(),
       emotion: 'excited'
     };
@@ -268,49 +281,6 @@ ${genreContext}
 
   if (!isOpen) return null;
 
-  if (showGenreSelect) {
-    return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-4xl p-8 bg-gradient-to-b from-card to-card/95 border-2 border-pink-500/30 shadow-2xl">
-          <div className="text-center mb-8">
-            <BookOpen className="w-16 h-16 mx-auto mb-4 text-pink-500" />
-            <h2 className="text-3xl font-bold mb-2">어떤 이야기를 시작할까요?</h2>
-            <p className="text-muted-foreground">
-              {idol.name}과 함께할 특별한 세계관을 선택해주세요
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {GENRES.map((genre) => (
-              <button
-                key={genre.id}
-                onClick={() => handleGenreSelect(genre.id as GenreType)}
-                className="group relative overflow-hidden rounded-xl border-2 border-border hover:border-pink-500/50 bg-card/60 backdrop-blur-sm p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl text-left"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative">
-                  <div className="text-4xl mb-3">{genre.emoji}</div>
-                  <h3 className="font-bold text-lg mb-2">{genre.name}</h3>
-                  <p className="text-sm text-muted-foreground">{genre.description}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div className="flex justify-center">
-            <Button
-              variant="ghost"
-              onClick={onClose}
-              className="text-muted-foreground"
-            >
-              나중에 선택할게요
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-3xl h-[700px] flex flex-col bg-gradient-to-b from-card to-card/95 border-2 border-pink-500/30 shadow-2xl">
@@ -383,13 +353,33 @@ ${genreContext}
                       : 'bg-muted border border-border'
                   }`}
                 >
-                  <p className="text-sm leading-relaxed">{msg.content}</p>
+                  <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
                   <p className="text-xs opacity-70 mt-2">
                     {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
               </div>
             ))}
+            
+            {/* 장르 선택 버튼 (첫 메시지 후에만 표시) */}
+            {!selectedGenre && messages.length > 0 && (
+              <div className="flex justify-center">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-2xl">
+                  {GENRES.map((genre) => (
+                    <Button
+                      key={genre.id}
+                      onClick={() => handleGenreSelect(genre.id as GenreType)}
+                      variant="outline"
+                      className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-pink-500/10 hover:border-pink-500/50 transition-all"
+                    >
+                      <span className="text-2xl">{genre.emoji}</span>
+                      <span className="text-xs font-medium">{genre.name}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             {isTyping && (
               <div className="flex justify-start animate-in fade-in">
                 <Avatar className="w-8 h-8 mr-2">
@@ -415,18 +405,18 @@ ${genreContext}
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder={`${idol.name}에게 메시지를 보내세요...`}
+              placeholder={selectedGenre ? `${idol.name}에게 메시지를 보내세요...` : "장르를 선택해주세요..."}
               onKeyPress={(e) => {
-                if (e.key === 'Enter' && !isTyping) {
+                if (e.key === 'Enter' && !isTyping && selectedGenre) {
                   sendMessage();
                 }
               }}
               className="flex-1 bg-background border-border"
-              disabled={isTyping}
+              disabled={isTyping || !selectedGenre}
             />
             <Button 
               onClick={sendMessage} 
-              disabled={isTyping || !inputMessage.trim()}
+              disabled={isTyping || !inputMessage.trim() || !selectedGenre}
               className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
             >
               <Send className="w-4 h-4" />
