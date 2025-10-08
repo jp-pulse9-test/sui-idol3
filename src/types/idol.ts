@@ -8,6 +8,7 @@ export interface IdolPreset {
   gender?: string;
   category?: string;
   concept?: string;
+  voice_id?: string; // ElevenLabs voice ID
 }
 
 export interface PublicIdolData {

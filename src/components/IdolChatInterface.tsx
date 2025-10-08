@@ -36,6 +36,7 @@ interface IdolChatInterfaceProps {
     name: string;
     image: string;
     personality: string;
+    voiceId?: string; // ElevenLabs voice ID
   };
   isOpen: boolean;
   onClose: () => void;
@@ -360,10 +361,13 @@ ${genreContext}
 
   const playIdolVoice = async (text: string) => {
     try {
+      // 아이돌의 voice_id 사용, 없으면 기본값 (Aria)
+      const voiceId = idol.voiceId || '9BWtsMINqrJLrRacOk9x';
+      
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text,
-          voice: idol.personality.includes('ENFP') ? '9BWtsMINqrJLrRacOk9x' : 'EXAVITQu4vr4xnSDxMaL'
+          voice: voiceId
         }
       });
 
