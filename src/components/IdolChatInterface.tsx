@@ -576,12 +576,12 @@ ${genreContext}
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-3xl h-[700px] flex flex-col bg-[#fffef5] dark:bg-card border-2 border-primary/20 shadow-2xl" style={{
-        backgroundImage: `repeating-linear-gradient(transparent, transparent 28px, #e0dfc8 28px, #e0dfc8 29px)`,
+      <Card className="w-full max-w-3xl h-[700px] flex flex-col bg-[#1a1a1a] border-2 border-gray-700 shadow-2xl" style={{
+        backgroundImage: `repeating-linear-gradient(transparent, transparent 28px, #2a2a2a 28px, #2a2a2a 29px)`,
         backgroundSize: '100% 29px'
       }}>
         {/* 헤더 */}
-        <div className="flex items-center justify-between p-6 border-b-2 border-primary/30 bg-white/80 dark:bg-card/80 backdrop-blur-sm">
+        <div className="flex items-center justify-between p-6 border-b-2 border-gray-700 bg-black/40 backdrop-blur-sm">
           <div className="flex items-center gap-4">
             <Avatar className="w-14 h-14 ring-2 ring-pink-500/50">
               <AvatarImage src={idol.image} alt={idol.name} />
@@ -589,29 +589,29 @@ ${genreContext}
             </Avatar>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-xl">{idol.name}</h3>
-                <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse" />
+                <h3 className="font-bold text-xl text-white">{idol.name}</h3>
+                <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/30">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse" />
                   온라인
                 </Badge>
                 {selectedGenre && (
-                  <Badge variant="outline" className="bg-pink-500/10 text-pink-500 border-pink-500/20">
+                  <Badge variant="outline" className="bg-pink-500/20 text-pink-400 border-pink-500/30">
                     {GENRES.find(g => g.id === selectedGenre)?.emoji} {GENRES.find(g => g.id === selectedGenre)?.name}
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground">{idol.personality}</p>
+              <p className="text-sm text-gray-400">{idol.personality}</p>
               <div className="flex items-center gap-2 mt-1">
-                <Heart className="w-4 h-4 text-pink-500" />
-                <div className="w-24 bg-muted rounded-full h-2">
+                <Heart className="w-4 h-4 text-pink-400" />
+                <div className="w-24 bg-gray-700 rounded-full h-2">
                   <div 
                     className="bg-gradient-to-r from-pink-500 to-red-500 h-2 rounded-full transition-all duration-500"
                     style={{ width: `${relationshipScore}%` }}
                   />
                 </div>
-                <span className="text-xs text-muted-foreground">{relationshipScore}%</span>
+                <span className="text-xs text-gray-400">{relationshipScore}%</span>
                 {isDemoMode && (
-                  <Badge variant="outline" className="ml-2 text-xs">
+                  <Badge variant="outline" className="ml-2 text-xs bg-gray-800/50 text-gray-300 border-gray-600">
                     {messageCount}/10
                   </Badge>
                 )}
@@ -649,7 +649,7 @@ ${genreContext}
                 )}
                 <div className="space-y-2 max-w-[70%]">
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
-                    <div className="rounded-lg overflow-hidden border-2 border-primary/20">
+                    <div className="rounded-lg overflow-hidden border-2 border-gray-700">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 
@@ -660,20 +660,20 @@ ${genreContext}
                   <div
                     className={`p-4 ${
                       msg.error
-                        ? 'bg-destructive/10 border-2 border-destructive/50 rounded-lg'
+                        ? 'bg-red-950/30 border-2 border-red-800/50 rounded-lg'
                         : msg.sender === 'user'
-                        ? 'bg-gradient-to-br from-pink-500 to-purple-500 text-white rounded-lg'
-                        : 'bg-white/90 dark:bg-muted/90 border-l-4 border-primary rounded-r-lg shadow-sm'
+                        ? 'bg-gradient-to-br from-gray-700 to-gray-600 text-white rounded-2xl'
+                        : 'bg-gray-800/70 text-white rounded-2xl border border-gray-700'
                     }`}
                   >
                     {msg.error ? (
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm text-destructive">메시지 전송 실패</p>
+                        <p className="text-sm text-red-400">메시지 전송 실패</p>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => retryMessage(msg.content)}
-                          className="border-destructive/50 hover:bg-destructive/20"
+                          className="border-red-800/50 hover:bg-red-900/30 text-red-400"
                         >
                           <RefreshCw className="w-3 h-3 mr-1" />
                           재전송
@@ -697,17 +697,18 @@ ${genreContext}
 
             {/* 선택지 표시 (아이돌 메시지 직후) */}
             {messages.length > 0 && messages[messages.length - 1].sender === 'idol' && messages[messages.length - 1].choices && (
-              <div className="flex justify-center animate-in fade-in slide-in-from-bottom-2">
-                <div className="flex flex-col gap-2 w-full max-w-md">
+              <div className="flex justify-end mr-10 animate-in fade-in slide-in-from-bottom-2">
+                <div className="flex flex-col gap-2 w-full max-w-sm">
                   {messages[messages.length - 1].choices!.map((choice, idx) => (
-                    <Button
+                    <button
                       key={idx}
                       onClick={() => handleChoiceClick(choice)}
-                      variant="outline"
-                      className="justify-start text-left h-auto py-3 px-4 hover:bg-pink-500/10 hover:border-pink-500/50 transition-all"
+                      className="relative bg-gray-700/70 text-white border border-gray-600 rounded-2xl px-4 py-3 text-left hover:bg-gray-600/70 transition-all shadow-lg"
                     >
                       <span className="text-sm">{choice}</span>
-                    </Button>
+                      {/* 말풍선 꼬리 */}
+                      <div className="absolute -right-2 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-gray-700/70"></div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -715,18 +716,21 @@ ${genreContext}
             
             {/* 장르 선택 버튼 (첫 메시지 후에만 표시) */}
             {!selectedGenre && messages.length > 0 && (
-              <div className="flex justify-center">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-2xl">
+              <div className="flex justify-start ml-10">
+                <div className="grid grid-cols-2 gap-2 max-w-sm">
                   {GENRES.map((genre) => (
-                    <Button
+                    <button
                       key={genre.id}
                       onClick={() => handleGenreSelect(genre.id as GenreType)}
-                      variant="outline"
-                      className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-pink-500/10 hover:border-pink-500/50 transition-all"
+                      className="relative bg-gray-800/70 text-white border border-gray-700 rounded-2xl px-4 py-3 text-left hover:bg-gray-700/70 transition-all shadow-lg"
                     >
-                      <span className="text-2xl">{genre.emoji}</span>
-                      <span className="text-xs font-medium">{genre.name}</span>
-                    </Button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{genre.emoji}</span>
+                        <span className="text-sm font-medium">{genre.name}</span>
+                      </div>
+                      {/* 말풍선 꼬리 */}
+                      <div className="absolute -left-2 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-gray-800/70"></div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -738,11 +742,11 @@ ${genreContext}
                   <AvatarImage src={idol.image} />
                   <AvatarFallback>{idol.name[0]}</AvatarFallback>
                 </Avatar>
-                <div className="bg-muted p-4 rounded-2xl border border-border">
+                <div className="bg-gray-800/70 p-4 rounded-2xl border border-gray-700">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                   </div>
                 </div>
               </div>
@@ -752,12 +756,12 @@ ${genreContext}
         </ScrollArea>
 
         {/* 입력 영역 */}
-        <div className="p-6 border-t-2 border-primary/30 bg-white/80 dark:bg-card/80 backdrop-blur-sm">
+        <div className="p-6 border-t-2 border-gray-700 bg-black/40 backdrop-blur-sm">
           {isDemoMode && messageCount >= 10 ? (
             <div className="text-center space-y-3">
-              <p className="text-sm font-medium text-primary">체험판 대화 횟수를 모두 사용했습니다</p>
-              <p className="text-xs text-muted-foreground">지갑을 연결하여 계속 대화하세요!</p>
-              <p className="text-xs text-muted-foreground">기존 내용을 저장하려면 {idol.name} 포토카드 민팅 + 일기장 패키지를 결제하세요</p>
+              <p className="text-sm font-medium text-pink-400">체험판 대화 횟수를 모두 사용했습니다</p>
+              <p className="text-xs text-gray-400">지갑을 연결하여 계속 대화하세요!</p>
+              <p className="text-xs text-gray-400">기존 내용을 저장하려면 {idol.name} 포토카드 민팅 + 일기장 패키지를 결제하세요</p>
               <Button 
                 className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
                 onClick={() => window.location.href = '/auth'}
@@ -778,7 +782,7 @@ ${genreContext}
                       sendMessage();
                     }
                   }}
-                  className="flex-1 bg-white dark:bg-background border-primary/30"
+                  className="flex-1 bg-gray-800/50 text-white border-gray-700 placeholder:text-gray-500"
                   disabled={isTyping || !selectedGenre}
                 />
                 <Button 
@@ -789,7 +793,7 @@ ${genreContext}
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
+              <p className="text-xs text-gray-500 mt-2 text-center">
                 💖 AI가 모든 대화를 학습하여 당신만의 {idol.name}을(를) 만들어갑니다
               </p>
             </>
