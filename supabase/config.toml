@@ -2,3 +2,9 @@ project_id = "lylblbckiwabbnjasahu"
 
 [functions.generate-batch-idols]
 verify_jwt = false
+
+[functions.generate-character-chat]
+verify_jwt = false
+
+[functions.text-to-speech]
+verify_jwt = false

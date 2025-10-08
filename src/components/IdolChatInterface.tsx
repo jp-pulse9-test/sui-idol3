@@ -51,6 +51,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [selectedGenre, setSelectedGenre] = useState<GenreType>(null);
   const [showGenreSelect, setShowGenreSelect] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -194,6 +195,10 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
 
       setMessages(prev => [...prev, storyMsg]);
       await saveChatLog(storyMsg);
+      
+      if (isVoiceMode) {
+        await playIdolVoice(storyContent);
+      }
 
     } catch (error) {
       console.error('배경 설명 생성 실패:', error);
@@ -320,6 +325,10 @@ ${genreContext}
 
       setMessages(prev => [...prev, idolMessage]);
       await saveChatLog(idolMessage);
+      
+      if (isVoiceMode) {
+        await playIdolVoice(storyContent);
+      }
 
       // 관계 점수 업데이트
       const positiveKeywords = ['좋아', '사랑', '멋있', '예쁘', '최고', '고마워', '응원'];
@@ -349,12 +358,46 @@ ${genreContext}
     setTimeout(() => sendMessage(), 100);
   };
 
+  const playIdolVoice = async (text: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('text-to-speech', {
+        body: {
+          text,
+          voice: idol.personality.includes('ENFP') ? '9BWtsMINqrJLrRacOk9x' : 'EXAVITQu4vr4xnSDxMaL'
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.audioContent) {
+        const audioBlob = new Blob(
+          [Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))],
+          { type: 'audio/mpeg' }
+        );
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        if (audioRef.current) {
+          audioRef.current.src = audioUrl;
+          await audioRef.current.play();
+        }
+      }
+    } catch (error) {
+      console.error('음성 재생 실패:', error);
+    }
+  };
+
   const toggleVoiceMode = () => {
     setIsVoiceMode(!isVoiceMode);
     if (!isVoiceMode) {
-      toast.success("음성 모드가 활성화되었습니다!");
+      toast.success("캐릭터 음성 모드가 활성화되었습니다!");
+      if (!audioRef.current) {
+        audioRef.current = new Audio();
+      }
     } else {
       toast("음성 모드가 비활성화되었습니다.");
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
     }
   };
 
