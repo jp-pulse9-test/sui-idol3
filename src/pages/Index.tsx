@@ -247,61 +247,45 @@ const Index = () => {
           </div>
         </section>
 
-        {/* 심쿵톡 메인 섹션 - 강조 */}
+        {/* 심쿵톡 메인 섹션 - 간결한 픽셀 디자인 */}
         <section className="py-20">
-          <div className="text-center space-y-8 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-500/20 backdrop-blur-sm p-16 rounded-3xl border-2 border-pink-500/30 shadow-2xl animate-float">
-            <div className="space-y-6">
-              <div className="inline-block px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full text-white font-bold text-sm mb-4 animate-pulse">
-                💖 NEW! 심쿵톡
-              </div>
-              <h2 className="text-5xl md:text-6xl font-black gradient-text">
-                24/7 내 아이돌과 심쿵톡
+          <div className="text-center space-y-6 glass p-12">
+            <div className="space-y-4">
+              <Badge className="bg-primary text-primary-foreground font-pixel text-sm px-4 py-2">
+                💖 NEW
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-pixel gradient-text">
+                AI 아이돌 심쿵톡
               </h2>
-              <p className="text-2xl text-foreground max-w-3xl mx-auto leading-relaxed">
-                내가 뽑고 민팅한 아이돌과 <span className="font-bold text-pink-500">실시간 텍스트/음성 채팅</span>
+              <p className="text-lg font-mono text-foreground max-w-xl mx-auto">
+                24/7 실시간 채팅 · 음성 통화 · AI 학습
               </p>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                AI가 당신과의 모든 대화를 학습하여 <span className="font-bold text-primary">독점적 관계</span>를 형성합니다
-              </p>
-              <div className="grid md:grid-cols-3 gap-6 mt-8">
-                <div className="bg-card/60 backdrop-blur-sm p-6 rounded-xl border border-border">
-                  <div className="text-4xl mb-3">💬</div>
-                  <h3 className="font-bold text-xl mb-2">실시간 채팅</h3>
-                  <p className="text-muted-foreground">24/7 언제든 대화 가능</p>
-                </div>
-                <div className="bg-card/60 backdrop-blur-sm p-6 rounded-xl border border-border">
-                  <div className="text-4xl mb-3">🎤</div>
-                  <h3 className="font-bold text-xl mb-2">음성 통화</h3>
-                  <p className="text-muted-foreground">목소리로 더 깊은 교감</p>
-                </div>
-                <div className="bg-card/60 backdrop-blur-sm p-6 rounded-xl border border-border">
-                  <div className="text-4xl mb-3">🧠</div>
-                  <h3 className="font-bold text-xl mb-2">AI 학습</h3>
-                  <p className="text-muted-foreground">대화 기록으로 관계 성장</p>
-                </div>
-              </div>
               <Button
                 onClick={() => setShowDemoChat(!showDemoChat)}
-                variant="premium"
-                size="xl"
-                className="min-w-80 text-2xl py-8 mt-6 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-semibold border-0 shadow-2xl hover:shadow-3xl transition-all duration-300"
+                variant="default"
+                size="lg"
+                className="font-pixel text-base px-8 py-4 mt-4"
               >
-                💖 {showDemoChat ? '심쿵톡 닫기' : '심쿵톡 맛보기 (무료 체험)'}
+                💖 {showDemoChat ? '대화 종료' : '무료 체험'}
               </Button>
-            
-            {/* 샘플 대화 창 */}
-            {showDemoChat && (
-              <div className="mt-8">
-                <IdolChatInterface 
-                  idol={demoIdol}
-                  isOpen={showDemoChat}
-                  onClose={() => setShowDemoChat(false)}
-                />
-              </div>
-            )}
             </div>
           </div>
         </section>
+
+        {/* 심쿵톡 대화창 (백드롭 포함) */}
+        {showDemoChat && (
+          <>
+            {/* 어두운 배경 오버레이 */}
+            <div className="fixed inset-0 bg-black/90 z-40" />
+            
+            {/* 대화창 */}
+            <IdolChatInterface 
+              idol={demoIdol}
+              isOpen={showDemoChat}
+              onClose={() => setShowDemoChat(false)}
+            />
+          </>
+        )}
 
         {/* Features Section */}
         <section className="py-20">

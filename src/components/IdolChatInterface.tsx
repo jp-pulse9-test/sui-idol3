@@ -575,177 +575,170 @@ ${genreContext}
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-      {/* 80년대 컴퓨터 프레임 */}
-      <div className="relative w-full max-w-3xl h-[700px] bg-gradient-to-b from-[#d4c5a9] to-[#b8a989] p-6 rounded-lg shadow-2xl border-4 border-[#8b7355]" style={{
-        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.5)'
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* 1세대 애플 컴퓨터 프레임 - 베이지색 플라스틱 */}
+      <div className="relative w-full max-w-4xl" style={{
+        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.5))'
       }}>
-        {/* 베젤 */}
-        <div className="absolute inset-0 rounded-lg border-2 border-[#6b5840] pointer-events-none" />
-        
-        {/* TV 스크린 영역 */}
-        <Card className="w-full h-full flex flex-col bg-black border-4 border-[#1a1a1a] rounded overflow-hidden relative" style={{
-          boxShadow: 'inset 0 0 50px rgba(0,100,200,0.3)'
+        {/* 컴퓨터 본체 */}
+        <div className="bg-[#e8dcc4] p-8 border-8 border-[#d4c5a9]" style={{
+          boxShadow: 'inset 0 4px 8px rgba(0,0,0,0.15), inset 0 -4px 8px rgba(255,255,255,0.3)'
         }}>
-          {/* CRT 스캔라인 효과 */}
-          <div className="absolute inset-0 pointer-events-none z-10 opacity-10" style={{
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)',
-          }} />
+          {/* 베젤 라인 */}
+          <div className="absolute inset-8 border-4 border-[#c4b59a] pointer-events-none" />
           
-          {/* TV 비네팅 효과 */}
-          <div className="absolute inset-0 pointer-events-none z-10" style={{
-            background: 'radial-gradient(ellipse at center, transparent 0%, transparent 60%, rgba(0,0,0,0.4) 100%)'
-          }} />
-          {/* 헤더 */}
-          <div className="relative z-20 flex items-center justify-between p-6 border-b border-cyan-500/30 bg-gradient-to-b from-black to-gray-900/50">
-            <div className="flex items-center gap-4">
-              <Avatar className="w-14 h-14 ring-2 ring-cyan-400/50">
-                <AvatarImage src={idol.image} alt={idol.name} />
-                <AvatarFallback>{idol.name[0]}</AvatarFallback>
-              </Avatar>
+          {/* 모니터 스크린 영역 */}
+          <Card className="w-full aspect-[4/3] flex flex-col bg-[#1a3a1a] border-4 border-black relative overflow-hidden" style={{
+            boxShadow: 'inset 0 0 60px rgba(50,200,50,0.2), inset 0 4px 12px rgba(0,0,0,0.6)'
+          }}>
+            {/* CRT 녹색 글로우 */}
+            <div className="absolute inset-0 pointer-events-none z-10" style={{
+              background: 'radial-gradient(ellipse at center, transparent 0%, rgba(50,255,50,0.03) 50%, rgba(0,0,0,0.5) 100%)'
+            }} />
+            
+            {/* 스캔라인 효과 */}
+            <div className="absolute inset-0 pointer-events-none z-10 opacity-20" style={{
+              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)',
+            }} />
+          {/* 헤더 - 애플 스타일 */}
+          <div className="relative z-20 flex items-center justify-between p-4 border-b-2 border-[#00ff00]/30 bg-black/40">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 border-2 border-[#00ff00]">
+                <img src={idol.image} alt={idol.name} className="w-full h-full object-cover" />
+              </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-xl text-cyan-300" style={{ fontFamily: 'sans-serif' }}>{idol.name}</h3>
-                  <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/50">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse" />
-                    온라인
-                  </Badge>
+                  <h3 className="font-mono text-base text-[#00ff00] uppercase tracking-wider">{idol.name}</h3>
+                  <span className="text-[#00ff00] text-xs font-mono">●</span>
                   {selectedGenre && (
-                    <Badge variant="outline" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/50">
-                      {GENRES.find(g => g.id === selectedGenre)?.emoji} {GENRES.find(g => g.id === selectedGenre)?.name}
-                    </Badge>
+                    <span className="text-[#00ff00] text-xs font-mono">
+                      {GENRES.find(g => g.id === selectedGenre)?.emoji}
+                    </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-400" style={{ fontFamily: 'sans-serif' }}>{idol.personality}</p>
+                <p className="text-xs text-[#00ff00]/70 font-mono mt-0.5">{idol.personality}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <Heart className="w-4 h-4 text-pink-400" />
-                  <div className="w-24 bg-gray-800/50 rounded-full h-2 border border-cyan-500/30">
+                  <span className="text-[#00ff00] text-xs font-mono">LOVE:</span>
+                  <div className="w-20 bg-black border border-[#00ff00]/50 h-1.5">
                     <div 
-                      className="bg-gradient-to-r from-cyan-400 to-pink-500 h-full rounded-full transition-all duration-500"
+                      className="bg-[#00ff00] h-full transition-all duration-500"
                       style={{ width: `${relationshipScore}%` }}
                     />
                   </div>
-                  <span className="text-xs text-cyan-300" style={{ fontFamily: 'monospace' }}>{relationshipScore}%</span>
+                  <span className="text-xs text-[#00ff00] font-mono">{relationshipScore}%</span>
                   {isDemoMode && (
-                    <Badge variant="outline" className="ml-2 text-xs bg-gray-900/70 text-cyan-300 border-cyan-500/50">
-                      {messageCount}/10
-                    </Badge>
+                    <span className="ml-2 text-xs text-[#00ff00]/70 font-mono">
+                      [{messageCount}/10]
+                    </span>
                   )}
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
-                variant={isVoiceMode ? "default" : "outline"}
+                variant="ghost"
                 size="sm"
                 onClick={toggleVoiceMode}
-                className={isVoiceMode ? "bg-cyan-500 hover:bg-cyan-600 text-black" : "border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/20"}
+                className={isVoiceMode ? "text-[#00ff00] bg-[#00ff00]/20 hover:bg-[#00ff00]/30" : "text-[#00ff00]/50 hover:text-[#00ff00] hover:bg-[#00ff00]/10"}
               >
                 {isVoiceMode ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
               </Button>
-              <Button variant="ghost" size="sm" onClick={onClose} className="text-cyan-300 hover:bg-cyan-500/20">
-                <X className="w-5 h-5" />
+              <Button variant="ghost" size="sm" onClick={onClose} className="text-[#00ff00] hover:bg-[#00ff00]/20">
+                <X className="w-4 h-4" />
               </Button>
             </div>
           </div>
 
-          {/* 메시지 영역 */}
-          <ScrollArea className="relative z-20 flex-1 p-6 bg-gradient-to-b from-gray-900/30 to-black/50">
-            <div className="space-y-4">
+          {/* 메시지 영역 - 애플 모니터 스타일 */}
+          <ScrollArea className="relative z-20 flex-1 p-4 bg-black/50">
+            <div className="space-y-3 font-mono text-sm">
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2`}
+                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'idol' && !msg.error && (
-                  <Avatar className="w-8 h-8 mr-2">
-                    <AvatarImage src={idol.image} />
-                    <AvatarFallback>{idol.name[0]}</AvatarFallback>
-                  </Avatar>
+                  <span className="text-[#00ff00] mr-2">▶</span>
                 )}
-                <div className="space-y-2 max-w-[70%]">
+                <div className="space-y-2 max-w-[80%]">
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
-                    <div className="rounded-lg overflow-hidden border-2 border-cyan-500/30 shadow-lg shadow-cyan-500/20">
+                    <div className="border-2 border-[#00ff00]/50 p-1 bg-black">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 
                         className="w-full h-auto"
+                        style={{ filter: 'contrast(1.2) brightness(0.9)' }}
                       />
                     </div>
                   )}
                   <div
-                    className={`p-4 ${
+                    className={`p-3 border-2 ${
                       msg.error
-                        ? 'bg-red-950/50 border-2 border-red-500/50 rounded-lg'
+                        ? 'border-red-500 bg-red-950/30 text-red-400'
                         : msg.sender === 'user'
-                        ? 'bg-gradient-to-br from-cyan-600/80 to-blue-600/80 text-white rounded-2xl shadow-lg shadow-cyan-500/20'
-                        : 'bg-gray-900/80 text-cyan-100 rounded-2xl border border-cyan-500/30 shadow-lg shadow-cyan-500/10'
+                        ? 'border-[#00ff00] bg-[#00ff00]/10 text-[#00ff00]'
+                        : 'border-[#00ff00]/50 bg-black/60 text-[#00ff00]'
                     }`}
                   >
                     {msg.error ? (
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm text-red-300" style={{ fontFamily: 'sans-serif' }}>메시지 전송 실패</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs">ERROR: MSG FAILED</p>
                         <Button
                           size="sm"
-                          variant="outline"
+                          variant="ghost"
                           onClick={() => retryMessage(msg.content)}
-                          className="border-red-500/50 hover:bg-red-900/30 text-red-300"
+                          className="text-red-400 hover:bg-red-900/30 h-6 px-2 text-xs"
                         >
                           <RefreshCw className="w-3 h-3 mr-1" />
-                          재전송
+                          RETRY
                         </Button>
                       </div>
                     ) : (
                       <>
-                        <p className="text-sm leading-relaxed whitespace-pre-line" style={{ 
-                          fontFamily: 'sans-serif',
-                          lineHeight: '1.7'
-                        }}>{msg.content}</p>
-                        <p className="text-xs opacity-60 mt-2" style={{ fontFamily: 'monospace' }}>
+                        <p className="text-xs leading-relaxed whitespace-pre-line">{msg.content}</p>
+                        <p className="text-[10px] opacity-50 mt-1.5">
                           {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </>
                     )}
                   </div>
                 </div>
+                {msg.sender === 'user' && !msg.error && (
+                  <span className="text-[#00ff00] ml-2">◀</span>
+                )}
               </div>
             ))}
 
-            {/* 선택지 표시 (아이돌 메시지 직후) */}
+            {/* 선택지 표시 (아이돌 메시지 직후) - 애플 스타일 */}
             {messages.length > 0 && messages[messages.length - 1].sender === 'idol' && messages[messages.length - 1].choices && (
-              <div className="flex justify-end mr-10 animate-in fade-in slide-in-from-bottom-2">
-                <div className="flex flex-col gap-2 w-full max-w-sm">
+              <div className="flex justify-end">
+                <div className="flex flex-col gap-2 w-full max-w-md">
                   {messages[messages.length - 1].choices!.map((choice, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleChoiceClick(choice)}
-                      className="relative bg-gradient-to-r from-cyan-600/70 to-blue-600/70 text-white border border-cyan-400/50 rounded-2xl px-4 py-3 text-left hover:from-cyan-500/70 hover:to-blue-500/70 transition-all shadow-lg shadow-cyan-500/20"
+                      className="border-2 border-[#00ff00] bg-[#00ff00]/10 text-[#00ff00] p-2 text-left hover:bg-[#00ff00]/20 transition-all font-mono text-xs"
                     >
-                      <span className="text-sm" style={{ fontFamily: 'sans-serif' }}>{choice}</span>
-                      {/* 말풍선 꼬리 */}
-                      <div className="absolute -right-2 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-cyan-600/70"></div>
+                      [{idx + 1}] {choice}
                     </button>
                   ))}
                 </div>
               </div>
             )}
             
-            {/* 장르 선택 버튼 (첫 메시지 후에만 표시) */}
+            {/* 장르 선택 버튼 (첫 메시지 후에만 표시) - 애플 스타일 */}
             {!selectedGenre && messages.length > 0 && (
-              <div className="flex justify-start ml-10">
-                <div className="grid grid-cols-2 gap-2 max-w-sm">
-                  {GENRES.map((genre) => (
+              <div className="flex justify-start">
+                <div className="grid grid-cols-2 gap-2 max-w-md w-full">
+                  {GENRES.map((genre, idx) => (
                     <button
                       key={genre.id}
                       onClick={() => handleGenreSelect(genre.id as GenreType)}
-                      className="relative bg-gray-900/70 text-cyan-100 border border-cyan-500/50 rounded-2xl px-4 py-3 text-left hover:bg-gray-800/70 transition-all shadow-lg shadow-cyan-500/20"
+                      className="border-2 border-[#00ff00]/70 bg-black/60 text-[#00ff00] p-3 text-left hover:bg-[#00ff00]/10 transition-all"
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{genre.emoji}</span>
-                        <span className="text-sm font-medium" style={{ fontFamily: 'sans-serif' }}>{genre.name}</span>
+                      <div className="font-mono text-xs">
+                        <div>[{idx + 1}] {genre.emoji} {genre.name}</div>
                       </div>
-                      {/* 말풍선 꼬리 */}
-                      <div className="absolute -left-2 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-gray-900/70"></div>
                     </button>
                   ))}
                 </div>
@@ -753,70 +746,66 @@ ${genreContext}
             )}
             
             {isTyping && (
-              <div className="flex justify-start animate-in fade-in">
-                <Avatar className="w-8 h-8 mr-2">
-                  <AvatarImage src={idol.image} />
-                  <AvatarFallback>{idol.name[0]}</AvatarFallback>
-                </Avatar>
-                <div className="bg-gray-900/80 p-4 rounded-2xl border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
+              <div className="flex justify-start">
+                <span className="text-[#00ff00] mr-2">▶</span>
+                <div className="border-2 border-[#00ff00]/50 bg-black/60 p-3 text-[#00ff00]">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                    <div className="w-1.5 h-1.5 bg-[#00ff00] animate-bounce" />
+                    <div className="w-1.5 h-1.5 bg-[#00ff00] animate-bounce" style={{ animationDelay: '0.1s' }} />
+                    <div className="w-1.5 h-1.5 bg-[#00ff00] animate-bounce" style={{ animationDelay: '0.2s' }} />
                   </div>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
+            </div>
+          </ScrollArea>
 
-          {/* 입력 영역 */}
-          <div className="relative z-20 p-6 border-t border-cyan-500/30 bg-gradient-to-t from-black to-gray-900/50">
+          {/* 입력 영역 - 애플 스타일 */}
+          <div className="relative z-20 p-4 border-t-2 border-[#00ff00]/30 bg-black/40">
             {isDemoMode && messageCount >= 10 ? (
-              <div className="text-center space-y-3">
-                <p className="text-sm font-medium text-cyan-300" style={{ fontFamily: 'sans-serif' }}>체험판 대화 횟수를 모두 사용했습니다</p>
-                <p className="text-xs text-gray-400" style={{ fontFamily: 'sans-serif' }}>지갑을 연결하여 계속 대화하세요!</p>
-                <p className="text-xs text-gray-400" style={{ fontFamily: 'sans-serif' }}>기존 내용을 저장하려면 {idol.name} 포토카드 민팅 + 일기장 패키지를 결제하세요</p>
+              <div className="text-center space-y-2">
+                <p className="text-xs font-mono text-[#00ff00]">DEMO LIMIT REACHED [10/10]</p>
+                <p className="text-[10px] font-mono text-[#00ff00]/70">CONNECT WALLET TO CONTINUE</p>
                 <Button 
-                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-bold"
+                  className="bg-[#00ff00] hover:bg-[#00ff00]/80 text-black font-mono text-xs mt-2"
                   onClick={() => window.location.href = '/auth'}
                 >
-                  <Wallet className="w-4 h-4 mr-2" />
-                  지갑 연결하기
+                  <Wallet className="w-3 h-3 mr-2" />
+                  CONNECT
                 </Button>
               </div>
             ) : (
               <>
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder={selectedGenre ? `${idol.name}에게 메시지를 보내세요...` : "장르를 선택해주세요..."}
+                    placeholder={selectedGenre ? "> INPUT MSG..." : "> SELECT GENRE..."}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && !isTyping && selectedGenre) {
                         sendMessage();
                       }
                     }}
-                    className="flex-1 bg-black/50 text-cyan-100 border-cyan-500/50 placeholder:text-gray-500"
-                    style={{ fontFamily: 'sans-serif' }}
+                    className="flex-1 bg-black border-2 border-[#00ff00]/50 text-[#00ff00] placeholder:text-[#00ff00]/30 font-mono text-xs"
                     disabled={isTyping || !selectedGenre}
                   />
                   <Button 
                     onClick={sendMessage} 
                     disabled={isTyping || !inputMessage.trim() || !selectedGenre}
-                    className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-bold"
+                    className="bg-[#00ff00] hover:bg-[#00ff00]/80 text-black font-mono text-xs px-4"
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-3 h-3" />
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 text-center" style={{ fontFamily: 'monospace' }}>
-                  💾 AI가 모든 대화를 학습하여 당신만의 {idol.name}을(를) 만들어갑니다
+                <p className="text-[10px] text-[#00ff00]/50 mt-2 text-center font-mono">
+                  AI LEARNING ACTIVE
                 </p>
               </>
             )}
           </div>
-        </Card>
+          </Card>
+        </div>
       </div>
     </div>
   );
