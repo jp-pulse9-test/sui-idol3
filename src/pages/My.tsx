@@ -83,7 +83,7 @@ const My = () => {
     image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
     level: 3,
     badges: ['신인', '체험판'],
-    voiceId: '9BWtsMINqrJLrRacOk9x' // Aria (female, energetic)
+    voiceId: 'xi3rF0t7dg7uN2M0WUhr'
   };
 
   useEffect(() => {
