@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { X, Send, Mic, MicOff, Heart, MessageCircle, Phone } from "lucide-react";
+import { X, Send, Mic, MicOff, Heart, MessageCircle, Phone, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,6 +17,17 @@ interface Message {
   timestamp: Date;
   emotion?: 'happy' | 'excited' | 'shy' | 'neutral';
 }
+
+type GenreType = 'mystery-thriller' | 'apocalypse-survival' | 'highteen-romance' | 'bromance' | 'girls-romance' | 'historical-romance' | null;
+
+const GENRES = [
+  { id: 'mystery-thriller', name: '미스터리 스릴러', emoji: '🔍', description: '긴장감 넘치는 추리와 미스터리' },
+  { id: 'apocalypse-survival', name: '아포칼립스 생존물', emoji: '🧟', description: '생존을 위한 치열한 여정' },
+  { id: 'highteen-romance', name: '하이틴 로맨스', emoji: '💕', description: '풋풋한 청춘의 설렘' },
+  { id: 'bromance', name: '브로맨스', emoji: '🤝', description: '우정과 신뢰의 끈끈한 관계' },
+  { id: 'girls-romance', name: '걸스로맨스', emoji: '👭', description: '여성들 간의 특별한 우정과 사랑' },
+  { id: 'historical-romance', name: '시대극 로맨스', emoji: '👑', description: '역사 속 운명적 사랑' }
+] as const;
 
 interface IdolChatInterfaceProps {
   idol: {
@@ -36,13 +47,15 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [isTyping, setIsTyping] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [relationshipScore, setRelationshipScore] = useState(0);
+  const [selectedGenre, setSelectedGenre] = useState<GenreType>(null);
+  const [showGenreSelect, setShowGenreSelect] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen && user) {
       loadChatHistory();
       loadRelationshipScore();
-      sendWelcomeMessage();
+      loadSavedGenre();
     }
   }, [isOpen, user]);
 
@@ -98,22 +111,38 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     }
   };
 
+  const loadSavedGenre = () => {
+    const saved = localStorage.getItem(`genre_${idol.id}`);
+    if (saved) {
+      setSelectedGenre(saved as GenreType);
+      setShowGenreSelect(false);
+    }
+  };
+
   const saveRelationshipScore = (score: number) => {
     localStorage.setItem(`relationship_${idol.id}`, score.toString());
     setRelationshipScore(score);
   };
 
-  const sendWelcomeMessage = () => {
-    if (messages.length === 0) {
-      const welcomeMsg: Message = {
-        id: Date.now().toString(),
-        sender: 'idol',
-        content: `안녕하세요! 저는 ${idol.name}이에요! 💖 당신과 대화할 수 있어서 정말 설레요! 무엇이든 편하게 얘기해주세요~`,
-        timestamp: new Date(),
-        emotion: 'excited'
-      };
-      setMessages([welcomeMsg]);
-    }
+  const handleGenreSelect = (genreId: GenreType) => {
+    setSelectedGenre(genreId);
+    localStorage.setItem(`genre_${idol.id}`, genreId as string);
+    setShowGenreSelect(false);
+    sendWelcomeMessage(genreId);
+  };
+
+  const sendWelcomeMessage = (genre: GenreType = selectedGenre) => {
+    const genreInfo = GENRES.find(g => g.id === genre);
+    const genreContext = genreInfo ? ` ${genreInfo.emoji} ${genreInfo.name} 세계관에서` : '';
+    
+    const welcomeMsg: Message = {
+      id: Date.now().toString(),
+      sender: 'idol',
+      content: `안녕하세요!${genreContext} 저는 ${idol.name}이에요! 💖 당신과 함께${genreContext} 특별한 이야기를 만들어가고 싶어요! 무엇이든 편하게 얘기해주세요~`,
+      timestamp: new Date(),
+      emotion: 'excited'
+    };
+    setMessages([welcomeMsg]);
   };
 
   const saveChatLog = async (message: Message) => {
@@ -166,17 +195,25 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
         content: m.content
       }));
 
+      const genreInfo = GENRES.find(g => g.id === selectedGenre);
+      const genreContext = genreInfo ? `
+장르: ${genreInfo.name} ${genreInfo.emoji}
+장르 설정: ${genreInfo.description}
+이 장르의 특성을 대화에 자연스럽게 녹여내세요.` : '';
+
       const systemPrompt = `당신은 K-POP 아이돌 ${idol.name}입니다.
 성격: ${idol.personality}
+${genreContext}
 
 이전 대화 기록을 바탕으로 팬과의 독점적이고 친밀한 관계를 형성하세요.
 규칙:
 1. ${idol.name}의 성격에 맞게 응답
 2. 팬과의 과거 대화를 기억하고 참조
 3. 감정적이고 따뜻한 대화
-4. 100자 내외로 간결하게
-5. 이모지 1-2개 사용
-6. 팬을 특별하게 대우`;
+4. 선택된 장르의 분위기를 반영
+5. 100자 내외로 간결하게
+6. 이모지 1-2개 사용
+7. 팬을 특별하게 대우`;
 
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
@@ -231,6 +268,49 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
 
   if (!isOpen) return null;
 
+  if (showGenreSelect) {
+    return (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-4xl p-8 bg-gradient-to-b from-card to-card/95 border-2 border-pink-500/30 shadow-2xl">
+          <div className="text-center mb-8">
+            <BookOpen className="w-16 h-16 mx-auto mb-4 text-pink-500" />
+            <h2 className="text-3xl font-bold mb-2">어떤 이야기를 시작할까요?</h2>
+            <p className="text-muted-foreground">
+              {idol.name}과 함께할 특별한 세계관을 선택해주세요
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            {GENRES.map((genre) => (
+              <button
+                key={genre.id}
+                onClick={() => handleGenreSelect(genre.id as GenreType)}
+                className="group relative overflow-hidden rounded-xl border-2 border-border hover:border-pink-500/50 bg-card/60 backdrop-blur-sm p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl text-left"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative">
+                  <div className="text-4xl mb-3">{genre.emoji}</div>
+                  <h3 className="font-bold text-lg mb-2">{genre.name}</h3>
+                  <p className="text-sm text-muted-foreground">{genre.description}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex justify-center">
+            <Button
+              variant="ghost"
+              onClick={onClose}
+              className="text-muted-foreground"
+            >
+              나중에 선택할게요
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-3xl h-[700px] flex flex-col bg-gradient-to-b from-card to-card/95 border-2 border-pink-500/30 shadow-2xl">
@@ -248,6 +328,11 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse" />
                   온라인
                 </Badge>
+                {selectedGenre && (
+                  <Badge variant="outline" className="bg-pink-500/10 text-pink-500 border-pink-500/20">
+                    {GENRES.find(g => g.id === selectedGenre)?.emoji} {GENRES.find(g => g.id === selectedGenre)?.name}
+                  </Badge>
+                )}
               </div>
               <p className="text-sm text-muted-foreground">{idol.personality}</p>
               <div className="flex items-center gap-2 mt-1">
