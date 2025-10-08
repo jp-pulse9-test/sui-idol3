@@ -23,61 +23,70 @@
 
 @layer base {
   :root {
-    /* 8-bit dark theme with vibrant pixel colors */
-    --background: 240 10% 8%;
-    --foreground: 0 0% 100%;
+    /* Refined Pixel Art Design - Modern 8-bit K-POP */
+    --background: 234 20% 10%;
+    --foreground: 0 0% 98%;
 
-    /* Pixel card surfaces */
-    --card: 240 10% 12%;
-    --card-foreground: 0 0% 100%;
+    /* Premium pixel surfaces with subtle depth */
+    --card: 234 18% 14%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 234 18% 14%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Bright pixel primary - hot pink */
-    --primary: 330 100% 60%;
+    /* Vibrant pixel primary - Electric Magenta */
+    --primary: 320 100% 58%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 330 100% 70%;
+    --primary-glow: 320 100% 68%;
 
-    /* Pixel secondary - electric blue */
-    --secondary: 200 100% 50%;
+    /* Pixel secondary - Cyber Cyan */
+    --secondary: 190 100% 48%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 200 100% 60%;
+    --secondary-glow: 190 100% 58%;
 
-    /* Pixel accent - neon yellow */
-    --accent: 60 100% 50%;
-    --accent-foreground: 240 10% 8%;
-    --accent-glow: 60 100% 60%;
+    /* Pixel accent - Golden Yellow */
+    --accent: 48 100% 55%;
+    --accent-foreground: 234 20% 10%;
+    --accent-glow: 48 100% 65%;
 
-    /* Retro neutral tones */
-    --muted: 240 5% 20%;
-    --muted-foreground: 0 0% 70%;
+    /* Sophisticated neutral palette */
+    --muted: 234 12% 22%;
+    --muted-foreground: 0 0% 65%;
 
-    /* System colors */
-    --destructive: 0 100% 50%;
+    /* System colors with pixel flair */
+    --destructive: 0 85% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 25%;
-    --input: 0 0% 25%;
-    --ring: 330 100% 60%;
+    --border: 234 15% 25%;
+    --input: 234 15% 25%;
+    --ring: 320 100% 58%;
 
     --radius: 0px;
 
-    /* Pixel gradient system - No smooth gradients, use dithering patterns */
-    --gradient-primary: linear-gradient(0deg, hsl(330 100% 60%), hsl(200 100% 50%));
-    --gradient-secondary: linear-gradient(0deg, hsl(200 100% 50%), hsl(60 100% 50%));
-    --gradient-accent: linear-gradient(0deg, hsl(60 100% 50%), hsl(330 100% 60%));
-    --gradient-background: hsl(240 10% 8%);
+    /* Sophisticated pixel gradients */
+    --gradient-primary: linear-gradient(180deg, hsl(320 100% 58%) 0%, hsl(280 100% 50%) 100%);
+    --gradient-secondary: linear-gradient(180deg, hsl(190 100% 48%) 0%, hsl(240 100% 50%) 100%);
+    --gradient-accent: linear-gradient(180deg, hsl(48 100% 55%) 0%, hsl(30 100% 50%) 100%);
+    --gradient-background: linear-gradient(180deg, hsl(234 20% 12%) 0%, hsl(234 20% 8%) 100%);
     
-    /* Pixel box shadows - Hard edges only */
-    --glow-primary: 0 0 0 4px hsl(330 100% 60%), 0 0 0 8px hsl(330 100% 40%);
-    --glow-secondary: 0 0 0 4px hsl(200 100% 50%), 0 0 0 8px hsl(200 100% 30%);
-    --glow-accent: 0 0 0 4px hsl(60 100% 50%), 0 0 0 8px hsl(60 100% 30%);
+    /* Multi-layer pixel shadows for depth */
+    --glow-primary: 
+      0 0 0 2px hsl(320 100% 58%), 
+      0 0 0 4px hsl(320 100% 48% / 0.6),
+      0 4px 0 4px hsl(320 100% 38% / 0.4);
+    --glow-secondary: 
+      0 0 0 2px hsl(190 100% 48%), 
+      0 0 0 4px hsl(190 100% 38% / 0.6),
+      0 4px 0 4px hsl(190 100% 28% / 0.4);
+    --glow-accent: 
+      0 0 0 2px hsl(48 100% 55%), 
+      0 0 0 4px hsl(48 100% 45% / 0.6),
+      0 4px 0 4px hsl(48 100% 35% / 0.4);
     
-    /* Instant transitions for pixel feel */
-    --transition-smooth: all 0.1s steps(3);
-    --transition-bounce: all 0.2s steps(5);
-    --transition-elastic: all 0.15s steps(4);
+    /* Refined transitions */
+    --transition-smooth: all 0.15s steps(2);
+    --transition-bounce: all 0.2s steps(4);
+    --transition-elastic: all 0.15s steps(3);
 
     /* Sidebar */
     --sidebar-background: 220 25% 12%;
@@ -91,26 +100,26 @@
   }
 
   .light {
-    /* Pixel light mode */
-    --background: 0 0% 95%;
-    --foreground: 0 0% 0%;
+    /* Refined pixel light mode */
+    --background: 210 30% 96%;
+    --foreground: 234 20% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 234 20% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 330 100% 50%;
+    --popover-foreground: 234 20% 12%;
+    --primary: 320 100% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 200 100% 40%;
+    --secondary: 190 100% 40%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 85%;
-    --muted-foreground: 0 0% 30%;
-    --accent: 60 100% 40%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 100% 40%;
+    --muted: 210 20% 88%;
+    --muted-foreground: 234 20% 35%;
+    --accent: 48 100% 45%;
+    --accent-foreground: 234 20% 12%;
+    --destructive: 0 85% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 70%;
-    --input: 0 0% 70%;
-    --ring: 330 100% 50%;
+    --border: 210 15% 75%;
+    --input: 210 15% 75%;
+    --ring: 320 100% 48%;
   }
 }
 
@@ -145,32 +154,39 @@
 }
 
 @layer components {
-  /* Pixel background */
+  /* Premium pixel background */
   .bg-gradient-background {
     background: var(--gradient-background);
   }
 
-  /* Pixel fonts */
+  /* Refined pixel typography */
   .font-blacksword {
     font-family: 'Press Start 2P', monospace;
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    letter-spacing: 0.05em;
   }
 
-  /* Pixel box effects - No blur, hard edges */
+  /* Modern pixel surfaces with depth */
   .glass {
     background: hsl(var(--card));
-    border: 4px solid hsl(var(--border));
-    box-shadow: 0 0 0 4px hsl(var(--background));
+    border: 3px solid hsl(var(--border));
+    box-shadow: 
+      0 0 0 1px hsl(var(--foreground) / 0.1),
+      0 4px 0 0 hsl(var(--background)),
+      0 4px 0 3px hsl(var(--border));
   }
   
   .glass-dark {
     background: hsl(var(--muted));
-    border: 4px solid hsl(var(--border));
-    box-shadow: 0 0 0 4px hsl(var(--background));
+    border: 3px solid hsl(var(--border));
+    box-shadow: 
+      0 0 0 1px hsl(var(--foreground) / 0.15),
+      0 4px 0 0 hsl(var(--background)),
+      0 4px 0 3px hsl(var(--border) / 0.6);
   }
 
-  /* Pixel glow effects */
+  /* Premium pixel glows with depth */
   .glow-primary {
     box-shadow: var(--glow-primary);
   }
@@ -183,77 +199,129 @@
     box-shadow: var(--glow-accent);
   }
 
-  /* Pixel text effects */
+  /* Sophisticated pixel text */
   .gradient-text {
-    color: hsl(var(--primary));
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-family: 'Press Start 2P', monospace;
     font-size: 0.875rem;
+    line-height: 1.6;
   }
 
   .neon-text {
     color: hsl(var(--primary));
     text-shadow: 
-      2px 0 0 hsl(var(--primary)),
-      -2px 0 0 hsl(var(--primary)),
-      0 2px 0 hsl(var(--primary)),
-      0 -2px 0 hsl(var(--primary));
+      2px 0 0 hsl(var(--primary-glow)),
+      -2px 0 0 hsl(var(--primary-glow)),
+      0 2px 0 hsl(var(--primary-glow)),
+      0 -2px 0 hsl(var(--primary-glow)),
+      2px 2px 0 hsl(var(--primary) / 0.5);
     font-family: 'Press Start 2P', monospace;
+    font-weight: normal;
   }
 
-  /* Pixel animations */
+  /* Refined pixel animations */
   .animate-glow {
-    animation: pixelGlow 0.5s steps(2) infinite alternate;
+    animation: refinedPixelGlow 0.6s steps(3) infinite alternate;
   }
 
   .animate-float {
-    animation: pixelFloat 1s steps(4) infinite;
+    animation: refinedPixelFloat 1.2s steps(6) infinite;
   }
 
-  @keyframes pixelGlow {
-    from {
-      box-shadow: 0 0 0 2px hsl(var(--primary));
+  @keyframes refinedPixelGlow {
+    0% {
+      box-shadow: 
+        0 0 0 2px hsl(var(--primary)),
+        0 0 0 4px hsl(var(--primary) / 0.3);
     }
-    to {
-      box-shadow: 0 0 0 4px hsl(var(--primary)), 0 0 0 6px hsl(var(--primary-glow));
+    100% {
+      box-shadow: 
+        0 0 0 3px hsl(var(--primary)),
+        0 0 0 6px hsl(var(--primary-glow) / 0.5),
+        0 0 0 9px hsl(var(--primary-glow) / 0.2);
     }
   }
 
-  @keyframes pixelFloat {
+  @keyframes refinedPixelFloat {
     0%, 100% {
       transform: translateY(0px);
+    }
+    25% {
+      transform: translateY(-4px);
     }
     50% {
       transform: translateY(-8px);
     }
+    75% {
+      transform: translateY(-4px);
+    }
   }
 
-  /* Pixel card interactions */
+  /* Premium pixel card interactions */
   .card-hover {
     transition: var(--transition-smooth);
-    border: 4px solid hsl(var(--border));
+    border: 3px solid hsl(var(--border));
+    position: relative;
+  }
+  
+  .card-hover::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 3px solid hsl(var(--primary));
+    opacity: 0;
+    transition: var(--transition-smooth);
+    pointer-events: none;
   }
   
   .card-hover:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     border-color: hsl(var(--primary));
-    box-shadow: 0 8px 0 hsl(var(--primary) / 0.5);
+    box-shadow: 
+      0 0 0 1px hsl(var(--primary)),
+      0 6px 0 0 hsl(var(--primary) / 0.3),
+      0 6px 0 3px hsl(var(--border));
+  }
+  
+  .card-hover:hover::after {
+    opacity: 1;
+    inset: -6px;
   }
 
-  /* Pixel button styles */
+  /* Premium pixel buttons */
   .btn-modern {
     background: hsl(var(--primary));
-    border: 4px solid hsl(var(--foreground));
+    border: 3px solid hsl(var(--foreground));
     color: hsl(var(--primary-foreground));
     font-family: 'Press Start 2P', monospace;
-    font-size: 0.75rem;
-    padding: 12px 24px;
+    font-size: 0.7rem;
+    padding: 10px 20px;
     transition: var(--transition-smooth);
     box-shadow: 0 4px 0 hsl(var(--foreground));
+    position: relative;
+    overflow: visible;
+  }
+  
+  .btn-modern::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border: 2px solid hsl(var(--primary-glow));
+    opacity: 0;
+    transition: var(--transition-smooth);
   }
   
   .btn-modern:hover {
     transform: translateY(2px);
     box-shadow: 0 2px 0 hsl(var(--foreground));
+  }
+  
+  .btn-modern:hover::before {
+    opacity: 1;
+    inset: -4px;
   }
   
   .btn-modern:active {

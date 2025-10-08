@@ -238,7 +238,7 @@ const My = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate('/')}
                 className="hover:bg-muted/50"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
