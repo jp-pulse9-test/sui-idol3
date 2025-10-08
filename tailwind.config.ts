@@ -65,6 +65,7 @@ export default {
         pixel: ['Press Start 2P', 'monospace'],
         mono: ['VT323', 'monospace'],
         blacksword: ['Press Start 2P', 'monospace'],
+        sans: ['VT323', 'monospace'],
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
@@ -82,9 +83,10 @@ export default {
         'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "0px",
+        md: "0px",
+        sm: "0px",
+        DEFAULT: "0px",
       },
       keyframes: {
         "accordion-down": {

@@ -134,10 +134,13 @@
     min-height: 100vh;
     overflow-x: hidden;
     font-family: 'VT323', monospace;
-    font-size: 18px;
+    font-size: 16px;
+    line-height: 1.6;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html {
@@ -145,11 +148,16 @@
     scroll-behavior: auto;
   }
   
-  /* Pixel perfect rendering for images */
-  img {
+  /* Pixel perfect rendering */
+  img, svg {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+  }
+  
+  /* Remove all rounded corners globally */
+  * {
+    border-radius: 0 !important;
   }
 }
 
@@ -159,67 +167,67 @@
     background: var(--gradient-background);
   }
 
-  /* Refined pixel typography */
+  /* Pixel typography system */
   .font-blacksword {
     font-family: 'Press Start 2P', monospace;
     font-size: 0.75rem;
-    line-height: 1.6;
+    line-height: 1.8;
     letter-spacing: 0.05em;
   }
 
-  /* Modern pixel surfaces with depth */
+  /* Consistent pixel surfaces */
   .glass {
     background: hsl(var(--card));
-    border: 3px solid hsl(var(--border));
-    box-shadow: 
-      0 0 0 1px hsl(var(--foreground) / 0.1),
-      0 4px 0 0 hsl(var(--background)),
-      0 4px 0 3px hsl(var(--border));
+    border: 4px solid hsl(var(--border));
+    box-shadow: 0 4px 0 0 hsl(var(--border));
   }
   
   .glass-dark {
     background: hsl(var(--muted));
-    border: 3px solid hsl(var(--border));
-    box-shadow: 
-      0 0 0 1px hsl(var(--foreground) / 0.15),
-      0 4px 0 0 hsl(var(--background)),
-      0 4px 0 3px hsl(var(--border) / 0.6);
+    border: 4px solid hsl(var(--border));
+    box-shadow: 0 4px 0 0 hsl(var(--background));
   }
 
-  /* Premium pixel glows with depth */
+  /* Pixel glow effects - Consistent */
   .glow-primary {
-    box-shadow: var(--glow-primary);
+    box-shadow: 
+      0 0 0 2px hsl(var(--primary)),
+      0 0 0 4px hsl(var(--primary) / 0.5),
+      0 4px 0 4px hsl(var(--primary) / 0.3);
   }
   
   .glow-secondary {
-    box-shadow: var(--glow-secondary);
+    box-shadow: 
+      0 0 0 2px hsl(var(--secondary)),
+      0 0 0 4px hsl(var(--secondary) / 0.5),
+      0 4px 0 4px hsl(var(--secondary) / 0.3);
   }
   
   .glow-accent {
-    box-shadow: var(--glow-accent);
+    box-shadow: 
+      0 0 0 2px hsl(var(--accent)),
+      0 0 0 4px hsl(var(--accent) / 0.5),
+      0 4px 0 4px hsl(var(--accent) / 0.3);
   }
 
-  /* Sophisticated pixel text */
+  /* Pixel text with proper shadow */
   .gradient-text {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: hsl(var(--primary));
     font-family: 'Press Start 2P', monospace;
     font-size: 0.875rem;
-    line-height: 1.6;
+    line-height: 1.8;
+    text-shadow: 2px 2px 0 hsl(var(--primary) / 0.3);
   }
 
   .neon-text {
     color: hsl(var(--primary));
+    font-family: 'Press Start 2P', monospace;
     text-shadow: 
       2px 0 0 hsl(var(--primary-glow)),
       -2px 0 0 hsl(var(--primary-glow)),
       0 2px 0 hsl(var(--primary-glow)),
       0 -2px 0 hsl(var(--primary-glow)),
-      2px 2px 0 hsl(var(--primary) / 0.5);
-    font-family: 'Press Start 2P', monospace;
-    font-weight: normal;
+      2px 2px 0 hsl(var(--foreground));
   }
 
   /* Refined pixel animations */

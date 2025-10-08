@@ -5,30 +5,30 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-pixel text-xs uppercase tracking-wider ring-offset-background transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border-4 border-foreground",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-primary hover:shadow-lg",
+        default: "bg-primary text-primary-foreground hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--foreground))] hover:shadow-[0_2px_0_0_hsl(var(--foreground))] active:translate-y-2 active:shadow-none",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--foreground))] hover:shadow-[0_2px_0_0_hsl(var(--foreground))] active:translate-y-2 active:shadow-none",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-white",
+          "border-4 border-primary bg-background text-primary hover:bg-primary hover:text-primary-foreground hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--primary))] hover:shadow-[0_2px_0_0_hsl(var(--primary))] active:translate-y-2 active:shadow-none",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-glow-secondary",
-        ghost: "hover:bg-accent hover:text-white",
-        link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-gradient-primary text-white font-bold shadow-glow-primary hover:scale-105 hover:shadow-xl transform transition-all border border-primary/30 hover:text-white hover:bg-gradient-secondary",
-        neon: "bg-transparent border-2 border-primary text-primary shadow-glow-primary hover:bg-primary hover:text-white transition-all duration-300 font-semibold",
-        gradient: "bg-gradient-secondary text-white font-bold hover:scale-105 transform transition-all shadow-glow-secondary hover:text-white",
-        premium: "bg-gradient-to-r from-accent via-primary to-secondary text-white hover:shadow-glow-accent transition-all duration-300 font-semibold border border-primary/30 hover:text-white",
+          "bg-secondary text-secondary-foreground hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--foreground))] hover:shadow-[0_2px_0_0_hsl(var(--foreground))] active:translate-y-2 active:shadow-none",
+        ghost: "border-0 bg-transparent hover:bg-muted hover:text-foreground shadow-none",
+        link: "border-0 text-primary underline-offset-4 hover:underline shadow-none",
+        hero: "bg-primary text-primary-foreground hover:translate-y-1 shadow-[0_6px_0_0_hsl(var(--foreground)),0_6px_0_0_hsl(var(--primary-glow))] hover:shadow-[0_3px_0_0_hsl(var(--foreground)),0_3px_0_0_hsl(var(--primary-glow))] active:translate-y-2 active:shadow-none",
+        neon: "bg-transparent border-4 border-primary text-primary shadow-[0_0_0_2px_hsl(var(--primary-glow))] hover:bg-primary hover:text-primary-foreground hover:shadow-[0_0_0_4px_hsl(var(--primary-glow))]",
+        gradient: "bg-gradient-to-r from-primary to-secondary text-white hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--foreground))] hover:shadow-[0_2px_0_0_hsl(var(--foreground))] active:translate-y-2 active:shadow-none",
+        premium: "bg-gradient-to-r from-accent via-primary to-secondary text-white hover:translate-y-1 shadow-[0_6px_0_0_hsl(var(--foreground)),0_0_0_2px_hsl(var(--accent-glow))] hover:shadow-[0_3px_0_0_hsl(var(--foreground)),0_0_0_4px_hsl(var(--accent-glow))] active:translate-y-2 active:shadow-none",
       },
       size: {
-        default: "h-11 px-6 py-3",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-14 rounded-lg px-10 text-base",
-        xl: "h-16 rounded-xl px-12 text-lg",
-        icon: "h-11 w-11",
+        default: "h-11 px-6 py-2",
+        sm: "h-9 px-4 py-1 text-[10px]",
+        lg: "h-14 px-10 py-3 text-sm",
+        xl: "h-16 px-12 py-4 text-base",
+        icon: "h-11 w-11 p-0",
       },
     },
     defaultVariants: {
