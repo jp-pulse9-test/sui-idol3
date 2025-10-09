@@ -59,6 +59,9 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [isTypingEffect, setIsTypingEffect] = useState(false);
   const [conversationCount, setConversationCount] = useState(0);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<string>("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -85,9 +88,9 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     scrollToBottom();
   }, [messages, typingText]);
 
-  // 레트로 TV 사운드 효과
+  // 레트로 TV 사운드 효과 (대화 중일 때만)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || messages.length === 0) return;
 
     const playStaticSound = () => {
       // 랜덤하게 10초에서 60초 사이에 재생
@@ -123,7 +126,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
         clearTimeout(staticIntervalRef.current);
       }
     };
-  }, [isOpen]);
+  }, [isOpen, messages.length]);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -283,6 +286,32 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
       emotion: 'excited'
     };
     setMessages([welcomeMsg]);
+  };
+
+  const performAnalysis = async () => {
+    try {
+      const conversationHistory = messages.map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.content
+      }));
+
+      const { data, error } = await supabase.functions.invoke('analyze-conversation', {
+        body: {
+          messages: conversationHistory,
+          choices: selectedChoices
+        }
+      });
+
+      if (error) throw error;
+
+      setAnalysisResult(data.analysis || "분석을 완료했습니다!");
+      setShowAnalysis(true);
+    } catch (error) {
+      console.error('분석 실패:', error);
+      toast.error("성향 분석에 실패했습니다.");
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const saveChatLog = async (message: Message) => {
@@ -591,11 +620,15 @@ ${genreContext}
         saveRelationshipScore(newScore);
       }
 
+      // 선택지 저장
+      if (choices.length > 0) {
+        setSelectedChoices(prev => [...prev, userMessage.content]);
+      }
+
       // 11번의 대화가 완료되면 분석 시작
-      if (conversationCount >= 11 && isDemoMode) {
-        setTimeout(() => {
-          setShowAnalysis(true);
-        }, 1000);
+      if (conversationCount >= 10 && isDemoMode && !isAnalyzing) {
+        setIsAnalyzing(true);
+        await performAnalysis();
       }
 
     } catch (error) {
@@ -703,6 +736,7 @@ ${genreContext}
   if (!isOpen) return null;
 
   return (
+    <>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-black">
       {/* MUD 게임 터미널 - 모바일 세로 사이즈 */}
       <div className="relative w-full max-w-md h-[90vh]">
@@ -927,67 +961,74 @@ ${genreContext}
               </>
             )}
           </div>
-            </Card>
-          </div>
-          
-      {/* 성향 분석 및 추천 모달 */}
-      {showAnalysis && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="glass-dark rounded-3xl p-8 max-w-2xl w-full space-y-6 animate-scale-in">
-            <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold gradient-text">대화 분석 완료! 🎯</h2>
-              <p className="text-lg text-muted-foreground">
-                {conversationCount}번의 대화를 통해 당신의 성향을 분석했어요
-              </p>
-            </div>
-
-            <div className="glass p-6 rounded-xl space-y-3">
-              <h3 className="text-xl font-semibold text-primary">당신의 성향</h3>
-              <p className="text-foreground">
-                • 감성적이고 공감 능력이 뛰어난 성향<br/>
-                • 창의적이고 예술적 감각이 풍부함<br/>
-                • 깊이 있는 대화를 선호하는 유형
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-center gradient-text">당신과 잘 맞는 아이돌 11명을 추천합니다!</h3>
-              <p className="text-center text-muted-foreground">
-                아이돌과 본격적으로 대화하려면 캐릭터를 소장해야 해요
-              </p>
-              
-              <div className="flex gap-3 justify-center">
-                <Button
-                  onClick={() => {
-                    setShowAnalysis(false);
-                    onClose();
-                    window.location.href = '/pick';
-                  }}
-                  variant="default"
-                  size="lg"
-                  className="bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold"
-                >
-                  💖 추천 아이돌 보기
-                </Button>
-                <Button
-                  onClick={() => setShowAnalysis(false)}
-                  variant="outline"
-                  size="lg"
-                >
-                  계속 대화하기
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
           
           {/* 전원 LED */}
           <div className="absolute top-1 right-1">
             <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
           </div>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+        
+        {/* 성향 분석 및 추천 모달 */}
+        {showAnalysis && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="glass-dark rounded-3xl p-8 max-w-2xl w-full space-y-6 animate-scale-in">
+              <div className="text-center space-y-4">
+                <h2 className="text-3xl font-bold gradient-text">대화 분석 완료! 🎯</h2>
+                <p className="text-lg text-muted-foreground">
+                  {conversationCount}번의 대화를 통해 당신의 성향을 분석했어요
+                </p>
+              </div>
+
+              {isAnalyzing ? (
+                <div className="glass p-6 rounded-xl text-center space-y-3">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                  <p className="text-muted-foreground">대화 내용을 분석하고 있어요...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="glass p-6 rounded-xl space-y-3">
+                    <h3 className="text-xl font-semibold text-primary">당신의 성향 & 추천 아이돌</h3>
+                    <div className="text-foreground whitespace-pre-wrap">
+                      {analysisResult}
+                    </div>
+                  </div>
+
+                    <div className="space-y-4">
+                      <p className="text-center text-muted-foreground">
+                        아이돌과 본격적으로 대화하려면 캐릭터를 소장해야 해요
+                      </p>
+                  
+                      <div className="flex gap-3 justify-center">
+                        <Button
+                          onClick={() => {
+                            setShowAnalysis(false);
+                            onClose();
+                            window.location.href = '/pick';
+                          }}
+                          variant="default"
+                          size="lg"
+                          className="bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold"
+                        >
+                          💖 추천 아이돌 보기
+                        </Button>
+                        <Button
+                          onClick={() => setShowAnalysis(false)}
+                          variant="outline"
+                          size="lg"
+                        >
+                          계속 대화하기
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+    </>
   );
 };

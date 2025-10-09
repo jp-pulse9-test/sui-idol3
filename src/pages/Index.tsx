@@ -187,10 +187,10 @@ const Index = () => {
               </h1>
               <div className="space-y-4">
                 <h2 className="text-2xl md:text-3xl font-bold gradient-text">
-                  나의 최애, 이상형은 어떤 사람일까?
+                  나의 최애, 이상형은 어떤 사람?
                 </h2>
                 <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  24시간 실시간 대화 · 포토카드 수집 · 팬덤 활동
+                  취향 데이터를 기반으로 AIDOL 찾기
                 </p>
               </div>
             </div>
@@ -218,7 +218,7 @@ const Index = () => {
             <div className="mt-12 p-6 md:p-8 glass rounded-2xl border border-white/10 shadow-lg space-y-6">
               <div className="text-center space-y-3">
                 <h3 className="text-xl md:text-2xl font-bold gradient-text">2025 AI 심쿵 챌린지 101</h3>
-                <p className="text-base md:text-lg text-muted-foreground">시즌 1 · 당신의 픽으로 탄생한 K-POP 아이돌들</p>
+                <p className="text-base md:text-lg text-muted-foreground">당신의 픽으로 만드는 K-POP 아이돌</p>
                 <p className="text-sm md:text-base text-muted-foreground">
                   16강 배틀 · 성격 테스트 · 운명의 아이돌
                 </p>
@@ -339,14 +339,14 @@ const Index = () => {
         <section className="py-20">
           <div className="text-center space-y-8 glass p-16 rounded-2xl">
             <div className="space-y-6">
-              <h2 className="text-5xl md:text-6xl font-bold gradient-text">
-                나만의 최애를 찾아보세요
+              <h2 className="text-3xl md:text-5xl font-bold gradient-text leading-tight">
+                나만의 최애를<br className="md:hidden" /> 찾아보세요
               </h2>
-              <p className="text-2xl text-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-2xl text-foreground max-w-3xl mx-auto leading-relaxed">
                 AI 성격 분석으로 시작하는 특별한 팬덤 여정
               </p>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                아이돌 발견부터 심쿵톡, 포토카드 수집, 팬덤 활동까지 모든 것이 한 곳에
+              <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                아이돌 발견부터 심쿵톡,<br className="md:hidden" /> 포토카드 수집, 팬덤 활동까지<br className="md:hidden" /> 모든 것이 한 곳에
               </p>
             </div>
             
