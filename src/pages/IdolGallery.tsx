@@ -73,11 +73,14 @@ const IdolGallery = () => {
   const getIdolStats = (idol: Idol) => {
     const stats = generateRandomStats(idol.category);
     return [
-      { stat: 'Vocal', value: stats.vocal.current },
-      { stat: 'Dance', value: stats.dance.current },
-      { stat: 'Visual', value: stats.visual.current },
-      { stat: 'Variety', value: stats.variety.current },
-      { stat: 'Rap', value: stats.rap.current }
+      { stat: 'Vocal', current: stats.vocal.current, potential: stats.vocal.potential },
+      { stat: 'Dance', current: stats.dance.current, potential: stats.dance.potential },
+      { stat: 'Visual', current: stats.visual.current, potential: stats.visual.potential },
+      { stat: 'Variety', current: stats.variety.current, potential: stats.variety.potential },
+      { stat: 'Rap', current: stats.rap.current, potential: stats.rap.potential },
+      { stat: 'Charisma', current: stats.charisma.current, potential: stats.charisma.potential },
+      { stat: 'Acting', current: stats.acting.current, potential: stats.acting.potential },
+      { stat: 'Leadership', current: stats.leadership.current, potential: stats.leadership.potential }
     ];
   };
 
@@ -95,7 +98,7 @@ const IdolGallery = () => {
               <ArrowLeft className="w-4 h-4" />
               홈으로
             </Button>
-            <h1 className="text-2xl font-bold gradient-text">아이돌 탐색기</h1>
+            <h1 className="text-2xl font-bold gradient-text">AIDOL 탐색하기</h1>
             <div className="w-20" /> {/* Spacer for centering */}
           </div>
 
@@ -196,19 +199,28 @@ const IdolGallery = () => {
                   
                   {/* 능력치 오버레이 */}
                   {hoveredIdol === idol.id && (
-                    <div className="absolute inset-0 bg-black/90 flex items-center justify-center transition-all duration-300">
+                    <div className="absolute inset-0 bg-black/95 flex items-center justify-center transition-all duration-300 p-2">
                       <ResponsiveContainer width="100%" height="100%">
                         <RadarChart data={getIdolStats(idol)}>
-                          <PolarGrid stroke="hsl(var(--border))" />
+                          <PolarGrid stroke="hsl(var(--border))" strokeOpacity={0.3} />
                           <PolarAngleAxis 
                             dataKey="stat" 
-                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
+                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 8 }}
                           />
                           <Radar
-                            dataKey="value"
+                            name="현재"
+                            dataKey="current"
                             stroke="hsl(var(--primary))"
                             fill="hsl(var(--primary))"
-                            fillOpacity={0.3}
+                            fillOpacity={0.5}
+                          />
+                          <Radar
+                            name="잠재력"
+                            dataKey="potential"
+                            stroke="hsl(var(--accent))"
+                            fill="hsl(var(--accent))"
+                            fillOpacity={0.2}
+                            strokeDasharray="3 3"
                           />
                         </RadarChart>
                       </ResponsiveContainer>
@@ -232,10 +244,33 @@ const IdolGallery = () => {
 
         {/* Info Section */}
         {!loading && filteredIdols.length > 0 && (
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              총 {filteredIdols.length}명의 아이돌 · 클릭하여 대화 시작
-            </p>
+          <div className="mt-8 space-y-4">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                총 {filteredIdols.length}명의 아이돌 · 클릭하여 대화 시작
+              </p>
+            </div>
+            
+            {/* 로그인 안내 */}
+            {!searchTerm && selectedGender === "all" && (
+              <Card className="max-w-2xl mx-auto p-6 bg-gradient-to-r from-primary/10 to-accent/10 border-2 border-primary/20">
+                <div className="text-center space-y-3">
+                  <h3 className="text-lg font-bold gradient-text">🎯 더 많은 아이돌을 만나보세요!</h3>
+                  <p className="text-sm text-muted-foreground">
+                    현재 랜덤으로 선별된 <span className="font-bold text-primary">8명</span>의 아이돌을 보여드리고 있습니다.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    전체 아이돌 프로필과 상세한 능력치, 더욱 깊은 대화를 경험하려면 로그인이 필요합니다.
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/auth')}
+                    className="mt-4 bg-gradient-primary hover:bg-gradient-secondary"
+                  >
+                    로그인하고 전체 아이돌 탐색하기 →
+                  </Button>
+                </div>
+              </Card>
+            )}
           </div>
         )}
       </div>
