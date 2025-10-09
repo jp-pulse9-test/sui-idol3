@@ -707,16 +707,16 @@ ${genreContext}
             {messages.map((msg, index) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.sender === 'user' ? 'justify-start' : 'justify-center'} animate-fade-in glitch-on-appear`}
+                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-center'} animate-fade-in glitch-on-appear`}
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <div className="space-y-1 w-full flex flex-col items-center">
+                <div className={`space-y-1 ${msg.sender === 'user' ? 'max-w-[80%]' : 'w-full flex flex-col items-center'}`}>
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
                     <div className="border border-blue-600 p-1 bg-black mb-1 w-full max-w-[340px]">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 
-                        className="w-full h-auto aspect-video grayscale contrast-125 brightness-110"
+                        className="w-full h-auto object-contain grayscale contrast-125 brightness-110"
                       />
                     </div>
                   )}
