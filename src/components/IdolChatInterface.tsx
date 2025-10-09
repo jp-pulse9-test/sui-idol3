@@ -59,7 +59,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [isTypingEffect, setIsTypingEffect] = useState(false);
   const [conversationCount, setConversationCount] = useState(0);
   const [showAnalysis, setShowAnalysis] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<string>("");
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -975,50 +975,101 @@ ${genreContext}
     {/* 성향 분석 및 추천 모달 */}
     {showAnalysis && (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="glass-dark rounded-3xl p-8 max-w-2xl w-full space-y-6 animate-scale-in">
-          <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold gradient-text">대화 분석 완료! 🎯</h2>
-            <p className="text-lg text-muted-foreground">
-              {conversationCount}번의 대화를 통해 당신의 성향을 분석했어요
-            </p>
+        <div className="bg-gradient-to-br from-background to-muted rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
+          {/* 헤더 */}
+          <div className="bg-primary/10 border-b border-primary/20 px-6 py-5">
+            <h2 className="text-2xl font-bold text-foreground mb-1">🎯 취향 분석 완료</h2>
+            <p className="text-sm text-muted-foreground">{conversationCount}번의 대화로 당신을 분석했어요</p>
           </div>
-
+          
           {isAnalyzing ? (
-            <div className="glass p-6 rounded-xl text-center space-y-3">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="text-muted-foreground">대화 내용을 분석하고 있어요...</p>
+            <div className="flex-1 flex items-center justify-center p-8">
+              <div className="text-center space-y-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                <p className="text-muted-foreground">대화 내용을 분석하고 있어요...</p>
+              </div>
             </div>
           ) : (
             <>
-              <div className="glass p-6 rounded-xl space-y-3">
-                <h3 className="text-xl font-semibold text-primary">당신의 성향 & 추천 아이돌</h3>
-                <div className="text-foreground whitespace-pre-wrap">
-                  {analysisResult}
+              {/* 스크롤 가능한 컨텐츠 */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* 성향 분석 */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                    <span className="text-primary">📊</span> 성향 분석
+                  </h3>
+                  <p className="text-sm text-foreground/90 leading-relaxed bg-muted/50 rounded-lg p-4">
+                    {analysisResult?.personality || analysisResult}
+                  </p>
+                  {analysisResult?.traits && analysisResult.traits.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {analysisResult.traits.map((trait: string, idx: number) => (
+                        <span key={idx} className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full font-medium">
+                          {trait}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
+
+                {/* 추천 아이돌 */}
+                {analysisResult?.maleIdol && analysisResult?.femaleIdol && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <span className="text-primary">💎</span> 추천 아이돌
+                    </h3>
+                    
+                    {/* 남자 아이돌 */}
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">👨</span>
+                        <h4 className="font-semibold text-foreground">{analysisResult.maleIdol.name}</h4>
+                        {analysisResult.maleIdol.mbti && (
+                          <span className="ml-auto px-2 py-0.5 bg-blue-500/20 text-blue-700 dark:text-blue-300 text-xs rounded">
+                            {analysisResult.maleIdol.mbti}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{analysisResult.maleIdol.description}</p>
+                    </div>
+
+                    {/* 여자 아이돌 */}
+                    <div className="bg-pink-500/10 border border-pink-500/20 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">👩</span>
+                        <h4 className="font-semibold text-foreground">{analysisResult.femaleIdol.name}</h4>
+                        {analysisResult.femaleIdol.mbti && (
+                          <span className="ml-auto px-2 py-0.5 bg-pink-500/20 text-pink-700 dark:text-pink-300 text-xs rounded">
+                            {analysisResult.femaleIdol.mbti}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{analysisResult.femaleIdol.description}</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-4">
-                <p className="text-center text-muted-foreground">
+              {/* 버튼 영역 - 고정 */}
+              <div className="border-t border-border bg-background/95 backdrop-blur px-4 py-4 space-y-3">
+                <p className="text-center text-sm text-muted-foreground">
                   아이돌과 본격적으로 대화하려면 캐릭터를 소장해야 해요
                 </p>
-            
-                <div className="flex gap-3 justify-center">
+                <div className="flex gap-3">
                   <Button
                     onClick={() => {
                       setShowAnalysis(false);
                       onClose();
                       window.location.href = '/pick';
                     }}
-                    variant="default"
-                    size="lg"
-                    className="bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold"
+                    className="flex-1"
                   >
                     💖 추천 아이돌 보기
                   </Button>
                   <Button
                     onClick={() => setShowAnalysis(false)}
                     variant="outline"
-                    size="lg"
+                    className="flex-1"
                   >
                     계속 대화하기
                   </Button>

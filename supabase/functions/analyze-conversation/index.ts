@@ -27,13 +27,24 @@ ${messages.map((m: any) => `${m.role === 'user' ? '사용자' : 'AI'}: ${m.conte
 선택한 선택지:
 ${choices.join(', ')}
 
-이 데이터를 바탕으로 사용자의 성향을 분석하고, 다음 형식으로 응답해주세요:
+다음 형식으로 **정확히** JSON 형식으로만 응답해주세요:
 
-1. 성향 분석 (3-4줄의 간결한 요약)
-2. 추천 남자 아이돌 (이름, 간단한 특징)
-3. 추천 여자 아이돌 (이름, 간단한 특징)
+{
+  "personality": "사용자의 핵심 성향을 2-3줄로 간결하게 요약",
+  "traits": ["특징1", "특징2", "특징3"],
+  "maleIdol": {
+    "name": "이름",
+    "mbti": "MBTI",
+    "description": "한 줄 설명"
+  },
+  "femaleIdol": {
+    "name": "이름",
+    "mbti": "MBTI", 
+    "description": "한 줄 설명"
+  }
+}
 
-사용자의 대화 패턴, 선택지를 통해 드러난 성격, 선호하는 대화 스타일 등을 종합적으로 분석해주세요.`;
+사용자의 대화 패턴과 선택지를 종합하여 분석하고, JSON만 반환하세요.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -46,7 +57,7 @@ ${choices.join(', ')}
         messages: [
           {
             role: "system",
-            content: "당신은 사용자의 대화 패턴과 선택지를 분석하여 성향을 파악하고, 적합한 아이돌을 추천하는 전문가입니다."
+            content: "당신은 사용자의 대화 패턴과 선택지를 분석하여 성향을 파악하고, 적합한 아이돌을 추천하는 전문가입니다. 반드시 JSON 형식으로만 응답하세요."
           },
           {
             role: "user",
@@ -63,7 +74,21 @@ ${choices.join(', ')}
     }
 
     const data = await response.json();
-    const analysis = data.choices[0]?.message?.content || "분석을 완료하지 못했습니다.";
+    const analysisText = data.choices[0]?.message?.content || "{}";
+    
+    // JSON 파싱 시도
+    let analysis;
+    try {
+      analysis = JSON.parse(analysisText);
+    } catch (e) {
+      // JSON 파싱 실패 시 기본값
+      analysis = {
+        personality: "분석을 완료하지 못했습니다.",
+        traits: [],
+        maleIdol: { name: "추천 불가", mbti: "", description: "" },
+        femaleIdol: { name: "추천 불가", mbti: "", description: "" }
+      };
+    }
 
     return new Response(
       JSON.stringify({ analysis }),
