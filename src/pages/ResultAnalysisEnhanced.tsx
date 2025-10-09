@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Sparkles, Heart, Star } from "lucide-react";
 
 interface PersonalityProfile {
   type: string;
@@ -35,8 +36,6 @@ export const ResultAnalysisEnhanced = () => {
   const [appearanceProfile, setAppearanceProfile] = useState<AppearanceProfile | null>(null);
   const [analysis, setAnalysis] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const [idolImage, setIdolImage] = useState<string | null>(null);
-  const [imageLoading, setImageLoading] = useState(false);
 
   useEffect(() => {
     const loadProfiles = async () => {
@@ -58,9 +57,6 @@ export const ResultAnalysisEnhanced = () => {
         
         // Gemini를 사용하여 팬 성향 분석 생성
         await generateFanAnalysisWithGemini(personality, appearance);
-        
-        // 외모 취향 기반 AI 이미지 생성
-        await generateIdolImage(appearance);
         
       } catch (error) {
         console.error('프로필 로딩 중 에러:', error);
@@ -122,31 +118,6 @@ export const ResultAnalysisEnhanced = () => {
       // 백업 분석 사용
       const selectedGender = localStorage.getItem('selectedGender');
       setAnalysis(generateBackupAnalysis(personality, appearance, 'modern', selectedGender));
-    }
-  };
-
-  const generateIdolImage = async (appearance: AppearanceProfile) => {
-    try {
-      setImageLoading(true);
-      const selectedGender = localStorage.getItem('selectedGender');
-      
-      const { data, error } = await supabase.functions.invoke('generate-idol-image', {
-        body: { 
-          appearanceProfile: appearance,
-          gender: selectedGender
-        }
-      });
-
-      if (error) throw error;
-      
-      if (data?.imageUrl) {
-        setIdolImage(data.imageUrl);
-      }
-    } catch (error) {
-      console.error('이미지 생성 실패:', error);
-      toast.error('이미지 생성에 실패했습니다.');
-    } finally {
-      setImageLoading(false);
     }
   };
 
@@ -216,29 +187,10 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
         {appearanceProfile && (
           <Card className="p-8 bg-card/80 backdrop-blur-sm border-border">
             <h3 className="text-2xl font-bold mb-4 gradient-text">외모 취향</h3>
-            <div className="space-y-6">
+            <div className="space-y-4">
               <Badge variant="outline" className="text-lg px-4 py-2">
                 {appearanceProfile.type}
               </Badge>
-              
-              {/* AI 생성 이미지 */}
-              {imageLoading ? (
-                <div className="w-full aspect-square rounded-lg bg-muted flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                    <p className="text-sm text-muted-foreground">AI가 당신의 최애 이미지를 생성하고 있어요...</p>
-                  </div>
-                </div>
-              ) : idolImage ? (
-                <div className="w-full aspect-square rounded-lg overflow-hidden border border-border/50">
-                  <img 
-                    src={idolImage} 
-                    alt="AI 생성 최애 이미지" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : null}
-              
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                 <div>헤어: {appearanceProfile.hair}</div>
                 <div>눈매: {appearanceProfile.eyes}</div>
@@ -261,17 +213,37 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
               <p className="text-sm text-gray-300 mt-1">당신만을 위한 특별한 분석 결과</p>
             </div>
             
-            {/* AI 생성 이미지 */}
-            {idolImage && (
-              <div className="relative w-full aspect-[4/3] overflow-hidden">
-                <img 
-                  src={idolImage} 
-                  alt="당신의 최애 이미지" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            {/* 타로카드 스타일 상징 */}
+            <div className="relative w-full bg-gradient-to-b from-purple-900/30 to-pink-900/30 p-12 flex items-center justify-center">
+              <div className="relative">
+                {/* 타로카드 배경 */}
+                <div className="w-48 h-72 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                  <div className="absolute inset-0 bg-black/20 rounded-lg" />
+                  <div className="absolute inset-2 border-2 border-white/30 rounded-lg" />
+                  
+                  {/* 카드 중앙 상징 */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                    <div className="relative">
+                      <Star className="w-16 h-16 text-yellow-300" fill="currentColor" />
+                      <Sparkles className="w-8 h-8 text-white absolute -top-2 -right-2" />
+                    </div>
+                    <Heart className="w-12 h-12 text-pink-200" fill="currentColor" />
+                    <p className="text-white font-bold text-lg tracking-wider">運命</p>
+                    <p className="text-white/80 text-sm">DESTINY</p>
+                  </div>
+                  
+                  {/* 카드 하단 장식 */}
+                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/50" />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* 빛나는 효과 */}
+                <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent blur-2xl animate-pulse" />
               </div>
-            )}
+            </div>
             
             {/* 다크 블로그 스타일 본문 */}
             <div className="p-6 md:p-10 bg-gradient-to-b from-black to-gray-900">
