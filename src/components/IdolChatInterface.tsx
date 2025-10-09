@@ -603,8 +603,8 @@ ${genreContext}
 
   const playIdolVoice = async (text: string) => {
     try {
-      // 아이돌의 voice_id 사용, 없으면 기본값
-      const voiceId = idol.voiceId || '9BWtsMINqrJLrRacOk9x';
+      // 테스트용 지우 보이스 ID
+      const voiceId = idol.voiceId || 'DMkRitQrfpiddSQT5adl';
       
       console.log('🎤 Using voice ID:', voiceId);
       console.log('🎤 Text to speak:', text);

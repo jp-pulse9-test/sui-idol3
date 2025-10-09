@@ -20,17 +20,17 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY가 설정되지 않았습니다');
     }
 
-    // 장르별 이미지 스타일
+    // 장르별 이미지 스타일 - 사진작가 스타일
     const genreStyles = {
-      'mystery-thriller': 'dark mysterious cinematic atmosphere, film noir lighting, dramatic shadows, moody color grading',
-      'apocalypse-survival': 'post-apocalyptic cinematic landscape, survival theme, gritty realistic cinematography, desaturated colors',
-      'highteen-romance': 'bright youthful cinematic atmosphere, school setting, soft warm cinematic colors, romantic lighting',
-      'bromance': 'strong friendship vibe, energetic cinematic atmosphere, dynamic composition, vibrant colors',
-      'girls-romance': 'romantic soft cinematic atmosphere, pastel colors, dreamy aesthetic, golden hour lighting',
-      'historical-romance': 'historical korean cinematic setting, traditional costumes, elegant composition, period drama cinematography'
+      'mystery-thriller': 'photojournalism style, noir photography, dramatic chiaroscuro lighting, deep shadows, high contrast black and white aesthetic, documentary photography, Leica M10 camera, 35mm lens, f/2.8, ISO 800, professional editorial photography',
+      'apocalypse-survival': 'war photography style, gritty photojournalism, desaturated color palette, handheld camera aesthetic, documentary realism, Nikon D850, 24-70mm lens, f/4, ISO 1600, reportage photography, raw and unfiltered',
+      'highteen-romance': 'lifestyle photography, soft natural light, golden hour warmth, Canon 5D Mark IV, 50mm f/1.4, shallow depth of field, bokeh background, Kodak Portra 400 film aesthetic, editorial fashion photography style',
+      'bromance': 'street photography style, candid moments, Fujifilm X-T4, 23mm f/2, vibrant colors, dynamic composition, photojournalistic approach, Henri Cartier-Bresson inspired decisive moment',
+      'girls-romance': 'fine art portrait photography, dreamy soft focus, pastel color grading, Sony A7R IV, 85mm f/1.4, professional beauty photography, magazine editorial style, ethereal lighting',
+      'historical-romance': 'period photography aesthetic, classic portraiture style, medium format camera feel, Hasselblad 501C, 80mm lens, f/2.8, film grain texture, museum quality photography, timeless composition'
     };
 
-    const styleGuide = genreStyles[genre as keyof typeof genreStyles] || 'cinematic, highly detailed';
+    const styleGuide = genreStyles[genre as keyof typeof genreStyles] || 'professional photography, photorealistic, magazine quality';
 
     // 캐릭터 정보를 포함하여 주인공 시점으로 이미지 생성
     const genderDesc = characterGender === 'male' 
@@ -41,7 +41,7 @@ serve(async (req) => {
       ? `The main protagonist is ${characterName}, a ${genderDesc}, K-pop idol. Show ${characterName} clearly in the scene as the main focus.` 
       : 'Show the scene from first-person perspective';
     
-    const imagePrompt = `Create a CINEMATIC PHOTOREALISTIC 16:9 widescreen scene like a film still: ${storyContext}. ${characterDescription}. ASPECT RATIO: 16:9 horizontal widescreen format, cinematic letterbox composition. Cinematic composition with depth of field, professional color grading, film-quality lighting, anamorphic widescreen feel, ${styleGuide}. Shot on ARRI Alexa, anamorphic lens, shallow depth of field, bokeh background, professional film production quality. CRITICAL: The protagonist MUST be ${characterGender === 'male' ? 'MALE' : 'FEMALE'}. NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image.`;
+    const imagePrompt = `Professional photography capturing this scene: ${storyContext}. ${characterDescription}. Shot as if by a master photographer with professional camera equipment. PHOTOREALISTIC QUALITY with ${styleGuide}. Composition following rule of thirds, perfect focus, natural lighting or dramatic lighting as appropriate. ASPECT RATIO: 16:9 horizontal format. CRITICAL: The protagonist MUST be ${characterGender === 'male' ? 'MALE' : 'FEMALE'}. NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image. Pure photography, no digital art or illustration style.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
