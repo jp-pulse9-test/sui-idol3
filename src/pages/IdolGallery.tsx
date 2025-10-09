@@ -75,7 +75,7 @@ const IdolGallery = () => {
               <ArrowLeft className="w-4 h-4" />
               홈으로
             </Button>
-            <h1 className="text-2xl font-bold gradient-text">아이돌 갤러리</h1>
+            <h1 className="text-2xl font-bold gradient-text">아이돌 탐색기</h1>
             <div className="w-20" /> {/* Spacer for centering */}
           </div>
 
@@ -165,11 +165,11 @@ const IdolGallery = () => {
                 className="group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105"
                 onClick={() => handleIdolClick(idol)}
               >
-                <div className="aspect-[3/4] relative">
+                <div className="aspect-square relative flex items-center justify-center p-4">
                   <img
                     src={idol.profile_image}
                     alt={idol.name}
-                    className="w-full h-full object-cover"
+                    className="w-32 h-32 object-cover rounded-full border-4 border-border shadow-lg"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
                     <div className="space-y-1">
