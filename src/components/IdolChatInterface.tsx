@@ -637,21 +637,21 @@ ${genreContext}
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black">
-      {/* MUD 게임 터미널 */}
-      <div className="relative w-full max-w-5xl">
-        <div className="relative p-2 bg-gray-900">
-          <div className="relative">
-            <Card className="w-full aspect-[4/3] flex flex-col bg-black border border-blue-600 rounded-none relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-black">
+      {/* MUD 게임 터미널 - 모바일 세로 사이즈 */}
+      <div className="relative w-full max-w-md h-[90vh]">
+        <div className="relative p-2 bg-gray-900 h-full">
+          <div className="relative h-full">
+            <Card className="w-full h-full flex flex-col bg-black border border-blue-600 rounded-none relative overflow-hidden">
               {/* 미세한 스캔라인 */}
               <div className="absolute inset-0 pointer-events-none z-10 opacity-10" style={{
                 backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.02) 1px, rgba(255,255,255,0.02) 2px)',
               }} />
 
           {/* 헤더 - MUD 스타일 */}
-          <div className="relative z-20 flex items-center justify-between px-6 py-3 border-b border-blue-600 bg-black">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 border border-blue-600 p-0.5 bg-black">
+          <div className="relative z-20 flex items-center justify-between px-4 py-2 border-b border-blue-600 bg-black">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 border border-blue-600 p-0.5 bg-black">
                 <img src={idol.image} alt={idol.name} className="w-full h-full object-cover grayscale" />
               </div>
               <div>
@@ -712,7 +712,7 @@ ${genreContext}
               >
                 <div className="space-y-1 max-w-full">
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
-                    <div className="border border-blue-600 p-1 bg-black mb-1">
+                    <div className="border border-blue-600 p-1 bg-black mb-1 max-w-[200px]">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 

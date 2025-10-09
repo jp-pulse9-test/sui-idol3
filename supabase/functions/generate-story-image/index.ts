@@ -22,12 +22,12 @@ serve(async (req) => {
 
     // 장르별 이미지 스타일
     const genreStyles = {
-      'mystery-thriller': 'dark mysterious atmosphere, noir style, dramatic shadows',
-      'apocalypse-survival': 'post-apocalyptic landscape, survival theme, gritty realistic',
-      'highteen-romance': 'bright youthful atmosphere, school setting, soft warm colors',
-      'bromance': 'strong friendship vibe, energetic atmosphere, dynamic composition',
-      'girls-romance': 'romantic soft atmosphere, pastel colors, dreamy aesthetic',
-      'historical-romance': 'historical korean setting, traditional costumes, elegant composition'
+      'mystery-thriller': 'dark mysterious cinematic atmosphere, film noir lighting, dramatic shadows, moody color grading',
+      'apocalypse-survival': 'post-apocalyptic cinematic landscape, survival theme, gritty realistic cinematography, desaturated colors',
+      'highteen-romance': 'bright youthful cinematic atmosphere, school setting, soft warm cinematic colors, romantic lighting',
+      'bromance': 'strong friendship vibe, energetic cinematic atmosphere, dynamic composition, vibrant colors',
+      'girls-romance': 'romantic soft cinematic atmosphere, pastel colors, dreamy aesthetic, golden hour lighting',
+      'historical-romance': 'historical korean cinematic setting, traditional costumes, elegant composition, period drama cinematography'
     };
 
     const styleGuide = genreStyles[genre as keyof typeof genreStyles] || 'cinematic, highly detailed';
@@ -41,7 +41,7 @@ serve(async (req) => {
       ? `The main protagonist is ${characterName}, a ${genderDesc}, K-pop idol. Show ${characterName} clearly in the scene as the main focus.` 
       : 'Show the scene from first-person perspective';
     
-    const imagePrompt = `Create a PHOTOREALISTIC scene like a snapshot from a friend's camera: ${storyContext}. ${characterDescription}. Style: authentic smartphone photo quality, realistic lighting, natural colors, candid photography style, ${styleGuide}. Make it look like a real photo someone took with their phone, not a painting or illustration. CRITICAL: The protagonist MUST be ${characterGender === 'male' ? 'MALE' : 'FEMALE'}. NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image.`;
+    const imagePrompt = `Create a CINEMATIC PHOTOREALISTIC scene like a film still: ${storyContext}. ${characterDescription}. Cinematic composition with depth of field, professional color grading, film-quality lighting, cinematic aspect ratio feel, ${styleGuide}. Shot on ARRI Alexa, anamorphic lens, shallow depth of field, bokeh background, professional film production quality. CRITICAL: The protagonist MUST be ${characterGender === 'male' ? 'MALE' : 'FEMALE'}. NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
