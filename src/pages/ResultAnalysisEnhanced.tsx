@@ -203,14 +203,30 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
         )}
 
         {analysis && (
-          <Card className="p-8 bg-gradient-to-br from-primary/5 to-purple/5 border-primary/20">
-            <h3 className="text-2xl font-bold mb-6 gradient-text flex items-center gap-2">
-              ✨ AI 팬 운명 분석
-            </h3>
-            <div className="bg-card/50 p-6 rounded-lg border border-border">
-              <p className="text-lg leading-relaxed whitespace-pre-wrap">
-                {analysis}
-              </p>
+          <Card className="p-0 bg-gradient-to-br from-primary/5 to-purple/5 border-primary/20 overflow-hidden">
+            <div className="p-6 border-b border-border/50 bg-card/30">
+              <h3 className="text-2xl font-bold gradient-text flex items-center gap-2">
+                ✨ AI 팬 운명 분석
+              </h3>
+            </div>
+            
+            {/* 웹소설 스타일 본문 */}
+            <div className="p-8 md:p-12 space-y-6">
+              <div className="prose prose-lg max-w-none">
+                {analysis.split('\n\n').map((paragraph, idx) => (
+                  <p 
+                    key={idx} 
+                    className="text-base md:text-lg leading-loose text-foreground/90 mb-6 first-letter:text-3xl first-letter:font-bold first-letter:text-primary first-letter:mr-1 first-letter:float-left indent-0"
+                    style={{ 
+                      textAlign: 'justify',
+                      lineHeight: '2',
+                      letterSpacing: '0.02em'
+                    }}
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
             </div>
           </Card>
         )}

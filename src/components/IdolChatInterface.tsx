@@ -67,12 +67,15 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [showNameInput, setShowNameInput] = useState(true);
   const [demoAnalysis, setDemoAnalysis] = useState<any>(null);
   const [skipTyping, setSkipTyping] = useState(false);
+  const [isPulling, setIsPulling] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const staticAudioRef = useRef<HTMLAudioElement | null>(null);
   const staticIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartY = useRef<number>(0);
   const isDemoMode = !user;
 
   useEffect(() => {
@@ -93,27 +96,61 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     scrollToBottom();
   }, [messages, typingText]);
 
-  // 스크롤 이벤트로 타이핑 효과 건너뛰기
+  // Pull to Refresh 기능
   useEffect(() => {
-    const handleScroll = () => {
-      if (isTypingEffect && scrollAreaRef.current) {
-        setSkipTyping(true);
+    const handleTouchStart = (e: TouchEvent) => {
+      const scrollElement = scrollAreaRef.current;
+      if (!scrollElement) return;
+      
+      const scrollTop = scrollElement.scrollTop;
+      if (scrollTop === 0) {
+        touchStartY.current = e.touches[0].clientY;
       }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const scrollElement = scrollAreaRef.current;
+      if (!scrollElement || touchStartY.current === 0) return;
+      
+      const scrollTop = scrollElement.scrollTop;
+      if (scrollTop === 0) {
+        const currentY = e.touches[0].clientY;
+        const distance = currentY - touchStartY.current;
+        
+        if (distance > 0) {
+          setPullDistance(Math.min(distance, 100));
+          if (distance > 80) {
+            setIsPulling(true);
+          }
+        }
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (isPulling && pullDistance > 80) {
+        setSkipTyping(true);
+        toast.info("빠른 모드 활성화");
+      }
+      setIsPulling(false);
+      setPullDistance(0);
+      touchStartY.current = 0;
     };
 
     const scrollElement = scrollAreaRef.current;
     if (scrollElement) {
-      scrollElement.addEventListener('wheel', handleScroll);
-      scrollElement.addEventListener('touchmove', handleScroll);
+      scrollElement.addEventListener('touchstart', handleTouchStart);
+      scrollElement.addEventListener('touchmove', handleTouchMove);
+      scrollElement.addEventListener('touchend', handleTouchEnd);
     }
 
     return () => {
       if (scrollElement) {
-        scrollElement.removeEventListener('wheel', handleScroll);
-        scrollElement.removeEventListener('touchmove', handleScroll);
+        scrollElement.removeEventListener('touchstart', handleTouchStart);
+        scrollElement.removeEventListener('touchmove', handleTouchMove);
+        scrollElement.removeEventListener('touchend', handleTouchEnd);
       }
     };
-  }, [isTypingEffect]);
+  }, [isPulling, pullDistance]);
 
   // 레트로 TV 사운드 효과 (대화 중일 때만)
   useEffect(() => {
