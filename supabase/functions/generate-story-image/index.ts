@@ -68,12 +68,16 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('이미지 생성 성공');
+    console.log('이미지 생성 응답:', JSON.stringify(data).substring(0, 200));
 
     const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     
     if (!imageUrl) {
-      throw new Error('생성된 이미지를 찾을 수 없습니다');
+      console.error('이미지 URL 찾기 실패. 전체 응답:', JSON.stringify(data));
+      // 폴백: 빈 이미지 대신 null 반환하여 클라이언트가 재시도하도록
+      return new Response(JSON.stringify({ imageUrl: null }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     return new Response(JSON.stringify({ imageUrl }), {

@@ -60,6 +60,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [conversationCount, setConversationCount] = useState(0);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isDemoMode = !user;
@@ -80,10 +81,12 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, typingText]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
   };
 
   const loadChatHistory = async () => {
@@ -342,20 +345,27 @@ ${genreContext}
             .filter(c => c.length > 0)
         : [];
 
-      // 이미지 생성 (캐릭터 정보 포함)
+      // 이미지 생성 (두 번에 한 번 생성 - 50% 확률)
       let imageUrl: string | undefined;
-      try {
-        const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
-          body: {
-            storyContext: storyContent,
-            genre: selectedGenre,
-            characterName: idol.name,
-            characterGender: idol.gender || 'female'
+      const shouldGenerateImage = Math.random() > 0.5;
+      
+      if (shouldGenerateImage) {
+        try {
+          const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
+            body: {
+              storyContext: storyContent,
+              genre: selectedGenre,
+              characterName: idol.name,
+              characterGender: idol.gender || 'female'
+            }
+          });
+          
+          if (imageData?.imageUrl) {
+            imageUrl = imageData.imageUrl;
           }
-        });
-        imageUrl = imageData?.imageUrl;
-      } catch (imgError) {
-        console.error('이미지 생성 실패:', imgError);
+        } catch (imgError) {
+          console.error('이미지 생성 실패:', imgError);
+        }
       }
 
       const idolMessage: Message = {
@@ -660,46 +670,16 @@ ${genreContext}
               }} />
 
           {/* 헤더 - MUD 스타일 */}
-          <div className="relative z-20 flex items-center justify-between px-4 py-2 border-b border-blue-600 bg-black">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 border border-blue-600 p-0.5 bg-black">
-                <img src={idol.image} alt={idol.name} className="w-full h-full object-cover grayscale" />
-              </div>
-              <div>
-                <div className="flex items-center gap-3 mb-1">
-                  <h3 className="font-mono text-sm text-white uppercase tracking-wide">{idol.name}</h3>
-                  {selectedGenre && (
-                    <span className="text-xs font-mono bg-blue-600 text-white px-2 py-0.5">
-                      {GENRES.find(g => g.id === selectedGenre)?.name}
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 font-mono mb-1">{idol.personality}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-white text-xs font-mono">REL:</span>
-                  <div className="w-24 bg-gray-900 border border-blue-600 h-2">
-                    <div 
-                      className="bg-blue-600 h-full transition-all duration-500"
-                      style={{ width: `${relationshipScore}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-white font-mono">{relationshipScore}%</span>
-                  {isDemoMode && (
-                    <span className="ml-2 text-xs text-blue-400 font-mono">
-                      [{messageCount}/11]
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
+          <div className="relative z-20 border-b border-blue-600 bg-black">
+            {/* 상단 고정: 버튼들 */}
+            <div className="flex items-center justify-end gap-2 px-3 py-2 border-b border-blue-900">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleVoiceMode}
                 className={`border p-2 text-xs ${isVoiceMode ? "border-blue-600 bg-blue-600 text-white" : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"}`}
               >
-                {isVoiceMode ? <Mic className="w-3 h-3" /> : <MicOff className="w-3 h-3" />}
+                {isVoiceMode ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
               </Button>
               <Button 
                 variant="ghost" 
@@ -707,8 +687,41 @@ ${genreContext}
                 onClick={onClose} 
                 className="border border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white p-2"
               >
-                <X className="w-3 h-3" />
+                <X className="w-4 h-4" />
               </Button>
+            </div>
+            
+            {/* 캐릭터 정보 */}
+            <div className="flex items-center gap-3 px-4 py-2">
+              <div className="w-12 h-12 border border-blue-600 p-0.5 bg-black flex-shrink-0">
+                <img src={idol.image} alt={idol.name} className="w-full h-full object-cover grayscale" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h3 className="font-mono text-sm text-white uppercase tracking-wide">{idol.name}</h3>
+                  {selectedGenre && (
+                    <span className="text-xs font-mono bg-blue-600 text-white px-2 py-0.5">
+                      {GENRES.find(g => g.id === selectedGenre)?.name}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 font-mono mb-1 truncate">{idol.personality}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-white text-xs font-mono">REL:</span>
+                  <div className="w-20 sm:w-24 bg-gray-900 border border-blue-600 h-2">
+                    <div 
+                      className="bg-blue-600 h-full transition-all duration-500"
+                      style={{ width: `${relationshipScore}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-white font-mono">{relationshipScore}%</span>
+                  {isDemoMode && (
+                    <span className="text-xs text-blue-400 font-mono">
+                      [{messageCount}/11]
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
