@@ -208,11 +208,9 @@ const Index = () => {
               </Button>
               
               {!user && (
-                <div className="mt-4 p-3 md:p-4 bg-accent/10 rounded-lg border border-accent/20">
-                  <p className="text-xs md:text-sm text-muted-foreground text-center">
-                    💡 로그인 없이 바로 체험 가능해요
-                  </p>
-                </div>
+                <p className="mt-3 text-xs text-muted-foreground/60 text-center">
+                  💡 로그인 없이 바로 체험 가능해요
+                </p>
               )}
             </div>
           </div>
