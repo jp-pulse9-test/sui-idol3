@@ -5,10 +5,11 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Search, ArrowLeft, Sparkles } from "lucide-react";
+import { Search, ArrowLeft, Sparkles, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { generateRandomStats } from "@/components/IdolStatsDisplay";
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Idol {
   id: number;
@@ -22,11 +23,10 @@ interface Idol {
 
 const IdolGallery = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [idols, setIdols] = useState<Idol[]>([]);
   const [displayedIdols, setDisplayedIdols] = useState<Idol[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedGender, setSelectedGender] = useState<"all" | "male" | "female">("all");
   const [hoveredIdol, setHoveredIdol] = useState<number | null>(null);
 
   useEffect(() => {
@@ -54,11 +54,12 @@ const IdolGallery = () => {
     }
   };
 
-  const filteredIdols = (searchTerm || selectedGender !== "all" ? idols : displayedIdols).filter(idol => {
-    const matchesSearch = idol.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesGender = selectedGender === "all" || idol.gender === selectedGender;
-    return matchesSearch && matchesGender;
-  });
+  const handleSearchClick = () => {
+    if (!user) {
+      toast.error("검색하려면 로그인이 필요합니다");
+      navigate('/auth');
+    }
+  };
 
   const handleIdolClick = (idol: Idol) => {
     // 아이돌과 바로 대화 시작
@@ -88,8 +89,8 @@ const IdolGallery = () => {
     <div className="min-h-screen bg-gradient-background">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-6">
             <Button
               variant="ghost"
               onClick={() => navigate('/')}
@@ -102,62 +103,50 @@ const IdolGallery = () => {
             <div className="w-20" /> {/* Spacer for centering */}
           </div>
 
-          {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          {/* Google-style Search */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <Input
-                placeholder="아이돌 이름 검색..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                placeholder="AIDOL 이름 검색..."
+                onClick={handleSearchClick}
+                readOnly
+                className="pl-12 h-12 text-base rounded-full border-2 hover:shadow-lg transition-shadow cursor-pointer"
               />
-            </div>
-            
-            <div className="flex gap-2">
-              <Button
-                variant={selectedGender === "all" ? "default" : "outline"}
-                onClick={() => setSelectedGender("all")}
-                size="sm"
-              >
-                전체
-              </Button>
-              <Button
-                variant={selectedGender === "male" ? "default" : "outline"}
-                onClick={() => setSelectedGender("male")}
-                size="sm"
-              >
-                남자
-              </Button>
-              <Button
-                variant={selectedGender === "female" ? "default" : "outline"}
-                onClick={() => setSelectedGender("female")}
-                size="sm"
-              >
-                여자
-              </Button>
             </div>
           </div>
           
-          {/* 빠른 매칭 옵션 */}
-          <div className="mt-4 flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
+          {/* 매칭 옵션 - 재디자인 */}
+          <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Card 
+              className="p-6 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gradient-to-br from-primary/10 to-transparent border-2"
               onClick={() => navigate('/mbti')}
-              className="gap-2"
             >
-              <Sparkles className="w-4 h-4" />
-              AI 빠른 매칭
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full bg-primary/20">
+                  <Sparkles className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg mb-1">AI 빠른 매칭</h3>
+                  <p className="text-sm text-muted-foreground">나와 딱 맞는 아이돌 찾기</p>
+                </div>
+              </div>
+            </Card>
+            
+            <Card 
+              className="p-6 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gradient-to-br from-accent/10 to-transparent border-2"
               onClick={() => navigate('/worldcup')}
-              className="gap-2"
             >
-              🏆 이상형 월드컵
-            </Button>
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full bg-accent/20">
+                  <Trophy className="w-6 h-6 text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg mb-1">이상형 월드컵</h3>
+                  <p className="text-sm text-muted-foreground">선택으로 찾는 나의 이상형</p>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
@@ -171,18 +160,9 @@ const IdolGallery = () => {
               <p className="text-muted-foreground">아이돌을 불러오는 중...</p>
             </div>
           </div>
-        ) : filteredIdols.length === 0 ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center space-y-4">
-              <p className="text-xl text-muted-foreground">검색 결과가 없습니다</p>
-              <Button onClick={() => setSearchTerm("")} variant="outline">
-                초기화
-              </Button>
-            </div>
-          </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {filteredIdols.map((idol) => (
+            {displayedIdols.map((idol) => (
               <Card
                 key={idol.id}
                 className="group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105"
@@ -227,12 +207,12 @@ const IdolGallery = () => {
                     </div>
                   )}
                 </div>
-                <div className="p-3 space-y-1">
+                <div className="p-3 space-y-2">
                   <h3 className="font-bold text-sm truncate">{idol.name}</h3>
                   <Badge variant="outline" className="text-xs truncate w-full justify-center">
                     {idol.category}
                   </Badge>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground pt-2">
                     <Sparkles className="w-3 h-3" />
                     <span>대화 시작하기</span>
                   </div>
@@ -243,7 +223,7 @@ const IdolGallery = () => {
         )}
 
         {/* 로그인 안내 */}
-        {!loading && !searchTerm && selectedGender === "all" && (
+        {!loading && (
           <div className="mt-8">
             <Card className="max-w-2xl mx-auto p-8 bg-card border-2 border-border text-center space-y-4">
               <h3 className="text-xl font-bold gradient-text">더 많은 AIDOL을 만나보세요!</h3>
