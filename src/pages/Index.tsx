@@ -498,12 +498,12 @@ const Index = () => {
             
             <div className="flex flex-col gap-6 items-center pt-6 relative z-10">
               <Button
-                onClick={() => navigate('/demo-chat')}
+                onClick={() => navigate('/gallery')}
                 variant="default"
                 size="xl"
                 className="min-w-80 text-2xl py-8 bg-gradient-primary hover:bg-gradient-secondary text-white font-bold shadow-2xl hover:shadow-3xl transition-all duration-300"
               >
-                💬 아이돌 갤러리 둘러보기
+                💬 내 최애 탐색하기
               </Button>
               <p className="text-base text-muted-foreground">
                 지금 시작하면 무료 체험 가능!
