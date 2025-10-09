@@ -214,19 +214,57 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
             
             {/* 다크 블로그 스타일 본문 */}
             <div className="p-6 md:p-10 bg-gradient-to-b from-black to-gray-900">
-              <div className="space-y-4 md:space-y-5">
-                {analysis.split('\n\n').map((paragraph, idx) => (
-                  <p 
-                    key={idx} 
-                    className="text-[15px] md:text-[16px] leading-[1.8] text-gray-100"
-                    style={{ 
-                      wordBreak: 'keep-all',
-                      wordWrap: 'break-word'
-                    }}
-                  >
-                    {paragraph}
-                  </p>
-                ))}
+              <div className="space-y-6">
+                {analysis.split('\n').map((line, idx) => {
+                  // 헤더 파싱 (## 제목)
+                  if (line.startsWith('## ')) {
+                    return (
+                      <h2 key={idx} className="text-xl md:text-2xl font-bold text-white mt-8 mb-4 first:mt-0">
+                        {line.replace('## ', '')}
+                      </h2>
+                    );
+                  }
+                  
+                  // 소제목 파싱 (### 제목)
+                  if (line.startsWith('### ')) {
+                    return (
+                      <h3 key={idx} className="text-lg md:text-xl font-semibold text-gray-200 mt-6 mb-3">
+                        {line.replace('### ', '')}
+                      </h3>
+                    );
+                  }
+                  
+                  // 빈 줄
+                  if (line.trim() === '') {
+                    return <div key={idx} className="h-2" />;
+                  }
+                  
+                  // 일반 텍스트 (볼드, 이탤릭 처리)
+                  const processedLine = line
+                    .split(/(\*\*.*?\*\*|\*.*?\*)/)
+                    .map((part, i) => {
+                      if (part.startsWith('**') && part.endsWith('**')) {
+                        return <strong key={i} className="font-bold text-white">{part.slice(2, -2)}</strong>;
+                      }
+                      if (part.startsWith('*') && part.endsWith('*')) {
+                        return <em key={i} className="italic text-gray-300">{part.slice(1, -1)}</em>;
+                      }
+                      return part;
+                    });
+                  
+                  return (
+                    <p 
+                      key={idx} 
+                      className="text-[15px] md:text-[16px] leading-[1.9] text-gray-100"
+                      style={{ 
+                        wordBreak: 'keep-all',
+                        wordWrap: 'break-word'
+                      }}
+                    >
+                      {processedLine}
+                    </p>
+                  );
+                })}
               </div>
             </div>
             
