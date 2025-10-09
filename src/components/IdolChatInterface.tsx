@@ -63,6 +63,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
   const [userName, setUserName] = useState<string>('');
+  const [userGender, setUserGender] = useState<'male' | 'female' | ''>('');
   const [showNameInput, setShowNameInput] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -236,7 +237,8 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
           prompt: `${systemPrompt}\n\n장르 시작 메시지를 생성해줘. 반드시 다음 형식으로 응답해:\n\n[이야기]\n(여기에 자기소개와 배경 설명)\n\n[선택지]\n1. (첫 번째 선택지)\n2. (두 번째 선택지)\n3. (세 번째 선택지)`,
-          userName: userName || '팬'
+          userName: userName || '팬',
+          userGender: userGender || ''
         }
       });
 
@@ -479,7 +481,8 @@ ${genreContext}
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
           prompt: `${systemPrompt}\n\n대화 기록:\n${conversationHistory.map(m => `${m.role}: ${m.content}`).join('\n')}\n\n${userName || '팬'}: ${userMessage.content}\n\n${idol.name}:`,
-          userName: userName || '팬'
+          userName: userName || '팬',
+          userGender: userGender || ''
         }
       });
 
@@ -1047,6 +1050,73 @@ ${genreContext}
           </div>
         </div>
       </div>
+      
+      {/* 이름과 성별 입력 모달 */}
+      {showNameInput && isDemoMode && (
+        <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <Card className="w-full max-w-md p-8 bg-white/95 backdrop-blur-md">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-purple-900 mb-2">
+                {idol.name}와의 대화 시작 ✨
+              </h2>
+              <p className="text-gray-600">
+                이름과 성별을 입력하면 더 맞춤형 대화를 나눌 수 있어요
+              </p>
+            </div>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.target as HTMLFormElement;
+              const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+              if (nameInput.value.trim() && userGender) {
+                setUserName(nameInput.value.trim());
+                setShowNameInput(false);
+              } else {
+                toast.error('이름과 성별을 모두 입력해주세요!');
+              }
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    이름
+                  </label>
+                  <Input
+                    name="name"
+                    placeholder="이름을 입력하세요"
+                    maxLength={20}
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    성별
+                  </label>
+                  <div className="flex gap-4">
+                    <Button
+                      type="button"
+                      variant={userGender === 'male' ? 'default' : 'outline'}
+                      className="flex-1"
+                      onClick={() => setUserGender('male')}
+                    >
+                      남성
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={userGender === 'female' ? 'default' : 'outline'}
+                      className="flex-1"
+                      onClick={() => setUserGender('female')}
+                    >
+                      여성
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <Button type="submit" className="w-full mt-6">
+                대화 시작하기
+              </Button>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
     </>
   );

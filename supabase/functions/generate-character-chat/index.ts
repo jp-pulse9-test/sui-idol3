@@ -13,9 +13,10 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, userName = '팬' } = await req.json();
+    const { prompt, userName = '팬', userGender = '' } = await req.json();
     console.log('캐릭터 채팅 요청:', prompt);
     console.log('사용자 이름:', userName);
+    console.log('사용자 성별:', userGender);
     
     const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
     if (!GOOGLE_AI_API_KEY) {
@@ -34,7 +35,9 @@ serve(async (req) => {
             {
               parts: [
                 {
-                  text: prompt
+                  text: userGender ? 
+                    `${prompt}\n\n참고: 사용자는 ${userGender === 'male' ? '남성' : '여성'}입니다. 이를 고려해서 대화를 진행하세요.` 
+                    : prompt
                 }
               ]
             }
