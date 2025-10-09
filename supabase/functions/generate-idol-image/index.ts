@@ -11,16 +11,32 @@ serve(async (req) => {
   }
 
   try {
-    const { appearanceProfile, gender } = await req.json()
+    const { appearanceProfile, gender, type } = await req.json()
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured')
     }
 
-    // 외모 취향을 기반으로 프롬프트 생성
-    const genderText = gender === 'male' ? 'male' : 'female'
-    const prompt = `Create a high-quality K-pop idol portrait photo. 
+    let prompt = ''
+    
+    // 타로카드 생성
+    if (type === 'tarot') {
+      prompt = `Create a mystical tarot card design with the title "DESTINY" (運命).
+The card should have:
+- Ornate golden borders with intricate patterns
+- A central illustration featuring a shining star, heart symbol, and cosmic elements
+- Purple and pink gradient background with mystical atmosphere
+- Vintage tarot card aesthetic with sacred geometry
+- Bottom text reading "DESTINY" in elegant font
+- Art nouveau style decorative elements
+- Magical sparkles and celestial symbols
+- High quality, detailed illustration in traditional tarot card style
+Professional tarot card illustration, mystical, ornate, golden details, cosmic theme.`
+    } else {
+      // 기존 아이돌 이미지 생성
+      const genderText = gender === 'male' ? 'male' : 'female'
+      prompt = `Create a high-quality K-pop idol portrait photo. 
 Gender: ${genderText}
 Hair style: ${appearanceProfile.hair}
 Eye shape: ${appearanceProfile.eyes}
@@ -30,6 +46,7 @@ Expression: ${appearanceProfile.expression}
 Overall concept: ${appearanceProfile.concept}
 
 Professional studio photography, soft lighting, detailed facial features, beautiful composition, 8k quality, ultra realistic.`
+    }
 
     console.log('Generating image with prompt:', prompt)
 

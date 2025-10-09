@@ -36,6 +36,8 @@ export const ResultAnalysisEnhanced = () => {
   const [appearanceProfile, setAppearanceProfile] = useState<AppearanceProfile | null>(null);
   const [analysis, setAnalysis] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [tarotImage, setTarotImage] = useState<string | null>(null);
+  const [tarotLoading, setTarotLoading] = useState(false);
 
   useEffect(() => {
     const loadProfiles = async () => {
@@ -57,6 +59,9 @@ export const ResultAnalysisEnhanced = () => {
         
         // Gemini를 사용하여 팬 성향 분석 생성
         await generateFanAnalysisWithGemini(personality, appearance);
+        
+        // 타로카드 이미지 생성
+        await generateTarotCard();
         
       } catch (error) {
         console.error('프로필 로딩 중 에러:', error);
@@ -118,6 +123,29 @@ export const ResultAnalysisEnhanced = () => {
       // 백업 분석 사용
       const selectedGender = localStorage.getItem('selectedGender');
       setAnalysis(generateBackupAnalysis(personality, appearance, 'modern', selectedGender));
+    }
+  };
+
+  const generateTarotCard = async () => {
+    try {
+      setTarotLoading(true);
+      
+      const { data, error } = await supabase.functions.invoke('generate-idol-image', {
+        body: { 
+          type: 'tarot'
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.imageUrl) {
+        setTarotImage(data.imageUrl);
+      }
+    } catch (error) {
+      console.error('타로카드 생성 실패:', error);
+      // 실패해도 조용히 넘어감 (선택적 기능)
+    } finally {
+      setTarotLoading(false);
     }
   };
 
@@ -213,36 +241,39 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
               <p className="text-sm text-gray-300 mt-1">당신만을 위한 특별한 분석 결과</p>
             </div>
             
-            {/* 타로카드 스타일 상징 */}
+            {/* 타로카드 이미지 */}
             <div className="relative w-full bg-gradient-to-b from-purple-900/30 to-pink-900/30 p-12 flex items-center justify-center">
-              <div className="relative">
-                {/* 타로카드 배경 */}
-                <div className="w-48 h-72 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                  <div className="absolute inset-0 bg-black/20 rounded-lg" />
-                  <div className="absolute inset-2 border-2 border-white/30 rounded-lg" />
-                  
-                  {/* 카드 중앙 상징 */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                    <div className="relative">
-                      <Star className="w-16 h-16 text-yellow-300" fill="currentColor" />
-                      <Sparkles className="w-8 h-8 text-white absolute -top-2 -right-2" />
-                    </div>
-                    <Heart className="w-12 h-12 text-pink-200" fill="currentColor" />
-                    <p className="text-white font-bold text-lg tracking-wider">運命</p>
-                    <p className="text-white/80 text-sm">DESTINY</p>
-                  </div>
-                  
-                  {/* 카드 하단 장식 */}
-                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/50" />
-                    ))}
+              {tarotLoading ? (
+                <div className="w-48 h-72 bg-black/40 rounded-lg flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400 mx-auto"></div>
+                    <p className="text-sm text-gray-300">운명의 카드를 준비하고 있어요...</p>
                   </div>
                 </div>
-                
-                {/* 빛나는 효과 */}
-                <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent blur-2xl animate-pulse" />
-              </div>
+              ) : tarotImage ? (
+                <div className="relative">
+                  <img 
+                    src={tarotImage} 
+                    alt="운명의 타로카드" 
+                    className="w-64 h-96 object-cover rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-radial from-white/10 to-transparent blur-2xl animate-pulse" />
+                </div>
+              ) : (
+                <div className="relative">
+                  {/* 백업 타로카드 디자인 */}
+                  <div className="w-48 h-72 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg shadow-2xl">
+                    <div className="absolute inset-0 bg-black/20 rounded-lg" />
+                    <div className="absolute inset-2 border-2 border-white/30 rounded-lg" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                      <Star className="w-16 h-16 text-yellow-300" fill="currentColor" />
+                      <Heart className="w-12 h-12 text-pink-200" fill="currentColor" />
+                      <p className="text-white font-bold text-lg tracking-wider">運命</p>
+                      <p className="text-white/80 text-sm">DESTINY</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             
             {/* 다크 블로그 스타일 본문 */}
