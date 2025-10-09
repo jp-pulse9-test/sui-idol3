@@ -65,6 +65,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [userName, setUserName] = useState<string>('');
   const [userGender, setUserGender] = useState<'male' | 'female' | ''>('');
   const [showNameInput, setShowNameInput] = useState(true);
+  const [demoAnalysis, setDemoAnalysis] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -514,7 +515,9 @@ ${genreContext}
 
     // 특별 선택지 처리
     if (choice === '성향 분석 결과보기') {
-      window.location.href = '/auth';
+      if (demoAnalysis) {
+        window.location.href = `/result-analysis?analysis=${encodeURIComponent(JSON.stringify(demoAnalysis))}`;
+      }
       return;
     }
     
@@ -671,6 +674,8 @@ ${genreContext}
             if (error) throw error;
 
             const result = data.analysis;
+            setDemoAnalysis(result); // 분석 결과 저장
+            
             const summaryContent = `[체험 완료! 🎉]\n\n${userName}님의 핵심 성향: ${result.personality || '당신의 취향을 분석했어요.'}\n\n추천 아이돌:\n• 남자: ${result.maleIdol?.name || '남자 아이돌'} (${result.maleIdol?.mbti || ''})\n• 여자: ${result.femaleIdol?.name || '여자 아이돌'} (${result.femaleIdol?.mbti || ''})`;
 
             const analysisMessage: Message = {
