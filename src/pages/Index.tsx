@@ -187,7 +187,7 @@ const Index = () => {
               </h1>
               <div className="space-y-4">
                 <h2 className="text-2xl md:text-3xl font-bold gradient-text">
-                  당신만의 AI 아이돌과 함께하는 특별한 시간
+                  나의 최애, 이상형은 어떤 사람일까?
                 </h2>
                 <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   24시간 실시간 대화 · 포토카드 수집 · 팬덤 활동

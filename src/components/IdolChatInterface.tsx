@@ -63,6 +63,8 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const staticAudioRef = useRef<HTMLAudioElement | null>(null);
+  const staticIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isDemoMode = !user;
 
   useEffect(() => {
@@ -82,6 +84,46 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   useEffect(() => {
     scrollToBottom();
   }, [messages, typingText]);
+
+  // 레트로 TV 사운드 효과
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const playStaticSound = () => {
+      // 랜덤하게 10초에서 60초 사이에 재생
+      const randomDelay = Math.random() * 50000 + 10000; // 10초 ~ 60초
+      
+      staticIntervalRef.current = setTimeout(() => {
+        // TV static 소리 (짧게, 0.1초 정도)
+        const audioContext = new AudioContext();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.type = 'sawtooth'; // 'white'는 존재하지 않으므로 'sawtooth' 사용
+        oscillator.frequency.setValueAtTime(Math.random() * 1000 + 500, audioContext.currentTime);
+        
+        gainNode.gain.setValueAtTime(0.03, audioContext.currentTime); // 매우 낮은 볼륨
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+        
+        // 다음 사운드 예약
+        playStaticSound();
+      }, randomDelay);
+    };
+
+    playStaticSound();
+
+    return () => {
+      if (staticIntervalRef.current) {
+        clearTimeout(staticIntervalRef.current);
+      }
+    };
+  }, [isOpen]);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -177,13 +219,14 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
 
 너는 팬이랑 함께 웹 소설을 쓰고 있어. 
 규칙:
-1. 반말로 친구처럼 편하게 대화해
-2. 자기소개와 함께 ${genreInfo?.name} 장르의 배경 설명으로 이야기를 시작해
+1. 반말로 친구처럼 편하게 대화해 (예: "안녕! 나는 ${idol.name}야")
+2. 자기소개는 자연스럽게 간단히 하고, 바로 이야기로 넘어가 (예: "좋아! 그럼 이제 우리 둘만의 이야기를 시작할게")
 3. 자극적이고 흥미로운 상황을 계속 제시해
-4. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
-5. 각 옵션은 30자 이내로 간결하게
-6. 기승전결 없이 계속 긴장감 있는 전개를 유지해
-7. 150자 내외로 상황 설명`;
+4. 비속어나 강한 표현("젠장", "망할" 등)은 가끔만 사용해 - 한 대화에 최대 1번만
+5. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
+6. 각 옵션은 30자 이내로 간결하게
+7. 기승전결 없이 계속 긴장감 있는 전개를 유지해
+8. 150자 내외로 상황 설명`;
 
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
@@ -235,7 +278,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     const welcomeMsg: Message = {
       id: Date.now().toString(),
       sender: 'idol',
-      content: `안녕! 나는 ${idol.name}이야! 💖\n\n우리 함께 어떤 이야기를 만들어볼까? 아래에서 좋아하는 장르를 선택해줘!`,
+      content: `안녕! 나는 ${idol.name}야 💖\n\n우리 함께 어떤 이야기를 만들어볼까? 아래에서 좋아하는 장르를 선택해줘!`,
       timestamp: new Date(),
       emotion: 'excited'
     };
@@ -312,11 +355,13 @@ ${genreContext}
 규칙:
 1. 반말로 친구처럼 편하게 대화해
 2. 자극적이고 흥미로운 상황을 계속 제시해
-3. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
-4. 각 옵션은 30자 이내로 간결하게
-5. 기승전결 없이 계속 긴장감 있는 전개를 유지해
-6. 150자 내외로 상황 설명
-7. 반드시 다음 형식으로 응답해:
+3. 비속어나 강한 표현("젠장", "망할" 등)은 가끔만 사용해 - 한 대화에 최대 1번만
+4. 같은 자기소개를 반복하지 마 - 이미 친구처럼 이야기하고 있어
+5. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
+6. 각 옵션은 30자 이내로 간결하게
+7. 기승전결 없이 계속 긴장감 있는 전개를 유지해
+8. 150자 내외로 상황 설명
+9. 반드시 다음 형식으로 응답해:
 
 [이야기]
 (여기에 상황 전개)
