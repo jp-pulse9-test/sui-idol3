@@ -203,22 +203,22 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
         )}
 
         {analysis && (
-          <Card className="p-0 bg-white dark:bg-card overflow-hidden shadow-sm">
+          <Card className="p-0 bg-black border border-white/10 overflow-hidden shadow-2xl">
             {/* 헤더 */}
-            <div className="p-6 border-b border-border/30">
-              <h3 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
+            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-900/20 to-pink-900/20">
+              <h3 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
                 ✨ AI 팬 운명 분석
               </h3>
-              <p className="text-sm text-muted-foreground mt-1">당신만을 위한 특별한 분석 결과</p>
+              <p className="text-sm text-gray-300 mt-1">당신만을 위한 특별한 분석 결과</p>
             </div>
             
-            {/* 네이버 블로그 스타일 본문 */}
-            <div className="p-6 md:p-10">
+            {/* 다크 블로그 스타일 본문 */}
+            <div className="p-6 md:p-10 bg-gradient-to-b from-black to-gray-900">
               <div className="space-y-4 md:space-y-5">
                 {analysis.split('\n\n').map((paragraph, idx) => (
                   <p 
                     key={idx} 
-                    className="text-[15px] md:text-[16px] leading-[1.8] text-foreground/85"
+                    className="text-[15px] md:text-[16px] leading-[1.8] text-gray-100"
                     style={{ 
                       wordBreak: 'keep-all',
                       wordWrap: 'break-word'
@@ -231,9 +231,9 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
             </div>
             
             {/* 푸터 */}
-            <div className="px-6 md:px-10 pb-6 pt-2">
-              <div className="pt-4 border-t border-border/20">
-                <p className="text-xs text-muted-foreground text-center">
+            <div className="px-6 md:px-10 pb-6 pt-2 bg-black/50">
+              <div className="pt-4 border-t border-white/10">
+                <p className="text-xs text-gray-400 text-center">
                   💡 이 분석은 AI가 생성한 창작 콘텐츠입니다
                 </p>
               </div>
