@@ -183,56 +183,89 @@ const Index = () => {
         <section className="min-h-screen flex items-center justify-center">
           <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl relative overflow-hidden">
             {/* 배경 데코레이션 */}
-            <div className="absolute inset-0 pointer-events-none opacity-20">
-              {/* 좌상단 라인아트 */}
-              <div className="absolute top-0 left-0 w-40 h-40">
-                <svg viewBox="0 0 100 100" className="w-full h-full text-pink-400">
-                  <circle cx="10" cy="10" r="2" fill="currentColor" className="animate-pulse" />
-                  <circle cx="30" cy="20" r="1.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
-                  <circle cx="50" cy="15" r="1" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1s' }} />
-                  <path d="M 10 10 Q 30 20 50 15" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.6" />
-                </svg>
+            <div className="absolute inset-0 pointer-events-none">
+              {/* 그라디언트 블러 효과 */}
+              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+              <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+              
+              {/* 라인아트 데코레이션 */}
+              <div className="absolute inset-0 opacity-30">
+                {/* 좌상단 */}
+                <div className="absolute top-4 left-4 w-32 h-32">
+                  <svg viewBox="0 0 100 100" className="w-full h-full text-pink-400">
+                    <circle cx="20" cy="20" r="3" fill="currentColor" className="animate-pulse" />
+                    <circle cx="40" cy="30" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
+                    <circle cx="60" cy="25" r="2.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1s' }} />
+                    <path d="M 20 20 Q 40 30 60 25" stroke="currentColor" strokeWidth="1" fill="none" />
+                    <path d="M 10 40 Q 30 35 50 40" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.5" />
+                  </svg>
+                </div>
+                
+                {/* 우상단 */}
+                <div className="absolute top-4 right-4 w-32 h-32">
+                  <svg viewBox="0 0 100 100" className="w-full h-full text-purple-400">
+                    <circle cx="80" cy="20" r="3" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.3s' }} />
+                    <circle cx="60" cy="30" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.8s' }} />
+                    <circle cx="40" cy="25" r="2.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.3s' }} />
+                    <path d="M 80 20 Q 60 30 40 25" stroke="currentColor" strokeWidth="1" fill="none" />
+                    <path d="M 90 40 Q 70 35 50 40" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.5" />
+                  </svg>
+                </div>
+                
+                {/* 좌하단 */}
+                <div className="absolute bottom-4 left-4 w-32 h-32">
+                  <svg viewBox="0 0 100 100" className="w-full h-full text-blue-400">
+                    <circle cx="20" cy="80" r="3" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.6s' }} />
+                    <circle cx="40" cy="70" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.1s' }} />
+                    <circle cx="60" cy="75" r="2.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.2s' }} />
+                    <path d="M 20 80 Q 40 70 60 75" stroke="currentColor" strokeWidth="1" fill="none" />
+                    <path d="M 10 60 Q 30 65 50 60" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.5" />
+                  </svg>
+                </div>
+                
+                {/* 우하단 */}
+                <div className="absolute bottom-4 right-4 w-32 h-32">
+                  <svg viewBox="0 0 100 100" className="w-full h-full text-pink-400">
+                    <circle cx="80" cy="80" r="3" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.9s' }} />
+                    <circle cx="60" cy="70" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.4s' }} />
+                    <circle cx="40" cy="75" r="2.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.4s' }} />
+                    <path d="M 80 80 Q 60 70 40 75" stroke="currentColor" strokeWidth="1" fill="none" />
+                    <path d="M 90 60 Q 70 65 50 60" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.5" />
+                  </svg>
+                </div>
+                
+                {/* 추가 데코레이션: 중간 라인들 */}
+                <div className="absolute top-1/3 left-0 right-0 h-px bg-gradient-to-r from-transparent via-pink-500/30 to-transparent" />
+                <div className="absolute bottom-1/3 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
               </div>
               
-              {/* 우상단 라인아트 */}
-              <div className="absolute top-0 right-0 w-40 h-40">
-                <svg viewBox="0 0 100 100" className="w-full h-full text-purple-400">
-                  <circle cx="90" cy="10" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.3s' }} />
-                  <circle cx="70" cy="20" r="1.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.8s' }} />
-                  <circle cx="50" cy="15" r="1" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.3s' }} />
-                  <path d="M 90 10 Q 70 20 50 15" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.6" />
-                </svg>
-              </div>
-              
-              {/* 좌하단 라인아트 */}
-              <div className="absolute bottom-0 left-0 w-40 h-40">
-                <svg viewBox="0 0 100 100" className="w-full h-full text-blue-400">
-                  <circle cx="10" cy="90" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.6s' }} />
-                  <circle cx="30" cy="80" r="1.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.1s' }} />
-                  <circle cx="50" cy="85" r="1" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.2s' }} />
-                  <path d="M 10 90 Q 30 80 50 85" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.6" />
-                </svg>
-              </div>
-              
-              {/* 우하단 라인아트 */}
-              <div className="absolute bottom-0 right-0 w-40 h-40">
-                <svg viewBox="0 0 100 100" className="w-full h-full text-pink-400">
-                  <circle cx="90" cy="90" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.9s' }} />
-                  <circle cx="70" cy="80" r="1.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.4s' }} />
-                  <circle cx="50" cy="85" r="1" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.4s' }} />
-                  <path d="M 90 90 Q 70 80 50 85" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.6" />
-                </svg>
-              </div>
-              
-              {/* 중앙 스파클 효과 */}
-              <div className="absolute top-1/4 left-1/4 w-3 h-3">
+              {/* 스파클 효과 */}
+              <div className="absolute top-1/4 left-1/4 w-4 h-4">
                 <div className="w-full h-full bg-yellow-400 rounded-full animate-ping opacity-75" />
               </div>
-              <div className="absolute top-1/3 right-1/4 w-2 h-2">
+              <div className="absolute top-1/3 right-1/4 w-3 h-3">
                 <div className="w-full h-full bg-pink-400 rounded-full animate-ping opacity-75" style={{ animationDelay: '0.7s' }} />
               </div>
-              <div className="absolute bottom-1/3 left-1/3 w-2.5 h-2.5">
+              <div className="absolute bottom-1/3 left-1/3 w-3.5 h-3.5">
                 <div className="w-full h-full bg-purple-400 rounded-full animate-ping opacity-75" style={{ animationDelay: '1.2s' }} />
+              </div>
+              <div className="absolute top-1/2 right-1/3 w-2.5 h-2.5">
+                <div className="w-full h-full bg-blue-400 rounded-full animate-ping opacity-75" style={{ animationDelay: '0.4s' }} />
+              </div>
+              <div className="absolute bottom-1/4 right-1/2 w-3 h-3">
+                <div className="w-full h-full bg-pink-300 rounded-full animate-ping opacity-75" style={{ animationDelay: '1.6s' }} />
+              </div>
+              
+              {/* 떠다니는 하트 */}
+              <div className="absolute top-1/4 right-1/4 text-2xl opacity-40 animate-bounce" style={{ animationDelay: '0.5s' }}>
+                💖
+              </div>
+              <div className="absolute bottom-1/3 left-1/4 text-xl opacity-40 animate-bounce" style={{ animationDelay: '1.5s' }}>
+                ✨
+              </div>
+              <div className="absolute top-1/2 left-1/2 text-lg opacity-40 animate-bounce" style={{ animationDelay: '2.5s' }}>
+                ⭐
               </div>
             </div>
             
