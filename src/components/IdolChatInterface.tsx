@@ -156,6 +156,10 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
       timestamp: new Date()
     };
     setMessages(prev => [...prev, userSelectionMsg]);
+    await saveChatLog(userSelectionMsg);
+    
+    // 장르 선택 UI 숨기기
+    setShowGenreSelect(false);
     
     setIsTyping(true);
 
@@ -206,12 +210,12 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
       setMessages(prev => [...prev, storyMsg]);
       await saveChatLog(storyMsg);
       
-      // 타이핑 효과로 메시지 표시
-      await typeMessage(storyContent);
+      // 음성과 타이핑 효과를 동시에 시작
+      const voicePromise = isVoiceMode ? playIdolVoice(storyContent) : Promise.resolve();
+      const typePromise = typeMessage(storyContent);
       
-      if (isVoiceMode) {
-        await playIdolVoice(storyContent);
-      }
+      // 둘 다 완료될 때까지 기다림 (병렬 처리)
+      await Promise.all([voicePromise, typePromise]);
 
     } catch (error) {
       console.error('배경 설명 생성 실패:', error);
@@ -335,13 +339,15 @@ ${genreContext}
             .filter(c => c.length > 0)
         : [];
 
-      // 이미지 생성
+      // 이미지 생성 (캐릭터 정보 포함)
       let imageUrl: string | undefined;
       try {
         const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
           body: {
             storyContext: storyContent,
-            genre: selectedGenre
+            genre: selectedGenre,
+            characterName: idol.name,
+            characterGender: idol.personality.includes('여성') || idol.personality.includes('girl') ? 'female' : 'male'
           }
         });
         imageUrl = imageData?.imageUrl;
@@ -362,12 +368,12 @@ ${genreContext}
       setMessages(prev => [...prev, idolMessage]);
       await saveChatLog(idolMessage);
       
-      // 타이핑 효과로 메시지 표시
-      await typeMessage(storyContent);
+      // 음성과 타이핑 효과를 동시에 시작
+      const voicePromise = isVoiceMode ? playIdolVoice(storyContent) : Promise.resolve();
+      const typePromise = typeMessage(storyContent);
       
-      if (isVoiceMode) {
-        await playIdolVoice(storyContent);
-      }
+      // 둘 다 완료될 때까지 기다림 (병렬 처리)
+      await Promise.all([voicePromise, typePromise]);
 
       // 관계 점수 업데이트
       const positiveKeywords = ['좋아', '사랑', '멋있', '예쁘', '최고', '고마워', '응원'];
@@ -482,13 +488,15 @@ ${genreContext}
             .filter(c => c.length > 0)
         : [];
 
-      // 이미지 생성
+      // 이미지 생성 (캐릭터 정보 포함)
       let imageUrl: string | undefined;
       try {
         const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
           body: {
             storyContext: storyContent,
-            genre: selectedGenre
+            genre: selectedGenre,
+            characterName: idol.name,
+            characterGender: idol.personality.includes('여성') || idol.personality.includes('girl') ? 'female' : 'male'
           }
         });
         imageUrl = imageData?.imageUrl;
@@ -509,12 +517,12 @@ ${genreContext}
       setMessages(prev => [...prev, idolMessage]);
       await saveChatLog(idolMessage);
       
-      // 타이핑 효과로 메시지 표시
-      await typeMessage(storyContent);
+      // 음성과 타이핑 효과를 동시에 시작
+      const voicePromise = isVoiceMode ? playIdolVoice(storyContent) : Promise.resolve();
+      const typePromise = typeMessage(storyContent);
       
-      if (isVoiceMode) {
-        await playIdolVoice(storyContent);
-      }
+      // 둘 다 완료될 때까지 기다림 (병렬 처리)
+      await Promise.all([voicePromise, typePromise]);
 
       // 관계 점수 업데이트
       const positiveKeywords = ['좋아', '사랑', '멋있', '예쁘', '최고', '고마워', '응원'];

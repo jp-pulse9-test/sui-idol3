@@ -12,8 +12,8 @@ serve(async (req) => {
   }
 
   try {
-    const { storyContext, genre } = await req.json();
-    console.log('이미지 생성 요청:', { storyContext, genre });
+    const { storyContext, genre, characterName, characterGender } = await req.json();
+    console.log('이미지 생성 요청:', { storyContext, genre, characterName, characterGender });
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -32,7 +32,12 @@ serve(async (req) => {
 
     const styleGuide = genreStyles[genre as keyof typeof genreStyles] || 'cinematic, highly detailed';
 
-    const imagePrompt = `Create a realistic scene: ${storyContext}. Style: ${styleGuide}, K-drama aesthetic, professional photography, 4K quality. IMPORTANT: NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image. Pure visual scene only.`;
+    // 캐릭터 정보를 포함하여 주인공 시점으로 이미지 생성
+    const characterDescription = characterName 
+      ? `featuring ${characterName}, a ${characterGender === 'male' ? 'handsome young man' : 'beautiful young woman'} K-pop idol as the main protagonist` 
+      : 'from first-person perspective';
+    
+    const imagePrompt = `Create a realistic scene from first-person POV: ${storyContext}. ${characterDescription}. The protagonist ${characterName || 'main character'} should be clearly visible and central to the scene. Style: ${styleGuide}, K-drama aesthetic, professional photography, 4K quality. IMPORTANT: NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image. Pure visual scene only.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
