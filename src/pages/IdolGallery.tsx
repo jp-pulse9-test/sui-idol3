@@ -242,35 +242,25 @@ const IdolGallery = () => {
           </div>
         )}
 
-        {/* Info Section */}
-        {!loading && filteredIdols.length > 0 && (
-          <div className="mt-8 space-y-4">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                총 {filteredIdols.length}명의 아이돌 · 클릭하여 대화 시작
+        {/* 로그인 안내 */}
+        {!loading && !searchTerm && selectedGender === "all" && (
+          <div className="mt-8">
+            <Card className="max-w-2xl mx-auto p-8 bg-card border-2 border-border text-center space-y-4">
+              <h3 className="text-xl font-bold gradient-text">🎯 더 많은 아이돌을 만나보세요!</h3>
+              <p className="text-muted-foreground">
+                현재 랜덤으로 선별된 8명의 아이돌을 보여드리고 있습니다.
               </p>
-            </div>
-            
-            {/* 로그인 안내 */}
-            {!searchTerm && selectedGender === "all" && (
-              <Card className="max-w-2xl mx-auto p-6 bg-gradient-to-r from-primary/10 to-accent/10 border-2 border-primary/20">
-                <div className="text-center space-y-3">
-                  <h3 className="text-lg font-bold gradient-text">🎯 더 많은 아이돌을 만나보세요!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    현재 랜덤으로 선별된 <span className="font-bold text-primary">8명</span>의 아이돌을 보여드리고 있습니다.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    전체 아이돌 프로필과 상세한 능력치, 더욱 깊은 대화를 경험하려면 로그인이 필요합니다.
-                  </p>
-                  <Button 
-                    onClick={() => navigate('/auth')}
-                    className="mt-4 bg-gradient-primary hover:bg-gradient-secondary"
-                  >
-                    로그인하고 전체 아이돌 탐색하기 →
-                  </Button>
-                </div>
-              </Card>
-            )}
+              <p className="text-muted-foreground">
+                전체 아이돌 프로필과 상세한 능력치, 더욱 깊은 대화를 경험하려면 로그인이 필요합니다.
+              </p>
+              <Button 
+                onClick={() => navigate('/auth')}
+                size="lg"
+                className="mt-2 bg-gradient-primary hover:bg-gradient-secondary"
+              >
+                로그인하고 전체 아이돌 탐색하기 →
+              </Button>
+            </Card>
           </div>
         )}
       </div>
