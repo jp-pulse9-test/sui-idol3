@@ -452,9 +452,9 @@ ${genreContext}
             .filter(c => c.length > 0)
         : [];
 
-      // 이미지 생성 (두 번에 한 번 생성 - 50% 확률)
+      // 이미지 생성 (두 번에 한 번 생성 - 50% 확률, 스킵 상태가 아닐 때만)
       let imageUrl: string | undefined;
-      const shouldGenerateImage = Math.random() > 0.5;
+      const shouldGenerateImage = !skipTyping && Math.random() > 0.5;
       
       if (shouldGenerateImage) {
         try {
@@ -624,20 +624,22 @@ ${genreContext}
             .filter(c => c.length > 0)
         : [];
 
-      // 이미지 생성 (캐릭터 정보 포함)
+      // 이미지 생성 (캐릭터 정보 포함, 스킵 상태가 아닐 때만)
       let imageUrl: string | undefined;
-      try {
-        const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
-          body: {
-            storyContext: storyContent,
-            genre: selectedGenre,
-            characterName: idol.name,
-            characterGender: idol.gender || 'female'
-          }
-        });
-        imageUrl = imageData?.imageUrl;
-      } catch (imgError) {
-        console.error('이미지 생성 실패:', imgError);
+      if (!skipTyping) {
+        try {
+          const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
+            body: {
+              storyContext: storyContent,
+              genre: selectedGenre,
+              characterName: idol.name,
+              characterGender: idol.gender || 'female'
+            }
+          });
+          imageUrl = imageData?.imageUrl;
+        } catch (imgError) {
+          console.error('이미지 생성 실패:', imgError);
+        }
       }
 
       const idolMessage: Message = {
