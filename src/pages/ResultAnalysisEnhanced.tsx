@@ -181,129 +181,100 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center space-y-4 pt-8">
-          <h1 className="text-4xl font-bold gradient-text">3. 팬 운명 분석 결과</h1>
-          <p className="text-xl text-muted-foreground">
-            AI가 분석한 당신만의 특별한 팬 운명이에요
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="text-center space-y-2 pt-8">
+          <h1 className="text-3xl font-bold gradient-text">팬 운명 분석 결과</h1>
+          <p className="text-base text-muted-foreground">
+            AI가 분석한 당신만의 특별한 팬 운명
           </p>
         </div>
 
         {personalityProfile && (
-          <Card className="p-8 bg-card/80 backdrop-blur-sm border-border">
-            <h3 className="text-2xl font-bold mb-4 gradient-text">성격 분석</h3>
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-lg px-4 py-2">
-                  {personalityProfile.type}
-                </Badge>
-              </div>
+          <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
+            <h3 className="text-xl font-bold mb-3 gradient-text flex items-center gap-2">
+              <Sparkles className="w-5 h-5" />
+              성격 분석
+            </h3>
+            <div className="space-y-3">
+              <Badge variant="outline" className="text-base px-3 py-1">
+                {personalityProfile.type}
+              </Badge>
               <div className="flex flex-wrap gap-2">
                 {personalityProfile.traits.map((trait, index) => (
-                  <Badge key={index} variant="secondary">
+                  <Badge key={index} variant="secondary" className="text-sm">
                     {trait}
                   </Badge>
                 ))}
               </div>
-              <p className="text-muted-foreground leading-relaxed">
-                {personalityProfile.description}
-              </p>
             </div>
           </Card>
         )}
 
         {appearanceProfile && (
-          <Card className="p-8 bg-card/80 backdrop-blur-sm border-border">
-            <h3 className="text-2xl font-bold mb-4 gradient-text">외모 취향</h3>
-            <div className="space-y-4">
-              <Badge variant="outline" className="text-lg px-4 py-2">
+          <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
+            <h3 className="text-xl font-bold mb-3 gradient-text flex items-center gap-2">
+              <Heart className="w-5 h-5" />
+              외모 취향
+            </h3>
+            <div className="space-y-3">
+              <Badge variant="outline" className="text-base px-3 py-1">
                 {appearanceProfile.type}
               </Badge>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <div>헤어: {appearanceProfile.hair}</div>
-                <div>눈매: {appearanceProfile.eyes}</div>
-                <div>체형: {appearanceProfile.body}</div>
-                <div>스타일: {appearanceProfile.style}</div>
-                <div>표정: {appearanceProfile.expression}</div>
-                <div>컨셉: {appearanceProfile.concept}</div>
-              </div>
             </div>
           </Card>
         )}
 
         {analysis && (
-          <Card className="p-0 bg-black border border-white/10 overflow-hidden shadow-2xl">
+          <Card className="p-0 bg-black border border-white/10 overflow-hidden shadow-lg">
             {/* 헤더 */}
-            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-900/20 to-pink-900/20">
-              <h3 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
+            <div className="p-5 border-b border-white/10 bg-gradient-to-r from-purple-900/20 to-pink-900/20">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 ✨ AI 팬 운명 분석
               </h3>
-              <p className="text-sm text-gray-300 mt-1">당신만을 위한 특별한 분석 결과</p>
             </div>
             
             {/* 타로카드 이미지 */}
-            <div className="relative w-full bg-gradient-to-b from-purple-900/30 to-pink-900/30 p-12 flex items-center justify-center">
+            <div className="relative w-full bg-gradient-to-b from-purple-900/30 to-pink-900/30 p-8 flex items-center justify-center">
               {tarotLoading ? (
-                <div className="w-48 h-72 bg-black/40 rounded-lg flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400 mx-auto"></div>
-                    <p className="text-sm text-gray-300">운명의 카드를 준비하고 있어요...</p>
+                <div className="w-40 h-60 bg-black/40 rounded-lg flex items-center justify-center">
+                  <div className="text-center space-y-3">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-400 mx-auto"></div>
+                    <p className="text-xs text-gray-300">카드 준비 중...</p>
                   </div>
                 </div>
               ) : tarotImage ? (
-                <div className="relative">
-                  <img 
-                    src={tarotImage} 
-                    alt="운명의 타로카드" 
-                    className="w-64 h-96 object-cover rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-radial from-white/10 to-transparent blur-2xl animate-pulse" />
-                </div>
+                <img 
+                  src={tarotImage} 
+                  alt="운명의 타로카드" 
+                  className="w-48 h-72 object-cover rounded-lg shadow-xl"
+                />
               ) : (
-                <div className="relative">
-                  {/* 백업 타로카드 디자인 */}
-                  <div className="w-48 h-72 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg shadow-2xl">
-                    <div className="absolute inset-0 bg-black/20 rounded-lg" />
-                    <div className="absolute inset-2 border-2 border-white/30 rounded-lg" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                      <Star className="w-16 h-16 text-yellow-300" fill="currentColor" />
-                      <Heart className="w-12 h-12 text-pink-200" fill="currentColor" />
-                      <p className="text-white font-bold text-lg tracking-wider">運命</p>
-                      <p className="text-white/80 text-sm">DESTINY</p>
-                    </div>
+                <div className="w-40 h-60 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg shadow-xl">
+                  <div className="absolute inset-0 bg-black/20 rounded-lg" />
+                  <div className="absolute inset-2 border-2 border-white/30 rounded-lg" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                    <Star className="w-12 h-12 text-yellow-300" fill="currentColor" />
+                    <Heart className="w-10 h-10 text-pink-200" fill="currentColor" />
+                    <p className="text-white font-bold text-base">運命</p>
+                    <p className="text-white/80 text-xs">DESTINY</p>
                   </div>
                 </div>
               )}
             </div>
             
-            {/* 다크 블로그 스타일 본문 */}
-            <div className="p-6 md:p-10 bg-gradient-to-b from-black to-gray-900">
-              <div className="space-y-6">
+            {/* 본문 */}
+            <div className="p-6 bg-gradient-to-b from-black to-gray-900">
+              <div className="space-y-4 text-sm text-gray-100 leading-relaxed">
                 {analysis.split('\n').map((line, idx) => {
-                  // 헤더 파싱 (## 제목)
                   if (line.startsWith('## ')) {
-                    return (
-                      <h2 key={idx} className="text-xl md:text-2xl font-bold text-white mt-8 mb-4 first:mt-0">
-                        {line.replace('## ', '')}
-                      </h2>
-                    );
+                    return <h2 key={idx} className="text-lg font-bold text-white mt-6 mb-3 first:mt-0">{line.replace('## ', '')}</h2>;
                   }
-                  
-                  // 소제목 파싱 (### 제목)
                   if (line.startsWith('### ')) {
-                    return (
-                      <h3 key={idx} className="text-lg md:text-xl font-semibold text-gray-200 mt-6 mb-3">
-                        {line.replace('### ', '')}
-                      </h3>
-                    );
+                    return <h3 key={idx} className="text-base font-semibold text-gray-200 mt-4 mb-2">{line.replace('### ', '')}</h3>;
                   }
-                  
-                  // 빈 줄
                   if (line.trim() === '') {
                     return <div key={idx} className="h-2" />;
                   }
-                  
-                  // 일반 텍스트 (볼드, 이탤릭 처리)
                   const processedLine = line
                     .split(/(\*\*.*?\*\*|\*.*?\*)/)
                     .map((part, i) => {
@@ -315,35 +286,23 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
                       }
                       return part;
                     });
-                  
-                  return (
-                    <p 
-                      key={idx} 
-                      className="text-[15px] md:text-[16px] leading-[1.9] text-gray-100"
-                      style={{ 
-                        wordBreak: 'keep-all',
-                        wordWrap: 'break-word'
-                      }}
-                    >
-                      {processedLine}
-                    </p>
-                  );
+                  return <p key={idx} className="text-sm leading-relaxed">{processedLine}</p>;
                 })}
               </div>
             </div>
             
             {/* 푸터 */}
-            <div className="px-6 md:px-10 pb-6 pt-2 bg-black/50">
-              <div className="pt-4 border-t border-white/10">
+            <div className="px-6 pb-5 pt-2 bg-black/50">
+              <div className="pt-3 border-t border-white/10">
                 <p className="text-xs text-gray-400 text-center">
-                  💡 이 분석은 AI가 생성한 창작 콘텐츠입니다
+                  💡 AI가 생성한 창작 콘텐츠
                 </p>
               </div>
             </div>
           </Card>
         )}
 
-        <div className="flex justify-center space-x-4 pt-8">
+        <div className="flex justify-center space-x-4 pt-6 pb-8">
           <Button
             onClick={() => navigate('/appearance')}
             variant="outline"
@@ -353,12 +312,12 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
             이전 단계로
           </Button>
           <Button
-            onClick={() => navigate('/final-pick')}
+            onClick={() => navigate('/idol-gallery')}
             variant="hero"
             size="lg"
             className="bg-gradient-primary text-primary-foreground px-8"
           >
-            이상형 월드컵 시작하기
+            분석 결과에 맞는 AIDOL 추천받기
           </Button>
         </div>
       </div>

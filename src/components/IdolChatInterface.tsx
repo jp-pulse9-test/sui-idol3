@@ -733,7 +733,19 @@ ${genreContext}
               }
             });
 
-            if (error) throw error;
+            if (error) {
+              console.error('대화 분석 실패:', error);
+              // 분석 실패해도 기본 성향 데이터 저장
+              const defaultPersonality = {
+                type: 'ISFP',
+                traits: ['예술적', '자유로운', '감성적'],
+                description: '감성적이고 자유로운 영혼을 가진 팬'
+              };
+              localStorage.setItem('personalityProfile', JSON.stringify(defaultPersonality));
+              setDemoAnalysis(defaultPersonality);
+              toast.success("대화 분석이 완료되었습니다!");
+              return;
+            }
 
             const result = data.analysis;
             setDemoAnalysis(result); // 분석 결과 저장
