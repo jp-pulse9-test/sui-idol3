@@ -31,18 +31,18 @@ serve(async (req) => {
 
     switch (action) {
       case 'get_for_service': {
-        // Securely retrieve API key for server-side use (e.g., in AI generation)
-        // This function should only be called by other edge functions
-        const { data, error } = await supabaseClient
-          .from('api_keys')
-          .select('api_key')
-          .eq('user_wallet', user_wallet)
-          .eq('service', service || 'default')
-          .single()
+        // SECURITY: This retrieves the API key for server-side use ONLY
+        // This should ONLY be called by other edge functions, NEVER from client code
+        
+        // Use the secure RPC function instead of direct table access
+        const { data: apiKey, error } = await supabaseClient
+          .rpc('get_api_key_for_service', {
+            user_wallet_param: user_wallet
+          })
 
-        if (error || !data) {
+        if (error || !apiKey) {
           return new Response(
-            JSON.stringify({ error: 'API key not found' }),
+            JSON.stringify({ error: 'API key not found or expired' }),
             { 
               status: 404, 
               headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -53,7 +53,7 @@ serve(async (req) => {
         // Only return the key for server-side operations
         // This should NEVER be exposed to frontend
         return new Response(
-          JSON.stringify({ api_key: data.api_key }),
+          JSON.stringify({ api_key: apiKey }),
           { 
             status: 200, 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

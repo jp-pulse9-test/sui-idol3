@@ -43,9 +43,11 @@ export const useApiKey = (walletAddress: string | null) => {
     setError(null);
 
     try {
-      const result = await ApiKeyService.saveApiKey(walletAddress, newApiKey);
-      if (result) {
-        setApiKey(newApiKey);
+      const success = await ApiKeyService.saveApiKey(walletAddress, newApiKey);
+      if (success) {
+        // SECURITY: Never store the actual API key in state
+        // Only indicate that a key exists
+        setApiKey('SECURE_KEY_EXISTS');
         return true;
       }
       setError('Failed to save API key');

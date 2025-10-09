@@ -601,6 +601,10 @@ export type Database = {
         Args: { user_wallet_param: string }
         Returns: Json
       }
+      get_api_key_for_service: {
+        Args: { user_wallet_param: string }
+        Returns: string
+      }
       get_basic_idol_data: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -649,6 +653,10 @@ export type Database = {
       has_active_api_key: {
         Args: { user_wallet_param: string }
         Returns: boolean
+      }
+      hash_api_key: {
+        Args: { key_to_hash: string }
+        Returns: string
       }
       is_admin_user: {
         Args: Record<PropertyKey, never>

@@ -3,10 +3,11 @@ import { supabase, ApiKey } from '@/lib/supabase';
 export class ApiKeyService {
   /**
    * Save or update Gemini API key for a user
+   * SECURITY: Does not return the plaintext key for security
    */
-  static async saveApiKey(walletAddress: string, apiKey: string): Promise<ApiKey | null> {
+  static async saveApiKey(walletAddress: string, apiKey: string): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('api_keys')
         .upsert(
           {
@@ -17,19 +18,17 @@ export class ApiKeyService {
             onConflict: 'user_wallet',
             ignoreDuplicates: false,
           }
-        )
-        .select()
-        .single();
+        );
 
       if (error) {
         console.error('Error saving API key:', error);
-        return null;
+        return false;
       }
 
-      return data;
+      return true;
     } catch (error) {
       console.error('Error in saveApiKey:', error);
-      return null;
+      return false;
     }
   }
 
@@ -57,19 +56,13 @@ export class ApiKeyService {
   }
 
   /**
-   * DEPRECATED: Use verifyApiKey instead for security
-   * This method is kept for backward compatibility but should not be used
+   * DEPRECATED: Removed for security reasons
+   * API keys should never be retrieved on the client side
+   * Use hasApiKey() to check existence or edge functions for server-side access
    */
   static async getApiKey(walletAddress: string): Promise<string | null> {
-    console.warn('⚠️ getApiKey is deprecated for security reasons. Use verifyApiKey instead.');
-    
-    // For backward compatibility with existing code, we'll need to handle this
-    // through secure edge functions or client-side storage
-    const hasKey = await this.hasApiKey(walletAddress);
-    if (!hasKey) return null;
-    
-    // Return a placeholder - actual key should be managed differently
-    return 'SECURE_KEY_USE_VERIFY_INSTEAD';
+    console.error('❌ getApiKey is disabled for security. API keys cannot be retrieved from client code.');
+    throw new Error('API key retrieval from client is disabled for security. Use edge functions for server-side access.');
   }
 
   /**
