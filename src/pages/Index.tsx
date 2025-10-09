@@ -183,7 +183,7 @@ const Index = () => {
           <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
             <div className="space-y-8">
               <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
-                AIDOL
+                SIMKUNG
               </h1>
               <div className="space-y-4">
                 <h2 className="text-2xl md:text-3xl font-bold gradient-text">
@@ -202,13 +202,13 @@ const Index = () => {
                 size="lg"
                 className="w-full md:w-auto text-xl md:text-2xl py-5 md:py-6 px-8 md:px-12 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                💖 AI 심쿵톡 무료 체험
+                💖 AIDOL 심쿵톡 맛보기
               </Button>
               
               {!user && (
                 <div className="mt-4 p-3 md:p-4 bg-accent/10 rounded-lg border border-accent/20">
                   <p className="text-xs md:text-sm text-muted-foreground text-center">
-                    💡 지갑 연결 없이 바로 체험! AI와 대화하며 성향 분석
+                    💡 바로 미리보기 체험 가능해요
                   </p>
                 </div>
               )}
@@ -220,7 +220,7 @@ const Index = () => {
                 <h3 className="text-xl md:text-2xl font-bold gradient-text">2025 AI 심쿵 챌린지 101</h3>
                 <p className="text-base md:text-lg text-muted-foreground">시즌 1 · 당신의 픽으로 탄생한 K-POP 아이돌들</p>
                 <p className="text-sm md:text-base text-muted-foreground">
-                  16강 배틀 · 성격 테스트 · 운명의 아이돌 발견
+                  16강 배틀 · 성격 테스트 · 운명의 아이돌
                 </p>
               </div>
               
@@ -245,14 +245,14 @@ const Index = () => {
             <div className="text-center space-y-3 md:space-y-4 glass p-4 md:p-8 rounded-xl">
               <h2 className="text-2xl md:text-4xl font-bold gradient-text">PICK · VAULT · RISE</h2>
               <p className="text-muted-foreground text-sm md:text-lg max-w-2xl mx-auto">
-                발견 → 수집 → 경쟁
+                찾고 · 모으고 · 자랑하세요
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-4 md:gap-8">
               <FeatureCard
                 title="🎯 PICK"
-                description="배틀 & 테스트로 운명의 아이돌 발견"
+                description="운명의 아이돌 발견"
                 icon={mbtiIcon}
                 onClick={() => openPreview('pick')}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
