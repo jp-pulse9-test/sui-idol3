@@ -410,8 +410,81 @@ const Index = () => {
 
         {/* Final CTA Section */}
         <section className="py-20">
-          <div className="text-center space-y-8 glass p-16 rounded-2xl">
-            <div className="space-y-6">
+          <div className="text-center space-y-8 glass p-16 rounded-2xl relative overflow-hidden">
+            {/* 물결 곡선 라인아트 배경 */}
+            <div className="absolute inset-0 pointer-events-none opacity-20">
+              {/* 큰 물결 곡선 1 */}
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="none">
+                <path 
+                  d="M 0 300 Q 250 200 500 300 T 1000 300" 
+                  stroke="url(#gradient1)" 
+                  strokeWidth="2" 
+                  fill="none"
+                  className="animate-pulse"
+                />
+                <path 
+                  d="M 0 350 Q 250 450 500 350 T 1000 350" 
+                  stroke="url(#gradient2)" 
+                  strokeWidth="2" 
+                  fill="none"
+                  className="animate-pulse"
+                  style={{ animationDelay: '0.5s' }}
+                />
+                <path 
+                  d="M 0 250 Q 250 150 500 250 T 1000 250" 
+                  stroke="url(#gradient3)" 
+                  strokeWidth="1.5" 
+                  fill="none"
+                  className="animate-pulse"
+                  style={{ animationDelay: '1s' }}
+                />
+                <path 
+                  d="M 0 400 Q 250 500 500 400 T 1000 400" 
+                  stroke="url(#gradient4)" 
+                  strokeWidth="1.5" 
+                  fill="none"
+                  className="animate-pulse"
+                  style={{ animationDelay: '1.5s' }}
+                />
+                
+                {/* 그라디언트 정의 */}
+                <defs>
+                  <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ec4899" stopOpacity="0.6" />
+                    <stop offset="50%" stopColor="#a855f7" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#ec4899" stopOpacity="0.6" />
+                  </linearGradient>
+                  <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.6" />
+                    <stop offset="50%" stopColor="#ec4899" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.6" />
+                  </linearGradient>
+                  <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.5" />
+                    <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.7" />
+                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.5" />
+                  </linearGradient>
+                  <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#f472b6" stopOpacity="0.5" />
+                    <stop offset="50%" stopColor="#a855f7" stopOpacity="0.7" />
+                    <stop offset="100%" stopColor="#f472b6" stopOpacity="0.5" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              
+              {/* 작은 스파클 효과 */}
+              <div className="absolute top-1/4 left-1/4 w-2 h-2">
+                <div className="w-full h-full bg-pink-400 rounded-full animate-ping" />
+              </div>
+              <div className="absolute top-1/3 right-1/3 w-2.5 h-2.5">
+                <div className="w-full h-full bg-purple-400 rounded-full animate-ping" style={{ animationDelay: '0.8s' }} />
+              </div>
+              <div className="absolute bottom-1/3 left-1/3 w-2 h-2">
+                <div className="w-full h-full bg-blue-400 rounded-full animate-ping" style={{ animationDelay: '1.2s' }} />
+              </div>
+            </div>
+            
+            <div className="space-y-6 relative z-10">
               <h2 className="text-3xl md:text-5xl font-bold gradient-text leading-tight">
                 나만의 최애를<br className="md:hidden" /> 찾아보세요
               </h2>
@@ -423,7 +496,7 @@ const Index = () => {
               </p>
             </div>
             
-            <div className="flex flex-col gap-6 items-center pt-6">
+            <div className="flex flex-col gap-6 items-center pt-6 relative z-10">
               <Button
                 onClick={() => navigate('/gallery')}
                 variant="default"
