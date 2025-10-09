@@ -1090,7 +1090,17 @@ ${genreContext}
       {/* 이름과 성별 입력 모달 */}
       {showNameInput && isDemoMode && (
         <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <Card className="w-full max-w-md p-8 bg-white/95 backdrop-blur-md">
+          <Card className="w-full max-w-md p-8 bg-white/95 backdrop-blur-md relative">
+            {/* 닫기 버튼 */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+            
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-purple-900 mb-2">
                 {idol.name}와의 대화 시작 ✨
