@@ -66,6 +66,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [userGender, setUserGender] = useState<'male' | 'female' | ''>('');
   const [showNameInput, setShowNameInput] = useState(true);
   const [demoAnalysis, setDemoAnalysis] = useState<any>(null);
+  const [skipTyping, setSkipTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -91,6 +92,28 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   useEffect(() => {
     scrollToBottom();
   }, [messages, typingText]);
+
+  // 스크롤 이벤트로 타이핑 효과 건너뛰기
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isTypingEffect && scrollAreaRef.current) {
+        setSkipTyping(true);
+      }
+    };
+
+    const scrollElement = scrollAreaRef.current;
+    if (scrollElement) {
+      scrollElement.addEventListener('wheel', handleScroll);
+      scrollElement.addEventListener('touchmove', handleScroll);
+    }
+
+    return () => {
+      if (scrollElement) {
+        scrollElement.removeEventListener('wheel', handleScroll);
+        scrollElement.removeEventListener('touchmove', handleScroll);
+      }
+    };
+  }, [isTypingEffect]);
 
   // 레트로 TV 사운드 효과 (대화 중일 때만)
   useEffect(() => {
@@ -733,9 +756,21 @@ ${genreContext}
     return new Promise<void>((resolve) => {
       setIsTypingEffect(true);
       setTypingText('');
+      setSkipTyping(false);
       let currentIndex = 0;
       
       const typeNextChar = () => {
+        // 스킵 요청 시 즉시 전체 텍스트 표시
+        if (skipTyping) {
+          setTypingText(text);
+          setIsTypingEffect(false);
+          if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+          }
+          resolve();
+          return;
+        }
+
         if (currentIndex < text.length) {
           setTypingText(text.substring(0, currentIndex + 1));
           currentIndex++;
