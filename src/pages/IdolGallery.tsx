@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Search, ArrowLeft, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { generateRandomStats } from "@/components/IdolStatsDisplay";
+import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 
 interface Idol {
   id: number;
@@ -21,9 +23,11 @@ interface Idol {
 const IdolGallery = () => {
   const navigate = useNavigate();
   const [idols, setIdols] = useState<Idol[]>([]);
+  const [displayedIdols, setDisplayedIdols] = useState<Idol[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGender, setSelectedGender] = useState<"all" | "male" | "female">("all");
+  const [hoveredIdol, setHoveredIdol] = useState<number | null>(null);
 
   useEffect(() => {
     loadIdols();
@@ -36,7 +40,12 @@ const IdolGallery = () => {
 
       if (error) throw error;
 
-      setIdols(data || []);
+      const allIdols = data || [];
+      setIdols(allIdols);
+      
+      // 랜덤하게 8명 선택
+      const shuffled = [...allIdols].sort(() => Math.random() - 0.5);
+      setDisplayedIdols(shuffled.slice(0, 8));
     } catch (error) {
       console.error('Error loading idols:', error);
       toast.error('아이돌을 불러오는데 실패했습니다.');
@@ -45,7 +54,7 @@ const IdolGallery = () => {
     }
   };
 
-  const filteredIdols = idols.filter(idol => {
+  const filteredIdols = (searchTerm || selectedGender !== "all" ? idols : displayedIdols).filter(idol => {
     const matchesSearch = idol.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesGender = selectedGender === "all" || idol.gender === selectedGender;
     return matchesSearch && matchesGender;
@@ -59,6 +68,17 @@ const IdolGallery = () => {
         isDemoMode: true 
       } 
     });
+  };
+
+  const getIdolStats = (idol: Idol) => {
+    const stats = generateRandomStats(idol.category);
+    return [
+      { stat: 'Vocal', value: stats.vocal.current },
+      { stat: 'Dance', value: stats.dance.current },
+      { stat: 'Visual', value: stats.visual.current },
+      { stat: 'Variety', value: stats.variety.current },
+      { stat: 'Rap', value: stats.rap.current }
+    ];
   };
 
   return (
@@ -164,6 +184,8 @@ const IdolGallery = () => {
                 key={idol.id}
                 className="group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105"
                 onClick={() => handleIdolClick(idol)}
+                onMouseEnter={() => setHoveredIdol(idol.id)}
+                onMouseLeave={() => setHoveredIdol(null)}
               >
                 <div className="aspect-square relative flex items-center justify-center p-4">
                   <img
@@ -171,17 +193,33 @@ const IdolGallery = () => {
                     alt={idol.name}
                     className="w-32 h-32 object-cover rounded-full border-4 border-border shadow-lg"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-                    <div className="space-y-1">
-                      <Badge variant="secondary" className="text-xs">
-                        {idol.concept}
-                      </Badge>
-                      <p className="text-xs text-white/80">{idol.category}</p>
+                  
+                  {/* 능력치 오버레이 */}
+                  {hoveredIdol === idol.id && (
+                    <div className="absolute inset-0 bg-black/90 flex items-center justify-center transition-all duration-300">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart data={getIdolStats(idol)}>
+                          <PolarGrid stroke="hsl(var(--border))" />
+                          <PolarAngleAxis 
+                            dataKey="stat" 
+                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
+                          />
+                          <Radar
+                            dataKey="value"
+                            stroke="hsl(var(--primary))"
+                            fill="hsl(var(--primary))"
+                            fillOpacity={0.3}
+                          />
+                        </RadarChart>
+                      </ResponsiveContainer>
                     </div>
-                  </div>
+                  )}
                 </div>
                 <div className="p-3 space-y-1">
                   <h3 className="font-bold text-sm truncate">{idol.name}</h3>
+                  <Badge variant="outline" className="text-xs truncate w-full justify-center">
+                    {idol.category}
+                  </Badge>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Sparkles className="w-3 h-3" />
                     <span>대화 시작하기</span>
