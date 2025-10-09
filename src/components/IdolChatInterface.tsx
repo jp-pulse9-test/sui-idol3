@@ -713,7 +713,7 @@ ${genreContext}
               >
                 <div className={`space-y-1 ${msg.sender === 'user' ? 'max-w-[80%]' : 'w-full flex flex-col items-center'}`}>
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
-                    <div className="border border-blue-600 p-1 bg-black mb-1 w-full max-w-[340px]">
+                    <div className="w-full max-w-[340px] mb-1">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 
