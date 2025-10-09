@@ -38,6 +38,7 @@ interface IdolChatInterfaceProps {
     name: string;
     image: string;
     personality: string;
+    gender?: 'male' | 'female';
     voiceId?: string; // ElevenLabs voice ID
   };
   isOpen: boolean;
@@ -347,7 +348,7 @@ ${genreContext}
             storyContext: storyContent,
             genre: selectedGenre,
             characterName: idol.name,
-            characterGender: idol.personality.includes('여성') || idol.personality.includes('girl') ? 'female' : 'male'
+            characterGender: idol.gender || 'female'
           }
         });
         imageUrl = imageData?.imageUrl;
@@ -496,7 +497,7 @@ ${genreContext}
             storyContext: storyContent,
             genre: selectedGenre,
             characterName: idol.name,
-            characterGender: idol.personality.includes('여성') || idol.personality.includes('girl') ? 'female' : 'male'
+            characterGender: idol.gender || 'female'
           }
         });
         imageUrl = imageData?.imageUrl;
