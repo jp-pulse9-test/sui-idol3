@@ -191,25 +191,25 @@ const Index = () => {
                   AI 아이돌 팬덤 플랫폼
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  성격 테스트로 나만의 아이돌을 찾고, AI 심쿵톡으로 24/7 대화하며, 포토카드를 수집하고 거래하세요.
+                  AI 심쿵톡으로 24/7 대화하며 나만의 아이돌을 찾고, 포토카드를 수집하고 거래하세요.
                 </p>
               </div>
             </div>
             
             <div className="flex flex-col gap-6 items-center">
               <Button
-                onClick={handleStartJourney}
+                onClick={() => navigate('/demo-chat')}
                 variant="default"
                 size="xl"
                 className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                💖 내 성향에 맞는 최애는?
+                💖 AI 심쿵톡 무료 체험
               </Button>
               
               {!user && (
                 <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
                   <p className="text-sm text-muted-foreground text-center">
-                    💡 지갑 연결 없이 바로 체험 가능! 볼트부터 본격적인 수집과 거래를 시작하세요
+                    💡 지갑 연결 없이 바로 체험 가능! AI와 대화하며 당신의 성향을 분석해보세요
                   </p>
                 </div>
               )}
@@ -229,26 +229,23 @@ const Index = () => {
           </div>
         </section>
 
-        {/* 심쿵톡 메인 섹션 - 간결한 디자인 */}
+        {/* 이상형 월드컵 섹션 */}
         <section className="py-20">
           <div className="text-center space-y-6 glass p-12 rounded-2xl">
             <div className="space-y-4">
-              <Badge className="bg-primary text-primary-foreground font-semibold text-sm px-4 py-2">
-                💖 NEW
-              </Badge>
               <h2 className="text-4xl md:text-5xl font-bold gradient-text">
-                AI 아이돌 심쿵톡
+                이상형 월드컵으로 최애 찾기
               </h2>
               <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-                24/7 실시간 채팅 · 음성 통화 · AI 학습
+                16강 심쿵 배틀 · 성격 테스트 · 운명의 아이돌 발견
               </p>
               <Button
-                onClick={() => navigate('/demo-chat')}
-                variant="default"
+                onClick={handleStartJourney}
+                variant="outline"
                 size="lg"
                 className="font-semibold text-base px-8 py-4 mt-4"
               >
-                💖 무료 체험하기
+                🎯 최애 찾기 시작
               </Button>
             </div>
           </div>

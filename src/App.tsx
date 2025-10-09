@@ -34,6 +34,7 @@ import SettingsPage from "./pages/Settings";
 import PhotocardGenerator from "./pages/PhotocardGenerator";
 import My from "./pages/My";
 const DemoChat = lazy(() => import("./pages/DemoChat"));
+const IdolDetail = lazy(() => import("./pages/IdolDetail"));
 
 const AdminButton = () => {
   const { user } = useAuth();
@@ -80,6 +81,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/my" element={<My />} />
           <Route path="/demo-chat" element={<DemoChat />} />
+          <Route path="/idol-detail" element={<IdolDetail />} />
           
           {/* 새로운 3단계 플로우: Pick → Vault → Rise */}
           <Route path="/pick" element={<Pick />} />

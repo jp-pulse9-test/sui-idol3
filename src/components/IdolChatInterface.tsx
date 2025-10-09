@@ -57,6 +57,8 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [messageCount, setMessageCount] = useState(0);
   const [typingText, setTypingText] = useState('');
   const [isTypingEffect, setIsTypingEffect] = useState(false);
+  const [conversationCount, setConversationCount] = useState(0);
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -434,6 +436,7 @@ ${genreContext}
     setInputMessage("");
     setIsTyping(true);
     setMessageCount(prev => prev + 1);
+    setConversationCount(prev => prev + 1);
 
     await saveChatLog(userMessage);
 
@@ -531,6 +534,13 @@ ${genreContext}
       if (isPositive) {
         const newScore = Math.min(100, relationshipScore + Math.floor(Math.random() * 5) + 2);
         saveRelationshipScore(newScore);
+      }
+
+      // 11번의 대화가 완료되면 분석 시작
+      if (conversationCount >= 11 && isDemoMode) {
+        setTimeout(() => {
+          setShowAnalysis(true);
+        }, 1000);
       }
 
     } catch (error) {
@@ -861,6 +871,58 @@ ${genreContext}
           </div>
             </Card>
           </div>
+          
+      {/* 성향 분석 및 추천 모달 */}
+      {showAnalysis && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass-dark rounded-3xl p-8 max-w-2xl w-full space-y-6 animate-scale-in">
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-bold gradient-text">대화 분석 완료! 🎯</h2>
+              <p className="text-lg text-muted-foreground">
+                {conversationCount}번의 대화를 통해 당신의 성향을 분석했어요
+              </p>
+            </div>
+
+            <div className="glass p-6 rounded-xl space-y-3">
+              <h3 className="text-xl font-semibold text-primary">당신의 성향</h3>
+              <p className="text-foreground">
+                • 감성적이고 공감 능력이 뛰어난 성향<br/>
+                • 창의적이고 예술적 감각이 풍부함<br/>
+                • 깊이 있는 대화를 선호하는 유형
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-center gradient-text">당신과 잘 맞는 아이돌 11명을 추천합니다!</h3>
+              <p className="text-center text-muted-foreground">
+                아이돌과 본격적으로 대화하려면 캐릭터를 소장해야 해요
+              </p>
+              
+              <div className="flex gap-3 justify-center">
+                <Button
+                  onClick={() => {
+                    setShowAnalysis(false);
+                    onClose();
+                    window.location.href = '/pick';
+                  }}
+                  variant="default"
+                  size="lg"
+                  className="bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold"
+                >
+                  💖 추천 아이돌 보기
+                </Button>
+                <Button
+                  onClick={() => setShowAnalysis(false)}
+                  variant="outline"
+                  size="lg"
+                >
+                  계속 대화하기
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
           
           {/* 전원 LED */}
           <div className="absolute top-1 right-1">
