@@ -181,16 +181,70 @@ const Index = () => {
 
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
+          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl relative overflow-hidden">
+            {/* 배경 데코레이션 */}
+            <div className="absolute inset-0 pointer-events-none opacity-20">
+              {/* 좌상단 라인아트 */}
+              <div className="absolute top-0 left-0 w-40 h-40">
+                <svg viewBox="0 0 100 100" className="w-full h-full text-pink-400">
+                  <circle cx="10" cy="10" r="2" fill="currentColor" className="animate-pulse" />
+                  <circle cx="30" cy="20" r="1.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  <circle cx="50" cy="15" r="1" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1s' }} />
+                  <path d="M 10 10 Q 30 20 50 15" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.6" />
+                </svg>
+              </div>
+              
+              {/* 우상단 라인아트 */}
+              <div className="absolute top-0 right-0 w-40 h-40">
+                <svg viewBox="0 0 100 100" className="w-full h-full text-purple-400">
+                  <circle cx="90" cy="10" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.3s' }} />
+                  <circle cx="70" cy="20" r="1.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.8s' }} />
+                  <circle cx="50" cy="15" r="1" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.3s' }} />
+                  <path d="M 90 10 Q 70 20 50 15" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.6" />
+                </svg>
+              </div>
+              
+              {/* 좌하단 라인아트 */}
+              <div className="absolute bottom-0 left-0 w-40 h-40">
+                <svg viewBox="0 0 100 100" className="w-full h-full text-blue-400">
+                  <circle cx="10" cy="90" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.6s' }} />
+                  <circle cx="30" cy="80" r="1.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.1s' }} />
+                  <circle cx="50" cy="85" r="1" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.2s' }} />
+                  <path d="M 10 90 Q 30 80 50 85" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.6" />
+                </svg>
+              </div>
+              
+              {/* 우하단 라인아트 */}
+              <div className="absolute bottom-0 right-0 w-40 h-40">
+                <svg viewBox="0 0 100 100" className="w-full h-full text-pink-400">
+                  <circle cx="90" cy="90" r="2" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.9s' }} />
+                  <circle cx="70" cy="80" r="1.5" fill="currentColor" className="animate-pulse" style={{ animationDelay: '0.4s' }} />
+                  <circle cx="50" cy="85" r="1" fill="currentColor" className="animate-pulse" style={{ animationDelay: '1.4s' }} />
+                  <path d="M 90 90 Q 70 80 50 85" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.6" />
+                </svg>
+              </div>
+              
+              {/* 중앙 스파클 효과 */}
+              <div className="absolute top-1/4 left-1/4 w-3 h-3">
+                <div className="w-full h-full bg-yellow-400 rounded-full animate-ping opacity-75" />
+              </div>
+              <div className="absolute top-1/3 right-1/4 w-2 h-2">
+                <div className="w-full h-full bg-pink-400 rounded-full animate-ping opacity-75" style={{ animationDelay: '0.7s' }} />
+              </div>
+              <div className="absolute bottom-1/3 left-1/3 w-2.5 h-2.5">
+                <div className="w-full h-full bg-purple-400 rounded-full animate-ping opacity-75" style={{ animationDelay: '1.2s' }} />
+              </div>
+            </div>
+            
             {/* 최애와의 특별한 연결 배지 */}
-            <div className="flex justify-center -mt-8 mb-4">
+            <div className="flex justify-center -mt-8 mb-4 relative z-10">
               <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-100/90 to-pink-200/90 dark:from-pink-900/30 dark:to-pink-800/30 rounded-full border border-pink-300/50 dark:border-pink-700/50 shadow-sm">
                 <Sparkles className="w-5 h-5 text-pink-500 dark:text-pink-400" />
                 <span className="text-sm md:text-base font-semibold text-pink-700 dark:text-pink-300">최애와의 특별한 연결</span>
               </div>
             </div>
             
-            <div className="space-y-8">
+            <div className="space-y-8 relative z-10">
               <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
                 SIMKUNG
               </h1>
@@ -204,7 +258,7 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="flex flex-col gap-6 items-center">
+            <div className="flex flex-col gap-6 items-center relative z-10">
               {/* 1순위: 심쿵톡 (갤러리) */}
               <Button
                 onClick={() => navigate('/gallery')}
