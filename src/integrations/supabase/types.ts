@@ -601,10 +601,6 @@ export type Database = {
         Args: { user_wallet_param: string }
         Returns: Json
       }
-      get_api_key_for_service: {
-        Args: { user_wallet_param: string }
-        Returns: string
-      }
       get_basic_idol_data: {
         Args: Record<PropertyKey, never>
         Returns: {
