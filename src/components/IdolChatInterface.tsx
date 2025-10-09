@@ -780,30 +780,25 @@ ${genreContext}
             )}
             
             {/* 장르 선택 버튼 - MUD 스타일 */}
-            <div className="border-t border-blue-600 pt-3 mt-3">
-              <p className="text-blue-400 text-sm mb-2 font-mono">📚 GENRE:</p>
-              <div className="grid grid-cols-2 gap-1">
-                {GENRES.map((genre, idx) => (
-                  <button
-                    key={genre.id}
-                    onClick={() => !selectedGenre && handleGenreSelect(genre.id as GenreType)}
-                    disabled={!!selectedGenre}
-                    className={`text-left transition-all p-2 ${
-                      selectedGenre === genre.id
-                        ? 'text-white bg-blue-600'
-                        : selectedGenre
-                        ? 'text-gray-700 cursor-not-allowed'
-                        : 'text-blue-400 hover:text-white hover:bg-blue-900/20'
-                    }`}
-                  >
-                    <div className="font-mono text-xs">
-                      <div className="font-bold">[{idx + 1}] {genre.emoji} {genre.name}</div>
-                      <div className="opacity-70 text-[10px]">{genre.description}</div>
-                    </div>
-                  </button>
-                ))}
+            {showGenreSelect && (
+              <div className="border-t border-blue-600 pt-3 mt-3">
+                <p className="text-blue-400 text-sm mb-2 font-mono">📚 GENRE:</p>
+                <div className="grid grid-cols-2 gap-1">
+                  {GENRES.map((genre, idx) => (
+                    <button
+                      key={genre.id}
+                      onClick={() => handleGenreSelect(genre.id as GenreType)}
+                      className="text-left transition-all p-2 text-blue-400 hover:text-white hover:bg-blue-900/20"
+                    >
+                      <div className="font-mono text-xs">
+                        <div className="font-bold">[{idx + 1}] {genre.emoji} {genre.name}</div>
+                        <div className="opacity-70 text-[10px]">{genre.description}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             
             {isTyping && !isTypingEffect && (
               <div className="flex justify-start">
