@@ -292,9 +292,9 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col gap-6 items-center relative z-10">
-              {/* 1순위: 심쿵톡 (갤러리) */}
+              {/* 1순위: 심쿵톡 (데모 채팅) */}
               <Button
-                onClick={() => navigate('/gallery')}
+                onClick={() => navigate('/demo-chat')}
                 variant="default"
                 size="lg"
                 className="w-full md:w-auto text-xl md:text-2xl py-5 md:py-6 px-8 md:px-12 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
@@ -498,7 +498,7 @@ const Index = () => {
             
             <div className="flex flex-col gap-6 items-center pt-6 relative z-10">
               <Button
-                onClick={() => navigate('/gallery')}
+                onClick={() => navigate('/demo-chat')}
                 variant="default"
                 size="xl"
                 className="min-w-80 text-2xl py-8 bg-gradient-primary hover:bg-gradient-secondary text-white font-bold shadow-2xl hover:shadow-3xl transition-all duration-300"
