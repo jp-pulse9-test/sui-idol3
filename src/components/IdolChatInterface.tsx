@@ -62,6 +62,8 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
+  const [userName, setUserName] = useState<string>('');
+  const [showNameInput, setShowNameInput] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -233,7 +235,8 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
 
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
-          prompt: `${systemPrompt}\n\n장르 시작 메시지를 생성해줘. 반드시 다음 형식으로 응답해:\n\n[이야기]\n(여기에 자기소개와 배경 설명)\n\n[선택지]\n1. (첫 번째 선택지)\n2. (두 번째 선택지)\n3. (세 번째 선택지)`
+          prompt: `${systemPrompt}\n\n장르 시작 메시지를 생성해줘. 반드시 다음 형식으로 응답해:\n\n[이야기]\n(여기에 자기소개와 배경 설명)\n\n[선택지]\n1. (첫 번째 선택지)\n2. (두 번째 선택지)\n3. (세 번째 선택지)`,
+          userName: userName || '팬'
         }
       });
 
@@ -345,8 +348,8 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const sendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
 
-    // 체험판 10번 제한 및 분석 트리거
-    if (isDemoMode && messageCount >= 10) {
+    // 체험판 11번 제한 및 분석 트리거
+    if (isDemoMode && messageCount >= 11) {
       // 10번째 메시지 후 분석 시작
       setConversationCount(prev => prev + 1);
       
@@ -354,7 +357,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
       const analysisMessage: Message = {
         id: (Date.now() + 100).toString(),
         sender: 'idol',
-        content: '10번의 대화 분석 중...',
+        content: '11번의 대화 분석 중...',
         timestamp: new Date(),
         emotion: 'neutral'
       };
@@ -475,7 +478,8 @@ ${genreContext}
 
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
-          prompt: `${systemPrompt}\n\n대화 기록:\n${conversationHistory.map(m => `${m.role}: ${m.content}`).join('\n')}\n\n팬: ${userMessage.content}\n\n${idol.name}:`
+          prompt: `${systemPrompt}\n\n대화 기록:\n${conversationHistory.map(m => `${m.role}: ${m.content}`).join('\n')}\n\n${userName || '팬'}: ${userMessage.content}\n\n${idol.name}:`,
+          userName: userName || '팬'
         }
       });
 
@@ -993,9 +997,9 @@ ${genreContext}
           </ScrollArea>
 
           <div className="relative z-20 px-4 py-3 border-t border-blue-600 bg-black">
-            {isDemoMode && messageCount >= 10 ? (
+            {isDemoMode && messageCount >= 11 ? (
               <div className="text-center space-y-2">
-                <p className="text-sm font-mono text-white">체험판 종료 [10/10]</p>
+                <p className="text-sm font-mono text-white">체험판 종료 [11/11]</p>
                 <p className="text-xs font-mono text-gray-500">지갑 연결하면 계속 대화 가능</p>
                 <Button
                   className="bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs mt-2 border border-blue-600"

@@ -13,8 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt } = await req.json();
+    const { prompt, userName = '팬' } = await req.json();
     console.log('캐릭터 채팅 요청:', prompt);
+    console.log('사용자 이름:', userName);
     
     const GOOGLE_AI_API_KEY = Deno.env.get('GOOGLE_AI_API_KEY');
     if (!GOOGLE_AI_API_KEY) {
