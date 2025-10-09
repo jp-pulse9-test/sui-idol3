@@ -261,6 +261,18 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
               <p className="text-sm text-gray-300 mt-1">당신만을 위한 특별한 분석 결과</p>
             </div>
             
+            {/* AI 생성 이미지 */}
+            {idolImage && (
+              <div className="relative w-full aspect-[4/3] overflow-hidden">
+                <img 
+                  src={idolImage} 
+                  alt="당신의 최애 이미지" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              </div>
+            )}
+            
             {/* 다크 블로그 스타일 본문 */}
             <div className="p-6 md:p-10 bg-gradient-to-b from-black to-gray-900">
               <div className="space-y-6">
