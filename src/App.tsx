@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { DevTools } from "@/components/DevTools";
 import Index from "./pages/Index";
 import Pick from "./pages/Pick";
+import IdolGallery from "./pages/IdolGallery";
 const Vault = lazy(() => import("./pages/Vault"));
 import Rise from "./pages/Rise";
 import Play from "./pages/Play";
@@ -82,6 +83,7 @@ const App = () => (
           <Route path="/my" element={<My />} />
           <Route path="/demo-chat" element={<DemoChat />} />
           <Route path="/idol-detail" element={<IdolDetail />} />
+          <Route path="/gallery" element={<IdolGallery />} />
           
           {/* 새로운 3단계 플로우: Pick → Vault → Rise */}
           <Route path="/pick" element={<Pick />} />

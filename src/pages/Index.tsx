@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -196,44 +197,54 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col gap-6 items-center">
+              {/* 메인: 갤러리 탐색 */}
               <Button
-                onClick={() => navigate('/demo-chat')}
+                onClick={() => navigate('/gallery')}
                 variant="default"
                 size="lg"
                 className="w-full md:w-auto text-xl md:text-2xl py-5 md:py-6 px-8 md:px-12 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                💖 AIDOL 심쿵톡 맛보기
+                ✨ 아이돌 갤러리 둘러보기
               </Button>
+              
+              {/* 선택 옵션들 */}
+              <div className="w-full max-w-2xl mt-6 space-y-4">
+                <p className="text-center text-sm text-muted-foreground mb-4">또는 다른 방식으로 최애를 찾아보세요</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* 옵션 1: AI 추천 */}
+                  <Card className="p-4 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate('/mbti')}>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">🎯</span>
+                        <h3 className="font-bold">AI 추천받기</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground">MBTI 기반 맞춤 추천</p>
+                      <p className="text-xs text-primary group-hover:underline">빠른 매칭 →</p>
+                    </div>
+                  </Card>
+                  
+                  {/* 옵션 3: 이상형 월드컵 */}
+                  <Card className="p-4 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate('/worldcup')}>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">🏆</span>
+                        <h3 className="font-bold">이상형 월드컵</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground">토너먼트 방식 선택</p>
+                      <p className="text-xs text-primary group-hover:underline">게임 시작 →</p>
+                    </div>
+                  </Card>
+                </div>
+              </div>
               
               {!user && (
                 <div className="mt-4 p-3 md:p-4 bg-accent/10 rounded-lg border border-accent/20">
                   <p className="text-xs md:text-sm text-muted-foreground text-center">
-                    💡 바로 미리보기 체험 가능해요
+                    💡 로그인 없이 바로 체험 가능해요
                   </p>
                 </div>
               )}
-            </div>
-            
-            {/* Season & World Cup 통합 섹션 */}
-            <div className="mt-12 p-6 md:p-8 glass rounded-2xl border border-white/10 shadow-lg space-y-6">
-              <div className="text-center space-y-3">
-                <h3 className="text-xl md:text-2xl font-bold gradient-text">2025 AI 심쿵 챌린지 101</h3>
-                <p className="text-base md:text-lg text-muted-foreground">당신의 픽으로 만드는 K-POP 아이돌</p>
-                <p className="text-sm md:text-base text-muted-foreground">
-                  16강 배틀 · 성격 테스트 · 운명의 아이돌
-                </p>
-              </div>
-              
-              <div className="flex justify-center">
-                <Button
-                  onClick={handleStartJourney}
-                  variant="outline"
-                  size="lg"
-                  className="font-semibold text-sm md:text-base px-6 md:px-8 py-3 md:py-4"
-                >
-                  🎯 최애 찾기 시작
-                </Button>
-              </div>
             </div>
           </div>
         </section>
