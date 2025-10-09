@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.generate-idol-image]
 verify_jwt = false
+
+[functions.generate-profile-cards]
+verify_jwt = false
