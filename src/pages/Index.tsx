@@ -197,17 +197,17 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col gap-6 items-center">
-              {/* 메인: 갤러리 탐색 */}
+              {/* 1순위: 심쿵톡 (갤러리) */}
               <Button
                 onClick={() => navigate('/gallery')}
                 variant="default"
                 size="lg"
                 className="w-full md:w-auto text-xl md:text-2xl py-5 md:py-6 px-8 md:px-12 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                ✨ 아이돌 갤러리 둘러보기
+                💬 심쿵톡 시작하기
               </Button>
               
-              {/* 선택 옵션들 */}
+              {/* 추가 옵션들 */}
               <div className="w-full max-w-2xl mt-6 space-y-4">
                 <p className="text-center text-sm text-muted-foreground mb-4">또는 다른 방식으로 최애를 찾아보세요</p>
                 
@@ -224,7 +224,7 @@ const Index = () => {
                     </div>
                   </Card>
                   
-                  {/* 옵션 3: 이상형 월드컵 */}
+                  {/* 옵션 2: 이상형 월드컵 */}
                   <Card className="p-4 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate('/worldcup')}>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
@@ -363,12 +363,12 @@ const Index = () => {
             
             <div className="flex flex-col gap-6 items-center pt-6">
               <Button
-                onClick={handleStartJourney}
+                onClick={() => navigate('/gallery')}
                 variant="default"
                 size="xl"
                 className="min-w-80 text-2xl py-8 bg-gradient-primary hover:bg-gradient-secondary text-white font-bold shadow-2xl hover:shadow-3xl transition-all duration-300"
               >
-                💖 최애 찾으러 가기
+                💬 아이돌 갤러리 둘러보기
               </Button>
               <p className="text-base text-muted-foreground">
                 지금 시작하면 무료 체험 가능!

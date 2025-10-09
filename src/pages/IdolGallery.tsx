@@ -115,6 +115,27 @@ const IdolGallery = () => {
               </Button>
             </div>
           </div>
+          
+          {/* 빠른 매칭 옵션 */}
+          <div className="mt-4 flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/mbti')}
+              className="gap-2"
+            >
+              <Sparkles className="w-4 h-4" />
+              AI 빠른 매칭
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/worldcup')}
+              className="gap-2"
+            >
+              🏆 이상형 월드컵
+            </Button>
+          </div>
         </div>
       </div>
 
