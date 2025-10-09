@@ -207,37 +207,6 @@ const Index = () => {
                 💬 심쿵톡 시작하기
               </Button>
               
-              {/* 추가 옵션들 */}
-              <div className="w-full max-w-2xl mt-6 space-y-4">
-                <p className="text-center text-sm text-muted-foreground mb-4">또는 다른 방식으로 최애를 찾아보세요</p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* 옵션 1: AI 추천 */}
-                  <Card className="p-4 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate('/mbti')}>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">🎯</span>
-                        <h3 className="font-bold">AI 추천받기</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground">MBTI 기반 맞춤 추천</p>
-                      <p className="text-xs text-primary group-hover:underline">빠른 매칭 →</p>
-                    </div>
-                  </Card>
-                  
-                  {/* 옵션 2: 이상형 월드컵 */}
-                  <Card className="p-4 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate('/worldcup')}>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">🏆</span>
-                        <h3 className="font-bold">이상형 월드컵</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground">토너먼트 방식 선택</p>
-                      <p className="text-xs text-primary group-hover:underline">게임 시작 →</p>
-                    </div>
-                  </Card>
-                </div>
-              </div>
-              
               {!user && (
                 <div className="mt-4 p-3 md:p-4 bg-accent/10 rounded-lg border border-accent/20">
                   <p className="text-xs md:text-sm text-muted-foreground text-center">
