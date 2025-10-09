@@ -23,6 +23,7 @@ import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
 import maleIdolFaces from "@/assets/male-idol-faces.jpg";
+import specialConnectionBadge from "@/assets/special-connection-badge.png";
 
 // Background idol grid component
 const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
@@ -182,6 +183,15 @@ const Index = () => {
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center">
           <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
+            {/* 최애와의 특별한 연결 배지 */}
+            <div className="flex justify-center -mt-8 mb-4">
+              <img 
+                src={specialConnectionBadge} 
+                alt="최애와의 특별한 연결" 
+                className="h-12 md:h-14 object-contain"
+              />
+            </div>
+            
             <div className="space-y-8">
               <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
                 SIMKUNG
