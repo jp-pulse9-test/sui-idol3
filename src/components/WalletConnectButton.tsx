@@ -21,6 +21,7 @@ export const WalletConnectButton: React.FC<WalletConnectButtonProps> = ({
 }) => {
   const { isConnected, walletAddress, connectWallet, disconnectWallet } = useWallet();
   const [copied, setCopied] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
 
   const handleCopyAddress = async () => {
@@ -57,67 +58,83 @@ export const WalletConnectButton: React.FC<WalletConnectButtonProps> = ({
       <Button
         onClick={handleConnect}
         variant={variant}
-        size={size}
-        className={`${className} flex items-center gap-2`}
+        size="icon"
+        className={`${className} transition-all duration-300 ${isHovered ? 'w-auto px-4 gap-2' : 'w-10'} overflow-hidden`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <Wallet className="w-4 h-4" />
-        Connect Wallet
+        <Wallet className="w-4 h-4 flex-shrink-0" />
+        {isHovered && <span className="whitespace-nowrap">Connect</span>}
       </Button>
     );
   }
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <div className="flex items-center gap-2 bg-card backdrop-blur-sm p-3 rounded-lg border border-border bg-opacity-80">
-        <Badge variant="secondary" className="px-3 py-1">
-          🟢 Connected
-        </Badge>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground font-mono">
-            {walletAddress?.substring(0, 6)}...{walletAddress?.substring(38)}
-          </span>
-          <Button
-            onClick={handleCopyAddress}
-            variant="ghost"
-            size="sm"
-            className="h-auto p-1 hover:bg-muted hover:bg-opacity-50"
-            title="Copy Address"
-          >
-            {copied ? (
-              <Check className="w-3 h-3 text-green-500" />
-            ) : (
-              <Copy className="w-3 h-3" />
-            )}
-          </Button>
-        </div>
+    <div 
+      className={`${className} transition-all duration-300 ${isHovered ? 'w-auto' : 'w-10'} overflow-hidden`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="flex items-center gap-2 bg-card backdrop-blur-sm p-2 rounded-lg border border-border">
+        {!isHovered && (
+          <div className="w-6 h-6 rounded-full bg-green-500/20 border border-green-500 flex items-center justify-center">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          </div>
+        )}
+        
+        {isHovered && (
+          <>
+            <Badge variant="secondary" className="px-2 py-0.5 text-xs">
+              🟢
+            </Badge>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground font-mono">
+                {walletAddress?.substring(0, 6)}...{walletAddress?.substring(38)}
+              </span>
+              <Button
+                onClick={handleCopyAddress}
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 p-0"
+                title="Copy Address"
+              >
+                {copied ? (
+                  <Check className="w-3 h-3 text-green-500" />
+                ) : (
+                  <Copy className="w-3 h-3" />
+                )}
+              </Button>
+            </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-auto p-1 hover:bg-muted hover:bg-opacity-50"
-              title="Menu"
-            >
-              <ChevronDown className="w-3 h-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => navigate('/my')}>
-              <User className="w-4 h-4 mr-2" />
-              Go to My
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleCopyAddress}>
-              <Copy className="w-4 h-4 mr-2" />
-              Copy Address
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleDisconnect} className="text-destructive focus:text-destructive">
-              <LogOut className="w-4 h-4 mr-2" />
-              Disconnect
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 p-0"
+                  title="Menu"
+                >
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => navigate('/my')}>
+                  <User className="w-4 h-4 mr-2" />
+                  Go to My
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyAddress}>
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy Address
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleDisconnect} className="text-destructive focus:text-destructive">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Disconnect
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        )}
       </div>
     </div>
   );

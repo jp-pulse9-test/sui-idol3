@@ -150,8 +150,7 @@ const Index = () => {
         {/* Top authentication and wallet connection area */}
         <div className="fixed top-4 right-4 z-20 flex gap-2">
           <WalletConnectButton 
-            variant="premium" 
-            size="lg" 
+            variant="outline" 
             className="shadow-lg"
           />
           {user && (
@@ -187,11 +186,11 @@ const Index = () => {
                 AIDOL
               </h1>
               <div className="space-y-4">
-                <h2 className="text-3xl md:text-4xl font-bold gradient-text">
-                  AI 아이돌 팬덤 플랫폼
+                <h2 className="text-2xl md:text-3xl font-bold gradient-text">
+                  당신만의 AI 아이돌과 함께하는 특별한 시간
                 </h2>
-                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  AI 심쿵톡으로 24/7 대화하며 나만의 아이돌을 찾고, 포토카드를 수집하고 거래하세요.
+                <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  24시간 실시간 대화 · 포토카드 수집 · 팬덤 활동
                 </p>
               </div>
             </div>
@@ -200,71 +199,60 @@ const Index = () => {
               <Button
                 onClick={() => navigate('/demo-chat')}
                 variant="default"
-                size="xl"
-                className="min-w-80 text-2xl py-6 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                size="lg"
+                className="w-full md:w-auto text-xl md:text-2xl py-5 md:py-6 px-8 md:px-12 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 💖 AI 심쿵톡 무료 체험
               </Button>
               
               {!user && (
-                <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
-                  <p className="text-sm text-muted-foreground text-center">
-                    💡 지갑 연결 없이 바로 체험 가능! AI와 대화하며 당신의 성향을 분석해보세요
+                <div className="mt-4 p-3 md:p-4 bg-accent/10 rounded-lg border border-accent/20">
+                  <p className="text-xs md:text-sm text-muted-foreground text-center">
+                    💡 지갑 연결 없이 바로 체험! AI와 대화하며 성향 분석
                   </p>
                 </div>
               )}
             </div>
             
-            {/* Season information */}
-            <div className="mt-12 p-8 glass rounded-2xl border border-white/10 shadow-lg">
-              <div className="text-center space-y-4">
-                <h3 className="text-2xl font-bold gradient-text">2025 AI 심쿵 챌린지</h3>
-                <p className="text-5xl font-black text-foreground">101</p>
-                <p className="text-lg text-muted-foreground">시즌 1, 당신의 픽으로 탄생한 K-POP 아이돌들</p>
-                <p className="text-base text-muted-foreground">
-                  최애와 함께 성장하고 추억을 만드는 특별한 여정
+            {/* Season & World Cup 통합 섹션 */}
+            <div className="mt-12 p-6 md:p-8 glass rounded-2xl border border-white/10 shadow-lg space-y-6">
+              <div className="text-center space-y-3">
+                <h3 className="text-xl md:text-2xl font-bold gradient-text">2025 AI 심쿵 챌린지 101</h3>
+                <p className="text-base md:text-lg text-muted-foreground">시즌 1 · 당신의 픽으로 탄생한 K-POP 아이돌들</p>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  16강 배틀 · 성격 테스트 · 운명의 아이돌 발견
                 </p>
+              </div>
+              
+              <div className="flex justify-center">
+                <Button
+                  onClick={handleStartJourney}
+                  variant="outline"
+                  size="lg"
+                  className="font-semibold text-sm md:text-base px-6 md:px-8 py-3 md:py-4"
+                >
+                  🎯 최애 찾기 시작
+                </Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 이상형 월드컵 섹션 */}
-        <section className="py-20">
-          <div className="text-center space-y-6 glass p-12 rounded-2xl">
-            <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl font-bold gradient-text">
-                이상형 월드컵으로 최애 찾기
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-                16강 심쿵 배틀 · 성격 테스트 · 운명의 아이돌 발견
-              </p>
-              <Button
-                onClick={handleStartJourney}
-                variant="outline"
-                size="lg"
-                className="font-semibold text-base px-8 py-4 mt-4"
-              >
-                🎯 최애 찾기 시작
-              </Button>
-            </div>
-          </div>
-        </section>
 
         {/* Features Section */}
-        <section className="py-20">
-          <div className="space-y-12">
-            <div className="text-center space-y-4 glass p-8 rounded-xl">
-              <h2 className="text-4xl font-bold gradient-text">PICK · VAULT · RISE</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                아이돌 발견 → 포토카드 수집 → 팬덤 경쟁
+        <section className="py-12 md:py-20">
+          <div className="space-y-8 md:space-y-12">
+            <div className="text-center space-y-3 md:space-y-4 glass p-4 md:p-8 rounded-xl">
+              <h2 className="text-2xl md:text-4xl font-bold gradient-text">PICK · VAULT · RISE</h2>
+              <p className="text-muted-foreground text-sm md:text-lg max-w-2xl mx-auto">
+                발견 → 수집 → 경쟁
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-8">
               <FeatureCard
                 title="🎯 PICK"
-                description="성격 테스트와 16강 심쿵 배틀로 운명의 아이돌 발견"
+                description="배틀 & 테스트로 운명의 아이돌 발견"
                 icon={mbtiIcon}
                 onClick={() => openPreview('pick')}
                 gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
@@ -273,7 +261,7 @@ const Index = () => {
               
               <FeatureCard
                 title="🗃️ VAULT"
-                description="랜덤박스로 희귀 포토카드 수집 및 보관"
+                description="랜덤박스로 포토카드 수집"
                 icon={photocardIcon}
                 onClick={() => openPreview('vault')}
                 gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
@@ -282,7 +270,7 @@ const Index = () => {
               
                <FeatureCard
                  title="📈 RISE"
-                 description="리더보드 순위 확인 및 마켓플레이스 거래"
+                 description="순위 & 마켓플레이스 거래"
                 icon={tournamentIcon}
                 onClick={() => openPreview('rise')}
                 gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
