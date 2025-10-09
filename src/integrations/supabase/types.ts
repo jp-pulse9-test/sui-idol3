@@ -662,6 +662,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      migrate_api_key_to_hash: {
+        Args: { user_wallet_param: string }
+        Returns: boolean
+      }
       user_has_activated_key: {
         Args: { key_to_check: string }
         Returns: boolean
