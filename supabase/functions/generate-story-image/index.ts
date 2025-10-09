@@ -33,11 +33,15 @@ serve(async (req) => {
     const styleGuide = genreStyles[genre as keyof typeof genreStyles] || 'cinematic, highly detailed';
 
     // 캐릭터 정보를 포함하여 주인공 시점으로 이미지 생성
-    const characterDescription = characterName 
-      ? `featuring ${characterName}, a ${characterGender === 'male' ? 'handsome young man' : 'beautiful young woman'} K-pop idol as the main protagonist` 
-      : 'from first-person perspective';
+    const genderDesc = characterGender === 'male' 
+      ? 'handsome young Korean man with stylish hair' 
+      : 'beautiful young Korean woman with elegant features';
     
-    const imagePrompt = `Create a realistic scene from first-person POV: ${storyContext}. ${characterDescription}. The protagonist ${characterName || 'main character'} should be clearly visible and central to the scene. Style: ${styleGuide}, K-drama aesthetic, professional photography, 4K quality. IMPORTANT: NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image. Pure visual scene only.`;
+    const characterDescription = characterName 
+      ? `The main protagonist is ${characterName}, a ${genderDesc}, K-pop idol. Show ${characterName} clearly in the scene as the main focus.` 
+      : 'Show the scene from first-person perspective';
+    
+    const imagePrompt = `Create a PHOTOREALISTIC scene like a snapshot from a friend's camera: ${storyContext}. ${characterDescription}. Style: authentic smartphone photo quality, realistic lighting, natural colors, candid photography style, ${styleGuide}. Make it look like a real photo someone took with their phone, not a painting or illustration. CRITICAL: The protagonist MUST be ${characterGender === 'male' ? 'MALE' : 'FEMALE'}. NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
