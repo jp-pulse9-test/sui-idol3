@@ -41,7 +41,7 @@ serve(async (req) => {
       ? `The main protagonist is ${characterName}, a ${genderDesc}, K-pop idol. Show ${characterName} clearly in the scene as the main focus.` 
       : 'Show the scene from first-person perspective';
     
-    const imagePrompt = `Create a CINEMATIC PHOTOREALISTIC scene like a film still: ${storyContext}. ${characterDescription}. Cinematic composition with depth of field, professional color grading, film-quality lighting, cinematic aspect ratio feel, ${styleGuide}. Shot on ARRI Alexa, anamorphic lens, shallow depth of field, bokeh background, professional film production quality. CRITICAL: The protagonist MUST be ${characterGender === 'male' ? 'MALE' : 'FEMALE'}. NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image.`;
+    const imagePrompt = `Create a CINEMATIC PHOTOREALISTIC 16:9 widescreen scene like a film still: ${storyContext}. ${characterDescription}. ASPECT RATIO: 16:9 horizontal widescreen format, cinematic letterbox composition. Cinematic composition with depth of field, professional color grading, film-quality lighting, anamorphic widescreen feel, ${styleGuide}. Shot on ARRI Alexa, anamorphic lens, shallow depth of field, bokeh background, professional film production quality. CRITICAL: The protagonist MUST be ${characterGender === 'male' ? 'MALE' : 'FEMALE'}. NO TEXT, NO LETTERS, NO WORDS, NO SUBTITLES, NO WRITING of any kind in the image.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
