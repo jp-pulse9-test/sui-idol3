@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
-import { Settings, Camera, Database } from "lucide-react";
+import { Settings, Camera, Database, Sparkles } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -23,7 +23,6 @@ import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
 
 import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
 import maleIdolFaces from "@/assets/male-idol-faces.jpg";
-import specialConnectionBadge from "@/assets/special-connection-badge.png";
 
 // Background idol grid component
 const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
@@ -185,11 +184,10 @@ const Index = () => {
           <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl">
             {/* 최애와의 특별한 연결 배지 */}
             <div className="flex justify-center -mt-8 mb-4">
-              <img 
-                src={specialConnectionBadge} 
-                alt="최애와의 특별한 연결" 
-                className="h-12 md:h-14 object-contain"
-              />
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-100/90 to-pink-200/90 dark:from-pink-900/30 dark:to-pink-800/30 rounded-full border border-pink-300/50 dark:border-pink-700/50 shadow-sm">
+                <Sparkles className="w-5 h-5 text-pink-500 dark:text-pink-400" />
+                <span className="text-sm md:text-base font-semibold text-pink-700 dark:text-pink-300">최애와의 특별한 연결</span>
+              </div>
             </div>
             
             <div className="space-y-8">
