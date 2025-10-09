@@ -630,88 +630,81 @@ ${genreContext}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black">
-      {/* 미니멀 386 컴퓨터 프레임 */}
-      <div className="relative w-full max-w-6xl">
-        {/* 심플한 모니터 케이스 */}
-        <div className="relative p-6 bg-gray-900 rounded-sm" style={{
-          boxShadow: '0 0 0 2px #333, 0 0 0 4px #666'
-        }}>
-          {/* 모니터 화면 */}
+      {/* MUD 게임 터미널 */}
+      <div className="relative w-full max-w-5xl">
+        <div className="relative p-2 bg-gray-900">
           <div className="relative">
-            <Card className="w-full aspect-[4/3] flex flex-col bg-black border-4 border-gray-800 rounded-none relative overflow-hidden">
-              {/* CRT 스캔라인 */}
-              <div className="absolute inset-0 pointer-events-none z-10 opacity-20" style={{
-                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px)',
+            <Card className="w-full aspect-[4/3] flex flex-col bg-black border border-blue-600 rounded-none relative overflow-hidden">
+              {/* 미세한 스캔라인 */}
+              <div className="absolute inset-0 pointer-events-none z-10 opacity-10" style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.02) 1px, rgba(255,255,255,0.02) 2px)',
               }} />
 
-          {/* 헤더 - 미니멀 386 스타일 */}
-          <div className="relative z-20 flex items-center justify-between px-8 py-6 border-b-2 border-green-400 bg-black">
-            <div className="flex items-center gap-6">
-              <div className="w-24 h-24 border-2 border-green-400 p-1 bg-black">
-                <img src={idol.image} alt={idol.name} className="w-full h-full object-cover" />
+          {/* 헤더 - MUD 스타일 */}
+          <div className="relative z-20 flex items-center justify-between px-6 py-3 border-b border-blue-600 bg-black">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 border border-blue-600 p-0.5 bg-black">
+                <img src={idol.image} alt={idol.name} className="w-full h-full object-cover grayscale" />
               </div>
               <div>
-                <div className="flex items-center gap-4 mb-2">
-                  <h3 className="font-mono text-2xl text-green-400 uppercase tracking-wider font-bold">{idol.name}</h3>
+                <div className="flex items-center gap-3 mb-1">
+                  <h3 className="font-mono text-sm text-white uppercase tracking-wide">{idol.name}</h3>
                   {selectedGenre && (
-                    <span className="text-lg font-mono bg-green-400 text-black px-3 py-1">
+                    <span className="text-xs font-mono bg-blue-600 text-white px-2 py-0.5">
                       {GENRES.find(g => g.id === selectedGenre)?.name}
                     </span>
                   )}
                 </div>
-                <p className="text-base text-gray-400 font-mono mb-3">{idol.personality}</p>
-                <div className="flex items-center gap-3">
-                  <span className="text-green-400 text-base font-mono">REL:</span>
-                  <div className="w-40 bg-gray-900 border-2 border-green-400 h-4">
+                <p className="text-xs text-gray-500 font-mono mb-1">{idol.personality}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-white text-xs font-mono">REL:</span>
+                  <div className="w-24 bg-gray-900 border border-blue-600 h-2">
                     <div 
-                      className="bg-green-400 h-full transition-all duration-500"
+                      className="bg-blue-600 h-full transition-all duration-500"
                       style={{ width: `${relationshipScore}%` }}
                     />
                   </div>
-                  <span className="text-base text-green-400 font-mono font-bold">{relationshipScore}%</span>
+                  <span className="text-xs text-white font-mono">{relationshipScore}%</span>
                   {isDemoMode && (
-                    <span className="ml-3 text-base text-cyan-400 font-mono">
+                    <span className="ml-2 text-xs text-blue-400 font-mono">
                       [{messageCount}/11]
                     </span>
                   )}
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleVoiceMode}
-                className={`border-2 p-3 ${isVoiceMode ? "border-green-400 bg-green-400 text-black" : "border-green-400 text-green-400 hover:bg-green-400 hover:text-black"}`}
+                className={`border p-2 text-xs ${isVoiceMode ? "border-blue-600 bg-blue-600 text-white" : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"}`}
               >
-                {isVoiceMode ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                {isVoiceMode ? <Mic className="w-3 h-3" /> : <MicOff className="w-3 h-3" />}
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={onClose} 
-                className="border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-black p-3"
+                className="border border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white p-2"
               >
-                <X className="w-5 h-5" />
+                <X className="w-3 h-3" />
               </Button>
             </div>
           </div>
 
-          {/* 메시지 영역 - DOS 스타일 개선 */}
-          <ScrollArea className="relative z-20 flex-1 p-6 bg-black">
-            <div className="space-y-4 font-mono">
+          {/* 메시지 영역 - MUD 스타일 */}
+          <ScrollArea className="relative z-20 flex-1 p-4 bg-black">
+            <div className="space-y-2 font-mono text-sm">
             {messages.map((msg, index) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in glitch-on-appear`}
+                className={`flex ${msg.sender === 'user' ? 'justify-start' : 'justify-start'} animate-fade-in glitch-on-appear`}
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                {msg.sender === 'idol' && !msg.error && (
-                  <span className="text-green-400 mr-3 font-bold text-lg">{'>'}</span>
-                )}
-                <div className="space-y-2 max-w-[75%]">
+                <div className="space-y-1 max-w-full">
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
-                    <div className="border-4 border-green-400 p-2 bg-black">
+                    <div className="border border-blue-600 p-1 bg-black mb-1">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 
@@ -719,61 +712,57 @@ ${genreContext}
                       />
                     </div>
                   )}
-                  <div
-                    className={`p-5 border-2 ${
-                      msg.error
-                        ? 'border-red-500 bg-black text-red-500'
-                        : msg.sender === 'user'
-                        ? 'border-cyan-400 bg-black text-cyan-400'
-                        : 'border-green-400 bg-black text-green-400'
-                    }`}
-                  >
+                  <div className="p-0">
                     {msg.error ? (
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm">ERROR: MESSAGE FAILED</p>
+                      <div className="flex items-start gap-2">
+                        <span className="text-red-500 text-xs">{'>'} ERROR:</span>
+                        <p className="text-red-500 text-xs flex-1">{msg.content}</p>
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => retryMessage(msg.content)}
-                          className="border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-black h-8 px-3 text-sm"
+                          className="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white h-6 px-2 text-xs"
                         >
-                          <RefreshCw className="w-3 h-3 mr-1" />
                           RETRY
                         </Button>
                       </div>
                     ) : (
                       <>
-                        <p className="text-lg leading-relaxed whitespace-pre-line">
-                          {msg.sender === 'idol' && index === messages.length - 1 && isTypingEffect
-                            ? typingText
-                            : msg.content}
-                          {msg.sender === 'idol' && index === messages.length - 1 && isTypingEffect && (
-                            <span className="inline-block w-2 h-5 bg-green-400 ml-1 animate-pulse" />
-                          )}
-                        </p>
-                        <p className="text-xs opacity-50 mt-2">
-                          {msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                        {msg.sender === 'idol' ? (
+                          <p className="text-white text-sm leading-relaxed whitespace-pre-line">
+                            <span className="text-blue-400">{'> '}</span>
+                            {msg.sender === 'idol' && index === messages.length - 1 && isTypingEffect
+                              ? typingText
+                              : msg.content}
+                            {msg.sender === 'idol' && index === messages.length - 1 && isTypingEffect && (
+                              <span className="inline-block w-1.5 h-3 bg-white ml-1 animate-pulse" />
+                            )}
+                          </p>
+                        ) : (
+                          <p className="text-blue-300 text-sm leading-relaxed whitespace-pre-line">
+                            <span className="text-blue-600">{'< '}</span>
+                            {msg.content}
+                          </p>
+                        )}
+                        <p className="text-xs text-gray-700 mt-0.5 ml-2">
+                          [{msg.timestamp.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}]
                         </p>
                       </>
                     )}
                   </div>
                 </div>
-                {msg.sender === 'user' && !msg.error && (
-                  <span className="text-cyan-400 ml-3 font-bold text-lg">{'<'}</span>
-                )}
               </div>
             ))}
 
-            {/* 선택지 표시 */}
+            {/* 선택지 표시 - MUD 스타일 */}
             {messages.length > 0 && messages[messages.length - 1].sender === 'idol' && messages[messages.length - 1].choices && !isTypingEffect && (
-              <div className="flex justify-start">
-                <span className="text-green-400 mr-3 font-bold text-lg opacity-0">{'>'}</span>
-                <div className="flex flex-col gap-3 w-full max-w-lg">
+              <div className="flex justify-start mt-2">
+                <div className="flex flex-col gap-1 w-full">
                   {messages[messages.length - 1].choices!.map((choice, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleChoiceClick(choice)}
-                      className="border-2 border-yellow-400 bg-black text-yellow-400 p-4 text-left hover:bg-yellow-400 hover:text-black transition-all font-mono text-base font-medium"
+                      className="text-left hover:text-white transition-colors font-mono text-sm text-blue-400 hover:bg-blue-900/20 p-1"
                     >
                       [{idx + 1}] {choice}
                     </button>
@@ -782,26 +771,26 @@ ${genreContext}
               </div>
             )}
             
-            {/* 장르 선택 버튼 - 항상 표시 */}
-            <div className="border-t-2 border-green-400 pt-4 mt-4">
-              <p className="text-green-400 text-base mb-3 font-mono">📚 GENRE SELECTION:</p>
-              <div className="grid grid-cols-2 gap-3 max-w-2xl">
+            {/* 장르 선택 버튼 - MUD 스타일 */}
+            <div className="border-t border-blue-600 pt-3 mt-3">
+              <p className="text-blue-400 text-sm mb-2 font-mono">📚 GENRE:</p>
+              <div className="grid grid-cols-2 gap-1">
                 {GENRES.map((genre, idx) => (
                   <button
                     key={genre.id}
                     onClick={() => !selectedGenre && handleGenreSelect(genre.id as GenreType)}
                     disabled={!!selectedGenre}
-                    className={`border-2 p-4 text-left transition-all ${
+                    className={`text-left transition-all p-2 ${
                       selectedGenre === genre.id
-                        ? 'border-green-400 bg-green-400 text-black'
+                        ? 'text-white bg-blue-600'
                         : selectedGenre
-                        ? 'border-gray-700 bg-black text-gray-700 cursor-not-allowed'
-                        : 'border-green-400 bg-black text-green-400 hover:bg-green-400/10'
+                        ? 'text-gray-700 cursor-not-allowed'
+                        : 'text-blue-400 hover:text-white hover:bg-blue-900/20'
                     }`}
                   >
-                    <div className="font-mono text-base">
-                      <div className="font-bold mb-1">[{idx + 1}] {genre.emoji} {genre.name}</div>
-                      <div className="text-xs opacity-70">{genre.description}</div>
+                    <div className="font-mono text-xs">
+                      <div className="font-bold">[{idx + 1}] {genre.emoji} {genre.name}</div>
+                      <div className="opacity-70 text-[10px]">{genre.description}</div>
                     </div>
                   </button>
                 ))}
@@ -810,12 +799,12 @@ ${genreContext}
             
             {isTyping && !isTypingEffect && (
               <div className="flex justify-start">
-                <span className="text-green-400 mr-3 font-bold text-lg">{'>'}</span>
-                <div className="border-2 border-green-400 bg-black p-4 text-green-400">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-green-400 animate-bounce" />
-                    <div className="w-2 h-2 bg-green-400 animate-bounce" style={{ animationDelay: '0.1s' }} />
-                    <div className="w-2 h-2 bg-green-400 animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="p-1 text-white">
+                  <div className="flex space-x-1 items-center">
+                    <span className="text-blue-400 text-sm">{'>'}</span>
+                    <div className="w-1.5 h-1.5 bg-white animate-bounce" />
+                    <div className="w-1.5 h-1.5 bg-white animate-bounce" style={{ animationDelay: '0.1s' }} />
+                    <div className="w-1.5 h-1.5 bg-white animate-bounce" style={{ animationDelay: '0.2s' }} />
                   </div>
                 </div>
               </div>
@@ -824,44 +813,44 @@ ${genreContext}
             </div>
           </ScrollArea>
 
-          <div className="relative z-20 px-6 py-4 border-t-2 border-green-400 bg-black">
+          <div className="relative z-20 px-4 py-3 border-t border-blue-600 bg-black">
             {isDemoMode && messageCount >= 11 ? (
-              <div className="text-center space-y-3">
-                <p className="text-base font-mono text-green-400 font-bold">체험판 대화 횟수 다 썼어 [11/11]</p>
-                <p className="text-sm font-mono text-gray-400">지갑 연결하면 계속 얘기할 수 있어!</p>
+              <div className="text-center space-y-2">
+                <p className="text-sm font-mono text-white">체험판 종료 [11/11]</p>
+                <p className="text-xs font-mono text-gray-500">지갑 연결하면 계속 대화 가능</p>
                 <Button 
-                  className="bg-green-400 hover:bg-green-300 text-black font-mono text-base font-bold mt-2 border-2 border-green-400"
+                  className="bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs mt-2 border border-blue-600"
                   onClick={() => window.location.href = '/auth'}
                 >
-                  <Wallet className="w-4 h-4 mr-2" />
-                  지갑 연결하기
+                  <Wallet className="w-3 h-3 mr-1" />
+                  지갑 연결
                 </Button>
               </div>
             ) : (
               <>
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder={selectedGenre ? "C:\\> 메시지 입력..." : "C:\\> 장르를 먼저 선택해줘..."}
+                    placeholder={selectedGenre ? "C:\\> " : "C:\\> 장르 선택 필요"}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && !isTyping && selectedGenre) {
                         sendMessage();
                       }
                     }}
-                    className="flex-1 bg-black border-2 border-green-400 text-green-400 placeholder:text-gray-600 font-mono text-base"
+                    className="flex-1 bg-black border border-blue-600 text-white placeholder:text-gray-700 font-mono text-sm"
                     disabled={isTyping || !selectedGenre}
                   />
                   <Button 
                     onClick={sendMessage} 
                     disabled={isTyping || !inputMessage.trim() || !selectedGenre}
-                    className="bg-green-400 hover:bg-green-300 text-black font-mono text-base px-6 border-2 border-green-400 font-bold"
+                    className="bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs px-4 border border-blue-600"
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-3 h-3" />
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500 mt-3 text-center font-mono">
-                  AI가 모든 대화를 학습해서 너만의 {idol.name}을 만들어가
+                <p className="text-[10px] text-gray-700 mt-2 text-center font-mono">
+                  AI 학습으로 {idol.name} 맞춤 생성
                 </p>
               </>
             )}
@@ -870,8 +859,8 @@ ${genreContext}
           </div>
           
           {/* 전원 LED */}
-          <div className="absolute top-2 right-2">
-            <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse shadow-lg shadow-green-400/50" />
+          <div className="absolute top-1 right-1">
+            <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
           </div>
         </div>
       </div>
