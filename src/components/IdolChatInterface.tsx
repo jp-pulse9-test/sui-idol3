@@ -970,65 +970,65 @@ ${genreContext}
           </div>
         </div>
       </div>
+    </div>
         
-        {/* 성향 분석 및 추천 모달 */}
-        {showAnalysis && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="glass-dark rounded-3xl p-8 max-w-2xl w-full space-y-6 animate-scale-in">
-              <div className="text-center space-y-4">
-                <h2 className="text-3xl font-bold gradient-text">대화 분석 완료! 🎯</h2>
-                <p className="text-lg text-muted-foreground">
-                  {conversationCount}번의 대화를 통해 당신의 성향을 분석했어요
-                </p>
-              </div>
-
-              {isAnalyzing ? (
-                <div className="glass p-6 rounded-xl text-center space-y-3">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                  <p className="text-muted-foreground">대화 내용을 분석하고 있어요...</p>
-                </div>
-              ) : (
-                <>
-                  <div className="glass p-6 rounded-xl space-y-3">
-                    <h3 className="text-xl font-semibold text-primary">당신의 성향 & 추천 아이돌</h3>
-                    <div className="text-foreground whitespace-pre-wrap">
-                      {analysisResult}
-                    </div>
-                  </div>
-
-                    <div className="space-y-4">
-                      <p className="text-center text-muted-foreground">
-                        아이돌과 본격적으로 대화하려면 캐릭터를 소장해야 해요
-                      </p>
-                  
-                      <div className="flex gap-3 justify-center">
-                        <Button
-                          onClick={() => {
-                            setShowAnalysis(false);
-                            onClose();
-                            window.location.href = '/pick';
-                          }}
-                          variant="default"
-                          size="lg"
-                          className="bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold"
-                        >
-                          💖 추천 아이돌 보기
-                        </Button>
-                        <Button
-                          onClick={() => setShowAnalysis(false)}
-                          variant="outline"
-                          size="lg"
-                        >
-                          계속 대화하기
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
+    {/* 성향 분석 및 추천 모달 */}
+    {showAnalysis && (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="glass-dark rounded-3xl p-8 max-w-2xl w-full space-y-6 animate-scale-in">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-bold gradient-text">대화 분석 완료! 🎯</h2>
+            <p className="text-lg text-muted-foreground">
+              {conversationCount}번의 대화를 통해 당신의 성향을 분석했어요
+            </p>
           </div>
-        )}
+
+          {isAnalyzing ? (
+            <div className="glass p-6 rounded-xl text-center space-y-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="text-muted-foreground">대화 내용을 분석하고 있어요...</p>
+            </div>
+          ) : (
+            <>
+              <div className="glass p-6 rounded-xl space-y-3">
+                <h3 className="text-xl font-semibold text-primary">당신의 성향 & 추천 아이돌</h3>
+                <div className="text-foreground whitespace-pre-wrap">
+                  {analysisResult}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-center text-muted-foreground">
+                  아이돌과 본격적으로 대화하려면 캐릭터를 소장해야 해요
+                </p>
+            
+                <div className="flex gap-3 justify-center">
+                  <Button
+                    onClick={() => {
+                      setShowAnalysis(false);
+                      onClose();
+                      window.location.href = '/pick';
+                    }}
+                    variant="default"
+                    size="lg"
+                    className="bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold"
+                  >
+                    💖 추천 아이돌 보기
+                  </Button>
+                  <Button
+                    onClick={() => setShowAnalysis(false)}
+                    variant="outline"
+                    size="lg"
+                  >
+                    계속 대화하기
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    )}
     </>
   );
 };
