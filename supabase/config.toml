@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.analyze-conversation]
 verify_jwt = false
+
+[functions.generate-idol-image]
+verify_jwt = false

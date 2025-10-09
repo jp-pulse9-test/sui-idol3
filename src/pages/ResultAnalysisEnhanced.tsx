@@ -35,6 +35,8 @@ export const ResultAnalysisEnhanced = () => {
   const [appearanceProfile, setAppearanceProfile] = useState<AppearanceProfile | null>(null);
   const [analysis, setAnalysis] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [idolImage, setIdolImage] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(false);
 
   useEffect(() => {
     const loadProfiles = async () => {
@@ -56,6 +58,9 @@ export const ResultAnalysisEnhanced = () => {
         
         // Gemini를 사용하여 팬 성향 분석 생성
         await generateFanAnalysisWithGemini(personality, appearance);
+        
+        // 외모 취향 기반 AI 이미지 생성
+        await generateIdolImage(appearance);
         
       } catch (error) {
         console.error('프로필 로딩 중 에러:', error);
@@ -117,6 +122,31 @@ export const ResultAnalysisEnhanced = () => {
       // 백업 분석 사용
       const selectedGender = localStorage.getItem('selectedGender');
       setAnalysis(generateBackupAnalysis(personality, appearance, 'modern', selectedGender));
+    }
+  };
+
+  const generateIdolImage = async (appearance: AppearanceProfile) => {
+    try {
+      setImageLoading(true);
+      const selectedGender = localStorage.getItem('selectedGender');
+      
+      const { data, error } = await supabase.functions.invoke('generate-idol-image', {
+        body: { 
+          appearanceProfile: appearance,
+          gender: selectedGender
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.imageUrl) {
+        setIdolImage(data.imageUrl);
+      }
+    } catch (error) {
+      console.error('이미지 생성 실패:', error);
+      toast.error('이미지 생성에 실패했습니다.');
+    } finally {
+      setImageLoading(false);
     }
   };
 
@@ -186,10 +216,29 @@ ${personality.description} 이런 당신의 특성이 완벽하게 조화를 이
         {appearanceProfile && (
           <Card className="p-8 bg-card/80 backdrop-blur-sm border-border">
             <h3 className="text-2xl font-bold mb-4 gradient-text">외모 취향</h3>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <Badge variant="outline" className="text-lg px-4 py-2">
                 {appearanceProfile.type}
               </Badge>
+              
+              {/* AI 생성 이미지 */}
+              {imageLoading ? (
+                <div className="w-full aspect-square rounded-lg bg-muted flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                    <p className="text-sm text-muted-foreground">AI가 당신의 최애 이미지를 생성하고 있어요...</p>
+                  </div>
+                </div>
+              ) : idolImage ? (
+                <div className="w-full aspect-square rounded-lg overflow-hidden border border-border/50">
+                  <img 
+                    src={idolImage} 
+                    alt="AI 생성 최애 이미지" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : null}
+              
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                 <div>헤어: {appearanceProfile.hair}</div>
                 <div>눈매: {appearanceProfile.eyes}</div>
