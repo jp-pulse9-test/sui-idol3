@@ -350,82 +350,11 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const sendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
 
-    // 체험판 11번 제한 및 분석 트리거
-    if (isDemoMode && messageCount >= 11) {
-      // 10번째 메시지 후 분석 시작
-      setConversationCount(prev => prev + 1);
-      
-      // 간략한 분석 결과 메시지 추가
-      const analysisMessage: Message = {
-        id: (Date.now() + 100).toString(),
-        sender: 'idol',
-        content: '11번의 대화 분석 중...',
-        timestamp: new Date(),
-        emotion: 'neutral'
-      };
-      
-      setMessages(prev => [...prev, analysisMessage]);
-      
-      // 분석 수행
-      try {
-        const chatMessages = messages.map(m => ({
-          role: m.sender === 'user' ? 'user' : 'assistant',
-          content: m.content
-        }));
-
-        const { data, error } = await supabase.functions.invoke('analyze-conversation', {
-          body: {
-            messages: chatMessages,
-            choices: selectedChoices
-          }
-        });
-
-        if (error) throw error;
-
-        // 간략한 분석 결과로 메시지 업데이트
-        const result = data.analysis;
-        const summaryContent = `🎯 **취향 분석 완료!**
-
-${result.personality || '당신의 취향을 분석했어요.'}
-
-💎 **추천 아이돌**
-👨 ${result.maleIdol?.name || '남자 아이돌'} - ${result.maleIdol?.description || ''}
-👩 ${result.femaleIdol?.name || '여자 아이돌'} - ${result.femaleIdol?.description || ''}
-
-📌 더 자세한 분석과 추천 아이돌을 보려면 로그인이 필요해요!`;
-
-        setMessages(prev => 
-          prev.map(m => 
-            m.id === analysisMessage.id 
-              ? { ...m, content: summaryContent }
-              : m
-          )
-        );
-
-        // 로그인 유도 메시지 추가
-        setTimeout(() => {
-          const loginPromptMessage: Message = {
-            id: (Date.now() + 200).toString(),
-            sender: 'idol',
-            content: '지갑을 연결하면 무제한 대화와 맞춤 아이돌 추천을 받을 수 있어요! 💖',
-            timestamp: new Date(),
-            emotion: 'excited',
-            choices: ['지갑 연결하기', '나중에 하기']
-          };
-          setMessages(prev => [...prev, loginPromptMessage]);
-        }, 1000);
-
-      } catch (error) {
-        console.error('분석 실패:', error);
-        setMessages(prev => 
-          prev.map(m => 
-            m.id === analysisMessage.id 
-              ? { ...m, content: '분석 중 오류가 발생했어요. 지갑을 연결하고 다시 시도해주세요!' }
-              : m
-          )
-        );
-      }
-      
+    // 체험판 11번 제한 (user 메시지만 카운트)
+    const userMessageCount = messages.filter(m => m.sender === 'user').length;
+    
+    if (isDemoMode && userMessageCount >= 11) {
+      toast.error("체험판은 11번까지만 대화할 수 있습니다!");
       return;
     }
 
@@ -583,9 +512,22 @@ ${genreContext}
   const handleChoiceClick = async (choice: string) => {
     if (!choice.trim() || isTyping) return;
 
-    // 체험판 11번 제한
-    if (isDemoMode && messageCount >= 11) {
-      toast.error("체험판은 11번까지만 대화할 수 있습니다. 지갑을 연결하여 계속 대화하세요!");
+    // 특별 선택지 처리
+    if (choice === '성향 분석 결과보기') {
+      window.location.href = '/auth';
+      return;
+    }
+    
+    if (choice === '나중에 하기') {
+      onClose();
+      return;
+    }
+
+    // 체험판 11번 제한 (user 메시지만 카운트)
+    const userMessageCount = messages.filter(m => m.sender === 'user').length;
+    
+    if (isDemoMode && userMessageCount >= 11) {
+      toast.error("체험판은 11번까지만 대화할 수 있습니다!");
       return;
     }
 
@@ -705,10 +647,62 @@ ${genreContext}
         setSelectedChoices(prev => [...prev, userMessage.content]);
       }
 
-      // 11번의 대화가 완료되면 분석 시작
-      if (conversationCount >= 10 && isDemoMode && !isAnalyzing) {
+      // 11번의 user 메시지가 완료되면 분석 시작
+      const currentUserMessageCount = messages.filter(m => m.sender === 'user').length + 1; // +1 for current message
+      
+      if (currentUserMessageCount === 11 && isDemoMode && !isAnalyzing) {
         setIsAnalyzing(true);
-        await performAnalysis();
+        
+        // 분석 시작
+        setTimeout(async () => {
+          try {
+            const chatMessages = messages.concat([userMessage, idolMessage]).map(m => ({
+              role: m.sender === 'user' ? 'user' : 'assistant',
+              content: m.content
+            }));
+
+            const { data, error } = await supabase.functions.invoke('analyze-conversation', {
+              body: {
+                messages: chatMessages,
+                choices: selectedChoices
+              }
+            });
+
+            if (error) throw error;
+
+            const result = data.analysis;
+            const summaryContent = `[체험 완료! 🎉]\n\n${userName}님의 핵심 성향: ${result.personality || '당신의 취향을 분석했어요.'}\n\n추천 아이돌:\n• 남자: ${result.maleIdol?.name || '남자 아이돌'} (${result.maleIdol?.mbti || ''})\n• 여자: ${result.femaleIdol?.name || '여자 아이돌'} (${result.femaleIdol?.mbti || ''})`;
+
+            const analysisMessage: Message = {
+              id: (Date.now() + 100).toString(),
+              sender: 'idol',
+              content: summaryContent,
+              timestamp: new Date(),
+              emotion: 'excited'
+            };
+
+            setMessages(prev => [...prev, analysisMessage]);
+
+            // 성향 분석 결과보기 유도 메시지 추가
+            setTimeout(() => {
+              const loginPromptMessage: Message = {
+                id: (Date.now() + 200).toString(),
+                sender: 'idol',
+                content: '더 자세한 성향 분석 결과를 확인하고 싶으신가요?',
+                timestamp: new Date(),
+                emotion: 'excited',
+                choices: ['성향 분석 결과보기', '나중에 하기']
+              };
+              setMessages(prev => [...prev, loginPromptMessage]);
+            }, 1000);
+
+          } catch (error) {
+            console.error('분석 실패:', error);
+            toast.error("분석 중 오류가 발생했습니다.");
+          } finally {
+            setIsAnalyzing(false);
+          }
+        }, 500);
       }
 
     } catch (error) {
