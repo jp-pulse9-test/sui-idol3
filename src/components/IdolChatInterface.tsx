@@ -712,7 +712,7 @@ ${genreContext}
               >
                 <div className="space-y-1 max-w-full">
                   {msg.imageUrl && msg.sender === 'idol' && !msg.error && (
-                    <div className="border border-blue-600 p-1 bg-black mb-1 max-w-[200px]">
+                    <div className="border border-blue-600 p-1 bg-black mb-1 max-w-[340px]">
                       <img 
                         src={msg.imageUrl} 
                         alt="Story scene" 
