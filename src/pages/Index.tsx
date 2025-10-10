@@ -523,7 +523,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
           <p className="text-muted-foreground">
-            © 2024 Sui:Idol³. K-POP Fandom Platform · Made with 💖 by Lovable
+            © 2024 Sui:Idol³. K-POP Fandom Platform · Made with 💖 by PULSE9 Inc
           </p>
         </footer>
       </div>
