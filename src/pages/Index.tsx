@@ -30,8 +30,8 @@ const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
   
   return (
     <div className={`
-      fixed top-0 ${side === 'left' ? 'left-0' : 'right-0'} h-full w-64
-      overflow-hidden opacity-30
+      hidden md:block fixed top-0 ${side === 'left' ? 'left-0' : 'right-0'} h-full md:w-40 lg:w-64
+      overflow-hidden opacity-20
     `}>
       <div 
         className="w-full h-full bg-cover bg-center bg-repeat-y animate-pulse"
@@ -141,7 +141,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-background relative overflow-x-hidden">
       {/* Left and right idol grid background */}
       <IdolGrid side="left" />
       <IdolGrid side="right" />
@@ -181,7 +181,7 @@ const Index = () => {
 
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-12 glass-dark p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl relative overflow-hidden">
+          <div className="text-center space-y-8 sm:space-y-12 glass-dark p-6 sm:p-10 md:p-16 rounded-3xl border border-white/5 shadow-2xl animate-float backdrop-blur-xl relative overflow-hidden">
             {/* 배경 데코레이션 */}
             <div className="absolute inset-0 pointer-events-none">
               {/* 그라디언트 블러 효과 */}
@@ -271,21 +271,21 @@ const Index = () => {
             
             {/* 최애와의 특별한 연결 배지 */}
             <div className="flex justify-center -mt-8 mb-4 relative z-10">
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-100/90 to-pink-200/90 dark:from-pink-900/30 dark:to-pink-800/30 rounded-full border border-pink-300/50 dark:border-pink-700/50 shadow-sm">
+              <div className="inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-pink-100/90 to-pink-200/90 dark:from-pink-900/30 dark:to-pink-800/30 rounded-full border border-pink-300/50 dark:border-pink-700/50 shadow-sm">
                 <Sparkles className="w-5 h-5 text-pink-500 dark:text-pink-400" />
                 <span className="text-sm md:text-base font-semibold text-pink-700 dark:text-pink-300">최애와의 특별한 연결</span>
               </div>
             </div>
             
             <div className="space-y-8 relative z-10">
-              <h1 className="text-7xl md:text-9xl font-black font-blacksword tracking-tight text-foreground">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-blacksword tracking-tight leading-tight text-foreground">
                 SIMKUNG
               </h1>
               <div className="space-y-4">
-                <h2 className="text-2xl md:text-3xl font-bold gradient-text">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold gradient-text">
                   나의 최애, 이상형은 어떤 사람?
                 </h2>
-                <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   취향 데이터를 기반으로 AIDOL 찾기
                 </p>
               </div>
@@ -297,7 +297,7 @@ const Index = () => {
                 onClick={() => navigate('/demo-chat')}
                 variant="default"
                 size="lg"
-                className="w-full md:w-auto text-xl md:text-2xl py-5 md:py-6 px-8 md:px-12 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full sm:w-auto text-base sm:text-lg md:text-2xl py-4 sm:py-5 md:py-6 px-6 sm:px-8 md:px-12 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 💬 심쿵톡 시작하기
               </Button>
