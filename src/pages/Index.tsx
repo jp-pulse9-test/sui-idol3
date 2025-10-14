@@ -521,8 +521,8 @@ const Index = () => {
         />
 
         {/* Footer */}
-        <footer className="py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
-          <p className="text-muted-foreground">
+        <footer className="py-4 md:py-8 text-center bg-card/30 backdrop-blur-sm rounded-t-xl border-t border-border">
+          <p className="text-xs md:text-sm text-muted-foreground px-4">
             © 2025 AIDOL.COM · AI Companion Platform
           </p>
         </footer>
