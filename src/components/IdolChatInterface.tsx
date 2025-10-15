@@ -944,8 +944,23 @@ ${genreContext}
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <h3 className="font-mono text-sm text-white uppercase tracking-wide">{idol.name}</h3>
                   {selectedGenre && (
-                    <span className="text-xs font-mono bg-blue-600 text-white px-2 py-0.5">
-                      {GENRES.find(g => g.id === selectedGenre)?.name}
+                    <span className="inline-flex items-center gap-2">
+                      <span className="text-xs font-mono bg-blue-600 text-white px-2 py-0.5">
+                        {GENRES.find(g => g.id === selectedGenre)?.name}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          localStorage.removeItem(`genre_${idol.id}`);
+                          setSelectedGenre(null);
+                          setShowGenreSelect(true);
+                        }}
+                        className="text-[10px] underline text-blue-400 hover:text-white"
+                        aria-label="장르 변경"
+                        title="장르 변경"
+                      >
+                        변경
+                      </button>
                     </span>
                   )}
                 </div>
