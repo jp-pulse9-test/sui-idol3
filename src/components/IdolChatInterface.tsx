@@ -248,7 +248,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
       setSelectedGenre(saved as GenreType);
       setShowGenreSelect(false);
     } else {
-      setShowGenreSelect(false); // 장르 선택 화면 제거, 대화로 진행
+      setShowGenreSelect(true); // 장르 선택 화면 표시
     }
   };
 
