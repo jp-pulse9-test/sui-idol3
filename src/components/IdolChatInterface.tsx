@@ -916,24 +916,37 @@ ${genreContext}
           {/* 헤더 - MUD 스타일 */}
           <div className="relative z-20 border-b border-blue-600 bg-black">
             {/* 상단 고정: 버튼들 */}
-            <div className="flex items-center justify-end gap-2 px-3 py-2 border-b border-blue-900">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleVoiceMode}
-                className={`border p-2 text-xs ${isVoiceMode ? "border-blue-600 bg-blue-600 text-white" : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"}`}
-              >
-                {isVoiceMode ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={onClose} 
-                className="border border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white p-2"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
+              <div className="flex items-center justify-end gap-2 px-3 py-2 border-b border-blue-900">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleVoiceMode}
+                  className={`border p-2 text-xs ${isVoiceMode ? "border-blue-600 bg-blue-600 text-white" : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"}`}
+                >
+                  {isVoiceMode ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowGenreSelect(true);
+                    toast.info("장르 선택 창을 열었습니다");
+                  }}
+                  className="border p-2 text-xs border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                  aria-label="장르 선택 열기"
+                  title="장르 선택 열기"
+                >
+                  <BookOpen className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={onClose} 
+                  className="border border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white p-2"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
             
             {/* 캐릭터 정보 */}
             <div className="flex items-center gap-3 px-4 py-2">
@@ -1065,7 +1078,7 @@ ${genreContext}
             {/* 장르 선택 버튼 - MUD 스타일 */}
             {showGenreSelect && (
               <div className="border-t border-blue-600 pt-3 mt-3">
-                <p className="text-blue-400 text-sm mb-2 font-mono">📚 GENRE:</p>
+                <p className="text-blue-400 text-sm mb-2 font-mono">📚 장르 선택:</p>
                 <div className="grid grid-cols-2 gap-1">
                   {GENRES.map((genre, idx) => (
                     <button
