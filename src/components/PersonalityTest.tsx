@@ -27,30 +27,30 @@ const PersonalityTest = ({ onComplete, onSkip, onBack }: PersonalityTestProps) =
   const quickQuestions: Question[] = [
     {
       id: 1,
-      text: "How do you approach meeting new people?",
-      answers: ["I actively approach them first", "I approach cautiously depending on the situation"],
+      text: "새로운 사람을 만날 때 어떻게 행동하나요?",
+      answers: ["적극적으로 먼저 다가간다", "상황에 따라 조심스럽게 접근한다"],
       scores: [[70, 0, 0, 0], [30, 0, 0, 0]]
     },
     {
       id: 2,
-      text: "What do you value most when listening to music?",
-      answers: ["Creative and unique sounds", "High-quality and stable melodies"],
+      text: "음악을 들을 때 무엇을 가장 중요하게 생각하나요?",
+      answers: ["창의적이고 독특한 사운드", "고품질의 안정적인 멜로디"],
       scores: [[0, 70, 0, 0], [0, 30, 0, 0]]
     },
     {
       id: 3,
-      text: "What's your preferred way of managing schedules?",
-      answers: ["Systematically with planning", "Flexibly according to situations"],
+      text: "일정 관리는 어떤 방식을 선호하나요?",
+      answers: ["체계적으로 계획해서 관리", "상황에 따라 유연하게 대응"],
       scores: [[0, 0, 0, 70], [0, 0, 0, 30]]
     }
   ];
 
   // One-click presets
   const oneClickPresets = [
-    { name: "Passionate Leader", emoji: "🔥", scores: { extroversion: 80, intuition: 70, feeling: 60, judging: 75 } },
-    { name: "Creative Artist", emoji: "🎨", scores: { extroversion: 40, intuition: 85, feeling: 80, judging: 30 } },
-    { name: "Stable Manager", emoji: "📋", scores: { extroversion: 60, intuition: 30, feeling: 40, judging: 85 } },
-    { name: "Free Adventurer", emoji: "🌟", scores: { extroversion: 75, intuition: 80, feeling: 70, judging: 25 } }
+    { name: "열정적인 리더", emoji: "🔥", scores: { extroversion: 80, intuition: 70, feeling: 60, judging: 75 } },
+    { name: "창의적인 아티스트", emoji: "🎨", scores: { extroversion: 40, intuition: 85, feeling: 80, judging: 30 } },
+    { name: "안정적인 매니저", emoji: "📋", scores: { extroversion: 60, intuition: 30, feeling: 40, judging: 85 } },
+    { name: "자유로운 모험가", emoji: "🌟", scores: { extroversion: 75, intuition: 80, feeling: 70, judging: 25 } }
   ];
 
   const handleQuickAnswer = (answerIndex: number) => {
@@ -93,20 +93,20 @@ const PersonalityTest = ({ onComplete, onSkip, onBack }: PersonalityTestProps) =
             🧠 Personality Analysis
           </h1>
           <p className="text-muted-foreground text-lg">
-            A simple personality test to find idols that match you well
+            나와 잘 맞는 아이돌을 찾기 위한 간단한 성격 테스트
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
             <TabsTrigger value="quick" className="data-[state=active]:bg-primary/20">
-              ⚡ 3-Question Quick Test
+              ⚡ 3문항 빠른 테스트
             </TabsTrigger>
             <TabsTrigger value="oneclick" className="data-[state=active]:bg-primary/20">
-              🎯 One-Click Selection
+              🎯 원클릭 선택
             </TabsTrigger>
             <TabsTrigger value="skip" className="data-[state=active]:bg-primary/20">
-              🏃 Skip
+              🏃 건너뛰기
             </TabsTrigger>
           </TabsList>
 
@@ -115,7 +115,7 @@ const PersonalityTest = ({ onComplete, onSkip, onBack }: PersonalityTestProps) =
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <Badge variant="outline">
-                    Question {currentQuestion + 1} / {quickQuestions.length}
+                    문항 {currentQuestion + 1} / {quickQuestions.length}
                   </Badge>
                   <Progress value={((currentQuestion) / quickQuestions.length) * 100} className="w-32" />
                 </div>
@@ -155,7 +155,7 @@ const PersonalityTest = ({ onComplete, onSkip, onBack }: PersonalityTestProps) =
                     <div className="text-4xl">{preset.emoji}</div>
                     <h3 className="text-xl font-bold gradient-text">{preset.name}</h3>
                     <Button variant="outline" size="sm">
-                      Select
+                      선택하기
                     </Button>
                   </div>
                 </Card>
@@ -167,9 +167,9 @@ const PersonalityTest = ({ onComplete, onSkip, onBack }: PersonalityTestProps) =
             <Card className="p-8 glass-dark border-white/10 text-center">
               <div className="space-y-6">
                 <div className="text-4xl">🏃‍♀️</div>
-                <h2 className="text-2xl font-bold gradient-text">Skip Test</h2>
+                <h2 className="text-2xl font-bold gradient-text">테스트 건너뛰기</h2>
                 <p className="text-muted-foreground">
-                  Skip the personality test and go directly to the Heart Battle
+                  성격 테스트를 건너뛰고 바로 하트 배틀로 이동합니다
                 </p>
                 <Button
                   onClick={onSkip}
@@ -177,7 +177,7 @@ const PersonalityTest = ({ onComplete, onSkip, onBack }: PersonalityTestProps) =
                   size="lg"
                   className="btn-modern"
                 >
-                  Start Heart Battle Now →
+                  하트 배틀 바로 시작 →
                 </Button>
               </div>
             </Card>
@@ -191,7 +191,7 @@ const PersonalityTest = ({ onComplete, onSkip, onBack }: PersonalityTestProps) =
               variant="ghost"
               className="text-muted-foreground hover:text-foreground"
             >
-              ← Go Back
+              ← 돌아가기
             </Button>
           </div>
         )}

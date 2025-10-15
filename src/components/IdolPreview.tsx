@@ -41,7 +41,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
     setCurrentSuiCoins(latestCoins);
     
     if (latestCoins < 0.15) {
-      toast.error(`Insufficient Sui coins. 0.15 coins (700 won) required. Current: ${latestCoins.toFixed(2)} SUI`);
+      toast.error(`Sui 코인이 부족합니다. 0.15 코인 (700원) 필요. 현재: ${latestCoins.toFixed(2)} SUI`);
       return;
     }
 
@@ -71,10 +71,10 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold gradient-text">
-            👑 Favorite Selection Complete!
+            👑 최애 선택 완료!
           </h1>
           <p className="text-muted-foreground text-lg">
-            Congratulations! Check out your favorite selected from the heart-racing battle
+            축하합니다! 가슴 뛰는 대결에서 선택한 최애를 확인하세요
           </p>
         </div>
 
@@ -128,15 +128,15 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
         <Card className="p-6 glass-dark border-white/10">
           <Tabs defaultValue="radar" className="w-full">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold gradient-text">📊 Idol Stats</h3>
+              <h3 className="text-2xl font-bold gradient-text">📊 아이돌 스탯</h3>
               <TabsList className="bg-card/50">
                 <TabsTrigger value="radar" className="flex items-center gap-2">
                   <Radar className="w-4 h-4" />
-                  Radar
+                  레이더
                 </TabsTrigger>
                 <TabsTrigger value="bar" className="flex items-center gap-2">
                   <BarChart3 className="w-4 h-4" />
-                  Bar Chart
+                  막대 차트
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -155,13 +155,13 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
               <div className="text-lg font-bold text-primary">
                 {Math.round(Object.values(idolStats).reduce((acc, stat) => acc + stat.current, 0) / 8)}
               </div>
-              <div className="text-muted-foreground">Current Average</div>
+              <div className="text-muted-foreground">현재 평균</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-accent">
                 {Math.round(Object.values(idolStats).reduce((acc, stat) => acc + stat.potential, 0) / 8)}
               </div>
-              <div className="text-muted-foreground">Potential Average</div>
+              <div className="text-muted-foreground">잠재력 평균</div>
             </div>
           </div>
         </Card>
@@ -170,16 +170,16 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
         {!isVoting ? (
           <div className="text-center space-y-6">
             <div className="space-y-4">
-              <h3 className="text-2xl font-bold gradient-text">💝 Vote for Your Favorite</h3>
+              <h3 className="text-2xl font-bold gradient-text">💝 최애에게 투표하기</h3>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Vote for your selected idol to own them permanently. <br />
-                Voting cost: 0.15 SUI coins (700 won) | Current balance: {currentSuiCoins.toFixed(2)} SUI
+                선택한 아이돌에게 투표하여 영구적으로 소유하세요. <br />
+                투표 비용: 0.15 SUI 코인 (700원) | 현재 잔액: {currentSuiCoins.toFixed(2)} SUI
               </p>
               {currentSuiCoins < 0.15 && (
                 <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 max-w-md mx-auto">
                   <p className="text-destructive text-sm">
-                    ⚠️ Insufficient Sui coins. 0.15 coins required. <br />
-                    Current balance: {currentSuiCoins.toFixed(2)} SUI
+                    ⚠️ Sui 코인이 부족합니다. 0.15 코인이 필요합니다. <br />
+                    현재 잔액: {currentSuiCoins.toFixed(2)} SUI
                   </p>
                 </div>
               )}
@@ -187,7 +187,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
             
             <div className="flex justify-center gap-4">
               <Button onClick={onBack} variant="outline" size="lg">
-                ← Select Again
+                ← 다시 선택하기
               </Button>
               <Button 
                 onClick={handleVoting} 
@@ -196,7 +196,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
                 className="btn-modern px-8"
                 disabled={currentSuiCoins < 0.15 || isMinting}
               >
-                {isMinting ? "🔄 Minting..." : "💝 Vote (0.15 SUI)"}
+                {isMinting ? "🔄 민팅 중..." : "💝 투표하기 (0.15 SUI)"}
               </Button>
             </div>
           </div>
@@ -205,26 +205,26 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
             <Card className="p-8 glass-dark border-white/10 max-w-md mx-auto">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-bold gradient-text">Voting in progress...</h3>
-                  <p className="text-muted-foreground">Please wait a moment</p>
+                  <h3 className="text-2xl font-bold gradient-text">투표 진행 중...</h3>
+                  <p className="text-muted-foreground">잠시만 기다려주세요</p>
                 </div>
                 
                 <div className="space-y-4">
                   <Progress value={votingProgress} className="w-full h-3" />
                   <div className="text-sm text-muted-foreground">
-                    {votingProgress === 0 && "Connecting to blockchain network..."}
-                    {votingProgress === 20 && "Creating voting transaction..."}
-                    {votingProgress === 40 && "Calling smart contract..."}
-                    {votingProgress === 60 && "Recording vote..."}
-                    {votingProgress === 80 && "Registering ownership..."}
-                    {votingProgress === 100 && "🎉 Voting complete!"}
+                    {votingProgress === 0 && "블록체인 네트워크에 연결 중..."}
+                    {votingProgress === 20 && "투표 트랜잭션 생성 중..."}
+                    {votingProgress === 40 && "스마트 컨트랙트 호출 중..."}
+                    {votingProgress === 60 && "투표 기록 중..."}
+                    {votingProgress === 80 && "소유권 등록 중..."}
+                    {votingProgress === 100 && "🎉 투표 완료!"}
                   </div>
                 </div>
 
                 {votingProgress === 100 && (
                   <div className="flex items-center justify-center gap-2 text-green-400">
                     <Heart className="w-5 h-5 fill-current" />
-                    <span className="font-bold">Vote successful!</span>
+                    <span className="font-bold">투표 성공!</span>
                   </div>
                 )}
               </div>
@@ -235,7 +235,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
         {/* Next step buttons */}
         <Card className="p-6 glass-dark border-white/10 max-w-2xl mx-auto">
           <div className="text-center space-y-6">
-            <h3 className="text-xl font-bold gradient-text">Next Steps</h3>
+            <h3 className="text-xl font-bold gradient-text">다음 단계</h3>
             <div className="grid md:grid-cols-2 gap-4">
               <Button 
                 variant="outline" 
@@ -245,7 +245,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
               >
                 <div className="text-2xl">🗃️</div>
                 <div className="font-bold text-accent text-lg">VAULT</div>
-                <div className="text-muted-foreground text-sm">Story Play & Photocard Collection</div>
+                <div className="text-muted-foreground text-sm">스토리 플레이 & 포토카드 수집</div>
                 <ArrowRight className="h-4 w-4 text-accent" />
               </Button>
               <Button 
@@ -256,7 +256,7 @@ const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: Ido
               >
                 <div className="text-2xl">📈</div>
                 <div className="font-bold text-secondary text-lg">RISE</div>
-                <div className="text-muted-foreground text-sm">Leaderboard & Gallery & Trading</div>
+                <div className="text-muted-foreground text-sm">리더보드 & 갤러리 & 트레이딩</div>
                 <ArrowRight className="h-4 w-4 text-secondary" />
               </Button>
             </div>

@@ -86,7 +86,7 @@ const Pick = () => {
 
     } catch (error) {
       console.error('❌ Failed to fetch idols:', error);
-                              toast.error('Error occurred during RLS policy creation');
+                              toast.error('아이돌 데이터를 불러오는 중 오류가 발생했습니다');
       return [];
     }
   };
@@ -157,18 +157,18 @@ const Pick = () => {
         .select();
 
       if (error) {
-        console.error('❌ Failed to insert sample data:', error);
-        toast.error(`Data insertion failed: ${error.message}`);
+      console.error('❌ Failed to insert sample data:', error);
+        toast.error(`데이터 삽입 실패: ${error.message}`);
         return false;
       }
 
       console.log('✅ Sample data inserted successfully:', data);
-      toast.success(`✅ ${data.length} idol data entries successfully inserted!`);
+      toast.success(`✅ ${data.length}개의 아이돌 데이터가 성공적으로 추가되었습니다!`);
       return true;
 
     } catch (error) {
       console.error('❌ Error inserting sample data:', error);
-      toast.error('An error occurred during data insertion.');
+      toast.error('데이터 삽입 중 오류가 발생했습니다.');
       return false;
     }
   };
@@ -257,7 +257,7 @@ const Pick = () => {
       setTimeout(() => navigate('/vault'), 2000);
     } catch (error) {
       console.error('Confirmation failed:', error);
-      toast.error('Confirmation failed. Please try again.');
+      toast.error('확인에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsMinting(false);
     }
@@ -270,14 +270,14 @@ const Pick = () => {
         <Card className="p-8 glass-dark border-white/10 text-center max-w-2xl">
           <div className="space-y-4">
             <LoadingSpinner />
-            <h2 className="text-xl font-bold gradient-text">Loading from idols table...</h2>
-            <p className="text-muted-foreground">Database connection required</p>
+            <h2 className="text-xl font-bold gradient-text">아이돌 테이블에서 데이터 로딩 중...</h2>
+            <p className="text-muted-foreground">데이터베이스 연결이 필요합니다</p>
 
             <div className="mt-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg text-left">
-              <h3 className="font-bold text-red-400 mb-2">⚠️ Database Required</h3>
+              <h3 className="font-bold text-red-400 mb-2">⚠️ 데이터베이스 필수</h3>
               <p className="text-sm text-red-300">
-                This application requires data from the 'idols' table in Supabase.
-                Sample/fallback data is NOT allowed.
+                이 애플리케이션은 Supabase의 'idols' 테이블 데이터가 필요합니다.
+                샘플/대체 데이터는 허용되지 않습니다.
               </p>
             </div>
 
@@ -296,10 +296,10 @@ const Pick = () => {
                     }
                     
                     console.log('✅ Basic Supabase connection OK');
-                    toast.success('Basic Supabase connection OK');
+                    toast.success('기본 Supabase 연결 성공');
                   } catch (err) {
                     console.error('❌ Connection test failed:', err);
-                    toast.error('Connection test failed: ' + (err as Error).message);
+                    toast.error('연결 테스트 실패: ' + (err as Error).message);
                     return;
                   }
 
@@ -317,13 +317,13 @@ const Pick = () => {
                     
                     // RLS 정책 문제일 가능성
                     if (error.message.includes('RLS') || error.message.includes('policy') || error.message.includes('permission') || error.code === 'PGRST116') {
-                      toast.error('🔒 RLS policy issue detected! SQL solution provided in console.');
-                      console.log('� RLS Policy Issue - This is the most common problem!');
+                      toast.error('🔒 RLS 정책 문제가 감지되었습니다! 콘솔에서 SQL 해결 방법을 확인하세요.');
+                      console.log('🔒 RLS Policy Issue - This is the most common problem!');
                     }
 
                     // 테이블이 없을 가능성
                     if (error.message.includes('does not exist') || error.message.includes('relation')) {
-                      toast.error('idols table does not exist. Create the table first.');
+                      toast.error('idols 테이블이 존재하지 않습니다. 먼저 테이블을 생성해주세요.');
                     }
 
                     // Show SQL to create and populate table
@@ -355,9 +355,9 @@ GRANT SELECT ON public.idols TO authenticated;
 SELECT * FROM public.idols LIMIT 5;
                     `;
                     console.log(sql);
-                    toast.info('Check console for SQL to fix RLS policies');
+                    toast.info('RLS 정책 수정을 위한 SQL을 콘솔에서 확인하세요');
                   } else if (data && data.length > 0) {
-                    toast.success(`✅ Found ${data.length} idols in database`);
+                    toast.success(`✅ 데이터베이스에서 ${data.length}개의 아이돌을 찾았습니다`);
                     console.log('Idol data:', data);
 
                     // Reload page to fetch data
@@ -365,14 +365,14 @@ SELECT * FROM public.idols LIMIT 5;
                       window.location.reload();
                     }, 1000);
                   } else {
-                    toast.warning('Table exists but is empty. Insert data using SQL above.');
+                    toast.warning('테이블은 존재하지만 비어있습니다. 위의 SQL을 사용하여 데이터를 추가하세요.');
                   }
                 }}
                 variant="destructive"
                 size="lg"
                 className="w-full"
               >
-                🔍 Test Database Connection
+                🔍 데이터베이스 연결 테스트
               </Button>
 
               <Button
@@ -387,7 +387,7 @@ SELECT * FROM public.idols LIMIT 5;
                 size="lg"
                 className="w-full"
               >
-                📝 Insert Data to idols Table
+                📝 아이돌 테이블에 데이터 추가
               </Button>
             </div>
           </div>
@@ -434,9 +434,9 @@ SELECT * FROM public.idols LIMIT 5;
   return (
     <div className="min-h-screen bg-gradient-background flex items-center justify-center">
       <div className="text-center">
-        <h2 className="text-xl font-bold">Game State Error</h2>
+        <h2 className="text-xl font-bold">게임 상태 오류</h2>
         <Button onClick={() => navigate('/')} className="mt-4">
-          Go Home
+          홈으로
         </Button>
       </div>
     </div>
