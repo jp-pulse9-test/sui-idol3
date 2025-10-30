@@ -75,6 +75,7 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const staticAudioRef = useRef<HTMLAudioElement | null>(null);
   const staticIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const warnedNoNanoKey = useRef(false);
   const touchStartY = useRef<number>(0);
   const isDemoMode = !user;
 
@@ -494,21 +495,25 @@ ${genreContext}
       const shouldGenerateImage = !skipTyping && Math.random() > 0.5;
       
       if (shouldGenerateImage) {
-        try {
-          const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
-            body: {
-              storyContext: storyContent,
-              genre: selectedGenre,
-              characterName: idol.name,
-              characterGender: idol.gender || 'female'
+        console.log('[1:1] Trying NanoBanana image generation...');
+        imageUrl = await generateSceneImage(storyContent);
+        if (!imageUrl) {
+          console.log('[1:1] Falling back to Lovable AI image generator');
+          try {
+            const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
+              body: {
+                storyContext: storyContent,
+                genre: selectedGenre,
+                characterName: idol.name,
+                characterGender: idol.gender || 'female'
+              }
+            });
+            if (imageData?.imageUrl) {
+              imageUrl = imageData.imageUrl;
             }
-          });
-          
-          if (imageData?.imageUrl) {
-            imageUrl = imageData.imageUrl;
+          } catch (imgError) {
+            console.error('이미지 생성 실패:', imgError);
           }
-        } catch (imgError) {
-          console.error('이미지 생성 실패:', imgError);
         }
       }
 
@@ -568,6 +573,45 @@ ${genreContext}
     if (text.includes('ㅎㅎ') || text.includes('😊')) return 'happy';
     if (text.includes('...') || text.includes('😳')) return 'shy';
     return 'neutral';
+  };
+
+  // NanoBanana로 스토리 장면 이미지 생성 (키 없거나 실패 시 undefined 반환)
+  const generateSceneImage = async (storyContent: string): Promise<string | undefined> => {
+    try {
+      const envKey = (import.meta as any).env?.VITE_NANO_BANANA_API_KEY;
+      const localKey = localStorage.getItem('nanoBananaApiKey');
+      if (!envKey && !localKey) {
+        if (!warnedNoNanoKey.current) {
+          console.warn('NanoBanana API 키가 없습니다. Lovable AI로 폴백합니다.');
+          toast.info('NanoBanana 키가 없어 기본 이미지 생성으로 대체합니다');
+          warnedNoNanoKey.current = true;
+        }
+        return undefined;
+      }
+
+      const { nanoBananaAPI } = await import('@/services/nanoBananaAPI');
+      const genreInfo = GENRES.find(g => g.id === selectedGenre);
+      const prompt = `photorealistic K-pop story scene, character: ${idol.name}, genre: ${genreInfo?.name ?? ''} ${genreInfo?.emoji ?? ''}, ${genreInfo?.description ?? ''}. scene: ${storyContent}. masterpiece, best quality, ultra-detailed, cinematic lighting, professional photography, 8k, sharp focus, vertical portrait`;
+
+      const result = await nanoBananaAPI.generateImage({
+        prompt,
+        negative_prompt: 'blurry, low quality, distorted, ugly, bad anatomy, deformed, extra limbs, text, watermark, logo',
+        width: 512,
+        height: 768,
+        steps: 22,
+        guidance_scale: 7.5,
+        model: 'gemini-2.5-flash-image-preview'
+      });
+
+      if (result.success && result.data?.image_url) {
+        return result.data.image_url;
+      }
+      console.error('NanoBanana 이미지 생성 실패:', result.error);
+      return undefined;
+    } catch (e) {
+      console.error('NanoBanana 호출 에러:', e);
+      return undefined;
+    }
   };
 
   const handleChoiceClick = async (choice: string) => {
@@ -664,18 +708,23 @@ ${genreContext}
       // 이미지 생성 (캐릭터 정보 포함, 스킵 상태가 아닐 때만)
       let imageUrl: string | undefined;
       if (!skipTyping) {
-        try {
-          const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
-            body: {
-              storyContext: storyContent,
-              genre: selectedGenre,
-              characterName: idol.name,
-              characterGender: idol.gender || 'female'
-            }
-          });
-          imageUrl = imageData?.imageUrl;
-        } catch (imgError) {
-          console.error('이미지 생성 실패:', imgError);
+        console.log('[1:1] Trying NanoBanana image generation...');
+        imageUrl = await generateSceneImage(storyContent);
+        if (!imageUrl) {
+          console.log('[1:1] Falling back to Lovable AI image generator');
+          try {
+            const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
+              body: {
+                storyContext: storyContent,
+                genre: selectedGenre,
+                characterName: idol.name,
+                characterGender: idol.gender || 'female'
+              }
+            });
+            imageUrl = imageData?.imageUrl;
+          } catch (imgError) {
+            console.error('이미지 생성 실패:', imgError);
+          }
         }
       }
 
