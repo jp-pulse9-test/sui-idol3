@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,12 +8,11 @@ import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { AdvancedPhotocardGenerator } from "@/components/AdvancedPhotocardGenerator";
 import { CrossChainMinting } from "@/components/CrossChainMinting";
 import { googleGenAI } from "@/services/googleGenAI";
-import { usePhotocardStorage } from "@/hooks/usePhotocardStorage";
 import { useWallet } from "@/hooks/useWallet";
 import { toast } from "sonner";
-import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft, Database, Save } from "lucide-react";
-import { walrusService } from "@/services/walrusService";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft, Database } from "lucide-react";
+import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { WalrusClient, WalrusFile } from "@mysten/walrus";
 
 interface SelectedIdol {
   id: number;
@@ -51,8 +50,10 @@ export const IdolPhotocardGenerator = ({
   onNavigateToCollection
 }: IdolPhotocardGeneratorProps) => {
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
-  const { storePhotocard, isLoading: isStoring, error: storageError } = usePhotocardStorage();
   const { currentAccount } = useWallet();
+  const suiClient = useSuiClient();
+  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
+
   const [selectedConcept, setSelectedConcept] = useState<ConceptOption | null>(null);
   const [selectedSeason, setSelectedSeason] = useState<string>('Season 1');
   const [selectedWeather, setSelectedWeather] = useState<string>('none');
@@ -64,7 +65,7 @@ export const IdolPhotocardGenerator = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [isStoringToWalrus, setIsStoringToWalrus] = useState(false);
-  const {mutate: signAndExecute} = useSignAndExecuteTransaction();
+  const [storageError, setStorageError] = useState<string | null>(null);
   
 
   const conceptOptions: ConceptOption[] = [
@@ -270,45 +271,87 @@ export const IdolPhotocardGenerator = ({
     }
 
     setIsStoringToWalrus(true);
+    setStorageError(null);
 
     try {
-      // Generate photocard metadata
-      const metadata = {
-        id: `photocard_${selectedIdol.id}_${Date.now()}`,
-        idolId: selectedIdol.id,
-        idolName: selectedIdol.name,
-        rarity: generatedCard.rarity,
-        concept: generatedCard.concept,
-        season: generatedCard.season,
-        serialNo: generatedCard.serialNo,
-        totalSupply: generatedCard.totalSupply,
-        mintedAt: new Date().toISOString(),
-        owner: currentAccount.address,
-        imageUrl: generatedImageUrl,
-        personaPrompt: selectedIdol.persona_prompt || selectedIdol.personality,
-        seed: generatedCard.seed,
-        prompt: generatedCard.prompt,
-        weather: selectedWeather !== 'none' ? selectedWeather : undefined,
-        mood: selectedMood !== 'none' ? selectedMood : undefined,
-        theme: selectedTheme !== 'none' ? selectedTheme : undefined,
-        isAdvanced: false
-      };
+      toast.info('🔄 Initializing Walrus client...');
 
-      const res = await fetch(generatedImageUrl);
-      const blob = await (await res.blob()).arrayBuffer();
-
-      // Save to Walrus
-      const walrusResult = await storePhotocard(metadata, generatedImageUrl, {
-        epochs: 10, // 포토카드는 오래 보관
-        deletable: false, // 포토카드는 삭제 불가
-        account: currentAccount
+      // Initialize Walrus client
+      const walrusClient = new WalrusClient({
+        suiClient,
+        network: "testnet",
       });
 
-      toast.success(`🎉 Photocard saved to Walrus! Blob ID: ${walrusResult.blobId.slice(0, 8)}...`);
+      toast.info('📥 Fetching photocard image...');
+
+      // Fetch image and convert to blob
+      const res = await fetch(generatedImageUrl);
+      const blob = await res.blob();
+      const arrayBuffer = await blob.arrayBuffer();
+
+      toast.info('📦 Creating Walrus file...');
+
+      // Create write files flow
+      const flow = walrusClient.writeFilesFlow({
+        files: [
+          WalrusFile.from({
+            contents: new Uint8Array(arrayBuffer),
+            identifier: `photocard_${selectedIdol.id}_${Date.now()}.png`
+          })
+        ]
+      });
+
+      toast.info('🔐 Encoding file...');
+
+      // Encode the file
+      await flow.encode();
+
+      toast.info('📝 Registering transaction...');
+
+      // Create register transaction
+      const registerTx = flow.register({
+        epochs: 10, // Store for 10 epochs (~3 months)
+        deletable: false, // Photocard should be permanent
+        owner: currentAccount.address,
+      });
+
+      console.log('📤 Walrus register transaction created');
+
+      // Execute transaction
+      signAndExecuteTransaction(
+        { transaction: registerTx },
+        {
+          onSuccess: (result) => {
+            console.log('✅ Walrus storage successful!', result);
+
+            // Extract blob ID from flow
+            const blobIds = flow.blobIds;
+            const blobId = blobIds && blobIds.length > 0 ? blobIds[0] : 'unknown';
+
+            toast.success(`🎉 Photocard saved to Walrus! Blob ID: ${blobId.toString().slice(0, 12)}...`);
+
+            // You can also save metadata to Supabase here if needed
+            console.log('Blob ID:', blobId);
+            console.log('Transaction digest:', result.digest);
+
+            setIsStoringToWalrus(false);
+          },
+          onError: (error) => {
+            console.error('❌ Walrus storage failed:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            setStorageError(errorMessage);
+            toast.error(`Failed to save to Walrus: ${errorMessage}`);
+            setIsStoringToWalrus(false);
+          }
+        }
+      );
+
+      console.log('⏳ Waiting for transaction confirmation...');
     } catch (error) {
-      console.error('Walrus save failed:', error);
-      toast.error(`Failed to save to Walrus: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
+      console.error('❌ Walrus save failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setStorageError(errorMessage);
+      toast.error(`Failed to save to Walrus: ${errorMessage}`);
       setIsStoringToWalrus(false);
     }
   };
@@ -776,14 +819,14 @@ export const IdolPhotocardGenerator = ({
               </div>
               
               {/* Walrus 저장 버튼 */}
-              <Button 
+              <Button
                 onClick={handleStoreToWalrus}
-                disabled={!currentAccount || isStoringToWalrus || isStoring}
+                disabled={!currentAccount || isStoringToWalrus}
                 variant="secondary"
                 className="w-full"
                 size="lg"
               >
-                {isStoringToWalrus || isStoring ? (
+                {isStoringToWalrus ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Saving to Walrus...
@@ -795,12 +838,16 @@ export const IdolPhotocardGenerator = ({
                   </div>
                 )}
               </Button>
-              
+
               {storageError && (
                 <div className="text-sm text-red-400 text-center">
                   Storage error: {storageError}
                 </div>
               )}
+
+              <div className="text-xs text-muted-foreground text-center">
+                💡 Files are stored permanently on Walrus decentralized storage for 10 epochs
+              </div>
             </div>
           </div>
         </Card>
