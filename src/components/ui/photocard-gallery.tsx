@@ -5,13 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, EyeOff, Search, Filter, TrendingUp, TrendingDown, Heart, Link2 } from "lucide-react";
+import { Eye, EyeOff, Search, Filter, TrendingUp, TrendingDown, Heart, Link2, ArrowRightLeft } from "lucide-react";
 import { useHeartSystem } from "@/hooks/useHeartSystem";
 import { toast } from "sonner";
 import { secureStorage } from "@/utils/secureStorage";
 import { crossChainService } from "@/services/crossChainService";
+import { nftBridgeService } from "@/services/nftBridgeService";
+import { NFTBridge } from "@/components/NFTBridge";
 
 interface PhotoCard {
+  objectId?: string; // Sui NFT object ID
   id: string;
   idolId: string;
   idolName: string;
@@ -44,10 +47,10 @@ interface PhotoCardGalleryProps {
   isPinterestMode?: boolean;
 }
 
-export const PhotoCardGallery = ({ 
-  photocards, 
-  selectedIdolId, 
-  onToggleVisibility, 
+export const PhotoCardGallery = ({
+  photocards,
+  selectedIdolId,
+  onToggleVisibility,
   onViewCard,
   isOwner = false,
   isPinterestMode = false
@@ -58,7 +61,9 @@ export const PhotoCardGallery = ({
   const [filterConcept, setFilterConcept] = useState<string>('all');
   const [filterCrossChain, setFilterCrossChain] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'catalog' | 'owned'>('catalog');
-  
+  const [bridgeDialogOpen, setBridgeDialogOpen] = useState(false);
+  const [selectedCardForBridge, setSelectedCardForBridge] = useState<PhotoCard | null>(null);
+
   const { dailyHearts, giveHeart, hasGivenHeart } = useHeartSystem();
   const currentWallet = secureStorage.getWalletAddress();
 
@@ -120,6 +125,27 @@ export const PhotoCardGallery = ({
     giveHeart(card.id, card.owner);
   };
 
+  const handleBridgeClick = (card: PhotoCard, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // Check if NFT is already bridged
+    const bridged = nftBridgeService.isBridged(card.objectId || card.id);
+    if (bridged) {
+      toast.info(`이 NFT는 이미 ${bridged.targetChain}으로 브릿지되었습니다.`);
+      return;
+    }
+
+    // Check if it's a cross-chain minted card (different from bridged)
+    const crossChainInfo = crossChainService.isCrossChainPhotocard(card.id);
+    if (crossChainInfo) {
+      toast.info('크로스체인 민팅된 NFT는 브릿지할 수 없습니다.');
+      return;
+    }
+
+    setSelectedCardForBridge(card);
+    setBridgeDialogOpen(true);
+  };
+
   const renderPhotoCard = (card: PhotoCard) => {
     const crossChainInfo = crossChainService.isCrossChainPhotocard(card.id);
     
@@ -179,6 +205,19 @@ export const PhotoCardGallery = ({
           <Badge className="absolute bottom-14 right-2 bg-red-500/80 text-white border-red-400">
             ❤️ {card.heartsReceived}
           </Badge>
+        )}
+
+        {/* Bridge Button for Owner */}
+        {isOwner && !crossChainInfo && !nftBridgeService.isBridged(card.objectId || card.id) && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute bottom-2 right-14 bg-gradient-to-r from-purple-500/80 to-blue-500/80 hover:from-purple-600/90 hover:to-blue-600/90 text-white"
+            onClick={(e) => handleBridgeClick(card, e)}
+            title="다른 체인으로 NFT 브릿지"
+          >
+            <ArrowRightLeft className="w-4 h-4" />
+          </Button>
         )}
 
         {/* Privacy Toggle for Owner */}
@@ -359,6 +398,26 @@ export const PhotoCardGallery = ({
           )}
         </TabsContent>
       </Tabs>
+
+      {/* NFT Bridge Dialog */}
+      {selectedCardForBridge && (
+        <NFTBridge
+          isOpen={bridgeDialogOpen}
+          onClose={() => {
+            setBridgeDialogOpen(false);
+            setSelectedCardForBridge(null);
+          }}
+          nftData={{
+            objectId: selectedCardForBridge.objectId || selectedCardForBridge.id,
+            id: selectedCardForBridge.id,
+            idolName: selectedCardForBridge.idolName,
+            imageUrl: selectedCardForBridge.imageUrl,
+            rarity: selectedCardForBridge.rarity,
+            concept: selectedCardForBridge.concept,
+            serialNo: selectedCardForBridge.serialNo
+          }}
+        />
+      )}
     </div>
   );
 };

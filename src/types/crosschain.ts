@@ -37,7 +37,18 @@ export const SUPPORTED_CHAINS: SupportedChain[] = [
     rpcUrl: 'https://mainnet.infura.io/v3/',
     explorerUrl: 'https://etherscan.io',
     chainId: 1,
-    icon: '🔵'
+    icon: '🔵',
+    isTestnet: false
+  },
+  {
+    id: 'solana',
+    name: 'Solana',
+    symbol: 'SOL',
+    rpcUrl: 'https://api.mainnet-beta.solana.com',
+    explorerUrl: 'https://explorer.solana.com',
+    chainId: 1, // Solana doesn't use EVM chainId
+    icon: '🟢',
+    isTestnet: false
   },
   {
     id: 'polygon',
@@ -46,7 +57,8 @@ export const SUPPORTED_CHAINS: SupportedChain[] = [
     rpcUrl: 'https://polygon-rpc.com/',
     explorerUrl: 'https://polygonscan.com',
     chainId: 137,
-    icon: '🟣'
+    icon: '🟣',
+    isTestnet: false
   },
   {
     id: 'bsc',
@@ -55,7 +67,8 @@ export const SUPPORTED_CHAINS: SupportedChain[] = [
     rpcUrl: 'https://bsc-dataseed1.binance.org/',
     explorerUrl: 'https://bscscan.com',
     chainId: 56,
-    icon: '🟡'
+    icon: '🟡',
+    isTestnet: false
   },
   {
     id: 'base',
@@ -64,6 +77,27 @@ export const SUPPORTED_CHAINS: SupportedChain[] = [
     rpcUrl: 'https://mainnet.base.org',
     explorerUrl: 'https://basescan.org',
     chainId: 8453,
-    icon: '🔵'
+    icon: '🔵',
+    isTestnet: false
+  },
+  {
+    id: 'arbitrum',
+    name: 'Arbitrum',
+    symbol: 'ETH',
+    rpcUrl: 'https://arb1.arbitrum.io/rpc',
+    explorerUrl: 'https://arbiscan.io',
+    chainId: 42161,
+    icon: '🔷',
+    isTestnet: false
+  },
+  {
+    id: 'optimism',
+    name: 'Optimism',
+    symbol: 'ETH',
+    rpcUrl: 'https://mainnet.optimism.io',
+    explorerUrl: 'https://optimistic.etherscan.io',
+    chainId: 10,
+    icon: '🔴',
+    isTestnet: false
   }
 ];

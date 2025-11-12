@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft, Database } from "lucide-react";
 import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { WalrusClient, WalrusFile } from "@mysten/walrus";
+import { suiCrossChainStorageService } from "@/services/suiCrossChainStorageService";
 
 interface SelectedIdol {
   id: number;
@@ -52,7 +53,7 @@ export const IdolPhotocardGenerator = ({
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
   const { currentAccount } = useWallet();
   const suiClient = useSuiClient();
-  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
+  const { mutate: signAndExecuteTransaction, mutateAsync: signAndExecuteTransactionAsync } = useSignAndExecuteTransaction();
 
   const [selectedConcept, setSelectedConcept] = useState<ConceptOption | null>(null);
   const [selectedSeason, setSelectedSeason] = useState<string>('Season 1');
@@ -321,26 +322,104 @@ export const IdolPhotocardGenerator = ({
       signAndExecuteTransaction(
         { transaction: registerTx },
         {
-          onSuccess: (result) => {
-            console.log('✅ Walrus storage successful!', result);
+          onSuccess: async (result) => {
+            try {
+              console.log('✅ Register transaction successful!', result);
+              toast.info('📤 Uploading file to storage nodes...');
 
-            // Extract blob ID from flow
-            const blobIds = flow.blobIds;
-            const blobId = blobIds && blobIds.length > 0 ? blobIds[0] : 'unknown';
+              // Upload the file to storage nodes (pass transaction result)
+              await (flow as any).upload(result);
+              console.log('✅ Upload successful!');
 
-            toast.success(`🎉 Photocard saved to Walrus! Blob ID: ${blobId.toString().slice(0, 12)}...`);
+              toast.info('🔐 Certifying upload...');
 
-            // You can also save metadata to Supabase here if needed
-            console.log('Blob ID:', blobId);
-            console.log('Transaction digest:', result.digest);
+              // Certify the upload (must await for completion)
+              await (flow as any).certify();
+              console.log('✅ Certify successful!');
 
-            setIsStoringToWalrus(false);
+              // Get the list of uploaded files
+              console.log('📋 Retrieving uploaded files...');
+              const uploadedFiles = await (flow as any).listFiles();
+              console.log('📦 Uploaded files:', uploadedFiles);
+
+              if (uploadedFiles && uploadedFiles.length > 0) {
+                const firstFile = uploadedFiles[0];
+                console.log('📄 First file:', firstFile);
+
+                // Extract blob ID from the file object
+                const blobId = firstFile.blobId || firstFile.blobObject?.blob_id;
+
+                if (blobId) {
+                  const blobIdStr = typeof blobId === 'string' ? blobId : blobId.toString();
+                  toast.success(`🎉 Photocard saved to Walrus! Blob ID: ${blobIdStr.slice(0, 12)}...`);
+                  console.log('✅ Full Blob ID:', blobIdStr);
+
+                  // Log additional file info
+                  const fileDetails = {
+                    blobId: blobIdStr,
+                    size: firstFile.blobObject?.size || firstFile.size || 0,
+                    registered_epoch: firstFile.blobObject?.registered_epoch || firstFile.registered_epoch || 0,
+                    certified_epoch: firstFile.blobObject?.certified_epoch || firstFile.certified_epoch || 0
+                  };
+                  console.log('📊 File details:', fileDetails);
+
+                  // Save proof to Sui blockchain
+                  try {
+                    toast.info('💾 Saving proof to Sui blockchain...');
+
+                    const proofData = {
+                      blobId: blobIdStr,
+                      storedEpoch: fileDetails.registered_epoch,
+                      certifiedEpoch: fileDetails.certified_epoch,
+                      fileSize: fileDetails.size,
+                      encodedSlivers: Math.ceil(fileDetails.size / 1024), // Approximate
+                      sourceChain: 'walrus',
+                      sourceTxHash: result.digest,
+                      vaaSignature: new Uint8Array(64), // Mock signature for now
+                    };
+
+                    const proofResult = await suiCrossChainStorageService.createProof(
+                      proofData,
+                      signAndExecuteTransactionAsync
+                    );
+
+                    console.log('✅ Proof saved to blockchain!', proofResult);
+                    toast.success(`✨ Cross-chain proof saved! TX: ${proofResult.digest.slice(0, 12)}...`);
+
+                    if (proofResult.proofObjectId) {
+                      console.log('📜 Proof Object ID:', proofResult.proofObjectId);
+                    }
+                  } catch (proofError) {
+                    console.error('❌ Failed to save proof to blockchain:', proofError);
+                    // Don't fail the whole operation if proof creation fails
+                    toast.warning('Photocard saved but blockchain proof failed');
+                  }
+                } else {
+                  toast.warning('Photocard uploaded but Blob ID not found in file object');
+                  console.warn('❌ Blob ID not found. File structure:', firstFile);
+                }
+              } else {
+                toast.warning('Photocard registered but file list is empty');
+                console.warn('❌ No files returned from listFiles()');
+              }
+
+              // You can also save metadata to Supabase here if needed
+              console.log('Transaction digest:', result.digest);
+
+              setIsStoringToWalrus(false);
+            } catch (uploadError) {
+              console.error('❌ Upload/Certify failed:', uploadError);
+              const errorMessage = uploadError instanceof Error ? uploadError.message : 'Upload failed';
+              setStorageError(errorMessage);
+              toast.error(`Failed to complete upload: ${errorMessage}`);
+              setIsStoringToWalrus(false);
+            }
           },
           onError: (error) => {
-            console.error('❌ Walrus storage failed:', error);
+            console.error('❌ Walrus registration failed:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             setStorageError(errorMessage);
-            toast.error(`Failed to save to Walrus: ${errorMessage}`);
+            toast.error(`Failed to register on Walrus: ${errorMessage}`);
             setIsStoringToWalrus(false);
           }
         }

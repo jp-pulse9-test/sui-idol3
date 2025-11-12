@@ -26,5 +26,24 @@ dist-ssr
 specs/
 tools/
 
+# Environment variables
+.env
+.env.local
+.env.production
+.env.testnet
+.env.*.local
 
+# Deployment artifacts
+deployed_addresses.json
+deployments/
+artifacts/
+cache/
+typechain-types/
 
+# Hardhat
+coverage/
+coverage.json
+.openzeppelin/
+
+# Move build artifacts
+move/build/

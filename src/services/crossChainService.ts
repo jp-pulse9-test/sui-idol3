@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import { SupportedChain, CrossChainMintingData, CrossChainTransaction } from "../types/crosschain";
+import { evmProofService, EVMProofData } from "./evmProofService";
 
 class CrossChainService {
   private transactions: Map<string, CrossChainTransaction> = new Map();
@@ -76,11 +77,14 @@ class CrossChainService {
       ethereum: { min: 0.005, max: 0.02 },
       polygon: { min: 0.001, max: 0.005 },
       bsc: { min: 0.002, max: 0.008 },
-      base: { min: 0.001, max: 0.004 }
+      base: { min: 0.001, max: 0.004 },
+      arbitrum: { min: 0.0005, max: 0.003 },
+      optimism: { min: 0.0005, max: 0.003 },
+      solana: { min: 0.00001, max: 0.0001 }
     };
 
     const feeRange = baseFees[targetChain.id as keyof typeof baseFees] || { min: 0.001, max: 0.01 };
-    const estimatedFee = (Math.random() * (feeRange.max - feeRange.min) + feeRange.min).toFixed(4);
+    const estimatedFee = (Math.random() * (feeRange.max - feeRange.min) + feeRange.min).toFixed(6);
 
     return {
       fee: estimatedFee,
@@ -88,8 +92,56 @@ class CrossChainService {
     };
   }
 
-  private saveCrossChainPhotocard(mintingData: CrossChainMintingData, txHash: string) {
+  private async saveCrossChainPhotocard(mintingData: CrossChainMintingData, txHash: string) {
     try {
+      // Determine which chain to use for proof storage
+      // For Ethereum-based chains, use Sepolia testnet for proof storage
+      const proofChainId = this.getProofChainId(mintingData.targetChain.id);
+
+      if (proofChainId) {
+        toast.info('💾 Storing proof on blockchain...');
+
+        // Create proof data
+        const proofData: EVMProofData = {
+          blobId: mintingData.photocardId, // Use photocard ID as blob ID
+          storedEpoch: Date.now(),
+          certifiedEpoch: Date.now() + 1000,
+          fileSize: 0, // Photocard metadata size (can be calculated)
+          encodedSlivers: 1,
+          sourceChain: 'sui',
+          sourceTxHash: txHash,
+          vaaSignature: new Uint8Array(64), // Mock Wormhole signature
+        };
+
+        // Store proof on EVM chain
+        const result = await evmProofService.storeProof(proofChainId, proofData);
+
+        if (result) {
+          console.log('✅ Cross-chain proof stored on blockchain!', result);
+
+          // Also save to localStorage as backup/cache
+          const existingCards = JSON.parse(localStorage.getItem('crossChainPhotocards') || '[]');
+          const newCard = {
+            photocardId: mintingData.photocardId,
+            targetChain: mintingData.targetChain.name,
+            chainIcon: mintingData.targetChain.icon,
+            txHash: result.txHash,
+            proofId: result.proofId,
+            mintedAt: new Date().toISOString(),
+            idolName: mintingData.idolName,
+            imageUrl: mintingData.imageUrl,
+            onChain: true,
+          };
+
+          existingCards.push(newCard);
+          localStorage.setItem('crossChainPhotocards', JSON.stringify(existingCards));
+
+          return result;
+        }
+      }
+
+      // Fallback to localStorage only if blockchain storage fails
+      console.warn('⚠️ Blockchain storage unavailable, falling back to localStorage');
       const existingCards = JSON.parse(localStorage.getItem('crossChainPhotocards') || '[]');
       const newCard = {
         photocardId: mintingData.photocardId,
@@ -98,15 +150,29 @@ class CrossChainService {
         txHash,
         mintedAt: new Date().toISOString(),
         idolName: mintingData.idolName,
-        imageUrl: mintingData.imageUrl
+        imageUrl: mintingData.imageUrl,
+        onChain: false,
       };
-      
+
       existingCards.push(newCard);
       localStorage.setItem('crossChainPhotocards', JSON.stringify(existingCards));
-      console.log('✅ Cross-chain photocard saved to localStorage:', newCard);
+      console.log('✅ Cross-chain photocard saved to localStorage (fallback):', newCard);
     } catch (error) {
       console.error('Failed to save cross-chain photocard:', error);
+      toast.error('Failed to store proof on blockchain');
     }
+  }
+
+  /**
+   * Map target chain to proof storage chain
+   */
+  private getProofChainId(targetChainId: string): string | null {
+    // For now, all EVM chains use Sepolia for proof storage
+    const evmChains = ['ethereum', 'polygon', 'bsc', 'base', 'arbitrum', 'optimism'];
+    if (evmChains.includes(targetChainId)) {
+      return 'sepolia';
+    }
+    return null;
   }
 
   getCrossChainPhotocards(): any[] {

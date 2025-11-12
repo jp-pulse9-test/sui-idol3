@@ -6,42 +6,66 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { toast } from 'sonner';
 import { Badge } from './ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { SUPPORTED_CHAINS, SupportedChain, CrossChainMintingData } from '../types/crosschain';
-import { useCrossChain } from '../hooks/useCrossChain';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { SUPPORTED_CHAINS, SupportedChain } from '../types/crosschain';
 import { evmProofService } from '../services/evmProofService';
-import { ExternalLink, Copy, Zap, ArrowRightLeft } from 'lucide-react';
+import { nftBridgeService } from '../services/nftBridgeService';
+import { Copy, Zap, ArrowRightLeft, Link2, AlertTriangle } from 'lucide-react';
+import { useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 
-interface CrossChainMintingProps {
+interface NFTBridgeProps {
   isOpen: boolean;
   onClose: () => void;
-  photocardData: {
+  nftData: {
+    objectId: string;
     id: string;
     idolName: string;
     imageUrl: string;
     rarity: string;
     concept: string;
+    serialNo: number;
   };
 }
 
-export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
+export const NFTBridge: React.FC<NFTBridgeProps> = ({
   isOpen,
   onClose,
-  photocardData
+  nftData
 }) => {
   const [selectedChain, setSelectedChain] = useState<SupportedChain | null>(null);
   const [connectedAddress, setConnectedAddress] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isBridging, setIsBridging] = useState(false);
   const [gasFee, setGasFee] = useState<{ fee: string; currency: string } | null>(null);
-  const { mintToChain, estimateGasFee, isLoading } = useCrossChain();
+  const { mutateAsync: signAndExecuteTransactionAsync } = useSignAndExecuteTransaction();
 
   useEffect(() => {
     if (selectedChain) {
-      estimateGasFee(selectedChain).then(setGasFee);
+      estimateGasFee(selectedChain);
       // Reset connected address when chain changes
       setConnectedAddress('');
     }
-  }, [selectedChain, estimateGasFee]);
+  }, [selectedChain]);
+
+  const estimateGasFee = async (chain: SupportedChain) => {
+    // Simulate gas fee estimation
+    const baseFees: Record<string, { min: number; max: number }> = {
+      ethereum: { min: 0.008, max: 0.03 },
+      polygon: { min: 0.002, max: 0.008 },
+      bsc: { min: 0.003, max: 0.01 },
+      base: { min: 0.002, max: 0.006 },
+      arbitrum: { min: 0.001, max: 0.005 },
+      optimism: { min: 0.001, max: 0.005 },
+    };
+
+    const feeRange = baseFees[chain.id] || { min: 0.002, max: 0.01 };
+    const estimatedFee = (Math.random() * (feeRange.max - feeRange.min) + feeRange.min).toFixed(6);
+
+    setGasFee({
+      fee: estimatedFee,
+      currency: chain.symbol
+    });
+  };
 
   const connectWallet = async () => {
     if (!selectedChain) {
@@ -53,11 +77,10 @@ export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
     setIsConnecting(true);
 
     try {
-      // EVM chains (Ethereum, Polygon, BSC, Base, Arbitrum, Optimism) - use MetaMask
+      // EVM chains - use MetaMask
       if (['ethereum', 'polygon', 'bsc', 'base', 'arbitrum', 'optimism'].includes(selectedChain.id)) {
         console.log('✅ Detected EVM chain, connecting to MetaMask...');
 
-        // Check if MetaMask is installed
         if (typeof window.ethereum === 'undefined') {
           toast.error('MetaMask를 설치해주세요.');
           window.open('https://metamask.io/download/', '_blank');
@@ -97,25 +120,43 @@ export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
     }
   };
 
-  const handleMint = async () => {
+  const handleBridge = async () => {
     if (!selectedChain || !connectedAddress) {
       toast.error('체인과 지갑을 모두 연결해주세요.');
       return;
     }
 
-    const mintingData: CrossChainMintingData = {
-      photocardId: photocardData.id,
-      idolName: photocardData.idolName,
-      imageUrl: photocardData.imageUrl,
-      rarity: photocardData.rarity,
-      concept: photocardData.concept,
-      targetChain: selectedChain,
-      recipientAddress: connectedAddress
-    };
+    setIsBridging(true);
 
-    const txHash = await mintToChain(mintingData);
-    if (txHash) {
-      onClose();
+    try {
+      const bridgeData = {
+        nftObjectId: nftData.objectId,
+        photocardId: nftData.id,
+        idolName: nftData.idolName,
+        imageUrl: nftData.imageUrl,
+        rarity: nftData.rarity,
+        concept: nftData.concept,
+        serialNo: nftData.serialNo,
+        targetChain: selectedChain
+      };
+
+      const result = await nftBridgeService.bridgeToChain(
+        bridgeData,
+        connectedAddress,
+        signAndExecuteTransactionAsync
+      );
+
+      if (result.success) {
+        toast.success('🎉 NFT 브릿지가 완료되었습니다!');
+        onClose();
+      } else {
+        toast.error(`브릿지 실패: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Bridge failed:', error);
+      toast.error('NFT 브릿지에 실패했습니다.');
+    } finally {
+      setIsBridging(false);
     }
   };
 
@@ -129,30 +170,50 @@ export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <ArrowRightLeft className="h-5 w-5" />
-            크로스체인 민팅
+            <Link2 className="h-5 w-5" />
+            NFT 브릿지
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* 포토카드 정보 */}
+          {/* NFT 정보 */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm">포토카드 정보</CardTitle>
+              <CardTitle className="text-sm">브릿지할 NFT</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex items-center gap-3">
-                <img 
-                  src={photocardData.imageUrl} 
-                  alt={photocardData.idolName}
-                  className="w-12 h-16 object-cover rounded border"
+                <img
+                  src={nftData.imageUrl}
+                  alt={nftData.idolName}
+                  className="w-16 h-20 object-cover rounded border"
                 />
                 <div>
-                  <p className="font-medium">{photocardData.idolName}</p>
-                  <p className="text-sm text-muted-foreground">{photocardData.concept}</p>
-                  <Badge variant="secondary" className="text-xs">
-                    {photocardData.rarity}
-                  </Badge>
+                  <p className="font-medium">{nftData.idolName}</p>
+                  <p className="text-sm text-muted-foreground">{nftData.concept}</p>
+                  <div className="flex gap-2 mt-1">
+                    <Badge variant="secondary" className="text-xs">
+                      {nftData.rarity}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      #{nftData.serialNo.toString().padStart(4, '0')}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 경고 메시지 */}
+          <Card className="border-yellow-500/50 bg-yellow-500/5">
+            <CardContent className="pt-4">
+              <div className="flex gap-3">
+                <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm space-y-1">
+                  <p className="font-medium text-yellow-500">주의사항</p>
+                  <p className="text-muted-foreground">
+                    NFT를 브릿지하면 Sui 체인의 원본 NFT는 락(lock)되고, 대상 체인에 새로운 NFT가 발행됩니다.
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -251,17 +312,17 @@ export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
               취소
             </Button>
             <Button
-              onClick={handleMint}
-              disabled={!selectedChain || !connectedAddress || isLoading}
+              onClick={handleBridge}
+              disabled={!selectedChain || !connectedAddress || isBridging}
               className="flex-1"
             >
-              {isLoading ? '민팅 중...' : '크로스체인 민팅'}
+              {isBridging ? '브릿지 중...' : 'NFT 브릿지'}
             </Button>
           </div>
 
           {/* 정보 텍스트 */}
           <p className="text-xs text-muted-foreground text-center">
-            크로스체인 민팅은 수분이 소요될 수 있습니다.
+            NFT 브릿지는 수분이 소요될 수 있습니다.
           </p>
         </div>
       </DialogContent>
