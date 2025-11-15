@@ -10,7 +10,6 @@ import TournamentBattle from "@/components/TournamentBattle";
 import IdolPreview from "@/components/IdolPreview";
 import { usePhotoCardMinting } from "@/services/photocardMintingStable";
 import { useWallet } from "@/hooks/useWallet";
-import { useSuiBalance } from "@/services/suiBalanceServiceNew";
 
 interface IdolPreset {
   id: number;
@@ -50,8 +49,7 @@ const Pick = () => {
 
   const navigate = useNavigate();
   const { mintIdolCard } = usePhotoCardMinting();
-  const { isConnected, walletAddress } = useWallet();
-  const { balance: suiBalance, isLoading: isBalanceLoading, error: balanceError } = useSuiBalance();
+  const { isConnected, walletAddress, balance } = useWallet();
 
   // Fetch idols from Supabase idols table
   const fetchIdolsFromDB = async (): Promise<IdolPreset[]> => {

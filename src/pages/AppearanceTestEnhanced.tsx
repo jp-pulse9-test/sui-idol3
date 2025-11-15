@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { useWallet } from "@/hooks/useWallet";
 
 interface Question {
   id: number;
@@ -289,20 +290,20 @@ const getFemaleAppearanceQuestions = (world: string): Question[] => {
 
 export const AppearanceTestEnhanced = () => {
   const navigate = useNavigate();
+  const { isConnected, walletAddress } = useWallet();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
-    const walletAddress = localStorage.getItem('walletAddress');
-    const selectedGender = localStorage.getItem('selectedGender');
-    
-    if (!walletAddress) {
+    if (!isConnected || !walletAddress) {
       toast.error("먼저 지갑을 연결해주세요!");
       navigate('/');
       return;
     }
-    
+
+    const selectedGender = localStorage.getItem('selectedGender');
+
     if (!selectedGender) {
       toast.error("먼저 성별을 선택해주세요!");
       navigate('/pick');
@@ -310,11 +311,11 @@ export const AppearanceTestEnhanced = () => {
     }
 
     // 성별에 따른 질문 설정
-    const questionsToUse = selectedGender === 'male' 
-      ? getMaleAppearanceQuestions('modern') 
+    const questionsToUse = selectedGender === 'male'
+      ? getMaleAppearanceQuestions('modern')
       : getFemaleAppearanceQuestions('modern');
     setQuestions(questionsToUse);
-  }, [navigate]);
+  }, [isConnected, walletAddress, navigate]);
 
   const handleAnswer = (value: string) => {
     const newAnswers = [...answers, value];

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useWallet } from "@/hooks/useWallet";
 
 interface Question {
   id: number;
@@ -100,23 +101,23 @@ const questions: Question[] = [
 
 export const MBTITest = () => {
   const navigate = useNavigate();
+  const { isConnected, walletAddress } = useWallet();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
 
   useEffect(() => {
-    const walletAddress = localStorage.getItem('walletAddress');
-    if (!walletAddress) {
-      toast.error("Please connect your wallet first!");
+    if (!isConnected || !walletAddress) {
+      toast.error("먼저 지갑을 연결해주세요!");
       navigate('/');
       return;
     }
-    
+
     const selectedGender = localStorage.getItem('selectedGender');
     if (!selectedGender) {
       toast.error("Please select gender first!");
       navigate('/gender-select');
     }
-  }, [navigate]);
+  }, [isConnected, walletAddress, navigate]);
 
   const handleAnswer = (type: string) => {
     const newAnswers = [...answers, type];

@@ -1,20 +1,46 @@
 import { toast } from "sonner";
 import { SupportedChain, CrossChainMintingData, CrossChainTransaction } from "../types/crosschain";
 import { evmProofService, EVMProofData } from "./evmProofService";
+import { solanaNFTService } from "./solanaNFTService";
 
 class CrossChainService {
   private transactions: Map<string, CrossChainTransaction> = new Map();
 
   async mintToChain(mintingData: CrossChainMintingData): Promise<string> {
     try {
-      toast.info(`${mintingData.targetChain.icon} ${mintingData.targetChain.name}으로 민팅을 시작합니다...`);
+      toast.info(`🌉 Sui → ${mintingData.targetChain.icon} ${mintingData.targetChain.name} 브릿지를 시작합니다...`);
 
-      // 시뮬레이션을 위한 지연
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      let txHash: string;
+      let mintAddress: string | undefined;
+
+      // Solana: Real minting using Metaplex (bridged from Sui)
+      if (mintingData.targetChain.id === 'solana') {
+        const result = await solanaNFTService.mintNFT(
+          mintingData.idolName,
+          mintingData.imageUrl,
+          mintingData.rarity,
+          mintingData.concept,
+          mintingData.photocardId, // Sui photocard ID
+          undefined // Sui TX hash (can be added later)
+        );
+
+        txHash = result.txSignature;
+        mintAddress = result.mintAddress;
+
+        console.log('✅ Solana NFT minted:', {
+          mint: mintAddress,
+          tx: txHash,
+          metadata: result.metadataUri
+        });
+      }
+      // EVM chains: Simulation for now (can be implemented later)
+      else {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        txHash = this.generateMockTxHash();
+      }
 
       // 트랜잭션 ID 생성
       const txId = this.generateTransactionId();
-      const txHash = this.generateMockTxHash();
 
       // 트랜잭션 기록
       const transaction: CrossChainTransaction = {
@@ -23,32 +49,51 @@ class CrossChainService {
         sourceChain: 'sui',
         targetChain: mintingData.targetChain.id,
         txHash,
-        status: 'pending',
+        status: mintingData.targetChain.id === 'solana' ? 'confirmed' : 'pending',
         timestamp: Date.now()
       };
 
       this.transactions.set(txId, transaction);
 
-      // 민팅 성공 시뮬레이션
-      setTimeout(() => {
-        const tx = this.transactions.get(txId);
-        if (tx) {
-          tx.status = 'confirmed';
-          this.transactions.set(txId, tx);
-          
-          // 크로스체인 민팅된 포토카드 정보를 로컬 스토리지에 저장
-          this.saveCrossChainPhotocard(mintingData, txHash);
-          
-          toast.success(`✅ ${mintingData.targetChain.name}에서 민팅이 완료되었습니다!`);
-        }
-      }, 3000);
+      // For Solana, immediately save since it's confirmed
+      if (mintingData.targetChain.id === 'solana') {
+        await this.saveCrossChainPhotocard(mintingData, txHash, mintAddress);
+        toast.success(`✅ Sui → ${mintingData.targetChain.name} 브릿지 완료!\nMint: ${mintAddress?.substring(0, 8)}...`);
+      }
+      // For EVM chains, simulate async confirmation
+      else {
+        setTimeout(() => {
+          const tx = this.transactions.get(txId);
+          if (tx) {
+            tx.status = 'confirmed';
+            this.transactions.set(txId, tx);
 
-      toast.success(`🚀 크로스체인 민팅이 시작되었습니다! TX: ${txHash.substring(0, 10)}...`);
+            this.saveCrossChainPhotocard(mintingData, txHash);
+
+            toast.success(`✅ Sui → ${mintingData.targetChain.name} 브릿지 완료!`);
+          }
+        }, 3000);
+
+        toast.success(`🌉 브릿지가 시작되었습니다! TX: ${txHash.substring(0, 10)}...`);
+      }
+
       return txHash;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Cross-chain minting failed:', error);
-      toast.error('크로스체인 민팅에 실패했습니다.');
+
+      // More specific error messages
+      if (error.message?.includes('Phantom wallet not found')) {
+        toast.error('❌ Phantom 지갑을 찾을 수 없습니다\n💡 https://phantom.app 에서 설치해주세요');
+      } else if (error.message?.includes('insufficient funds')) {
+        toast.error('❌ 잔액이 부족합니다');
+      } else if (error.message?.includes('failed to post funding tx')) {
+        toast.error('❌ 메타데이터 스토리지 펀딩 실패\n💡 잠시 후 다시 시도해주세요');
+      } else if (!error.message?.includes('User rejected')) {
+        // Don't show error toast if user cancelled
+        toast.error('❌ 크로스체인 민팅 실패\n💡 콘솔에서 상세 정보를 확인하세요');
+      }
+
       throw error;
     }
   }
@@ -66,7 +111,7 @@ class CrossChainService {
   }
 
   private generateMockTxHash(): string {
-    return '0x' + Array.from({ length: 64 }, () => 
+    return '0x' + Array.from({ length: 64 }, () =>
       Math.floor(Math.random() * 16).toString(16)
     ).join('');
   }
@@ -92,7 +137,7 @@ class CrossChainService {
     };
   }
 
-  private async saveCrossChainPhotocard(mintingData: CrossChainMintingData, txHash: string) {
+  private async saveCrossChainPhotocard(mintingData: CrossChainMintingData, txHash: string, mintAddress?: string) {
     try {
       // Determine which chain to use for proof storage
       // For Ethereum-based chains, use Sepolia testnet for proof storage
@@ -127,6 +172,7 @@ class CrossChainService {
             chainIcon: mintingData.targetChain.icon,
             txHash: result.txHash,
             proofId: result.proofId,
+            mintAddress: mintAddress, // For Solana NFTs
             mintedAt: new Date().toISOString(),
             idolName: mintingData.idolName,
             imageUrl: mintingData.imageUrl,
@@ -148,10 +194,11 @@ class CrossChainService {
         targetChain: mintingData.targetChain.name,
         chainIcon: mintingData.targetChain.icon,
         txHash,
+        mintAddress: mintAddress, // For Solana NFTs
         mintedAt: new Date().toISOString(),
         idolName: mintingData.idolName,
         imageUrl: mintingData.imageUrl,
-        onChain: false,
+        onChain: mintingData.targetChain.id === 'solana' ? true : false,
       };
 
       existingCards.push(newCard);

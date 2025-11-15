@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { secureStorage } from "@/utils/secureStorage";
 import { IdolPreset } from "@/types/idol";
 import { useNavigate } from "react-router-dom";
+import { useWallet } from "@/hooks/useWallet";
 
 interface IdolPreviewProps {
   selectedIdol: IdolPreset;
@@ -20,45 +21,39 @@ interface IdolPreviewProps {
 
 const IdolPreview = ({ selectedIdol, onConfirm, onBack, isMinting = false }: IdolPreviewProps) => {
   const navigate = useNavigate();
+  const { balance } = useWallet();
   const [votingProgress, setVotingProgress] = useState(0);
   const [isVoting, setIsVoting] = useState(false);
-  const [hasSufficientCoins, setHasSufficientCoins] = useState(false);
-  const [currentSuiCoins, setCurrentSuiCoins] = useState(0);
-  const [idolStats, setIdolStats] = useState(() => generateRandomStats(selectedIdol.personality));
+  const [idolStats] = useState(() => generateRandomStats(selectedIdol.personality));
+
+  // Convert balance string to number
+  const currentSuiCoins = parseFloat(balance);
+  const hasSufficientCoins = currentSuiCoins >= 0.15;
 
   useEffect(() => {
-    // Check Sui coin balance (0.15 coins = 700 won)
-    const userCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
-    setCurrentSuiCoins(userCoins);
-    setHasSufficientCoins(userCoins >= 0.15);
-    
-    console.log('🔍 IdolPreview coin check:', { userCoins, hasSufficientCoins: userCoins >= 0.15 });
-  }, []);
+    console.log('🔍 IdolPreview coin check:', { currentSuiCoins, hasSufficientCoins });
+  }, [currentSuiCoins, hasSufficientCoins]);
 
   const handleVoting = async () => {
-    // Real-time coin recheck
-    const latestCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
-    setCurrentSuiCoins(latestCoins);
-    
-    if (latestCoins < 0.15) {
-      toast.error(`Sui 코인이 부족합니다. 0.15 코인 (700원) 필요. 현재: ${latestCoins.toFixed(2)} SUI`);
+    // Real-time coin recheck using actual blockchain balance
+    if (currentSuiCoins < 0.15) {
+      toast.error(`Sui 코인이 부족합니다. 0.15 코인 (700원) 필요. 현재: ${currentSuiCoins.toFixed(4)} SUI`);
       return;
     }
 
     setIsVoting(true);
     setVotingProgress(0);
-    
+
     // Voting progress simulation
     const intervals = [20, 40, 60, 80, 100];
     for (const progress of intervals) {
       await new Promise(resolve => setTimeout(resolve, 800));
       setVotingProgress(progress);
     }
-    
-    // Deduct coins
-    const finalCoins = parseFloat(localStorage.getItem('suiCoins') || '0');
-    localStorage.setItem('suiCoins', (finalCoins - 0.15).toFixed(2));
-    
+
+    // Note: Actual coin deduction happens in the blockchain transaction
+    // No need to manually update localStorage
+
     // Confirm after completion
     setTimeout(() => {
       onConfirm();

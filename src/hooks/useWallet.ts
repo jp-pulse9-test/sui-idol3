@@ -1,4 +1,4 @@
-import { useConnectWallet, useDisconnectWallet, useCurrentAccount, useWallets } from '@mysten/dapp-kit';
+import { useConnectWallet, useDisconnectWallet, useCurrentAccount, useWallets, useSuiClientQuery } from '@mysten/dapp-kit';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 
@@ -10,6 +10,36 @@ export const useWallet = () => {
 
   const isConnected = !!currentAccount;
   const walletAddress = currentAccount?.address || null;
+
+  // Fetch SUI balance
+  const { data: balanceData, refetch: refetchBalance, isLoading, isError, error } = useSuiClientQuery(
+    'getBalance',
+    {
+      owner: walletAddress || '',
+    },
+    {
+      enabled: !!walletAddress,
+      refetchInterval: 10000, // Refetch every 10 seconds
+    }
+  );
+
+  // Convert balance from MIST to SUI (1 SUI = 1,000,000,000 MIST)
+  const balance = balanceData?.totalBalance
+    ? (Number(balanceData.totalBalance) / 1_000_000_000).toFixed(4)
+    : '0.0000';
+
+  // Debug logging
+  console.log('🔍 Wallet Debug:', {
+    walletAddress,
+    isLoading,
+    isError,
+    error,
+    balanceData,
+    totalBalance: balanceData?.totalBalance,
+    totalBalanceNumber: balanceData?.totalBalance ? Number(balanceData.totalBalance) : 0,
+    calculatedBalance: balanceData?.totalBalance ? Number(balanceData.totalBalance) / 1_000_000_000 : 0,
+    finalBalance: balance
+  });
 
   const connectWallet = useCallback(async () => {
     try {
@@ -75,5 +105,7 @@ export const useWallet = () => {
     connectWallet,
     disconnectWallet,
     currentAccount,
+    balance,
+    refetchBalance,
   };
 };

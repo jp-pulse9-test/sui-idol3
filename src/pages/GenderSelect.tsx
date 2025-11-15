@@ -3,19 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { useWallet } from "@/hooks/useWallet";
 
 export const GenderSelect = () => {
   const navigate = useNavigate();
+  const { isConnected, walletAddress } = useWallet();
   const [selectedGender, setSelectedGender] = useState<'male' | 'female' | null>(null);
 
   useEffect(() => {
-    const walletAddress = localStorage.getItem('walletAddress');
-    if (!walletAddress) {
+    if (!isConnected || !walletAddress) {
       toast.error("먼저 지갑을 연결해주세요!");
       navigate('/');
       return;
     }
-  }, [navigate]);
+  }, [isConnected, walletAddress, navigate]);
 
   const handleGenderSelect = (gender: 'male' | 'female') => {
     setSelectedGender(gender);

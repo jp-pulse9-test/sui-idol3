@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useWallet } from "@/hooks/useWallet";
 
 interface Question {
   id: number;
@@ -225,20 +226,20 @@ const getFemaleQuestions = (world: string): Question[] => {
 
 export const MBTITestEnhanced = () => {
   const navigate = useNavigate();
+  const { isConnected, walletAddress } = useWallet();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
-    const walletAddress = localStorage.getItem('walletAddress');
-    const selectedGender = localStorage.getItem('selectedGender');
-    
-    if (!walletAddress) {
+    if (!isConnected || !walletAddress) {
       toast.error("먼저 지갑을 연결해주세요!");
       navigate('/');
       return;
     }
-    
+
+    const selectedGender = localStorage.getItem('selectedGender');
+
     if (!selectedGender) {
       toast.error("먼저 성별을 선택해주세요!");
       navigate('/pick');
@@ -246,11 +247,11 @@ export const MBTITestEnhanced = () => {
     }
 
     // 성별에 따른 질문 설정
-    const questionsToUse = selectedGender === 'male' 
-      ? getMaleQuestions('modern') 
+    const questionsToUse = selectedGender === 'male'
+      ? getMaleQuestions('modern')
       : getFemaleQuestions('modern');
     setQuestions(questionsToUse);
-  }, [navigate]);
+  }, [isConnected, walletAddress, navigate]);
 
   const handleAnswer = (type: string) => {
     const newAnswers = [...answers, type];

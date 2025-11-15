@@ -4,18 +4,22 @@ import { ApiKeyManager } from '@/components/ApiKeyManager';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Settings as SettingsIcon, Key, Shield, Info } from 'lucide-react';
+import { useWallet } from '@/hooks/useWallet';
+import { toast } from 'sonner';
 
 const Settings = () => {
   const navigate = useNavigate();
-  const walletAddress = localStorage.getItem('walletAddress');
+  const { isConnected, walletAddress } = useWallet();
 
   useEffect(() => {
-    if (!walletAddress) {
+    if (!isConnected || !walletAddress) {
+      toast.error('먼저 지갑을 연결해주세요!');
       navigate('/');
+      return;
     }
-  }, [walletAddress, navigate]);
+  }, [isConnected, walletAddress, navigate]);
 
-  if (!walletAddress) {
+  if (!isConnected || !walletAddress) {
     return null;
   }
 

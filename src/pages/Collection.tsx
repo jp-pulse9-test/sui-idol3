@@ -8,6 +8,7 @@ import { MessageCircle, Download, Trash2, Database, Star } from "lucide-react";
 import { toast } from "sonner";
 import ChatModal from "@/components/ChatModal";
 import { SmartContractCollection } from "@/components/SmartContractCollection";
+import { useWallet } from "@/hooks/useWallet";
 
 
 interface SavedCard {
@@ -22,32 +23,29 @@ interface SavedCard {
 
 const Collection = () => {
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
-  const [walletAddress, setWalletAddress] = useState<string>("");
   const [selectedCharacter, setSelectedCharacter] = useState<any>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isConnected, walletAddress } = useWallet();
 
   useEffect(() => {
     const loadSavedCards = () => {
-      const wallet = localStorage.getItem('walletAddress');
-      if (!wallet) {
+      if (!isConnected || !walletAddress) {
         toast.error("먼저 지갑을 연결해주세요!");
         navigate('/');
         return;
       }
-      
-      setWalletAddress(wallet);
-      
+
       // localStorage에서 카드 불러오기 (지갑별로 구분)
-      const walletKey = `photoCards_${wallet}`;
+      const walletKey = `photoCards_${walletAddress}`;
       const cards = JSON.parse(localStorage.getItem(walletKey) || '[]');
       setSavedCards(cards);
       setLoading(false);
     };
 
     loadSavedCards();
-  }, [navigate]);
+  }, [isConnected, walletAddress, navigate]);
 
   const deleteCard = (id: string) => {
     const updatedCards = savedCards.filter(card => card.id !== id);

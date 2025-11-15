@@ -48,8 +48,8 @@ const Vault = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuthGuard('/', true);
   const { mintPhotoCard } = usePhotoCardMinting();
-  const { isConnected, walletAddress: currentWalletAddress } = useWallet();
-  
+  const { isConnected, walletAddress: currentWalletAddress, balance } = useWallet();
+
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [suiCoins, setSuiCoins] = useState(1.0);
@@ -110,15 +110,9 @@ const Vault = () => {
     // Load photocards from local storage
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     setPhotoCards(savedCards);
-    
-    // Load SUI coins
-    const savedSuiCoins = localStorage.getItem('suiCoins');
-    if (savedSuiCoins) {
-      setSuiCoins(parseFloat(savedSuiCoins));
-    } else {
-      setSuiCoins(1.0); // Default value
-      localStorage.setItem('suiCoins', '1.0');
-    }
+
+    // Note: SUI balance is now loaded from blockchain via useWallet hook
+    // No need to load from localStorage
     
     const savedFanHearts = localStorage.getItem('fanHearts');
     if (savedFanHearts) {
@@ -203,8 +197,9 @@ const Vault = () => {
     }
     
     const cost = type === 'free' ? 0 : (boxCost || 0.15); // Based on SUI coins
-    if (type !== 'free' && suiCoins < cost) {
-      toast.error('Insufficient SUI coins.');
+    const currentBalance = parseFloat(balance);
+    if (type !== 'free' && currentBalance < cost) {
+      toast.error(`Insufficient SUI coins. Need ${cost} SUI, have ${balance} SUI`);
       return;
     }
 
@@ -306,13 +301,8 @@ const Vault = () => {
       setPhotoCards(updatedCards);
       localStorage.setItem('photoCards', JSON.stringify(updatedCards));
 
-      if (type !== 'free') {
-        setSuiCoins(prev => {
-          const newValue = prev - cost;
-          localStorage.setItem('suiCoins', newValue.toFixed(2));
-          return newValue;
-        });
-      }
+      // Note: SUI coin deduction happens automatically in blockchain transaction
+      // No need to manually update balance - it will refresh from blockchain
 
       toast.success(`🎉 Minted ${cardCount} photocards!`);
     } catch (error) {
@@ -342,7 +332,7 @@ const Vault = () => {
               🔗 {walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(38)}` : 'Connecting wallet...'}
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
-              💰 {suiCoins.toFixed(2)} SUI
+              💰 {balance} SUI
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
               ❤️ {fanHearts} Fan Hearts
@@ -437,7 +427,7 @@ const Vault = () => {
                     </div>
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
                       <span>Owned SUI Coins</span>
-                      <Badge variant="outline">{suiCoins.toFixed(2)} 💰</Badge>
+                      <Badge variant="outline">{balance} 💰</Badge>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
                       <span>Fan Heart Points</span>
@@ -515,15 +505,14 @@ const Vault = () => {
               {selectedIdol ? (
                 <IdolPhotocardGenerator
                   selectedIdol={selectedIdol}
-                  userCoins={suiCoins}
+                  userCoins={parseFloat(balance)}
                   fanHearts={fanHearts}
                   hasAdvancedAccess={hasAdvancedAccess}
                   onCostDeduction={(suiCost, heartCost) => {
-                    setSuiCoins(prev => {
-                      const newValue = prev - suiCost;
-                      localStorage.setItem('suiCoins', newValue.toFixed(2));
-                      return newValue;
-                    });
+                    // Note: SUI coin deduction happens automatically in blockchain transaction
+                    // Balance will auto-refresh from blockchain
+
+                    // Only update Fan Hearts locally
                     setFanHearts(prev => {
                       const newValue = prev - heartCost;
                       localStorage.setItem('fanHearts', newValue.toString());
@@ -551,7 +540,7 @@ const Vault = () => {
             <RandomBox
               dailyFreeCount={dailyFreeStatus.totalClaimsToday}
               maxDailyFree={dailyFreeStatus.maxDailyClaims}
-              userCoins={suiCoins}
+              userCoins={parseFloat(balance)}
               pityCounter={pityCounters}
               onOpenBox={handleOpenRandomBox}
               isOpening={isMinting}
