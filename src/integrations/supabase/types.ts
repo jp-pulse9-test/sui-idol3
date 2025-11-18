@@ -18,7 +18,7 @@ export type Database = {
         Row: {
           api_key_id: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           success: boolean
           usage_type: string
           used_at: string
@@ -28,7 +28,7 @@ export type Database = {
         Insert: {
           api_key_id: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           success?: boolean
           usage_type: string
           used_at?: string
@@ -38,7 +38,7 @@ export type Database = {
         Update: {
           api_key_id?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           success?: boolean
           usage_type?: string
           used_at?: string
@@ -593,16 +593,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_idol_access_rate: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      check_idol_access_rate: { Args: never; Returns: boolean }
       claim_daily_free_box: {
         Args: { user_wallet_param: string }
         Returns: Json
       }
       get_basic_idol_data: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           created_at: string
           id: number
@@ -610,16 +607,13 @@ export type Database = {
           profile_image: string
         }[]
       }
-      get_current_user_wallet: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_current_user_wallet: { Args: never; Returns: string }
       get_daily_free_box_status: {
         Args: { user_wallet_param: string }
         Returns: Json
       }
       get_public_idol_data: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           category: string
           concept: string
@@ -631,7 +625,7 @@ export type Database = {
         }[]
       }
       get_public_idols: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           category: string
           concept: string
@@ -642,22 +636,13 @@ export type Database = {
           profile_image: string
         }[]
       }
-      get_safe_idol_data: {
-        Args: { idol_id: number }
-        Returns: Json
-      }
+      get_safe_idol_data: { Args: { idol_id: number }; Returns: Json }
       has_active_api_key: {
         Args: { user_wallet_param: string }
         Returns: boolean
       }
-      hash_api_key: {
-        Args: { key_to_hash: string }
-        Returns: string
-      }
-      is_admin_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      hash_api_key: { Args: { key_to_hash: string }; Returns: string }
+      is_admin_user: { Args: never; Returns: boolean }
       migrate_api_key_to_hash: {
         Args: { user_wallet_param: string }
         Returns: boolean
