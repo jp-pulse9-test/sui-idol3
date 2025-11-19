@@ -301,7 +301,7 @@ const Index = () => {
                 size="lg"
                 className="w-full sm:w-auto text-base sm:text-lg md:text-2xl py-4 sm:py-5 md:py-6 px-6 sm:px-8 md:px-12 font-semibold"
               >
-                ⚡ 미션 시작하기
+                Start Mission
               </Button>
               
               {!user && (
