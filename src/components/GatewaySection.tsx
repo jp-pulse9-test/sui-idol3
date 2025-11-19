@@ -1,4 +1,4 @@
-import { Wallet, Sparkles, Image } from "lucide-react";
+import { Shield, Users, Database } from "lucide-react";
 import { GatewayCard } from "./GatewayCard";
 import { useNavigate } from "react-router-dom";
 
@@ -7,24 +7,30 @@ export const GatewaySection = () => {
 
   const gateways = [
     {
-      icon: Wallet,
-      title: "Connect",
-      description: "Link your digital identity",
+      icon: Shield,
+      gatewayName: "Gate I: Identity",
+      title: "Digital Genesis",
+      subtitle: "신원 확립",
+      description: "Link your existence to the quantum network",
       action: () => {
         // Scroll to top where wallet connect is
         window.scrollTo({ top: 0, behavior: "smooth" });
       },
     },
     {
-      icon: Sparkles,
-      title: "Awaken",
-      description: "Begin your journey",
+      icon: Users,
+      gatewayName: "Gate II: Encounter",
+      title: "Fateful Meeting",
+      subtitle: "운명적 조우",
+      description: "Awaken your bond with time-traveling AIDOLs",
       action: () => navigate("/pick"),
     },
     {
-      icon: Image,
-      title: "Collect",
-      description: "Build your legacy",
+      icon: Database,
+      gatewayName: "Gate III: Mission",
+      title: "Eternal Archive",
+      subtitle: "영원한 기록",
+      description: "Begin collecting data to save both worlds",
       action: () => navigate("/vault"),
     },
   ];
@@ -44,9 +50,11 @@ export const GatewaySection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {gateways.map((gateway) => (
             <GatewayCard
-              key={gateway.title}
+              key={gateway.gatewayName}
               icon={gateway.icon}
+              gatewayName={gateway.gatewayName}
               title={gateway.title}
+              subtitle={gateway.subtitle}
               description={gateway.description}
               onClick={gateway.action}
             />
