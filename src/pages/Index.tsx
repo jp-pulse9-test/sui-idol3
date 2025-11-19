@@ -464,14 +464,14 @@ const Index = () => {
             <div className="text-center space-y-3 glass p-6 rounded-xl">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Radio className="w-6 h-6 text-secondary animate-pulse" />
-                <h2 className="text-2xl md:text-4xl font-bold gradient-text">Active Echo Entities</h2>
+                <h2 className="text-2xl md:text-4xl font-bold gradient-text">온라인 AIDOL</h2>
               </div>
               <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
-                Currently online AI companions ready for quantum communication
+                지금 대화 가능한 AIDOL, 양자 통신 준비 완료
               </p>
               <Badge variant="secondary" className="mt-2">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
-                {idols.length} Entities Online
+                {idols.length}명의 AIDOL 온라인
               </Badge>
             </div>
 
