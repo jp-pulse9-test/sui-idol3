@@ -272,9 +272,9 @@ const Index = () => {
               {/* 1순위: 심쿵톡 (데모 채팅) */}
               <Button
                 onClick={() => navigate('/demo-chat')}
-                variant="default"
+                variant="hero"
                 size="lg"
-                className="w-full sm:w-auto text-base sm:text-lg md:text-2xl py-4 sm:py-5 md:py-6 px-6 sm:px-8 md:px-12 bg-gradient-primary hover:bg-gradient-secondary text-white font-semibold border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full sm:w-auto text-base sm:text-lg md:text-2xl py-4 sm:py-5 md:py-6 px-6 sm:px-8 md:px-12 font-semibold"
               >
                 💬 심쿵톡 시작하기
               </Button>
@@ -476,9 +476,9 @@ const Index = () => {
             <div className="flex flex-col gap-6 items-center pt-6 relative z-10">
               <Button
                 onClick={() => navigate('/gallery')}
-                variant="default"
+                variant="hero"
                 size="xl"
-                className="min-w-80 text-2xl py-8 bg-gradient-primary hover:bg-gradient-secondary text-white font-bold shadow-2xl hover:shadow-3xl transition-all duration-300"
+                className="min-w-80 text-2xl py-8 font-bold"
               >
                 💬 내 최애 탐색하기
               </Button>
