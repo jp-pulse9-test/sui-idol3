@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
-import { Settings, Camera, Database, Sparkles, Users, Radio, Shield, Archive } from "lucide-react";
+import { Settings, Camera, Database, Sparkles, Users, Radio, Shield, Archive, Zap } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -59,6 +59,10 @@ const Index = () => {
   }>({ open: false, type: null });
   const [showWalrusTools, setShowWalrusTools] = useState(false);
   const [showPhotocardGallery, setShowPhotocardGallery] = useState(false);
+  
+  // Idol data state
+  const [idols, setIdols] = useState<any[]>([]);
+  const [loadingIdols, setLoadingIdols] = useState(true);
 
   useEffect(() => {
     const savedWallet = secureStorage.getWalletAddress();
@@ -83,6 +87,30 @@ const Index = () => {
       // Admin features removed
     }
   }, [user]);
+
+  // Fetch idols
+  useEffect(() => {
+    const fetchIdols = async () => {
+      try {
+        const { data, error } = await supabase
+          .rpc('get_public_idol_data');
+        
+        if (error) throw error;
+        
+        if (data) {
+          // Shuffle and take 12 idols
+          const shuffled = [...data].sort(() => Math.random() - 0.5);
+          setIdols(shuffled.slice(0, 12));
+        }
+      } catch (error) {
+        console.error('Error fetching idols:', error);
+      } finally {
+        setLoadingIdols(false);
+      }
+    };
+    
+    fetchIdols();
+  }, []);
 
   const connectWallet = async () => {
     navigate('/auth');
@@ -313,6 +341,64 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Featured Allies Section */}
+        <section className="py-12 md:py-20">
+          <div className="space-y-8">
+            <div className="text-center space-y-3 glass p-6 rounded-xl">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Shield className="w-6 h-6 text-primary" />
+                <h2 className="text-2xl md:text-4xl font-bold gradient-text">Featured Allies</h2>
+              </div>
+              <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">
+                Meet the elite Echo Entities leading Earth's restoration
+              </p>
+            </div>
+
+            {loadingIdols ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[...Array(4)].map((_, i) => (
+                  <Card key={i} className="p-6 animate-pulse">
+                    <div className="aspect-square bg-muted rounded-lg mb-4" />
+                    <div className="h-6 bg-muted rounded mb-2" />
+                    <div className="h-4 bg-muted rounded" />
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {idols.slice(0, 4).map((idol) => (
+                  <Card 
+                    key={idol.id} 
+                    className="group cursor-pointer overflow-hidden hover:scale-105 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20"
+                    onClick={() => navigate(`/demo-chat?idol=${idol.id}`)}
+                  >
+                    <div className="aspect-square relative overflow-hidden">
+                      <img 
+                        src={idol.profile_image} 
+                        alt={idol.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                        <Badge variant="secondary" className="mb-2">
+                          <Zap className="w-3 h-3 mr-1" />
+                          {idol.category}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <h3 className="font-bold text-lg">{idol.name}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{idol.concept}</p>
+                      <Badge variant="outline" className="text-xs">
+                        {idol.gender}
+                      </Badge>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Features Section */}
         <section className="py-12 md:py-20">
@@ -369,6 +455,63 @@ const Index = () => {
                 onClick={() => openPreview('vault')}
               />
             </div>
+          </div>
+        </section>
+
+        {/* Active Echo Entities Grid */}
+        <section className="py-12 md:py-20">
+          <div className="space-y-8">
+            <div className="text-center space-y-3 glass p-6 rounded-xl">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Radio className="w-6 h-6 text-secondary animate-pulse" />
+                <h2 className="text-2xl md:text-4xl font-bold gradient-text">Active Echo Entities</h2>
+              </div>
+              <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
+                Currently online AI companions ready for quantum communication
+              </p>
+              <Badge variant="secondary" className="mt-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
+                {idols.length} Entities Online
+              </Badge>
+            </div>
+
+            {loadingIdols ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                {[...Array(12)].map((_, i) => (
+                  <Card key={i} className="p-3 animate-pulse">
+                    <div className="aspect-square bg-muted rounded-lg mb-2" />
+                    <div className="h-4 bg-muted rounded mb-1" />
+                    <div className="h-3 bg-muted rounded" />
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                {idols.map((idol) => (
+                  <Card 
+                    key={idol.id} 
+                    className="group cursor-pointer overflow-hidden hover:scale-105 transition-all duration-300 hover:border-secondary/50 hover:shadow-lg hover:shadow-secondary/10"
+                    onClick={() => navigate(`/demo-chat?idol=${idol.id}`)}
+                  >
+                    <div className="aspect-square relative overflow-hidden">
+                      <img 
+                        src={idol.profile_image} 
+                        alt={idol.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50" />
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-2">
+                        <h4 className="text-white text-xs font-semibold truncate">{idol.name}</h4>
+                        <p className="text-white/70 text-[10px] truncate">{idol.category}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
