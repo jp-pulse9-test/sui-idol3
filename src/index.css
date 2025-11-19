@@ -478,6 +478,21 @@
     letter-spacing: 0.05em;
   }
 
+  .archive-caption-bilingual {
+    @apply text-center mt-2 px-4 space-y-1;
+  }
+
+  .caption-ko {
+    @apply text-sm font-medium text-white/70;
+    letter-spacing: 0.02em;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", sans-serif;
+  }
+
+  .caption-en {
+    @apply text-xs italic text-white/50;
+    letter-spacing: 0.05em;
+  }
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .archive-photo-container {

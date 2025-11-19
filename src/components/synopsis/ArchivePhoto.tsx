@@ -7,6 +7,7 @@ interface HistoricalPhoto {
   archiveId: string;
   date?: string;
   caption?: string;
+  captionKo?: string;
 }
 
 interface ArchivePhotoProps {
@@ -97,9 +98,14 @@ export const ArchivePhoto = ({ photo, delay = 0, parallaxOffset = 0, index = 0 }
         <span>{photo.archiveId}</span>
       </div>
       
-      {photo.caption && (
-        <div className="archive-caption">
-          {photo.caption}
+      {(photo.captionKo || photo.caption) && (
+        <div className="archive-caption-bilingual">
+          {photo.captionKo && (
+            <div className="caption-ko">{photo.captionKo}</div>
+          )}
+          {photo.caption && (
+            <div className="caption-en">{photo.caption}</div>
+          )}
         </div>
       )}
     </div>

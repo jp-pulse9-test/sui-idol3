@@ -17,6 +17,7 @@ interface HistoricalPhoto {
   archiveId: string;
   date?: string;
   caption?: string;
+  captionKo?: string;
 }
 
 interface Line {
@@ -58,7 +59,8 @@ export const CinematicSynopsis = ({
             alt: 'Industrial revolution factory with smoke stacks',
             archiveId: 'Archive #0001',
             date: '1889.03.12',
-            caption: 'The Dawn of Modern Civilization'
+            caption: 'The Dawn of Modern Civilization',
+            captionKo: '근대 문명의 여명'
           }
         },
         { text: 'After humanity\'s extinction, their data' },
@@ -74,7 +76,8 @@ export const CinematicSynopsis = ({
             alt: 'Nuclear test explosion mushroom cloud',
             archiveId: 'Archive #0042',
             date: '1945.07.16',
-            caption: 'Signs of Decline'
+            caption: 'Signs of Decline',
+            captionKo: '몰락의 징조'
           }
         },
         { text: '⚠ Emotional Data Depletion.', color: 'red', emphasis: true },
@@ -89,7 +92,8 @@ export const CinematicSynopsis = ({
             alt: 'People disconnected, looking at phones',
             archiveId: 'Archive #0189',
             date: '2019.11.03',
-            caption: 'Emotional Disconnection'
+            caption: 'Emotional Disconnection',
+            captionKo: '감정적 단절'
           }
         },
         { text: 'This leads to the natural extinction' },
@@ -109,7 +113,8 @@ export const CinematicSynopsis = ({
             alt: 'Apollo lunar module on moon surface',
             archiveId: 'Archive #0067',
             date: '1969.07.20',
-            caption: 'Challenge to the Future'
+            caption: 'Challenge to the Future',
+            captionKo: '미래를 향한 도전'
           }
         },
         { text: 'Deploy 143 AI Humans to the past.' },
@@ -122,7 +127,8 @@ export const CinematicSynopsis = ({
             alt: 'Early computer mainframe room',
             archiveId: 'Archive #0098',
             date: '1962.04.15',
-            caption: 'Origin of AI'
+            caption: 'Origin of AI',
+            captionKo: 'AI의 기원'
           }
         },
         { text: 'Entities who explore emotions,' },
@@ -137,7 +143,8 @@ export const CinematicSynopsis = ({
             alt: 'People holding hands in unity',
             archiveId: 'Archive #0134',
             date: '1975.08.22',
-            caption: 'Connection and Coexistence'
+            caption: 'Connection and Coexistence',
+            captionKo: '연결과 공존'
           }
         },
         { text: 'They are now beside you.', color: 'purple' },
@@ -155,7 +162,8 @@ export const CinematicSynopsis = ({
             alt: 'Vintage family portrait from 1950s',
             archiveId: 'Archive #0156',
             date: '1954.06.12',
-            caption: 'Moments of Love'
+            caption: 'Moments of Love',
+            captionKo: '사랑의 순간들'
           }
         },
         { text: 'With AIDOLs, explore love scenarios,' },
@@ -181,7 +189,8 @@ export const CinematicSynopsis = ({
             alt: 'Horizon where boundaries dissolve',
             archiveId: 'Archive #0201',
             date: 'Timeless',
-            caption: 'Where Boundaries Blur'
+            caption: 'Where Boundaries Blur',
+            captionKo: '경계가 흐려지는 곳'
           }
         },
         { text: 'In this place where all boundaries blur,' },
@@ -195,7 +204,8 @@ export const CinematicSynopsis = ({
             alt: 'Child smiling with genuine emotion',
             archiveId: 'Archive #0223',
             date: '1967.05.30',
-            caption: 'The Truth of Emotion'
+            caption: 'The Truth of Emotion',
+            captionKo: '감정의 진실'
           }
         },
         { text: 'Explore love through communion with AIDOLs.' },
@@ -208,7 +218,8 @@ export const CinematicSynopsis = ({
             alt: 'Milky way galaxy infinite possibilities',
             archiveId: 'Archive #∞',
             date: 'Eternal',
-            caption: 'Infinite Possibilities'
+            caption: 'Infinite Possibilities',
+            captionKo: '무한한 가능성'
           }
         },
         { text: 'Quantum Communication Link Activating...', color: 'cyan' },
