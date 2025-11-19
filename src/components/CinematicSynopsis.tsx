@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Zap, Heart, Users, Infinity } from 'lucide-react';
 import { ArchivePhoto } from './synopsis/ArchivePhoto';
 import { ParallaxText } from './synopsis/ParallaxText';
 
@@ -98,7 +98,8 @@ export const CinematicSynopsis = memo(({
         { text: 'The future virtual world' },
         { text: 'made a decision.' },
         { text: '', spacing: true },
-        { text: 'Deploy 143 AI Humans to the past.' },
+        { text: 'Deploy 202 AIDOLs to the past', emphasis: true },
+        { text: '(101 male, 101 female).' },
         { text: '', spacing: true },
         { text: 'Their name: AIDOL—', color: 'purple', emphasis: true },
         { text: '', spacing: true },
@@ -308,6 +309,20 @@ export const CinematicSynopsis = memo(({
 
   const currentChapterData = chapters.find((c) => c.id === currentChapter) || chapters[0];
 
+  // Timeline points configuration
+  const timelinePoints = useMemo(() => [
+    { year: '2847', label: 'Future', chapter: 1, icon: Zap, color: 'cyan' },
+    { year: '1962', label: 'AIDOL Birth', chapter: 2, icon: Heart, color: 'purple' },
+    { year: '1945', label: 'Current State', chapter: 3, icon: Users, color: 'green' },
+    { year: '∞', label: 'Eternal', chapter: 4, icon: Infinity, color: 'purple' },
+  ], []);
+
+  const handleTimelineClick = useCallback((chapter: number) => {
+    setCurrentChapter(chapter);
+    setAutoProgress(0);
+    setIsPaused(true);
+  }, []);
+
   return (
     <section 
       id="synopsis"
@@ -409,27 +424,54 @@ export const CinematicSynopsis = memo(({
           </div>
         </div>
 
-        {/* Enhanced Phase Indicator Dots */}
+        {/* Timeline Navigation */}
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 
-                        flex gap-3 p-3 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
-          {[1, 2, 3, 4].map((dot) => (
-            <button
-              key={dot}
-              onClick={() => {
-                setCurrentChapter(dot);
-                setAutoProgress(0);
-              }}
-              className={`
-                w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300
-                ${currentChapter === dot ? 'bg-primary scale-125 shadow-lg shadow-primary/50' : 'bg-white/40'}
-                hover:scale-110 hover:bg-white/60 cursor-pointer
-              `}
-              aria-label={`Go to chapter ${dot}`}
-              aria-current={currentChapter === dot}
-            >
-              <span className="sr-only">Chapter {dot}</span>
-            </button>
-          ))}
+                        flex gap-2 md:gap-3 p-2 md:p-3 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
+          {timelinePoints.map((point) => {
+            const Icon = point.icon;
+            const isActive = currentChapter === point.chapter;
+            
+            return (
+              <button
+                key={point.chapter}
+                onClick={() => handleTimelineClick(point.chapter)}
+                className={`
+                  flex flex-col items-center gap-1 px-2 md:px-3 py-1.5 md:py-2 rounded-lg
+                  transition-all duration-300 group
+                  ${isActive 
+                    ? 'bg-white/20 scale-105' 
+                    : 'bg-transparent hover:bg-white/10'
+                  }
+                `}
+                aria-label={`Go to ${point.label} (Year ${point.year})`}
+                aria-current={isActive}
+              >
+                <Icon 
+                  className={`
+                    w-4 h-4 md:w-5 md:h-5 transition-all duration-300
+                    ${isActive 
+                      ? `text-${point.color}-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]` 
+                      : 'text-white/60 group-hover:text-white/80'
+                    }
+                  `}
+                />
+                <div className="flex flex-col items-center">
+                  <span className={`
+                    text-[10px] md:text-xs font-orbitron tracking-wider
+                    ${isActive ? 'text-white font-semibold' : 'text-white/60 group-hover:text-white/80'}
+                  `}>
+                    {point.year}
+                  </span>
+                  <span className={`
+                    text-[8px] md:text-[10px] font-orbitron
+                    ${isActive ? 'text-white/80' : 'text-white/40 group-hover:text-white/60'}
+                  `}>
+                    {point.label}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Skip Button - Immediate display with fade-in */}
