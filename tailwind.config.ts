@@ -66,6 +66,7 @@ export default {
         mono: ['VT323', 'monospace'],
         blacksword: ['Press Start 2P', 'monospace'],
         sans: ['VT323', 'monospace'],
+        orbitron: ['Orbitron', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
