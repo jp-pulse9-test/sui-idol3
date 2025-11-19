@@ -32,20 +32,20 @@
     --popover: 240 12% 12%;
     --popover-foreground: 0 0% 98%;
 
-    /* Vibrant primary - Neon Magenta */
-    --primary: 320 90% 60%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 320 90% 70%;
+    /* Ice Pink - Primary */
+    --primary: 330 54% 83%;
+    --primary-foreground: 240 15% 8%;
+    --primary-glow: 330 54% 90%;
 
-    /* Neon secondary - Electric Cyan */
-    --secondary: 190 95% 55%;
+    /* Neon Green - Secondary */
+    --secondary: 72 66% 49%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 190 95% 65%;
+    --secondary-glow: 72 66% 60%;
 
-    /* Neon accent - Bright Purple */
-    --accent: 280 85% 65%;
+    /* Teal Accent */
+    --accent: 200 50% 65%;
     --accent-foreground: 0 0% 100%;
-    --accent-glow: 280 85% 75%;
+    --accent-glow: 200 50% 75%;
 
     /* Sophisticated neutral palette */
     --muted: 240 10% 18%;
@@ -57,19 +57,19 @@
 
     --border: 240 15% 20%;
     --input: 240 15% 20%;
-    --ring: 320 90% 60%;
+    --ring: 330 54% 83%;
 
     --radius: 0.75rem;
 
-    /* Neon gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(320 90% 60%) 0%, hsl(280 85% 65%) 50%, hsl(190 95% 55%) 100%);
-    --gradient-secondary: linear-gradient(180deg, hsl(190 95% 55%) 0%, hsl(280 85% 65%) 100%);
-    --gradient-accent: linear-gradient(180deg, hsl(280 85% 65%) 0%, hsl(320 90% 60%) 100%);
+    /* Ice Pink & Neon Green gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(330 54% 83%) 0%, hsl(72 66% 49%) 50%, hsl(200 50% 65%) 100%);
+    --gradient-secondary: linear-gradient(180deg, hsl(72 66% 49%) 0%, hsl(330 54% 83%) 100%);
+    --gradient-accent: linear-gradient(180deg, hsl(200 50% 65%) 0%, hsl(330 54% 83%) 100%);
     --gradient-background: linear-gradient(135deg, hsl(240 20% 8%) 0%, hsl(280 20% 10%) 50%, hsl(240 20% 8%) 100%);
     
-    /* Neon shadows */
-    --shadow-neon: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.2);
-    --shadow-neon-lg: 0 0 30px rgba(255, 0, 255, 0.4), 0 0 60px rgba(0, 255, 255, 0.3);
+    /* Pink & Green neon shadows */
+    --shadow-neon: 0 0 20px rgba(235, 190, 204, 0.3), 0 0 40px rgba(176, 209, 42, 0.2);
+    --shadow-neon-lg: 0 0 30px rgba(235, 190, 204, 0.4), 0 0 60px rgba(176, 209, 42, 0.3);
     
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
