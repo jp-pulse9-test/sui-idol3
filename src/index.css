@@ -335,5 +335,40 @@
   .shadow-green-glow {
     box-shadow: var(--shadow-green-glow);
   }
+
+  /* Cinematic Line Reveal Animation */
+  @keyframes line-fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+      filter: blur(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  .animate-line-reveal {
+    animation: line-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+  }
+
+  /* Text Glow Effects */
+  .text-glow-red {
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.6),
+                 0 0 40px rgba(239, 68, 68, 0.3);
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.6),
+                 0 0 40px rgba(34, 211, 238, 0.3);
+  }
+
+  .text-glow-purple {
+    text-shadow: 0 0 20px rgba(192, 132, 252, 0.6),
+                 0 0 40px rgba(192, 132, 252, 0.3);
+  }
 }
 
