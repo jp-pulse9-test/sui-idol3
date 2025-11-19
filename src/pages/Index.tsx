@@ -172,9 +172,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-x-hidden">
-      {/* Fragmented planet background - decorative only */}
-      <FragmentedPlanetGrid side="left" />
-      <FragmentedPlanetGrid side="right" />
+      {/* Fragmented planet background with idol faces */}
+      <FragmentedPlanetGrid side="left" idols={idols} />
+      <FragmentedPlanetGrid side="right" idols={idols} />
       
       {/* Main content */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
