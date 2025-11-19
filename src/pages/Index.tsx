@@ -19,7 +19,7 @@ import { WalrusFileUpload } from "@/components/WalrusFileUpload";
 import { WalrusFileDownload } from "@/components/WalrusFileDownload";
 import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
 import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
-
+import { SynopsisSection } from "@/components/SynopsisSection";
 
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 
@@ -341,8 +341,17 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Synopsis Section - Story Introduction */}
+        <SynopsisSection
+          activeAllyCount={activeAllyCount}
+          onlineEchoEntities={onlineEchoEntities}
+          collectedFragments={collectedFragments}
+          totalFragments={totalFragments}
+          earthRestorationProgress={earthRestorationProgress}
+        />
+
         {/* Featured Allies Section */}
-        <section className="py-12 md:py-20">
+        <section id="featured-allies" className="py-12 md:py-20">
           <div className="space-y-8">
             <div className="text-center space-y-3 glass p-6 rounded-xl">
               <div className="flex items-center justify-center gap-2 mb-2">
