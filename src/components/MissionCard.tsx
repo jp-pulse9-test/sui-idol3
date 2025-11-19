@@ -34,10 +34,10 @@ export const MissionCard = ({
           status === 'available' ? 'bg-primary/20 text-primary border border-primary/40' :
           'bg-muted/20 text-muted-foreground border border-muted/40'
         }`}>
-          {status === 'completed' ? '✓ COMPLETE' :
-           status === 'active' ? '⚡ ACTIVE' :
-           status === 'available' ? '● AVAILABLE' :
-           '🔒 LOCKED'}
+          {status === 'completed' ? '✓ 완료' :
+           status === 'active' ? '⚡ 진행중' :
+           status === 'available' ? '● 가능' :
+           '🔒 잠김'}
         </div>
       </div>
 
@@ -83,11 +83,11 @@ export const MissionCard = ({
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-primary/10">
           <div>
-            <div className="text-xs text-muted-foreground font-mono">DATA RESTORED</div>
+            <div className="text-xs text-muted-foreground font-mono">복구된 데이터</div>
             <div className="text-lg font-orbitron text-secondary">{contribution}%</div>
           </div>
           <div>
-            <div className="text-xs text-muted-foreground font-mono">ACTIVE ALLIES</div>
+            <div className="text-xs text-muted-foreground font-mono">참여 Ally</div>
             <div className="text-lg font-orbitron text-accent">{allyCount.toLocaleString()}</div>
           </div>
         </div>
@@ -99,10 +99,10 @@ export const MissionCard = ({
           className="w-full mt-4"
           disabled={status === 'locked'}
         >
-          {status === 'completed' ? 'View Records' :
-           status === 'active' ? 'Continue Mission' :
-           status === 'available' ? 'Deploy to Mission' :
-           'Unlock Required'}
+          {status === 'completed' ? '기록 보기' :
+           status === 'active' ? '미션 계속' :
+           status === 'available' ? '미션 시작' :
+           '잠금 해제 필요'}
         </Button>
       </CardContent>
       

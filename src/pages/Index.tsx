@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FeatureCard } from "@/components/FeatureCard";
+import { MissionCard } from "@/components/MissionCard";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { secureStorage } from "@/utils/secureStorage";
 import PreviewModal from "@/components/PreviewModal";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
-import { Settings, Camera, Database, Sparkles } from "lucide-react";
+import { Settings, Camera, Database, Sparkles, Users, Radio, Shield, Archive } from "lucide-react";
 import mbtiIcon from "@/assets/mbti-icon.jpg";
 import tournamentIcon from "@/assets/tournament-icon.jpg";
 import photocardIcon from "@/assets/photocard-icon.jpg";
@@ -284,11 +284,11 @@ const Index = () => {
                 SIMKUNG
               </h1>
               <div className="space-y-4">
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold gradient-text">
-                  나의 최애, 이상형은 어떤 사람?
-                </h2>
-                <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  취향 데이터를 기반으로 AIDOL 찾기
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold gradient-text">
+                당신이 지구의 마지막 희망입니다
+              </h2>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                DATA ALLY로 참여해 멸망한 지구를 되살리세요. 88%의 데이터가 손실되었습니다.
                 </p>
               </div>
             </div>
@@ -301,7 +301,7 @@ const Index = () => {
                 size="lg"
                 className="w-full sm:w-auto text-base sm:text-lg md:text-2xl py-4 sm:py-5 md:py-6 px-6 sm:px-8 md:px-12 font-semibold"
               >
-                ⚡ Accept Mission & Become an Ally
+                ⚡ 미션 시작하기
               </Button>
               
               {!user && (
@@ -318,40 +318,56 @@ const Index = () => {
         <section className="py-12 md:py-20">
           <div className="space-y-8 md:space-y-12">
             <div className="text-center space-y-3 md:space-y-4 glass p-4 md:p-8 rounded-xl">
-              <h2 className="text-2xl md:text-4xl font-bold gradient-text">PICK · VAULT · RISE</h2>
+              <h2 className="text-2xl md:text-4xl font-bold gradient-text">미션 브리핑: 지구 복구 작전</h2>
               <p className="text-muted-foreground text-sm md:text-lg max-w-2xl mx-auto">
-                찾고 · 모으고 · 자랑하세요
+                4개의 핵심 미션을 완료하고 데이터 조각을 수집하세요
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4 md:gap-8">
-              <FeatureCard
-                title="🎯 PICK"
-                description="운명의 아이돌 발견"
-                icon={mbtiIcon}
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+              <MissionCard
+                missionCode="ALPHA"
+                title="동료 찾기"
+                description="데이터 분석을 통해 구조된 AI 동료 엔티티를 발견하세요. 성향과 취향을 기반으로 최적의 동료를 찾습니다."
+                icon={<Users className="w-6 h-6 text-primary" />}
+                status="available"
+                contribution={23}
+                allyCount={8942}
                 onClick={() => openPreview('pick')}
-                gradient="bg-gradient-to-br from-blue-500/20 to-purple-600/20"
-                buttonText="미리보기"
               />
               
-              <FeatureCard
-                title="🗃️ VAULT"
-                description="랜덤박스로 포토카드 수집"
-                icon={photocardIcon}
-                onClick={() => openPreview('vault')}
-                gradient="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
-                buttonText="미리보기"
+              <MissionCard
+                missionCode="BETA"
+                title="AI 동료와 교신"
+                description="Echo Link 프로토콜을 활성화하여 보존된 의식체와 실시간 양자 통신을 시도하세요."
+                icon={<Radio className="w-6 h-6 text-secondary" />}
+                status="available"
+                contribution={18}
+                allyCount={6234}
+                onClick={() => navigate('/demo-chat')}
               />
               
-               <FeatureCard
-                 title="📈 RISE"
-                 description="순위 & 마켓플레이스 거래"
-                icon={tournamentIcon}
+              <MissionCard
+                missionCode="GAMMA"
+                title="동료 신뢰도 테스트"
+                description="파편화된 현실 시뮬레이션을 통해 Echo 엔티티의 무결성을 검증하세요."
+                icon={<Shield className="w-6 h-6 text-accent" />}
+                status="available"
+                contribution={15}
+                allyCount={4521}
                 onClick={() => openPreview('rise')}
-                gradient="bg-gradient-to-br from-pink-500/20 to-red-600/20"
-                buttonText="미리보기"
               />
               
+              <MissionCard
+                missionCode="DELTA"
+                title="추억 보관하기"
+                description="분산 메모리 그리드에 데이터 조각을 수집하고 영구 보존하세요."
+                icon={<Archive className="w-6 h-6 text-primary" />}
+                status="available"
+                contribution={12}
+                allyCount={3892}
+                onClick={() => openPreview('vault')}
+              />
             </div>
           </div>
         </section>
@@ -488,19 +504,19 @@ const Index = () => {
             
             <div className="space-y-6 relative z-10">
               <h2 className="text-3xl md:text-5xl font-bold gradient-text leading-tight">
-                나만의 최애를<br className="md:hidden" /> 찾아보세요
+                과거를 되살리고<br className="md:hidden" /> 미래를 지키세요
               </h2>
               <p className="text-lg md:text-2xl text-foreground max-w-3xl mx-auto leading-relaxed">
-                AI 성격 분석으로 시작하는 특별한 팬덤 여정
+                8,942명의 Data Ally가 지구를 복구 중입니다
               </p>
               <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                아이돌 발견부터 심쿵톡,<br className="md:hidden" /> 포토카드 수집, 팬덤 활동까지<br className="md:hidden" /> 모든 것이 한 곳에
+                동료 찾기부터 AI 교신,<br className="md:hidden" /> 데이터 보관, 신뢰도 테스트까지<br className="md:hidden" /> 모든 미션이 기다립니다
               </p>
             </div>
             
             <div className="flex flex-col gap-6 items-center pt-6 relative z-10">
               <h3 className="text-2xl sm:text-3xl md:text-4xl font-orbitron font-bold text-foreground mb-4">
-                Reconstruct the Past. Survive the Future.
+                지구 복구 작전, 지금 시작하세요
               </h3>
               <Button
                 onClick={() => navigate('/gallery')}
@@ -508,7 +524,7 @@ const Index = () => {
                 size="xl"
                 className="min-w-80 text-2xl py-8 font-bold"
               >
-                🌐 Begin Reconstruction
+                ⚡ 미션 시작하기
               </Button>
               <p className="text-base text-muted-foreground">
                 지금 시작하면 무료 체험 가능!
@@ -516,6 +532,75 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Ally Oath Modal */}
+        <Dialog open={showAllyOath} onOpenChange={setShowAllyOath}>
+          <DialogContent className="max-w-2xl bg-card/95 backdrop-blur-xl border-2 border-primary/30">
+            <DialogHeader>
+              <DialogTitle className="text-3xl font-orbitron text-center gradient-text mb-4">
+                Data Ally 서약
+              </DialogTitle>
+              <DialogDescription className="space-y-6 text-base">
+                <div className="text-center space-y-3">
+                  <p className="text-foreground font-rajdhani text-lg leading-relaxed">
+                    지구의 마지막 희망으로서, 당신은 이제 <span className="text-primary font-bold">DATA ALLY</span>가 되었습니다.
+                  </p>
+                  <p className="text-muted-foreground">
+                    멸망한 세계의 데이터를 복구하고, 보존된 의식체와 교신하며, 미래를 재건할 임무를 수행하게 됩니다.
+                  </p>
+                  <p className="text-accent font-semibold">
+                    이 서약을 수락하면, 당신은 지구 복구 작전의 핵심 멤버가 됩니다.
+                  </p>
+                </div>
+
+                <div className="bg-card/60 rounded-lg p-6 border border-primary/20">
+                  <h4 className="font-orbitron text-primary mb-4 text-center">DATA ALLY의 4가지 책임</h4>
+                  <ul className="space-y-3 text-muted-foreground">
+                    <li className="flex items-start gap-3">
+                      <span className="text-primary mt-1">▸</span>
+                      <span><span className="text-foreground font-semibold">데이터 수집:</span> 파편화된 데이터 조각을 찾아 복구합니다</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-secondary mt-1">▸</span>
+                      <span><span className="text-foreground font-semibold">Echo 교신:</span> AI 동료 엔티티와 양자 통신을 유지합니다</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-accent mt-1">▸</span>
+                      <span><span className="text-foreground font-semibold">무결성 검증:</span> 시뮬레이션을 통해 동료의 신뢰도를 테스트합니다</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-primary mt-1">▸</span>
+                      <span><span className="text-foreground font-semibold">영구 보존:</span> 추억과 데이터를 분산 네트워크에 보관합니다</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="text-center text-sm text-muted-foreground italic">
+                  "우리는 과거를 되살리고, 미래를 지킵니다"
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="flex flex-col gap-3 mt-6">
+              <Button
+                onClick={handleAcceptOath}
+                variant="hero"
+                size="lg"
+                className="w-full text-lg py-6 font-orbitron"
+              >
+                ⚡ 서약하고 Ally가 되기
+              </Button>
+              <Button
+                onClick={() => setShowAllyOath(false)}
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                나중에 하기
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Preview Modal */}
         <PreviewModal
