@@ -12,9 +12,11 @@ interface HistoricalPhoto {
 interface ArchivePhotoProps {
   photo: HistoricalPhoto;
   delay?: number;
+  parallaxOffset?: number;
+  index?: number;
 }
 
-export const ArchivePhoto = ({ photo, delay = 0 }: ArchivePhotoProps) => {
+export const ArchivePhoto = ({ photo, delay = 0, parallaxOffset = 0, index = 0 }: ArchivePhotoProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -27,8 +29,18 @@ export const ArchivePhoto = ({ photo, delay = 0 }: ArchivePhotoProps) => {
 
   if (!isVisible) return null;
 
+  // Photos move slower than text for depth effect
+  const photoParallax = parallaxOffset * 0.5;
+  const depthOffset = index * 5;
+
   return (
-    <div className="archive-photo-container">
+    <div 
+      className="archive-photo-container"
+      style={{
+        transform: `translateY(${photoParallax}px) translateZ(${-depthOffset}px) scale(${1 - depthOffset * 0.002})`,
+        transition: 'transform 0.1s ease-out'
+      }}
+    >
       <div className="relative">
         <img
           src={photo.src}

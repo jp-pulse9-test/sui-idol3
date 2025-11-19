@@ -41,6 +41,7 @@ export const CinematicSynopsis = ({
   const [currentChapter, setCurrentChapter] = useState(1);
   const [showSkip, setShowSkip] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   const chapters: Chapter[] = [
     {
@@ -250,6 +251,16 @@ export const CinematicSynopsis = ({
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
+  // Parallax scroll tracking
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleSkip = () => {
     const featuredSection = document.getElementById('featured-allies');
     if (featuredSection) {
@@ -274,12 +285,13 @@ export const CinematicSynopsis = ({
 
   return (
     <section 
-      className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16"
+      id="synopsis"
+      className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16 perspective-container"
       role="region"
       aria-label="Story Synopsis"
       aria-live="polite"
     >
-      <div className="w-full max-w-[1920px] aspect-video relative">
+      <div className="w-full max-w-[1920px] aspect-video relative parallax-scene">
         {/* Progress Bar */}
         <div className="absolute top-5 left-1/2 -translate-x-1/2 w-2/5 z-10">
           <div className="h-0.5 bg-white/20 rounded-full overflow-hidden">
@@ -308,6 +320,8 @@ export const CinematicSynopsis = ({
                     key={index}
                     photo={line.photo}
                     delay={index * 600}
+                    parallaxOffset={scrollY * 0.15}
+                    index={index}
                   />
                 );
               }
@@ -357,8 +371,12 @@ export const CinematicSynopsis = ({
                     ${line.emphasis ? 'font-semibold text-xl md:text-2xl lg:text-3xl' : 'font-normal'}
                     animate-line-reveal
                     leading-normal tracking-wide
+                    parallax-text
                   `}
-                  style={{ animationDelay: `${index * 0.6}s` }}
+                  style={{ 
+                    animationDelay: `${index * 0.6}s`,
+                    transform: `translateY(${scrollY * 0.05}px) translateZ(${index * 2}px)`
+                  }}
                 >
                   {line.text}
                 </p>

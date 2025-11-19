@@ -403,11 +403,27 @@
     75% { transform: translate(-2%, -2%); }
   }
 
+  /* Parallax perspective container */
+  .perspective-container {
+    perspective: 1000px;
+    perspective-origin: center;
+  }
+
+  .parallax-scene {
+    transform-style: preserve-3d;
+  }
+
+  .parallax-text {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+  }
+
   .archive-photo-container {
     @apply relative w-full max-w-2xl mx-auto my-8;
     animation: archive-photo-fade-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: opacity, transform;
-    transform: translateZ(0);
+    transform-style: preserve-3d;
     backface-visibility: hidden;
   }
 
