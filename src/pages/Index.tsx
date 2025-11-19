@@ -25,6 +25,31 @@ import { ConstellationGrid } from "@/components/ConstellationGrid";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [showAllyOath, setShowAllyOath] = useState(false);
+
+  // Ally Status Data
+  const [collectedFragments] = useState(1247);
+  const [earthRestorationProgress] = useState(12.4);
+  const [activeAllyCount] = useState(8942);
+  const [onlineEchoEntities] = useState(143);
+  const totalFragments = 487634;
+  const estimatedDays = Math.ceil((100 - earthRestorationProgress) * 10);
+
+  useEffect(() => {
+    // Check if user has seen the oath
+    const hasSeenOath = localStorage.getItem('ally_oath_accepted');
+    if (!hasSeenOath) {
+      const timer = setTimeout(() => {
+        setShowAllyOath(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleAcceptOath = () => {
+    localStorage.setItem('ally_oath_accepted', 'true');
+    setShowAllyOath(false);
+  };
   const { user, disconnectWallet, loading } = useAuth();
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string>("");
@@ -269,14 +294,14 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col gap-6 items-center relative z-10">
-              {/* 1순위: 심쿵톡 (데모 채팅) */}
+              {/* Primary CTA */}
               <Button
                 onClick={() => navigate('/demo-chat')}
                 variant="hero"
                 size="lg"
                 className="w-full sm:w-auto text-base sm:text-lg md:text-2xl py-4 sm:py-5 md:py-6 px-6 sm:px-8 md:px-12 font-semibold"
               >
-                💬 심쿵톡 시작하기
+                ⚡ Accept Mission & Become an Ally
               </Button>
               
               {!user && (
@@ -474,13 +499,16 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col gap-6 items-center pt-6 relative z-10">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-orbitron font-bold text-foreground mb-4">
+                Reconstruct the Past. Survive the Future.
+              </h3>
               <Button
                 onClick={() => navigate('/gallery')}
                 variant="hero"
                 size="xl"
                 className="min-w-80 text-2xl py-8 font-bold"
               >
-                💬 내 최애 탐색하기
+                🌐 Begin Reconstruction
               </Button>
               <p className="text-base text-muted-foreground">
                 지금 시작하면 무료 체험 가능!
