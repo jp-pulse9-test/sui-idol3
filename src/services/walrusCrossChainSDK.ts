@@ -285,7 +285,7 @@ class WalrusCrossChainSDK {
 
       // Initialize Walrus client
       const walrusClient = new WalrusClient({
-        suiClient,
+        suiClient: suiClient as any,
         network: "testnet",
       });
 
