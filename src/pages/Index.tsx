@@ -21,7 +21,7 @@ import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
 import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
 
 
-import { ConstellationGrid } from "@/components/ConstellationGrid";
+import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -144,9 +144,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-x-hidden">
-      {/* Background constellation grids - decorative only */}
-      <ConstellationGrid side="left" />
-      <ConstellationGrid side="right" />
+      {/* Fragmented planet background - decorative only */}
+      <FragmentedPlanetGrid side="left" />
+      <FragmentedPlanetGrid side="right" />
       
       {/* Main content */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
