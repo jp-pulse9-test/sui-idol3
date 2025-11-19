@@ -25,14 +25,14 @@ export const AllyStatusBar = ({
             <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
           <div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground font-mono">ALLY RANK</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground font-mono">앨리 등급</div>
             <div className="text-sm sm:text-lg font-orbitron font-bold text-primary">{allyRank}</div>
           </div>
         </div>
 
         {/* 2. Data Fragments Collected */}
         <div>
-          <div className="text-[10px] sm:text-xs text-muted-foreground font-mono mb-1">FRAGMENTS</div>
+          <div className="text-[10px] sm:text-xs text-muted-foreground font-mono mb-1">수집 데이터</div>
           <div className="flex items-center gap-2">
             <HardDrive className="w-3 h-3 sm:w-4 sm:h-4 text-secondary" />
             <span className="text-base sm:text-xl font-orbitron font-bold text-foreground">
@@ -46,7 +46,7 @@ export const AllyStatusBar = ({
 
         {/* 3. Earth Restoration Progress */}
         <div>
-          <div className="text-[10px] sm:text-xs text-muted-foreground font-mono mb-1">EARTH STATUS</div>
+          <div className="text-[10px] sm:text-xs text-muted-foreground font-mono mb-1">지구 복구율</div>
           <div className="space-y-1">
             <div className="h-2 bg-muted rounded-full overflow-hidden">
               <div 
@@ -54,13 +54,13 @@ export const AllyStatusBar = ({
                 style={{ width: `${restorationProgress}%` }}
               />
             </div>
-            <div className="text-[10px] sm:text-xs font-mono text-secondary">{restorationProgress}% RESTORED</div>
+            <div className="text-[10px] sm:text-xs font-mono text-secondary">{restorationProgress}% 복구 완료</div>
           </div>
         </div>
 
         {/* 4. Active Mission */}
         <div>
-          <div className="text-[10px] sm:text-xs text-muted-foreground font-mono mb-1">ACTIVE MISSION</div>
+          <div className="text-[10px] sm:text-xs text-muted-foreground font-mono mb-1">진행 미션</div>
           <div className="flex items-center gap-2">
             <Radio className="w-3 h-3 sm:w-4 sm:h-4 text-accent animate-pulse" />
             <span className="text-xs sm:text-sm font-rajdhani text-foreground truncate">{activeMission}</span>
