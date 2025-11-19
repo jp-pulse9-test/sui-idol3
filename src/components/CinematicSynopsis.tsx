@@ -44,6 +44,18 @@ export const CinematicSynopsis = ({
   const [showSkip, setShowSkip] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const chapters: Chapter[] = [
     {
@@ -274,9 +286,12 @@ export const CinematicSynopsis = ({
   }, []);
 
   const handleSkip = () => {
-    const featuredSection = document.getElementById('featured-allies');
-    if (featuredSection) {
-      featuredSection.scrollIntoView({ behavior: 'smooth' });
+    const gatewaySection = document.querySelector('.gateway-section');
+    if (gatewaySection) {
+      gatewaySection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Fallback: scroll to next section
+      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
     }
   };
 
@@ -298,14 +313,14 @@ export const CinematicSynopsis = ({
   return (
     <section 
       id="synopsis"
-      className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16 perspective-container"
+      className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16 md:py-20 perspective-container"
       role="region"
       aria-label="Story Synopsis"
       aria-live="polite"
     >
-      <div className="w-full max-w-[1920px] aspect-video relative parallax-scene">
+      <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container">
         {/* Progress Bar */}
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-2/5 z-10">
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-3/5 md:w-2/5 z-10">
           <div className="h-0.5 bg-white/20 rounded-full overflow-hidden">
             <div
               className="h-full bg-white transition-all duration-500 ease-out"
@@ -318,8 +333,8 @@ export const CinematicSynopsis = ({
         </div>
 
         {/* Main Content */}
-        <div className="absolute inset-0 flex items-center justify-center px-8 md:px-16">
-          <div className="text-center space-y-2 max-w-5xl w-full font-orbitron">
+        <div className="w-full flex items-center justify-center px-4 md:px-8 lg:px-16 py-12 md:py-20">
+          <div className="text-center space-y-3 md:space-y-2 max-w-5xl w-full font-orbitron">
             {currentChapterData.lines.map((line, index) => {
               if (line.spacing) {
                 return <div key={index} className="h-2" />;
@@ -332,7 +347,7 @@ export const CinematicSynopsis = ({
                     key={index}
                     photo={line.photo}
                     delay={index * 600}
-                    parallaxOffset={scrollY * 0.15}
+                    parallaxOffset={isMobile ? 0 : scrollY * 0.15}
                     index={index}
                   />
                 );
@@ -381,14 +396,14 @@ export const CinematicSynopsis = ({
                   className={`
                     text-sm md:text-base lg:text-lg
                     ${getColorClass(line.color, line.emphasis)}
-                    ${line.emphasis ? 'font-semibold text-xl md:text-2xl lg:text-3xl' : 'font-normal'}
+                    ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
                     animate-line-reveal
-                    leading-normal tracking-wide
+                    leading-relaxed md:leading-normal tracking-wide
                     parallax-text
                   `}
                   style={{ 
                     animationDelay: `${index * 0.6}s`,
-                    transform: `translateY(${scrollY * 0.05}px) translateZ(${index * 2}px)`
+                    transform: isMobile ? 'none' : `translateY(${scrollY * 0.05}px) translateZ(${index * 2}px)`
                   }}
                 />
               );
@@ -397,7 +412,7 @@ export const CinematicSynopsis = ({
         </div>
 
         {/* Phase Indicator Dots */}
-        <div className="absolute bottom-6 left-6 flex gap-2 z-10">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 flex gap-2 z-10">
           {[1, 2, 3, 4].map((dot) => (
             <button
               key={dot}
@@ -405,8 +420,10 @@ export const CinematicSynopsis = ({
               className={`
                 w-2 h-2 rounded-full transition-all duration-300
                 ${currentChapter === dot ? 'bg-white w-8' : 'bg-white/30'}
+                hover:bg-white/60 cursor-pointer
               `}
               aria-label={`Go to chapter ${dot}`}
+              aria-current={currentChapter === dot}
             />
           ))}
         </div>
@@ -415,11 +432,15 @@ export const CinematicSynopsis = ({
         {showSkip && (
           <button
             onClick={handleSkip}
-            className="absolute bottom-6 right-6 text-white/60 hover:text-white transition-all duration-300 flex items-center gap-2 group z-10"
+            className="absolute bottom-6 right-6 z-10 px-4 py-2 md:px-6 md:py-3
+                       bg-white/10 hover:bg-white/20 backdrop-blur-sm
+                       border border-white/20 rounded-lg
+                       text-white text-xs md:text-sm font-orbitron tracking-wider
+                       transition-all duration-300 hover:scale-105
+                       flex items-center gap-2"
+            aria-label="Skip synopsis"
           >
-            <span className="text-sm tracking-wide font-light group-hover:underline">
-              Skip Intro
-            </span>
+            <span>SKIP</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         )}
