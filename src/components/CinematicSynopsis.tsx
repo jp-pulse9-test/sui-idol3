@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { ArchivePhoto } from './synopsis/ArchivePhoto';
+import { ParallaxText } from './synopsis/ParallaxText';
 
 interface CinematicSynopsisProps {
   activeAllyCount: number;
@@ -363,8 +364,9 @@ export const CinematicSynopsis = ({
               }
 
               return (
-                <p
+                <ParallaxText
                   key={index}
+                  text={line.text}
                   className={`
                     text-sm md:text-base lg:text-lg
                     ${getColorClass(line.color, line.emphasis)}
@@ -377,9 +379,7 @@ export const CinematicSynopsis = ({
                     animationDelay: `${index * 0.6}s`,
                     transform: `translateY(${scrollY * 0.05}px) translateZ(${index * 2}px)`
                   }}
-                >
-                  {line.text}
-                </p>
+                />
               );
             })}
           </div>
