@@ -370,5 +370,108 @@
     text-shadow: 0 0 20px rgba(192, 132, 252, 0.6),
                  0 0 40px rgba(192, 132, 252, 0.3);
   }
+
+  /* Archive Photo Styles - Museum Effect */
+  @keyframes archive-photo-fade-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+      filter: grayscale(100%) blur(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      filter: grayscale(100%) blur(0px);
+    }
+  }
+
+  @keyframes archive-photo-fade-out {
+    0% {
+      opacity: 1;
+      filter: grayscale(100%) blur(0px);
+    }
+    100% {
+      opacity: 0;
+      filter: grayscale(100%) blur(8px);
+    }
+  }
+
+  @keyframes grain-animation {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-2%, 2%); }
+    50% { transform: translate(2%, -2%); }
+    75% { transform: translate(-2%, -2%); }
+  }
+
+  .archive-photo-container {
+    @apply relative w-full max-w-2xl mx-auto my-8;
+    animation: archive-photo-fade-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .archive-photo {
+    @apply w-full h-auto rounded-sm;
+    filter: grayscale(100%) contrast(1.1) brightness(0.9) sepia(15%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.3);
+    box-shadow: 
+      inset 0 0 100px rgba(0, 0, 0, 0.5),
+      inset 0 0 50px rgba(0, 0, 0, 0.3),
+      0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .photo-grain {
+    @apply absolute inset-0 pointer-events-none rounded-sm;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.03) 0px,
+        transparent 1px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 3px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.03) 0px,
+        transparent 1px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 3px
+      );
+    opacity: 0.15;
+    mix-blend-mode: overlay;
+    animation: grain-animation 8s steps(10) infinite;
+  }
+
+  .photo-frame {
+    @apply absolute inset-0 pointer-events-none rounded-sm;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.8);
+  }
+
+  .archive-metadata {
+    @apply flex justify-between items-center mt-2 px-2;
+    @apply text-xs font-mono text-white/40;
+    letter-spacing: 0.1em;
+  }
+
+  .archive-caption {
+    @apply text-center mt-1 px-4;
+    @apply text-xs italic text-white/50;
+    letter-spacing: 0.05em;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .archive-photo-container {
+      @apply max-w-sm my-6;
+    }
+    
+    .archive-metadata {
+      @apply flex-col gap-1;
+    }
+  }
 }
+
 
