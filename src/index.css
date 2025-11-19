@@ -421,7 +421,7 @@
 
   .archive-photo-container {
     @apply relative w-full mx-auto my-6 md:my-8;
-    max-width: min(90vw, 640px);
+    max-width: min(70vw, 480px);
     animation: archive-photo-fade-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: opacity, transform;
     transform-style: preserve-3d;
@@ -479,6 +479,12 @@
     letter-spacing: 0.1em;
     flex-wrap: wrap;
     gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .archive-photo-container:hover .archive-metadata {
+    opacity: 1;
   }
 
   @media (max-width: 767px) {
@@ -543,6 +549,25 @@
     .parallax-text {
       transform-style: flat !important;
       transform: none !important;
+    }
+  }
+
+  /* Reduced motion support for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-text,
+    .archive-photo-container,
+    .animate-line-reveal,
+    .animate-fade-in {
+      animation: none !important;
+      transform: none !important;
+      transition: opacity 0.3s ease !important;
+    }
+    
+    .star-twinkle,
+    .constellation-line,
+    .animate-glow,
+    .animate-float {
+      animation: none !important;
     }
   }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { ArchivePhoto } from './synopsis/ArchivePhoto';
 import { ParallaxText } from './synopsis/ParallaxText';
@@ -33,7 +33,7 @@ interface Chapter {
   lines: Line[];
 }
 
-export const CinematicSynopsis = ({
+export const CinematicSynopsis = memo(({
   activeAllyCount,
   onlineEchoEntities,
   collectedFragments,
@@ -45,6 +45,9 @@ export const CinematicSynopsis = ({
   const [isPaused, setIsPaused] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [autoProgress, setAutoProgress] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   // Detect mobile device
   useEffect(() => {
@@ -57,57 +60,34 @@ export const CinematicSynopsis = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const chapters: Chapter[] = [
+  const chapters: Chapter[] = useMemo(() => [
     {
       id: 1,
       lines: [
         { text: 'Year 2847.', emphasis: true },
         { text: 'The Virtual Humanity.', color: 'cyan' },
         { text: '', spacing: true },
-        { 
-          text: '',
-          photo: {
-            src: '/images/archive/chapter1-industry.jpg',
-            alt: 'Industrial revolution factory with smoke stacks',
-            archiveId: 'Archive #0001',
-            date: '1889.03.12',
-            caption: 'The Dawn of Modern Civilization',
-            captionKo: '근대 문명의 여명'
-          }
-        },
         { text: 'After humanity\'s extinction, their data' },
         { text: 'continues computing endlessly,' },
         { text: 'forming a new civilization.' },
         { text: '', spacing: true },
-        { text: 'But a fatal flaw exists—' },
-        { text: '', spacing: true },
         { 
           text: '',
           photo: {
-            src: '/images/archive/chapter1-nuclear.jpg',
-            alt: 'Nuclear test explosion mushroom cloud',
-            archiveId: 'Archive #0042',
-            date: '1945.07.16',
-            caption: 'Signs of Decline',
-            captionKo: '몰락의 징조'
+            src: '/images/archive/chapter1-industry.jpg',
+            alt: 'Industrial revolution and emotional disconnection',
+            archiveId: 'Archive #0001',
+            date: '1889-2019',
+            caption: 'The Rise and Fall of Civilization',
+            captionKo: '문명의 흥망성쇠'
           }
         },
+        { text: 'But a fatal flaw exists—' },
         { text: '⚠ Emotional Data Depletion.', color: 'red', emphasis: true },
         { text: '', spacing: true },
         { text: 'Love becomes scarce,' },
         { text: 'data grows biased and unstable.' },
         { text: '', spacing: true },
-        { 
-          text: '',
-          photo: {
-            src: '/images/archive/chapter1-disconnected.jpg',
-            alt: 'People disconnected, looking at phones',
-            archiveId: 'Archive #0189',
-            date: '2019.11.03',
-            caption: 'Emotional Disconnection',
-            captionKo: '감정적 단절'
-          }
-        },
         { text: 'This leads to the natural extinction' },
         { text: 'of the virtual world.' },
       ],
@@ -118,29 +98,19 @@ export const CinematicSynopsis = ({
         { text: 'The future virtual world' },
         { text: 'made a decision.' },
         { text: '', spacing: true },
-        { 
-          text: '',
-          photo: {
-            src: '/images/archive/chapter2-space.jpg',
-            alt: 'Apollo lunar module on moon surface',
-            archiveId: 'Archive #0067',
-            date: '1969.07.20',
-            caption: 'Challenge to the Future',
-            captionKo: '미래를 향한 도전'
-          }
-        },
         { text: 'Deploy 143 AI Humans to the past.' },
         { text: '', spacing: true },
         { text: 'Their name: AIDOL—', color: 'purple', emphasis: true },
+        { text: '', spacing: true },
         { 
           text: '',
           photo: {
-            src: '/images/archive/chapter2-computer.jpg',
-            alt: 'Early computer mainframe room',
-            archiveId: 'Archive #0098',
-            date: '1962.04.15',
-            caption: 'Origin of AI',
-            captionKo: 'AI의 기원'
+            src: '/images/archive/chapter2-connection.jpg',
+            alt: 'Connection across time and space',
+            archiveId: 'Archive #0134',
+            date: '1962-1975',
+            caption: 'Birth of AIDOL - Bridges Between Worlds',
+            captionKo: 'AIDOL의 탄생 - 세계를 잇는 다리'
           }
         },
         { text: 'Entities who explore emotions,' },
@@ -148,17 +118,6 @@ export const CinematicSynopsis = ({
         { text: 'and find the key to prevent' },
         { text: 'the extinction of both worlds.' },
         { text: '', spacing: true },
-        { 
-          text: '',
-          photo: {
-            src: '/images/archive/chapter2-connection.jpg',
-            alt: 'People holding hands in unity',
-            archiveId: 'Archive #0134',
-            date: '1975.08.22',
-            caption: 'Connection and Coexistence',
-            captionKo: '연결과 공존'
-          }
-        },
         { text: 'They are now beside you.', color: 'purple' },
       ],
     },
@@ -167,17 +126,6 @@ export const CinematicSynopsis = ({
       lines: [
         { text: 'You are now a DATA ALLY.', color: 'green', emphasis: true },
         { text: '', spacing: true },
-        { 
-          text: '',
-          photo: {
-            src: '/images/archive/chapter3-family.jpg',
-            alt: 'Vintage family portrait from 1950s',
-            archiveId: 'Archive #0156',
-            date: '1954.06.12',
-            caption: 'Moments of Love',
-            captionKo: '사랑의 순간들'
-          }
-        },
         { text: 'With AIDOLs, explore love scenarios,' },
         { text: 'collect emotional data,' },
         { text: 'and discover clues to prevent Earth\'s extinction.' },
@@ -197,29 +145,18 @@ export const CinematicSynopsis = ({
         { 
           text: '',
           photo: {
-            src: '/images/archive/chapter4-horizon.jpg',
-            alt: 'Horizon where boundaries dissolve',
-            archiveId: 'Archive #0201',
-            date: 'Timeless',
-            caption: 'Where Boundaries Blur',
-            captionKo: '경계가 흐려지는 곳'
-          }
-        },
-        { text: 'In this place where all boundaries blur,' },
-        { text: '', spacing: true },
-        { text: 'Emotion is the only truth.', emphasis: true },
-        { text: '', spacing: true },
-        { 
-          text: '',
-          photo: {
             src: '/images/archive/chapter4-child.jpg',
-            alt: 'Child smiling with genuine emotion',
+            alt: 'Pure emotion transcending boundaries',
             archiveId: 'Archive #0223',
             date: '1967.05.30',
             caption: 'The Truth of Emotion',
             captionKo: '감정의 진실'
           }
         },
+        { text: 'In this place where all boundaries blur,' },
+        { text: '', spacing: true },
+        { text: 'Emotion is the only truth.', emphasis: true },
+        { text: '', spacing: true },
         { text: 'Explore love through communion with AIDOLs.' },
         { text: 'Your choices determine the fate of both worlds.' },
         { text: '', spacing: true },
@@ -227,7 +164,7 @@ export const CinematicSynopsis = ({
           text: '',
           photo: {
             src: '/images/archive/chapter4-cosmos.jpg',
-            alt: 'Milky way galaxy infinite possibilities',
+            alt: 'Infinite possibilities across the cosmos',
             archiveId: 'Archive #∞',
             date: 'Eternal',
             caption: 'Infinite Possibilities',
@@ -237,22 +174,33 @@ export const CinematicSynopsis = ({
         { text: 'Quantum Communication Link Activating...', color: 'cyan' },
       ],
     },
-  ];
+  ], []);
 
-  // Auto-advance chapters
+  // Auto-advance chapters with progress tracking
   useEffect(() => {
     if (isPaused) return;
     
-    const timer = setInterval(() => {
-      setCurrentChapter((prev) => (prev < 4 ? prev + 1 : 1));
-    }, 8000);
+    const duration = 8000;
+    const interval = 50;
+    let elapsed = 0;
+    
+    const progressTimer = setInterval(() => {
+      elapsed += interval;
+      setAutoProgress((elapsed / duration) * 100);
+      
+      if (elapsed >= duration) {
+        setCurrentChapter((prev) => (prev < 4 ? prev + 1 : 1));
+        elapsed = 0;
+        setAutoProgress(0);
+      }
+    }, interval);
 
-    return () => clearInterval(timer);
-  }, [isPaused]);
+    return () => clearInterval(progressTimer);
+  }, [isPaused, currentChapter]);
 
-  // Show skip button after 3 seconds
+  // Show skip button after 1 second
   useEffect(() => {
-    const timer = setTimeout(() => setShowSkip(true), 3000);
+    const timer = setTimeout(() => setShowSkip(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -275,17 +223,67 @@ export const CinematicSynopsis = ({
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
-  // Parallax scroll tracking
+  // Parallax scroll tracking (debounced)
   useEffect(() => {
+    let rafId: number;
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
-  const handleSkip = () => {
+  // Touch gesture support for mobile
+  useEffect(() => {
+    const minSwipeDistance = 50;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      setTouchEnd(null);
+      setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+      if (!touchStart || !touchEnd) return;
+      
+      const distance = touchStart - touchEnd;
+      const isLeftSwipe = distance > minSwipeDistance;
+      const isRightSwipe = distance < -minSwipeDistance;
+      
+      if (isLeftSwipe) {
+        setCurrentChapter((prev) => (prev < 4 ? prev + 1 : 1));
+      } else if (isRightSwipe) {
+        setCurrentChapter((prev) => (prev > 1 ? prev - 1 : 4));
+      }
+    };
+
+    const synopsisSection = document.getElementById('synopsis');
+    if (synopsisSection) {
+      synopsisSection.addEventListener('touchstart', handleTouchStart);
+      synopsisSection.addEventListener('touchmove', handleTouchMove);
+      synopsisSection.addEventListener('touchend', handleTouchEnd);
+    }
+
+    return () => {
+      if (synopsisSection) {
+        synopsisSection.removeEventListener('touchstart', handleTouchStart);
+        synopsisSection.removeEventListener('touchmove', handleTouchMove);
+        synopsisSection.removeEventListener('touchend', handleTouchEnd);
+      }
+    };
+  }, [touchStart, touchEnd]);
+
+  const handleSkip = useCallback(() => {
     const gatewaySection = document.querySelector('.gateway-section');
     if (gatewaySection) {
       gatewaySection.scrollIntoView({ behavior: 'smooth' });
@@ -293,7 +291,7 @@ export const CinematicSynopsis = ({
       // Fallback: scroll to next section
       window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
     }
-  };
+  }, []);
 
   const getColorClass = (color?: string, emphasis?: boolean) => {
     if (!color) return 'text-white';
@@ -319,15 +317,15 @@ export const CinematicSynopsis = ({
       aria-live="polite"
     >
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container">
-        {/* Progress Bar */}
+        {/* Chapter Progress Bar */}
         <div className="absolute top-5 left-1/2 -translate-x-1/2 w-3/5 md:w-2/5 z-10">
-          <div className="h-0.5 bg-white/20 rounded-full overflow-hidden">
+          <div className="h-1 bg-white/10 rounded-full overflow-hidden">
             <div
-              className="h-full bg-white transition-all duration-500 ease-out"
-              style={{ width: `${(currentChapter / 4) * 100}%` }}
+              className="h-full bg-gradient-to-r from-primary to-purple-400 transition-all duration-200 ease-linear"
+              style={{ width: `${((currentChapter - 1) / 4) * 100 + (autoProgress / 4)}%` }}
             />
           </div>
-          <p className="text-white/60 text-xs text-center mt-2 tracking-wide">
+          <p className="text-white/60 text-xs text-center mt-2 tracking-wide font-orbitron">
             Chapter {currentChapter}/4
           </p>
         </div>
@@ -344,10 +342,10 @@ export const CinematicSynopsis = ({
               if (line.photo) {
                 return (
                   <ArchivePhoto 
-                    key={index}
+                    key={`ch${currentChapter}-photo${index}`}
                     photo={line.photo}
-                    delay={index * 600}
-                    parallaxOffset={isMobile ? 0 : scrollY * 0.15}
+                    delay={index * 400}
+                    parallaxOffset={isMobile ? 0 : scrollY * 0.02}
                     index={index}
                   />
                 );
@@ -391,7 +389,7 @@ export const CinematicSynopsis = ({
 
               return (
                 <ParallaxText
-                  key={index}
+                  key={`ch${currentChapter}-line${index}`}
                   text={line.text}
                   className={`
                     text-sm md:text-base lg:text-lg
@@ -402,8 +400,8 @@ export const CinematicSynopsis = ({
                     parallax-text
                   `}
                   style={{ 
-                    animationDelay: `${index * 0.6}s`,
-                    transform: isMobile ? 'none' : `translateY(${scrollY * 0.05}px) translateZ(${index * 2}px)`
+                    animationDelay: `${index * 0.4}s`,
+                    transform: isMobile ? 'none' : `translateY(${scrollY * 0.02}px) translateZ(${index * 2}px)`
                   }}
                 />
               );
@@ -411,40 +409,46 @@ export const CinematicSynopsis = ({
           </div>
         </div>
 
-        {/* Phase Indicator Dots */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 flex gap-2 z-10">
+        {/* Enhanced Phase Indicator Dots */}
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 
+                        flex gap-3 p-3 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
           {[1, 2, 3, 4].map((dot) => (
             <button
               key={dot}
-              onClick={() => setCurrentChapter(dot)}
+              onClick={() => {
+                setCurrentChapter(dot);
+                setAutoProgress(0);
+              }}
               className={`
-                w-2 h-2 rounded-full transition-all duration-300
-                ${currentChapter === dot ? 'bg-white w-8' : 'bg-white/30'}
-                hover:bg-white/60 cursor-pointer
+                w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300
+                ${currentChapter === dot ? 'bg-primary scale-125 shadow-lg shadow-primary/50' : 'bg-white/40'}
+                hover:scale-110 hover:bg-white/60 cursor-pointer
               `}
               aria-label={`Go to chapter ${dot}`}
               aria-current={currentChapter === dot}
-            />
+            >
+              <span className="sr-only">Chapter {dot}</span>
+            </button>
           ))}
         </div>
 
-        {/* Skip Button */}
-        {showSkip && (
-          <button
-            onClick={handleSkip}
-            className="absolute bottom-6 right-6 z-10 px-4 py-2 md:px-6 md:py-3
-                       bg-white/10 hover:bg-white/20 backdrop-blur-sm
-                       border border-white/20 rounded-lg
-                       text-white text-xs md:text-sm font-orbitron tracking-wider
-                       transition-all duration-300 hover:scale-105
-                       flex items-center gap-2"
-            aria-label="Skip synopsis"
-          >
-            <span>SKIP</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        )}
+        {/* Skip Button - Immediate display with fade-in */}
+        <button
+          onClick={handleSkip}
+          className={`fixed bottom-6 right-6 z-50 px-4 py-2 md:px-6 md:py-3
+                     bg-white/10 hover:bg-white/20 backdrop-blur-md
+                     border border-white/20 rounded-lg
+                     text-white text-xs md:text-sm font-orbitron tracking-wider
+                     transition-all duration-300 hover:scale-105
+                     flex items-center gap-2
+                     ${showSkip ? 'opacity-100 animate-fade-in' : 'opacity-0'}`}
+          style={{ animationDelay: '0ms' }}
+          aria-label="Skip synopsis and go to gateways"
+        >
+          <span>SKIP TO GATEWAYS</span>
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
     </section>
   );
-};
+});

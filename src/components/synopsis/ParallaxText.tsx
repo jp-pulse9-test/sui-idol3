@@ -14,23 +14,29 @@ export const ParallaxText = ({ text, className, style }: ParallaxTextProps) => {
     if (!textRef.current) return;
 
     const element = textRef.current;
+    let rafId: number;
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const ratio = entry.intersectionRatio;
+          if (rafId) cancelAnimationFrame(rafId);
           
-          if (ratio > 0.4) {
-            setScrollOpacity(1);
-          } else if (ratio > 0.1) {
-            const fadeProgress = (ratio - 0.1) / 0.3;
-            setScrollOpacity(fadeProgress);
-          } else {
-            setScrollOpacity(0);
-          }
+          rafId = requestAnimationFrame(() => {
+            const ratio = entry.intersectionRatio;
+            
+            if (ratio > 0.4) {
+              setScrollOpacity(1);
+            } else if (ratio > 0.1) {
+              const fadeProgress = (ratio - 0.1) / 0.3;
+              setScrollOpacity(fadeProgress);
+            } else {
+              setScrollOpacity(0);
+            }
+          });
         });
       },
       {
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        threshold: [0, 0.1, 0.4, 0.7, 1.0],
         rootMargin: '-15% 0px -15% 0px'
       }
     );
@@ -39,6 +45,7 @@ export const ParallaxText = ({ text, className, style }: ParallaxTextProps) => {
 
     return () => {
       observer.unobserve(element);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
