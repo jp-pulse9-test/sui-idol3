@@ -19,7 +19,7 @@ import { WalrusFileUpload } from "@/components/WalrusFileUpload";
 import { WalrusFileDownload } from "@/components/WalrusFileDownload";
 import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
 import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
-import { SynopsisSection } from "@/components/SynopsisSection";
+import { CinematicSynopsis } from "@/components/CinematicSynopsis";
 
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 
@@ -341,13 +341,13 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Synopsis Section - Story Introduction */}
-        <SynopsisSection
+        {/* Cinematic Synopsis Section */}
+        <CinematicSynopsis
           activeAllyCount={activeAllyCount}
           onlineEchoEntities={onlineEchoEntities}
           collectedFragments={collectedFragments}
           totalFragments={totalFragments}
-          earthRestorationProgress={earthRestorationProgress}
+          stabilityPercentage={earthRestorationProgress}
         />
 
         {/* Featured Allies Section */}
