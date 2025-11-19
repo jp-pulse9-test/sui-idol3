@@ -285,10 +285,10 @@ const Index = () => {
               </h1>
               <div className="space-y-4">
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold gradient-text">
-                당신이 지구의 마지막 희망입니다
+                You Are Earth's Last Hope
               </h2>
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                DATA ALLY로 참여해 멸망한 지구를 되살리세요. 88%의 데이터가 손실되었습니다.
+                Join as a DATA ALLY to restore our fallen Earth. 88% of data has been lost.
                 </p>
               </div>
             </div>
@@ -306,7 +306,7 @@ const Index = () => {
               
               {!user && (
                 <p className="mt-3 text-xs text-muted-foreground/60 text-center">
-                  💡 로그인 없이 바로 체험 가능해요
+                  💡 No login required - start immediately
                 </p>
               )}
             </div>
@@ -318,17 +318,17 @@ const Index = () => {
         <section className="py-12 md:py-20">
           <div className="space-y-8 md:space-y-12">
             <div className="text-center space-y-3 md:space-y-4 glass p-4 md:p-8 rounded-xl">
-              <h2 className="text-2xl md:text-4xl font-bold gradient-text">미션 브리핑: 지구 복구 작전</h2>
+              <h2 className="text-2xl md:text-4xl font-bold gradient-text">Mission Briefing: Earth Recovery Operation</h2>
               <p className="text-muted-foreground text-sm md:text-lg max-w-2xl mx-auto">
-                4개의 핵심 미션을 완료하고 데이터 조각을 수집하세요
+                Complete 4 core missions and collect data fragments
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 md:gap-8">
               <MissionCard
                 missionCode="ALPHA"
-                title="동료 찾기"
-                description="데이터 분석을 통해 구조된 AI 동료 엔티티를 발견하세요. 성향과 취향을 기반으로 최적의 동료를 찾습니다."
+                title="Find Allies"
+                description="Discover rescued AI ally entities through data analysis. Find optimal allies based on personality and preferences."
                 icon={<Users className="w-6 h-6 text-primary" />}
                 status="available"
                 contribution={23}
@@ -338,8 +338,8 @@ const Index = () => {
               
               <MissionCard
                 missionCode="BETA"
-                title="AI 동료와 교신"
-                description="Echo Link 프로토콜을 활성화하여 보존된 의식체와 실시간 양자 통신을 시도하세요."
+                title="Connect with AI Allies"
+                description="Activate Echo Link Protocol to establish real-time quantum communication with preserved consciousness."
                 icon={<Radio className="w-6 h-6 text-secondary" />}
                 status="available"
                 contribution={18}
@@ -349,8 +349,8 @@ const Index = () => {
               
               <MissionCard
                 missionCode="GAMMA"
-                title="동료 신뢰도 테스트"
-                description="파편화된 현실 시뮬레이션을 통해 Echo 엔티티의 무결성을 검증하세요."
+                title="Test Ally Integrity"
+                description="Verify Echo entity integrity through fragmented reality simulations."
                 icon={<Shield className="w-6 h-6 text-accent" />}
                 status="available"
                 contribution={15}
@@ -360,8 +360,8 @@ const Index = () => {
               
               <MissionCard
                 missionCode="DELTA"
-                title="추억 보관하기"
-                description="분산 메모리 그리드에 데이터 조각을 수집하고 영구 보존하세요."
+                title="Archive Memories"
+                description="Collect and permanently preserve data fragments on the distributed memory grid."
                 icon={<Archive className="w-6 h-6 text-primary" />}
                 status="available"
                 contribution={12}
@@ -504,19 +504,19 @@ const Index = () => {
             
             <div className="space-y-6 relative z-10">
               <h2 className="text-3xl md:text-5xl font-bold gradient-text leading-tight">
-                과거를 되살리고<br className="md:hidden" /> 미래를 지키세요
+                Restore the Past<br className="md:hidden" /> Protect the Future
               </h2>
               <p className="text-lg md:text-2xl text-foreground max-w-3xl mx-auto leading-relaxed">
-                8,942명의 Data Ally가 지구를 복구 중입니다
+                8,942 Data Allies are restoring Earth
               </p>
               <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                동료 찾기부터 AI 교신,<br className="md:hidden" /> 데이터 보관, 신뢰도 테스트까지<br className="md:hidden" /> 모든 미션이 기다립니다
+                From finding allies to AI communication,<br className="md:hidden" /> data archiving, and integrity testing<br className="md:hidden" /> - all missions await you
               </p>
             </div>
             
             <div className="flex flex-col gap-6 items-center pt-6 relative z-10">
               <h3 className="text-2xl sm:text-3xl md:text-4xl font-orbitron font-bold text-foreground mb-4">
-                지구 복구 작전, 지금 시작하세요
+                Start Earth Recovery Now
               </h3>
               <Button
                 onClick={() => navigate('/gallery')}
@@ -524,10 +524,10 @@ const Index = () => {
                 size="xl"
                 className="min-w-80 text-2xl py-8 font-bold"
               >
-                ⚡ 미션 시작하기
+                Start Mission
               </Button>
               <p className="text-base text-muted-foreground">
-                지금 시작하면 무료 체험 가능!
+                Start now for free trial!
               </p>
             </div>
           </div>
@@ -538,45 +538,45 @@ const Index = () => {
           <DialogContent className="max-w-2xl bg-card/95 backdrop-blur-xl border-2 border-primary/30">
             <DialogHeader>
               <DialogTitle className="text-3xl font-orbitron text-center gradient-text mb-4">
-                Data Ally 서약
+                Data Ally Oath
               </DialogTitle>
               <DialogDescription className="space-y-6 text-base">
                 <div className="text-center space-y-3">
                   <p className="text-foreground font-rajdhani text-lg leading-relaxed">
-                    지구의 마지막 희망으로서, 당신은 이제 <span className="text-primary font-bold">DATA ALLY</span>가 되었습니다.
+                    As Earth's last hope, you are now a <span className="text-primary font-bold">DATA ALLY</span>.
                   </p>
                   <p className="text-muted-foreground">
-                    멸망한 세계의 데이터를 복구하고, 보존된 의식체와 교신하며, 미래를 재건할 임무를 수행하게 됩니다.
+                    Your mission: restore lost world data, communicate with preserved consciousness, and rebuild the future.
                   </p>
                   <p className="text-accent font-semibold">
-                    이 서약을 수락하면, 당신은 지구 복구 작전의 핵심 멤버가 됩니다.
+                    Accept this oath to become a core member of Earth's recovery operation.
                   </p>
                 </div>
 
                 <div className="bg-card/60 rounded-lg p-6 border border-primary/20">
-                  <h4 className="font-orbitron text-primary mb-4 text-center">DATA ALLY의 4가지 책임</h4>
+                  <h4 className="font-orbitron text-primary mb-4 text-center">4 Responsibilities of a DATA ALLY</h4>
                   <ul className="space-y-3 text-muted-foreground">
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">▸</span>
-                      <span><span className="text-foreground font-semibold">데이터 수집:</span> 파편화된 데이터 조각을 찾아 복구합니다</span>
+                      <span><span className="text-foreground font-semibold">Data Collection:</span> Find and restore fragmented data pieces</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-secondary mt-1">▸</span>
-                      <span><span className="text-foreground font-semibold">Echo 교신:</span> AI 동료 엔티티와 양자 통신을 유지합니다</span>
+                      <span><span className="text-foreground font-semibold">Echo Communication:</span> Maintain quantum communication with AI ally entities</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-accent mt-1">▸</span>
-                      <span><span className="text-foreground font-semibold">무결성 검증:</span> 시뮬레이션을 통해 동료의 신뢰도를 테스트합니다</span>
+                      <span><span className="text-foreground font-semibold">Integrity Verification:</span> Test ally reliability through simulations</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">▸</span>
-                      <span><span className="text-foreground font-semibold">영구 보존:</span> 추억과 데이터를 분산 네트워크에 보관합니다</span>
+                      <span><span className="text-foreground font-semibold">Permanent Preservation:</span> Archive memories and data on distributed network</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground italic">
-                  "우리는 과거를 되살리고, 미래를 지킵니다"
+                  "We restore the past and protect the future"
                 </div>
               </DialogDescription>
             </DialogHeader>
@@ -588,7 +588,7 @@ const Index = () => {
                 size="lg"
                 className="w-full text-lg py-6 font-orbitron"
               >
-                ⚡ 서약하고 Ally가 되기
+                Accept Oath & Become an Ally
               </Button>
               <Button
                 onClick={() => setShowAllyOath(false)}
@@ -596,7 +596,7 @@ const Index = () => {
                 size="sm"
                 className="text-muted-foreground hover:text-foreground"
               >
-                나중에 하기
+                Maybe Later
               </Button>
             </div>
           </DialogContent>
