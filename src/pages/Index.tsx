@@ -21,30 +21,7 @@ import { WalrusFlowUpload } from "@/components/WalrusFlowUpload";
 import { WalrusPhotocardGallery } from "@/components/WalrusPhotocardGallery";
 
 
-import idolFacesGrid from "@/assets/idol-faces-grid.jpg";
-import maleIdolFaces from "@/assets/male-idol-faces.jpg";
-
-// Background idol grid component
-const IdolGrid = ({ side }: { side: 'left' | 'right' }) => {
-  const backgroundImage = side === 'left' ? maleIdolFaces : idolFacesGrid;
-  
-  return (
-    <div className={`
-      hidden md:block fixed top-0 ${side === 'left' ? 'left-0' : 'right-0'} h-full md:w-40 lg:w-64
-      overflow-hidden opacity-20
-    `}>
-      <div 
-        className="w-full h-full bg-cover bg-center bg-repeat-y animate-pulse"
-        style={{ 
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          filter: 'blur(1px) brightness(0.8)'
-        }}
-      />
-      <div className={`absolute inset-0 ${side === 'left' ? 'bg-gradient-to-r from-purple-900/50 to-transparent' : 'bg-gradient-to-l from-background/50 to-transparent'}`}></div>
-    </div>
-  );
-};
+import { ConstellationGrid } from "@/components/ConstellationGrid";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -142,9 +119,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background relative overflow-x-hidden">
-      {/* Left and right idol grid background */}
-      <IdolGrid side="left" />
-      <IdolGrid side="right" />
+      {/* Background constellation grids - decorative only */}
+      <ConstellationGrid side="left" />
+      <ConstellationGrid side="right" />
       
       {/* Main content */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">

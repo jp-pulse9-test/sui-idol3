@@ -9,19 +9,19 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground border-2 border-primary-foreground hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--primary-foreground))] hover:shadow-[0_2px_0_0_hsl(var(--primary-foreground))] active:translate-y-2 active:shadow-none transition-all duration-150",
+        default: "bg-secondary text-black border-2 border-secondary shadow-[0_0_20px_hsl(var(--secondary)/0.5)] hover:shadow-[0_0_35px_hsl(var(--secondary)/0.8)] hover:scale-105 transition-all duration-300",
         destructive:
-          "bg-destructive text-destructive-foreground border-2 border-foreground hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--foreground))] hover:shadow-[0_2px_0_0_hsl(var(--foreground))] active:translate-y-2 active:shadow-none",
+          "bg-destructive text-destructive-foreground border-2 border-destructive shadow-[0_0_15px_hsl(var(--destructive)/0.4)] hover:shadow-[0_0_25px_hsl(var(--destructive)/0.6)] transition-all duration-300",
         outline:
-          "border-2 border-primary bg-background/80 backdrop-blur-sm text-foreground hover:bg-primary/10 hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--primary))] hover:shadow-[0_2px_0_0_hsl(var(--primary))] active:translate-y-2 active:shadow-none",
+          "border-2 border-secondary bg-transparent text-secondary shadow-[0_0_15px_hsl(var(--secondary)/0.3)] hover:bg-secondary/10 hover:shadow-[0_0_25px_hsl(var(--secondary)/0.6)] transition-all duration-300",
         secondary:
-          "bg-secondary text-secondary-foreground border-2 border-foreground hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--foreground))] hover:shadow-[0_2px_0_0_hsl(var(--foreground))] active:translate-y-2 active:shadow-none",
-        ghost: "border-0 bg-transparent hover:bg-primary/10 hover:text-primary shadow-none transition-colors duration-200",
-        link: "border-0 text-primary underline-offset-4 hover:underline shadow-none",
-        hero: "bg-gradient-to-r from-primary via-secondary to-accent text-background font-bold border-2 border-primary/30 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] hover:scale-105 transition-all duration-300",
-        neon: "bg-transparent border-2 border-primary text-primary shadow-[0_0_15px_hsl(var(--primary)/0.5)] hover:bg-primary hover:text-background hover:shadow-[0_0_25px_hsl(var(--primary)/0.7)] transition-all duration-300",
-        gradient: "bg-gradient-to-r from-primary to-secondary text-background border-2 border-primary/20 hover:translate-y-1 shadow-[0_4px_0_0_hsl(var(--foreground))] hover:shadow-[0_2px_0_0_hsl(var(--foreground))] active:translate-y-2 active:shadow-none",
-        premium: "bg-gradient-to-br from-primary via-accent to-secondary text-background font-bold border-2 border-primary/30 shadow-[0_4px_20px_hsl(var(--primary)/0.3)] hover:shadow-[0_6px_30px_hsl(var(--primary)/0.5)] hover:scale-[1.02] transition-all duration-300",
+          "bg-secondary/20 text-secondary border-2 border-secondary/50 shadow-[0_0_10px_hsl(var(--secondary)/0.3)] hover:bg-secondary/30 hover:shadow-[0_0_20px_hsl(var(--secondary)/0.5)] transition-all duration-300",
+        ghost: "border-0 bg-transparent text-secondary/80 hover:bg-secondary/5 hover:text-secondary hover:shadow-[0_0_10px_hsl(var(--secondary)/0.2)] transition-all duration-200",
+        link: "text-secondary underline-offset-4 hover:underline hover:text-secondary-glow",
+        hero: "bg-secondary text-black font-bold border-2 border-secondary shadow-[0_0_30px_hsl(var(--secondary)/0.6),0_0_60px_hsl(var(--secondary)/0.3)] hover:shadow-[0_0_50px_hsl(var(--secondary)/0.9),0_0_100px_hsl(var(--secondary)/0.5)] hover:scale-110 animate-neon-green transition-all duration-300",
+        neon: "bg-transparent border-2 border-secondary text-secondary shadow-[0_0_15px_hsl(var(--secondary)/0.5)] hover:bg-secondary hover:text-black hover:shadow-[0_0_25px_hsl(var(--secondary)/0.7)] transition-all duration-300",
+        gradient: "bg-gradient-to-r from-secondary via-secondary-glow to-secondary text-black border-2 border-secondary/20 shadow-[0_0_25px_hsl(var(--secondary)/0.4)] hover:shadow-[0_0_40px_hsl(var(--secondary)/0.7)] hover:scale-105 transition-all duration-300",
+        premium: "bg-gradient-to-br from-secondary via-secondary-glow to-accent text-black font-bold border-2 border-secondary/30 shadow-[0_4px_20px_hsl(var(--secondary)/0.3)] hover:shadow-[0_6px_30px_hsl(var(--secondary)/0.5)] hover:scale-[1.02] transition-all duration-300",
       },
       size: {
         default: "h-11 px-6 py-2",

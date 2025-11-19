@@ -198,9 +198,38 @@
     border-color: rgba(176, 209, 42, 0.6);
   }
 
+  @keyframes twinkle {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes constellation-flow {
+    0% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: 100;
+    }
+  }
+
   .animate-neon-green {
     animation: neonGreenPulse 2s ease-in-out infinite;
   }
+
+  .star-twinkle {
+    animation: twinkle 2s ease-in-out infinite;
+  }
+
+  .constellation-line {
+    stroke-dasharray: 5 5;
+  animation: constellation-flow 20s linear infinite;
+}
 
   /* Modern buttons */
   .btn-modern {
