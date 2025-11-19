@@ -30,7 +30,7 @@ export const GatewaySection = () => {
   ];
 
   return (
-    <section className="min-h-screen flex items-center justify-center py-20 px-4">
+    <section className="min-h-screen flex items-center justify-center py-20 px-4 gateway-section">
       <div className="max-w-6xl w-full">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-orbitron font-bold mb-4 text-foreground">
