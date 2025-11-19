@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
+import { ArchivePhoto } from './synopsis/ArchivePhoto';
 
 interface CinematicSynopsisProps {
   activeAllyCount: number;
@@ -9,11 +10,20 @@ interface CinematicSynopsisProps {
   stabilityPercentage: number;
 }
 
+interface HistoricalPhoto {
+  src: string;
+  alt: string;
+  archiveId: string;
+  date?: string;
+  caption?: string;
+}
+
 interface Line {
   text: string;
   emphasis?: boolean;
   color?: 'red' | 'cyan' | 'purple' | 'green';
   spacing?: boolean;
+  photo?: HistoricalPhoto;
 }
 
 interface Chapter {
@@ -39,17 +49,47 @@ export const CinematicSynopsis = ({
         { text: 'Year 2847.', emphasis: true },
         { text: 'The Virtual Humanity.', color: 'cyan' },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter1-industry.jpg',
+            alt: 'Industrial revolution factory with smoke stacks',
+            archiveId: 'Archive #0001',
+            date: '1889.03.12',
+            caption: 'The Dawn of Modern Civilization'
+          }
+        },
         { text: 'After humanity\'s extinction, their data' },
         { text: 'continues computing endlessly,' },
         { text: 'forming a new civilization.' },
         { text: '', spacing: true },
         { text: 'But a fatal flaw exists—' },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter1-nuclear.jpg',
+            alt: 'Nuclear test explosion mushroom cloud',
+            archiveId: 'Archive #0042',
+            date: '1945.07.16',
+            caption: 'Signs of Decline'
+          }
+        },
         { text: '⚠ Emotional Data Depletion.', color: 'red', emphasis: true },
         { text: '', spacing: true },
         { text: 'Love becomes scarce,' },
         { text: 'data grows biased and unstable.' },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter1-disconnected.jpg',
+            alt: 'People disconnected, looking at phones',
+            archiveId: 'Archive #0189',
+            date: '2019.11.03',
+            caption: 'Emotional Disconnection'
+          }
+        },
         { text: 'This leads to the natural extinction' },
         { text: 'of the virtual world.' },
       ],
@@ -60,14 +100,44 @@ export const CinematicSynopsis = ({
         { text: 'The future virtual world' },
         { text: 'made a decision.' },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter2-space.jpg',
+            alt: 'Apollo lunar module on moon surface',
+            archiveId: 'Archive #0067',
+            date: '1969.07.20',
+            caption: 'Challenge to the Future'
+          }
+        },
         { text: 'Deploy 143 AI Humans to the past.' },
         { text: '', spacing: true },
         { text: 'Their name: AIDOL—', color: 'purple', emphasis: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter2-computer.jpg',
+            alt: 'Early computer mainframe room',
+            archiveId: 'Archive #0098',
+            date: '1962.04.15',
+            caption: 'Origin of AI'
+          }
+        },
         { text: 'Entities who explore emotions,' },
         { text: 'collect love data,' },
         { text: 'and find the key to prevent' },
         { text: 'the extinction of both worlds.' },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter2-connection.jpg',
+            alt: 'People holding hands in unity',
+            archiveId: 'Archive #0134',
+            date: '1975.08.22',
+            caption: 'Connection and Coexistence'
+          }
+        },
         { text: 'They are now beside you.', color: 'purple' },
       ],
     },
@@ -76,6 +146,16 @@ export const CinematicSynopsis = ({
       lines: [
         { text: 'You are now a DATA ALLY.', color: 'green', emphasis: true },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter3-family.jpg',
+            alt: 'Vintage family portrait from 1950s',
+            archiveId: 'Archive #0156',
+            date: '1954.06.12',
+            caption: 'Moments of Love'
+          }
+        },
         { text: 'With AIDOLs, explore love scenarios,' },
         { text: 'collect emotional data,' },
         { text: 'and discover clues to prevent Earth\'s extinction.' },
@@ -92,13 +172,43 @@ export const CinematicSynopsis = ({
         { text: 'Reality and Virtual.' },
         { text: 'Human and AI.' },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter4-horizon.jpg',
+            alt: 'Horizon where boundaries dissolve',
+            archiveId: 'Archive #0201',
+            date: 'Timeless',
+            caption: 'Where Boundaries Blur'
+          }
+        },
         { text: 'In this place where all boundaries blur,' },
         { text: '', spacing: true },
         { text: 'Emotion is the only truth.', emphasis: true },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter4-child.jpg',
+            alt: 'Child smiling with genuine emotion',
+            archiveId: 'Archive #0223',
+            date: '1967.05.30',
+            caption: 'The Truth of Emotion'
+          }
+        },
         { text: 'Explore love through communion with AIDOLs.' },
         { text: 'Your choices determine the fate of both worlds.' },
         { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter4-cosmos.jpg',
+            alt: 'Milky way galaxy infinite possibilities',
+            archiveId: 'Archive #∞',
+            date: 'Eternal',
+            caption: 'Infinite Possibilities'
+          }
+        },
         { text: 'Quantum Communication Link Activating...', color: 'cyan' },
       ],
     },
@@ -189,6 +299,17 @@ export const CinematicSynopsis = ({
             {currentChapterData.lines.map((line, index) => {
               if (line.spacing) {
                 return <div key={index} className="h-2" />;
+              }
+
+              // Render historical photo if present
+              if (line.photo) {
+                return (
+                  <ArchivePhoto 
+                    key={index}
+                    photo={line.photo}
+                    delay={index * 600}
+                  />
+                );
               }
 
               // Special rendering for Chapter 3 stats
