@@ -178,14 +178,14 @@ export const CinematicSynopsis = ({
               style={{ width: `${(currentChapter / 4) * 100}%` }}
             />
           </div>
-          <p className="text-white/60 text-sm text-center mt-2 tracking-wide font-light">
+          <p className="text-white/60 text-xs text-center mt-2 tracking-wide">
             Chapter {currentChapter}/4
           </p>
         </div>
 
         {/* Main Content */}
         <div className="absolute inset-0 flex items-center justify-center px-8 md:px-16">
-          <div className="text-center space-y-4 max-w-5xl w-full">
+          <div className="text-center space-y-2 max-w-5xl w-full font-orbitron">
             {currentChapterData.lines.map((line, index) => {
               if (line.spacing) {
                 return <div key={index} className="h-2" />;
@@ -194,29 +194,29 @@ export const CinematicSynopsis = ({
               // Special rendering for Chapter 3 stats
               if (currentChapter === 3 && index === 9) {
                 return (
-                  <div key={index} className="space-y-3 mt-8">
-                    <div className="flex justify-center items-center gap-4 text-white font-mono">
-                      <span className="text-white/60 text-lg md:text-xl">Active Allies:</span>
-                      <span className="text-2xl md:text-3xl font-semibold tabular-nums text-green-400">
+                  <div key={index} className="space-y-2 mt-4">
+                    <div className="flex justify-center items-center gap-4 text-white">
+                      <span className="text-white/60 text-xs md:text-sm">Active Allies:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-green-400">
                         {activeAllyCount.toLocaleString()}
                       </span>
                     </div>
-                    <div className="flex justify-center items-center gap-4 text-white font-mono">
-                      <span className="text-white/60 text-lg md:text-xl">Online AIDOLs:</span>
-                      <span className="text-2xl md:text-3xl font-semibold tabular-nums text-purple-400">
+                    <div className="flex justify-center items-center gap-4 text-white">
+                      <span className="text-white/60 text-xs md:text-sm">Online AIDOLs:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-purple-400">
                         {onlineEchoEntities} entities
                       </span>
                     </div>
-                    <div className="flex justify-center items-center gap-4 text-white font-mono">
-                      <span className="text-white/60 text-lg md:text-xl">Love Data:</span>
-                      <span className="text-2xl md:text-3xl font-semibold tabular-nums text-cyan-400">
+                    <div className="flex justify-center items-center gap-4 text-white">
+                      <span className="text-white/60 text-xs md:text-sm">Love Data:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-cyan-400">
                         {collectedFragments.toLocaleString()} / {totalFragments.toLocaleString()}
                       </span>
                     </div>
-                    <div className="flex justify-center items-center gap-4 text-white font-mono">
-                      <span className="text-white/60 text-lg md:text-xl">Stability:</span>
+                    <div className="flex justify-center items-center gap-4 text-white">
+                      <span className="text-white/60 text-xs md:text-sm">Stability:</span>
                       <span 
-                        className={`text-2xl md:text-3xl font-semibold tabular-nums ${
+                        className={`text-base md:text-lg font-semibold tabular-nums ${
                           stabilityPercentage > 50 ? 'text-green-400' : 'text-red-500'
                         }`}
                       >
@@ -231,11 +231,11 @@ export const CinematicSynopsis = ({
                 <p
                   key={index}
                   className={`
-                    text-xl md:text-2xl lg:text-3xl
+                    text-sm md:text-base lg:text-lg
                     ${getColorClass(line.color, line.emphasis)}
-                    ${line.emphasis ? 'font-semibold text-4xl md:text-5xl lg:text-6xl' : 'font-normal'}
+                    ${line.emphasis ? 'font-semibold text-xl md:text-2xl lg:text-3xl' : 'font-normal'}
                     animate-line-reveal
-                    leading-relaxed tracking-wide
+                    leading-normal tracking-wide
                   `}
                   style={{ animationDelay: `${index * 0.6}s` }}
                 >
