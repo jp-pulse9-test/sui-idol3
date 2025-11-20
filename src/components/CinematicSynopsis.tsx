@@ -333,7 +333,7 @@ export const CinematicSynopsis = memo(({
     >
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container">
         {/* Chapter Progress Bar */}
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-3/5 md:w-2/5 z-10">
+        <div className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 w-3/5 md:w-2/5 z-10">
           <div className="h-1 bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-primary to-purple-400 transition-all duration-200 ease-linear"
