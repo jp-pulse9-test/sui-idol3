@@ -38,7 +38,13 @@ export const useWallet = () => {
     totalBalance: balanceData?.totalBalance,
     totalBalanceNumber: balanceData?.totalBalance ? Number(balanceData.totalBalance) : 0,
     calculatedBalance: balanceData?.totalBalance ? Number(balanceData.totalBalance) / 1_000_000_000 : 0,
-    finalBalance: balance
+    finalBalance: balance,
+    walletsCount: wallets.length,
+    wallets: wallets.map(w => ({
+      name: w.name,
+      chains: w.chains,
+      features: w.features
+    }))
   });
 
   const connectWallet = useCallback(async () => {
