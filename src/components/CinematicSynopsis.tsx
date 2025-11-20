@@ -685,7 +685,7 @@ export const CinematicSynopsis = memo(({
       
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container z-10">
         {/* Unified Timeline Container */}
-        <div className="absolute -top-6 md:-top-4 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10 border border-gray-700/50 bg-gray-900/30 backdrop-blur-sm rounded-sm px-4 md:px-6 py-3 md:py-4">
+        <div className="absolute -top-8 md:-top-6 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10 border border-gray-700/50 bg-gray-900/30 backdrop-blur-sm rounded-sm px-4 md:px-6 py-3 md:py-4">
           {/* Header */}
           <div className="flex justify-between items-center mb-4 md:mb-5">
             <span className="text-gray-400 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
