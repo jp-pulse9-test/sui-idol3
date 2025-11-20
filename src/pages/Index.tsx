@@ -46,11 +46,8 @@ const Index = () => {
   }, []);
 
   const handleEnter = () => {
-    // Scroll to synopsis
-    const synopsisElement = document.getElementById('synopsis');
-    if (synopsisElement) {
-      synopsisElement.scrollIntoView({ behavior: 'smooth' });
-    }
+    // Navigate to game start (gender selection)
+    navigate('/gender-select');
   };
 
   return (
