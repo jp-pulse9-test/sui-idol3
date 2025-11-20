@@ -42,6 +42,7 @@ export const CinematicSynopsis = memo(({
   const [autoProgress, setAutoProgress] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Detect mobile device
   useEffect(() => {
@@ -245,9 +246,13 @@ export const CinematicSynopsis = memo(({
       elapsed += interval;
       setAutoProgress(elapsed / duration * 100);
       if (elapsed >= duration) {
-        setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
-        elapsed = 0;
-        setAutoProgress(0);
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
+          elapsed = 0;
+          setAutoProgress(0);
+          setTimeout(() => setIsTransitioning(false), 400);
+        }, 200);
       }
     }, interval);
     return () => clearInterval(progressTimer);
@@ -387,9 +392,13 @@ export const CinematicSynopsis = memo(({
     position: 85.8
   }], []);
   const handleTimelineClick = useCallback((chapter: number) => {
-    setCurrentChapter(chapter);
-    setAutoProgress(0);
-    setIsPaused(true);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentChapter(chapter);
+      setAutoProgress(0);
+      setIsPaused(true);
+      setTimeout(() => setIsTransitioning(false), 400);
+    }, 200);
   }, []);
   return <section id="synopsis" className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16 md:py-20 perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite">
       {/* Noise filter overlay */}
@@ -397,6 +406,18 @@ export const CinematicSynopsis = memo(({
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E")`,
           backgroundRepeat: 'repeat',
+        }}
+      />
+      
+      {/* Transition noise overlay */}
+      <div 
+        className={`absolute inset-0 pointer-events-none z-20 transition-opacity duration-200 ${
+          isTransitioning ? 'opacity-30' : 'opacity-0'
+        }`}
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          mixBlendMode: 'overlay',
         }}
       />
       
@@ -453,7 +474,9 @@ export const CinematicSynopsis = memo(({
         </div>
 
         {/* Main Content */}
-        <div className="w-full flex items-center justify-center px-4 md:px-8 lg:px-16 py-12 md:py-20">
+        <div className={`w-full flex items-center justify-center px-4 md:px-8 lg:px-16 py-12 md:py-20 transition-opacity duration-400 ${
+          isTransitioning ? 'opacity-0' : 'opacity-100'
+        }`}>
           <div className="text-center space-y-3 md:space-y-2 max-w-5xl w-full font-orbitron">
             {currentChapterData.lines.map((line, index) => {
             if (line.spacing) {
