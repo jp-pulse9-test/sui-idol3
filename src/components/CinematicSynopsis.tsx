@@ -350,14 +350,14 @@ export const CinematicSynopsis = memo(({
     }
   }, []);
   const getColorClass = (color?: string, emphasis?: boolean) => {
-    if (!color) return 'text-white';
+    if (!color) return 'text-gray-300';
     const baseClasses = {
-      red: 'text-red-500 text-glow-red',
-      cyan: 'text-cyan-400 text-glow-cyan',
-      purple: 'text-purple-400 text-glow-purple',
-      green: 'text-green-400'
+      red: 'text-gray-200',
+      cyan: 'text-gray-300',
+      purple: 'text-gray-300',
+      green: 'text-gray-400'
     };
-    return baseClasses[color as keyof typeof baseClasses] || 'text-white';
+    return baseClasses[color as keyof typeof baseClasses] || 'text-gray-300';
   };
   const currentChapterData = chapters.find(c => c.id === currentChapter) || chapters[0];
 
@@ -402,7 +402,7 @@ export const CinematicSynopsis = memo(({
   }, []);
   return <section id="synopsis" className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16 md:py-20 perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite">
       {/* Noise filter overlay */}
-      <div className="absolute inset-0 opacity-[0.015] pointer-events-none z-0" 
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E")`,
           backgroundRepeat: 'repeat',
@@ -412,7 +412,7 @@ export const CinematicSynopsis = memo(({
       {/* Transition noise overlay */}
       <div 
         className={`absolute inset-0 pointer-events-none z-20 transition-opacity duration-200 ${
-          isTransitioning ? 'opacity-30' : 'opacity-0'
+          isTransitioning ? 'opacity-20' : 'opacity-0'
         }`}
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E")`,
@@ -422,12 +422,22 @@ export const CinematicSynopsis = memo(({
       />
       
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container z-10">
-        {/* Minimalist Timeline & Progress */}
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10">
+        {/* Unified Timeline Container */}
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10 border border-gray-700/50 bg-gray-900/30 backdrop-blur-sm rounded-sm px-4 md:px-6 py-3 md:py-4">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-3 md:mb-4">
+            <span className="text-gray-400 text-[10px] md:text-xs tracking-[0.2em] font-mono uppercase">
+              Chapter {currentChapter} of 4
+            </span>
+            <span className="text-gray-500 text-[10px] md:text-xs tracking-[0.2em] font-mono uppercase">
+              SIMULATOR STATUS: ONLINE
+            </span>
+          </div>
+          
           {/* Progress Bar */}
-          <div className="relative h-[1px] bg-white/10 mb-8">
+          <div className="relative h-[2px] bg-gray-700/40">
             <div 
-              className="absolute top-0 left-0 h-full bg-white/90 transition-all duration-200 ease-linear"
+              className="absolute top-0 left-0 h-full bg-gray-400/70 transition-all duration-200 ease-linear"
               style={{ width: `${(currentChapter - 1) / 4 * 100 + autoProgress / 4}%` }}
             />
             
@@ -447,17 +457,17 @@ export const CinematicSynopsis = memo(({
                 >
                   <div className="flex flex-col items-center gap-2">
                     {/* Point marker */}
-                    <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
                       isActive 
-                        ? 'bg-white scale-150 shadow-[0_0_12px_rgba(255,255,255,0.8)]' 
-                        : 'bg-white/30 hover:bg-white/60 scale-100'
+                        ? 'bg-gray-300 scale-150 shadow-[0_0_12px_rgba(209,213,219,0.6)]' 
+                        : 'bg-gray-600/50 hover:bg-gray-500/70 scale-100'
                     }`} />
                     
                     {/* Year label */}
-                    <span className={`text-[10px] md:text-xs font-orbitron tracking-[0.2em] transition-all duration-300 whitespace-nowrap ${
+                    <span className={`text-[10px] md:text-sm font-mono tracking-[0.2em] transition-all duration-300 whitespace-nowrap uppercase ${
                       isActive 
-                        ? 'text-white font-medium opacity-100' 
-                        : 'text-white/40 group-hover:text-white/70 opacity-60'
+                        ? 'text-gray-300 font-medium opacity-100' 
+                        : 'text-gray-600 group-hover:text-gray-500 opacity-60'
                     }`}>
                       {point.year}
                     </span>
@@ -466,11 +476,6 @@ export const CinematicSynopsis = memo(({
               );
             })}
           </div>
-          
-          {/* Chapter indicator */}
-          <p className="text-white/50 text-[10px] md:text-xs text-center tracking-[0.2em] font-orbitron uppercase">
-            Chapter {currentChapter} of 4
-          </p>
         </div>
 
         {/* Main Content */}
@@ -491,27 +496,27 @@ export const CinematicSynopsis = memo(({
             // Special rendering for Chapter 3 stats
             if (currentChapter === 3 && index === 9) {
               return <div key={index} className="space-y-2 mt-4">
-                    <div className="flex justify-center items-center gap-4 text-white">
-                      <span className="text-white/60 text-xs md:text-sm">Active Allies:</span>
-                      <span className="text-base md:text-lg font-semibold tabular-nums text-green-400">
+                    <div className="flex justify-center items-center gap-4 text-gray-300">
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">Active Allies:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
                         {activeAllyCount.toLocaleString()}
                       </span>
                     </div>
-                    <div className="flex justify-center items-center gap-4 text-white">
-                      <span className="text-white/60 text-xs md:text-sm">Online AIDOLs:</span>
-                      <span className="text-base md:text-lg font-semibold tabular-nums text-purple-400">
+                    <div className="flex justify-center items-center gap-4 text-gray-300">
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">Online AIDOLs:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
                         {onlineEchoEntities} entities
                       </span>
                     </div>
-                    <div className="flex justify-center items-center gap-4 text-white">
-                      <span className="text-white/60 text-xs md:text-sm">Love Data:</span>
-                      <span className="text-base md:text-lg font-semibold tabular-nums text-cyan-400">
+                    <div className="flex justify-center items-center gap-4 text-gray-300">
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">Love Data:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-gray-300 font-mono">
                         {collectedFragments.toLocaleString()} / {totalFragments.toLocaleString()}
                       </span>
                     </div>
-                    <div className="flex justify-center items-center gap-4 text-white">
-                      <span className="text-white/60 text-xs md:text-sm">Stability:</span>
-                      <span className={`text-base md:text-lg font-semibold tabular-nums ${stabilityPercentage > 50 ? 'text-green-400' : 'text-red-500'}`}>
+                    <div className="flex justify-center items-center gap-4 text-gray-300">
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">Stability:</span>
+                      <span className={`text-base md:text-lg font-semibold tabular-nums font-mono ${stabilityPercentage > 50 ? 'text-gray-400' : 'text-gray-200'}`}>
                         {stabilityPercentage}%
                       </span>
                     </div>
