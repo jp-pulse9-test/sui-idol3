@@ -423,13 +423,13 @@ export const CinematicSynopsis = memo(({
       
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container z-10">
         {/* Unified Timeline Container */}
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10 border border-gray-700/50 bg-gray-900/30 backdrop-blur-sm rounded-sm px-4 md:px-6 py-3 md:py-4">
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10 border border-gray-700/50 bg-gray-900/30 backdrop-blur-sm rounded-sm px-4 md:px-6 py-2 md:py-3">
           {/* Header */}
-          <div className="flex justify-between items-center mb-3 md:mb-4">
-            <span className="text-gray-400 text-[10px] md:text-xs tracking-[0.2em] font-mono uppercase">
+          <div className="flex justify-between items-center mb-2 md:mb-3">
+            <span className="text-gray-400 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
               Chapter {currentChapter} of 4
             </span>
-            <span className="text-gray-500 text-[10px] md:text-xs tracking-[0.2em] font-mono uppercase">
+            <span className="text-gray-500 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
               SIMULATOR STATUS: ONLINE
             </span>
           </div>
@@ -455,16 +455,16 @@ export const CinematicSynopsis = memo(({
                   style={{ left: `${point.position}%` }}
                   aria-label={`Timeline ${point.year}`}
                 >
-                  <div className="flex flex-col items-center gap-2">
+                  <div className="flex flex-col items-center gap-1">
                     {/* Point marker */}
-                    <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
                       isActive 
-                        ? 'bg-gray-300 scale-150 shadow-[0_0_12px_rgba(209,213,219,0.6)]' 
+                        ? 'bg-gray-300 scale-125 shadow-[0_0_8px_rgba(209,213,219,0.5)]' 
                         : 'bg-gray-600/50 hover:bg-gray-500/70 scale-100'
                     }`} />
                     
                     {/* Year label */}
-                    <span className={`text-[10px] md:text-sm font-mono tracking-[0.2em] transition-all duration-300 whitespace-nowrap uppercase ${
+                    <span className={`text-[8px] md:text-[10px] font-mono tracking-[0.15em] transition-all duration-300 whitespace-nowrap uppercase ${
                       isActive 
                         ? 'text-gray-300 font-medium opacity-100' 
                         : 'text-gray-600 group-hover:text-gray-500 opacity-60'
