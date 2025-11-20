@@ -7,8 +7,19 @@ interface MinimalHeroProps {
 export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Background subtle gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background/80" />
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-30"
+      >
+        <source src="/videos/space-bg.mp4" type="video/mp4" />
+      </video>
+      
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-background/70" />
       
       {/* Content */}
       <div className="relative z-10 text-center space-y-6 md:space-y-8 px-4">
