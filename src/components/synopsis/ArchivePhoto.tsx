@@ -87,14 +87,15 @@ export const ArchivePhoto = memo(({ photo, delay = 0, parallaxOffset = 0, index 
       style={{
         transform: `translateY(${photoParallax}px) translateZ(${-depthOffset}px) scale(${1 - depthOffset * 0.002})`,
         opacity: scrollOpacity,
-        transition: 'transform 0.1s ease-out, opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+        transition: 'transform 0.1s ease-out, opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+        maxHeight: '35vh'
       }}
     >
-      <div className="relative">
+      <div className="relative max-h-[35vh] md:max-h-[35vh]">
         <img
           src={photo.src}
           alt={photo.alt}
-          className="archive-photo"
+          className="archive-photo signal-receive object-contain max-h-[30vh] md:max-h-[35vh]"
           loading="lazy"
         />
         <ArchivePhotoOverlay />
