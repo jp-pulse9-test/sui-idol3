@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { ChevronRight, Zap, Heart, Users, Infinity } from 'lucide-react';
 import { ArchivePhoto } from './synopsis/ArchivePhoto';
 import { ParallaxText } from './synopsis/ParallaxText';
 
@@ -22,6 +23,7 @@ interface HistoricalPhoto {
 interface Line {
   text: string;
   emphasis?: boolean;
+  color?: 'red' | 'cyan' | 'purple' | 'green';
   spacing?: boolean;
   photo?: HistoricalPhoto;
 }
@@ -31,12 +33,12 @@ interface Chapter {
   lines: Line[];
 }
 
-export const CinematicSynopsis = memo(({ 
+export const CinematicSynopsis = memo(({
   activeAllyCount,
   onlineEchoEntities,
   collectedFragments,
   totalFragments,
-  stabilityPercentage 
+  stabilityPercentage,
 }: CinematicSynopsisProps) => {
   const [currentChapter, setCurrentChapter] = useState(1);
   const [showSkip, setShowSkip] = useState(false);
@@ -46,142 +48,134 @@ export const CinematicSynopsis = memo(({
   const [autoProgress, setAutoProgress] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [visibleItems, setVisibleItems] = useState<number>(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Detect mobile device
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
+    
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Get signal strength based on chapter
-  const getSignalStrength = useCallback((chapter: number): string => {
-    if (chapter === 1 || chapter === 6) return 'weak';
-    if (chapter === 2 || chapter === 5) return 'strong';
-    return '';
-  }, []);
-
-  // Chapter data
   const chapters: Chapter[] = useMemo(() => [
     {
       id: 1,
       lines: [
-        { text: 'Year 2847.' },
-        { text: 'The Virtual Humanity.', emphasis: true },
+        { text: 'Year 2847.', emphasis: true },
+        { text: 'The Virtual Humanity.', color: 'cyan' },
+        { text: '', spacing: true },
+        { text: 'After humanity\'s extinction, their data' },
+        { text: 'continues computing endlessly,' },
+        { text: 'forming a new civilization.' },
         { text: '', spacing: true },
         { 
           text: '',
           photo: {
             src: '/images/archive/chapter1-industry.jpg',
-            alt: 'Industrial ruins',
-            archiveId: 'Archive #2847',
-            date: '2847',
-            caption: 'Virtual Civilization Crisis',
-            captionKo: '가상 문명의 위기'
+            alt: 'Industrial revolution and emotional disconnection',
+            archiveId: 'Archive #0001',
+            date: '1889-2019',
+            caption: 'The Rise and Fall of Civilization',
+            captionKo: '문명의 흥망성쇠'
           }
         },
+        { text: 'But a fatal flaw exists—' },
+        { text: '⚠ Emotional Data Depletion.', color: 'red', emphasis: true },
         { text: '', spacing: true },
-        { text: '⚠ Emotional Data Depletion.', emphasis: true },
-        { text: 'Virtual civilization faces collapse.' }
-      ]
+        { text: 'Love becomes scarce,' },
+        { text: 'data grows biased and unstable.' },
+        { text: '', spacing: true },
+        { text: 'This leads to the natural extinction' },
+        { text: 'of the virtual world.' },
+      ],
     },
     {
       id: 2,
       lines: [
-        { text: 'The Future decides.' },
-        { text: 'Send data collectors.', emphasis: true },
+        { text: 'The future virtual world' },
+        { text: 'made a decision.' },
+        { text: '', spacing: true },
+        { text: 'Deploy 202 AIDOLs to the past', emphasis: true },
+        { text: '(101 male, 101 female).' },
+        { text: '', spacing: true },
+        { text: 'Their name: AIDOL—', color: 'purple', emphasis: true },
         { text: '', spacing: true },
         { 
           text: '',
           photo: {
-            src: '/images/archive/chapter2-space.jpg',
-            alt: 'AIDOL birth',
-            archiveId: 'Archive #2847',
-            date: '2847',
-            caption: 'AIDOL Genesis',
-            captionKo: 'AIDOL의 탄생'
+            src: '/images/archive/chapter2-connection.jpg',
+            alt: 'Connection across time and space',
+            archiveId: 'Archive #0134',
+            date: '1962-1975',
+            caption: 'Birth of AIDOL - Bridges Between Worlds',
+            captionKo: 'AIDOL의 탄생 - 세계를 잇는 다리'
           }
         },
+        { text: 'Entities who explore emotions,' },
+        { text: 'collect love data,' },
+        { text: 'and find the key to prevent' },
+        { text: 'the extinction of both worlds.' },
         { text: '', spacing: true },
-        { text: '202 AIDOLs.', emphasis: true },
-        { text: 'Sent to the past.' }
-      ]
+        { text: 'They are now beside you.', color: 'purple' },
+      ],
     },
     {
       id: 3,
       lines: [
-        { text: 'Year 2019.' },
-        { text: 'The Mission Begins.', emphasis: true },
+        { text: 'You are now a DATA ALLY.', color: 'green', emphasis: true },
         { text: '', spacing: true },
-        { 
-          text: '',
-          photo: {
-            src: '/images/archive/chapter3-family.jpg',
-            alt: 'Human connections',
-            archiveId: 'Archive #2019',
-            date: '2019-2024',
-            caption: 'Mission Start',
-            captionKo: '임무의 시작'
-          }
-        },
+        { text: 'With AIDOLs, explore love scenarios,' },
+        { text: 'collect emotional data,' },
+        { text: 'and discover clues to prevent Earth\'s extinction.' },
         { text: '', spacing: true },
-        { text: 'Collect emotional fragments.', emphasis: true },
-        { text: 'Prevent extinction.' }
-      ]
+        { text: 'Current Exploration Status:', color: 'cyan' },
+        { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━', color: 'cyan' },
+        { text: '', spacing: true },
+      ],
     },
     {
       id: 4,
       lines: [
-        { text: 'Year 1989.' },
-        { text: 'The First Signal.', emphasis: true },
+        { text: 'Past and Future.' },
+        { text: 'Reality and Virtual.' },
+        { text: 'Human and AI.' },
+        { text: '', spacing: true },
+        { 
+          text: '',
+          photo: {
+            src: '/images/archive/chapter4-child.jpg',
+            alt: 'Pure emotion transcending boundaries',
+            archiveId: 'Archive #0223',
+            date: '1967.05.30',
+            caption: 'The Truth of Emotion',
+            captionKo: '감정의 진실'
+          }
+        },
+        { text: 'In this place where all boundaries blur,' },
+        { text: '', spacing: true },
+        { text: 'Emotion is the only truth.', emphasis: true },
+        { text: '', spacing: true },
+        { text: 'Explore love through communion with AIDOLs.' },
+        { text: 'Your choices determine the fate of both worlds.' },
         { text: '', spacing: true },
         { 
           text: '',
           photo: {
             src: '/images/archive/chapter4-cosmos.jpg',
-            alt: 'Cosmic signal',
-            archiveId: 'Archive #1989',
-            date: '1989',
-            caption: 'Origin Detected',
-            captionKo: '근원 발견'
+            alt: 'Infinite possibilities across the cosmos',
+            archiveId: 'Archive #∞',
+            date: 'Eternal',
+            caption: 'Infinite Possibilities',
+            captionKo: '무한한 가능성'
           }
         },
-        { text: '', spacing: true },
-        { text: 'Love data discovered.', emphasis: true },
-        { text: 'Humanity\'s essence.' }
-      ]
-    }
+        { text: 'Quantum Communication Link Activating...', color: 'cyan' },
+      ],
+    },
   ], []);
-
-  const currentChapterData = chapters[currentChapter - 1];
-
-  // Sequential reveal animation
-  useEffect(() => {
-    setVisibleItems(0);
-    setIsTransitioning(true);
-    
-    const totalItems = currentChapterData.lines.filter(
-      line => !line.spacing
-    ).length;
-    
-    const timers: NodeJS.Timeout[] = [];
-    for (let i = 0; i <= totalItems; i++) {
-      const timer = setTimeout(() => {
-        setVisibleItems(i);
-        if (i === totalItems) {
-          setIsTransitioning(false);
-        }
-      }, i * 500);
-      timers.push(timer);
-    }
-    
-    return () => timers.forEach(clearTimeout);
-  }, [currentChapter, currentChapterData]);
 
   // Auto-advance chapters with progress tracking
   useEffect(() => {
@@ -196,12 +190,12 @@ export const CinematicSynopsis = memo(({
       setAutoProgress((elapsed / duration) * 100);
       
       if (elapsed >= duration) {
-        setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
+        setCurrentChapter((prev) => (prev < 4 ? prev + 1 : 1));
         elapsed = 0;
         setAutoProgress(0);
       }
     }, interval);
-    
+
     return () => clearInterval(progressTimer);
   }, [isPaused, currentChapter]);
 
@@ -216,30 +210,51 @@ export const CinematicSynopsis = memo(({
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
+        setCurrentChapter((prev) => (prev < 4 ? prev + 1 : 1));
       } else if (e.key === 'Escape') {
         handleSkip();
+      } else if (e.key === 'ArrowRight') {
+        setCurrentChapter((prev) => (prev < 4 ? prev + 1 : 1));
+      } else if (e.key === 'ArrowLeft') {
+        setCurrentChapter((prev) => (prev > 1 ? prev - 1 : 4));
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
-  // Touch gesture support
+  // Parallax scroll tracking (debounced)
+  useEffect(() => {
+    let rafId: number;
+    const handleScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // Touch gesture support for mobile
   useEffect(() => {
     const minSwipeDistance = 50;
-    
-    const onTouchStart = (e: TouchEvent) => {
+
+    const handleTouchStart = (e: TouchEvent) => {
       setTouchEnd(null);
       setTouchStart(e.targetTouches[0].clientX);
     };
-    
-    const onTouchMove = (e: TouchEvent) => {
+
+    const handleTouchMove = (e: TouchEvent) => {
       setTouchEnd(e.targetTouches[0].clientX);
     };
-    
-    const onTouchEnd = () => {
+
+    const handleTouchEnd = () => {
       if (!touchStart || !touchEnd) return;
       
       const distance = touchStart - touchEnd;
@@ -247,40 +262,59 @@ export const CinematicSynopsis = memo(({
       const isRightSwipe = distance < -minSwipeDistance;
       
       if (isLeftSwipe) {
-        setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
+        setCurrentChapter((prev) => (prev < 4 ? prev + 1 : 1));
       } else if (isRightSwipe) {
-        setCurrentChapter(prev => prev > 1 ? prev - 1 : 4);
+        setCurrentChapter((prev) => (prev > 1 ? prev - 1 : 4));
       }
     };
-    
-    window.addEventListener('touchstart', onTouchStart);
-    window.addEventListener('touchmove', onTouchMove);
-    window.addEventListener('touchend', onTouchEnd);
-    
+
+    const synopsisSection = document.getElementById('synopsis');
+    if (synopsisSection) {
+      synopsisSection.addEventListener('touchstart', handleTouchStart);
+      synopsisSection.addEventListener('touchmove', handleTouchMove);
+      synopsisSection.addEventListener('touchend', handleTouchEnd);
+    }
+
     return () => {
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onTouchEnd);
+      if (synopsisSection) {
+        synopsisSection.removeEventListener('touchstart', handleTouchStart);
+        synopsisSection.removeEventListener('touchmove', handleTouchMove);
+        synopsisSection.removeEventListener('touchend', handleTouchEnd);
+      }
     };
   }, [touchStart, touchEnd]);
 
   const handleSkip = useCallback(() => {
-    const nextSection = document.querySelector('#next-section');
-    if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' });
+    const gatewaySection = document.querySelector('.gateway-section');
+    if (gatewaySection) {
+      gatewaySection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Fallback: scroll to next section
+      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
     }
   }, []);
 
-  const getColorClass = (emphasis?: boolean): string => {
-    if (emphasis) return 'text-white font-semibold text-lg md:text-xl text-emphasis';
-    return 'text-gray-300';
+  const getColorClass = (color?: string, emphasis?: boolean) => {
+    if (!color) return 'text-white';
+    
+    const baseClasses = {
+      red: 'text-red-500 text-glow-red',
+      cyan: 'text-cyan-400 text-glow-cyan',
+      purple: 'text-purple-400 text-glow-purple',
+      green: 'text-green-400',
+    };
+    
+    return baseClasses[color as keyof typeof baseClasses] || 'text-white';
   };
 
+  const currentChapterData = chapters.find((c) => c.id === currentChapter) || chapters[0];
+
+  // Timeline points configuration
   const timelinePoints = useMemo(() => [
-    { year: '∞', chapter: 1 },
-    { year: '2847', chapter: 2 },
-    { year: '2019', chapter: 3 },
-    { year: '1989', chapter: 4 }
+    { year: '2847', label: 'Future', chapter: 1, icon: Zap, color: 'cyan' },
+    { year: '1962', label: 'AIDOL Birth', chapter: 2, icon: Heart, color: 'purple' },
+    { year: '1945', label: 'Current State', chapter: 3, icon: Users, color: 'green' },
+    { year: '∞', label: 'Eternal', chapter: 4, icon: Infinity, color: 'purple' },
   ], []);
 
   const handleTimelineClick = useCallback((chapter: number) => {
@@ -290,161 +324,173 @@ export const CinematicSynopsis = memo(({
   }, []);
 
   return (
-    <>
-      {/* Signal Static Filter */}
-      <div className={`signal-static ${getSignalStrength(currentChapter)}`} aria-hidden="true" />
-      
-      <section 
-        id="synopsis" 
-        className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16 md:py-20 perspective-container" 
-        role="region" 
-        aria-label="Story Synopsis" 
-        aria-live="polite"
-      >
-        <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container">
-          
-          {/* Timeline Navigation - Horizontal Line with Dots */}
-          <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50 w-[80vw] max-w-4xl">
-            <div className="relative h-0.5 bg-white/20">
-              {timelinePoints.map((point, idx) => {
-                const position = (idx / (timelinePoints.length - 1)) * 100;
-                const isActive = point.chapter === currentChapter;
-                
-                return (
-                  <button
-                    key={point.chapter}
-                    onClick={() => handleTimelineClick(point.chapter)}
-                    className="absolute top-1/2 -translate-y-1/2 group"
-                    style={{ left: `${position}%` }}
-                  >
-                    {/* Dot */}
-                    <div className={`
-                      w-3 h-3 rounded-full transition-all duration-300
-                      ${isActive 
-                        ? 'bg-white scale-150 shadow-[0_0_12px_rgba(255,255,255,0.8)]' 
-                        : 'bg-gray-500 hover:bg-gray-300'
-                      }
-                    `} />
-                    
-                    {/* Year Label */}
-                    <span className={`
-                      absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap
-                      text-xs font-orbitron transition-opacity
-                      ${isActive ? 'text-white opacity-100' : 'text-gray-500 opacity-60'}
-                    `}>
-                      {point.year}
-                    </span>
-                    
-                    {/* Progress Indicator */}
-                    {isActive && (
-                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-white/40">
-                        <div 
-                          className="h-full bg-white transition-all duration-100"
-                          style={{ width: `${autoProgress}%` }}
-                        />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+    <section 
+      id="synopsis"
+      className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16 md:py-20 perspective-container"
+      role="region"
+      aria-label="Story Synopsis"
+      aria-live="polite"
+    >
+      <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container">
+        {/* Chapter Progress Bar */}
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-3/5 md:w-2/5 z-10">
+          <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-primary to-purple-400 transition-all duration-200 ease-linear"
+              style={{ width: `${((currentChapter - 1) / 4) * 100 + (autoProgress / 4)}%` }}
+            />
           </div>
+          <p className="text-white/60 text-xs text-center mt-2 tracking-wide font-orbitron">
+            Chapter {currentChapter}/4
+          </p>
+        </div>
 
-          {/* Content */}
-          <div className="relative z-10 min-h-screen flex items-center justify-center px-4 md:px-8">
-            <div className="max-w-4xl w-full space-y-3 md:space-y-4 text-center">
-              {currentChapterData.lines.map((line, index) => {
-                if (line.spacing) {
-                  return <div key={`spacing-${index}`} className="h-2" />;
-                }
+        {/* Main Content */}
+        <div className="w-full flex items-center justify-center px-4 md:px-8 lg:px-16 py-12 md:py-20">
+          <div className="text-center space-y-3 md:space-y-2 max-w-5xl w-full font-orbitron">
+            {currentChapterData.lines.map((line, index) => {
+              if (line.spacing) {
+                return <div key={index} className="h-2" />;
+              }
 
-                const actualIndex = currentChapterData.lines
-                  .slice(0, index)
-                  .filter(l => !l.spacing).length;
-                
-                const isVisible = actualIndex < visibleItems;
-
-                if (line.photo) {
-                  return (
-                    <div
-                      key={`ch${currentChapter}-photo${index}`}
-                      className={`transition-opacity duration-700 ${
-                        isVisible ? 'opacity-100' : 'opacity-0'
-                      }`}
-                    >
-                      <ArchivePhoto 
-                        photo={line.photo}
-                        delay={0}
-                        parallaxOffset={0}
-                        index={index}
-                      />
-                    </div>
-                  );
-                }
-
-                if (currentChapter === 3 && index === 9) {
-                  return (
-                    <div key={index} className="mt-8 grid grid-cols-2 gap-4 max-w-2xl mx-auto text-left">
-                      <div className="bg-white/5 p-4 rounded-lg backdrop-blur-sm">
-                        <div className="text-xs text-gray-400 mb-1">Active Allies</div>
-                        <div className="text-2xl font-bold text-white tabular-nums">
-                          {activeAllyCount.toLocaleString()}
-                        </div>
-                      </div>
-                      <div className="bg-white/5 p-4 rounded-lg backdrop-blur-sm">
-                        <div className="text-xs text-gray-400 mb-1">Echo Entities</div>
-                        <div className="text-2xl font-bold text-gray-300 tabular-nums">
-                          {onlineEchoEntities}
-                        </div>
-                      </div>
-                      <div className="bg-white/5 p-4 rounded-lg backdrop-blur-sm">
-                        <div className="text-xs text-gray-400 mb-1">Fragments Collected</div>
-                        <div className="text-2xl font-bold text-white tabular-nums">
-                          {collectedFragments.toLocaleString()}
-                        </div>
-                      </div>
-                      <div className="bg-white/5 p-4 rounded-lg backdrop-blur-sm">
-                        <div className="text-xs text-gray-400 mb-1">System Stability</div>
-                        <div className={`text-2xl font-bold tabular-nums ${
-                          stabilityPercentage > 50 ? 'text-white' : 'text-gray-500'
-                        }`}>
-                          {stabilityPercentage}%
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-
+              // Render historical photo if present
+              if (line.photo) {
                 return (
-                  <ParallaxText
-                    key={`ch${currentChapter}-line${index}`}
-                    text={line.text}
-                    className={`
-                      text-sm md:text-base lg:text-lg
-                      ${getColorClass(line.emphasis)}
-                      transition-opacity duration-700
-                      ${isVisible ? 'opacity-100' : 'opacity-0'}
-                    `}
+                  <ArchivePhoto 
+                    key={`ch${currentChapter}-photo${index}`}
+                    photo={line.photo}
+                    delay={index * 400}
+                    parallaxOffset={isMobile ? 0 : scrollY * 0.02}
+                    index={index}
                   />
                 );
-              })}
-            </div>
-          </div>
+              }
 
-          {/* Skip Button */}
-          {showSkip && (
-            <button
-              onClick={handleSkip}
-              className="absolute bottom-8 right-8 flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all duration-300 text-sm text-white"
-              aria-label="Skip to next section"
-            >
-              Skip
-            </button>
-          )}
+              // Special rendering for Chapter 3 stats
+              if (currentChapter === 3 && index === 9) {
+                return (
+                  <div key={index} className="space-y-2 mt-4">
+                    <div className="flex justify-center items-center gap-4 text-white">
+                      <span className="text-white/60 text-xs md:text-sm">Active Allies:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-green-400">
+                        {activeAllyCount.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-center items-center gap-4 text-white">
+                      <span className="text-white/60 text-xs md:text-sm">Online AIDOLs:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-purple-400">
+                        {onlineEchoEntities} entities
+                      </span>
+                    </div>
+                    <div className="flex justify-center items-center gap-4 text-white">
+                      <span className="text-white/60 text-xs md:text-sm">Love Data:</span>
+                      <span className="text-base md:text-lg font-semibold tabular-nums text-cyan-400">
+                        {collectedFragments.toLocaleString()} / {totalFragments.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-center items-center gap-4 text-white">
+                      <span className="text-white/60 text-xs md:text-sm">Stability:</span>
+                      <span 
+                        className={`text-base md:text-lg font-semibold tabular-nums ${
+                          stabilityPercentage > 50 ? 'text-green-400' : 'text-red-500'
+                        }`}
+                      >
+                        {stabilityPercentage}%
+                      </span>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <ParallaxText
+                  key={`ch${currentChapter}-line${index}`}
+                  text={line.text}
+                  className={`
+                    text-sm md:text-base lg:text-lg
+                    ${getColorClass(line.color, line.emphasis)}
+                    ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
+                    animate-line-reveal
+                    leading-relaxed md:leading-normal tracking-wide
+                    parallax-text
+                  `}
+                  style={{ 
+                    animationDelay: `${index * 0.4}s`,
+                    transform: isMobile ? 'none' : `translateY(${scrollY * 0.02}px) translateZ(${index * 2}px)`
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
-      </section>
-    </>
+
+        {/* Timeline Navigation */}
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 
+                        flex gap-2 md:gap-3 p-2 md:p-3 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
+          {timelinePoints.map((point) => {
+            const Icon = point.icon;
+            const isActive = currentChapter === point.chapter;
+            
+            return (
+              <button
+                key={point.chapter}
+                onClick={() => handleTimelineClick(point.chapter)}
+                className={`
+                  flex flex-col items-center gap-1 px-2 md:px-3 py-1.5 md:py-2 rounded-lg
+                  transition-all duration-300 group
+                  ${isActive 
+                    ? 'bg-white/20 scale-105' 
+                    : 'bg-transparent hover:bg-white/10'
+                  }
+                `}
+                aria-label={`Go to ${point.label} (Year ${point.year})`}
+                aria-current={isActive}
+              >
+                <Icon 
+                  className={`
+                    w-4 h-4 md:w-5 md:h-5 transition-all duration-300
+                    ${isActive 
+                      ? `text-${point.color}-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]` 
+                      : 'text-white/60 group-hover:text-white/80'
+                    }
+                  `}
+                />
+                <div className="flex flex-col items-center">
+                  <span className={`
+                    text-[10px] md:text-xs font-orbitron tracking-wider
+                    ${isActive ? 'text-white font-semibold' : 'text-white/60 group-hover:text-white/80'}
+                  `}>
+                    {point.year}
+                  </span>
+                  <span className={`
+                    text-[8px] md:text-[10px] font-orbitron
+                    ${isActive ? 'text-white/80' : 'text-white/40 group-hover:text-white/60'}
+                  `}>
+                    {point.label}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Skip Button - Immediate display with fade-in */}
+        <button
+          onClick={handleSkip}
+          className={`fixed bottom-6 right-6 z-50 px-4 py-2 md:px-6 md:py-3
+                     bg-white/10 hover:bg-white/20 backdrop-blur-md
+                     border border-white/20 rounded-lg
+                     text-white text-xs md:text-sm font-orbitron tracking-wider
+                     transition-all duration-300 hover:scale-105
+                     flex items-center gap-2
+                     ${showSkip ? 'opacity-100 animate-fade-in' : 'opacity-0'}`}
+          style={{ animationDelay: '0ms' }}
+          aria-label="Skip synopsis and go to gateways"
+        >
+          <span>SKIP TO GATEWAYS</span>
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </section>
   );
 });
-
-CinematicSynopsis.displayName = 'CinematicSynopsis';

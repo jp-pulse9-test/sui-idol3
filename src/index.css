@@ -21,64 +21,72 @@
 
 @layer base {
   :root {
-    /* Monotone Color System - White, Black, Gray */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-    --primary-glow: 0 0% 100%;
-    --secondary: 0 0% 25%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 0 0% 30%;
-    --accent: 0 0% 25%;
-    --accent-foreground: 0 0% 100%;
-    --accent-glow: 0 0% 30%;
-    --muted: 0 0% 25%;
+    /* Pure Black Design */
+    --background: 0 0% 2%;
+    --foreground: 0 0% 98%;
+
+    /* Almost Pure Black surfaces */
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Ice Pink - Primary */
+    --primary: 330 54% 83%;
+    --primary-foreground: 0 0% 2%;
+    --primary-glow: 330 54% 90%;
+
+    /* Intense Neon Green - Secondary */
+    --secondary: 72 85% 58%;
+    --secondary-foreground: 0 0% 0%;
+    --secondary-glow: 72 90% 65%;
+
+    /* Teal Accent */
+    --accent: 200 50% 65%;
+    --accent-foreground: 0 0% 0%;
+    --accent-glow: 200 50% 75%;
+
+    /* Dark neutral palette */
+    --muted: 0 0% 8%;
     --muted-foreground: 0 0% 70%;
-    --destructive: 0 0% 40%;
+
+    /* System colors */
+    --destructive: 0 75% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 30%;
-    --input: 0 0% 30%;
-    --ring: 0 0% 80%;
+
+    --border: 0 0% 12%;
+    --input: 0 0% 10%;
+    --ring: 72 85% 58%;
+
     --radius: 0.75rem;
 
-    /* Monotone Variables */
-    --mono-white: 0 0% 100%;
-    --mono-light: 0 0% 90%;
-    --mono-gray: 0 0% 50%;
-    --mono-dark: 0 0% 25%;
-    --mono-black: 0 0% 0%;
-
-    /* Gradients - Monotone */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 80%));
-    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 60%), hsl(0 0% 40%));
-    --gradient-accent: linear-gradient(180deg, hsl(0 0% 60%), hsl(0 0% 40%));
-    --gradient-background: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 10%));
-    --gradient-neon-green: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 90%));
-    --gradient-green-pink: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 80%));
+    /* Neon Green dominated gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(72 85% 58%) 0%, hsl(330 54% 83%) 50%, hsl(200 50% 65%) 100%);
+    --gradient-secondary: linear-gradient(180deg, hsl(72 85% 58%) 0%, hsl(330 54% 83%) 100%);
+    --gradient-accent: linear-gradient(180deg, hsl(72 85% 58%) 0%, hsl(200 50% 65%) 100%);
+    --gradient-background: linear-gradient(135deg, hsl(0 0% 1%) 0%, hsl(0 0% 3%) 50%, hsl(0 0% 1%) 100%);
+    --gradient-neon-green: linear-gradient(135deg, hsl(72 85% 58%) 0%, hsl(72 90% 65%) 100%);
+    --gradient-green-pink: linear-gradient(135deg, hsl(72 85% 58%) 0%, hsl(330 54% 83%) 100%);
     
-    /* Shadows - Monotone */
-    --shadow-neon: 0 0 25px hsl(0 0% 100% / 0.2);
-    --shadow-neon-lg: 0 0 40px hsl(0 0% 100% / 0.3);
-    --shadow-green-glow: 0 0 30px hsl(0 0% 100% / 0.2);
+    /* Neon Green dominated shadows */
+    --shadow-neon: 0 0 25px rgba(176, 209, 42, 0.6), 0 0 50px rgba(176, 209, 42, 0.3), 0 0 15px rgba(235, 190, 204, 0.2);
+    --shadow-neon-lg: 0 0 40px rgba(176, 209, 42, 0.7), 0 0 80px rgba(176, 209, 42, 0.4), 0 0 20px rgba(235, 190, 204, 0.3);
+    --shadow-green-glow: 0 0 30px rgba(176, 209, 42, 0.8), 0 0 60px rgba(176, 209, 42, 0.5), 0 0 90px rgba(176, 209, 42, 0.2);
     
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    /* Sidebar - Monotone */
+    /* Sidebar - Pure Black + Neon Green */
     --sidebar-background: 0 0% 2%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary: 72 85% 58%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 0 0% 5%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 30%;
-    --sidebar-ring: 0 0% 80%;
+    --sidebar-border: 72 85% 58%;
+    --sidebar-ring: 72 85% 58%;
   }
 
   .dark {
@@ -519,132 +527,6 @@
     }
   }
 
-  /* Grain effect overlay */
-  .photo-grain {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="300" height="300" filter="url(%23noise)" opacity="0.15"/></svg>');
-    opacity: 0.3;
-    pointer-events: none;
-    animation: grain-animation 0.3s steps(3) infinite;
-  }
-
-  /* Static noise signal filter - 교신 신호 효과 */
-  .signal-static {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.08;
-    background-image: 
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(255, 255, 255, 0.03) 2px,
-        rgba(255, 255, 255, 0.03) 4px
-      );
-    animation: static-scan 8s linear infinite, static-flicker 0.3s steps(2) infinite;
-  }
-
-  /* Weak signal strength (distant past/future) */
-  .signal-static.weak {
-    opacity: 0.04;
-  }
-
-  /* Strong signal strength (critical moments) */
-  .signal-static.strong {
-    opacity: 0.15;
-  }
-
-  .signal-static::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="staticNoise"><feTurbulence type="fractalNoise" baseFrequency="2.5" numOctaves="3" seed="2"/><feColorMatrix type="saturate" values="0"/></filter><rect width="200" height="200" filter="url(%23staticNoise)" opacity="0.4"/></svg>');
-    opacity: 0.15;
-    animation: grain-animation 0.2s steps(4) infinite;
-  }
-
-  .signal-static::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 200%;
-    height: 2px;
-    background: linear-gradient(90deg, 
-      transparent, 
-      rgba(176, 209, 42, 0.4), 
-      transparent
-    );
-    animation: signal-sweep 3s ease-in-out infinite;
-  }
-
-  /* Signal reception glitch effect for photos */
-  .signal-receive {
-    animation: signal-disruption 4s ease-in-out infinite;
-  }
-
-  @keyframes signal-disruption {
-    0%, 90%, 100% { 
-      filter: grayscale(100%) contrast(1.1) brightness(0.9);
-      transform: translateX(0);
-    }
-    93% { 
-      filter: grayscale(100%) contrast(1.3) brightness(0.7);
-      transform: translateX(-2px);
-    }
-    96% { 
-      filter: grayscale(100%) contrast(0.9) brightness(1.1);
-      transform: translateX(2px);
-    }
-  }
-
-  /* Text emphasis */
-  .text-emphasis {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-  }
-
-  @keyframes grain-animation {
-    0%, 100% { transform: translate(0, 0); }
-    10% { transform: translate(-5%, -5%); }
-    20% { transform: translate(-10%, 5%); }
-    30% { transform: translate(5%, -10%); }
-    40% { transform: translate(-5%, 15%); }
-    50% { transform: translate(-10%, 5%); }
-    60% { transform: translate(15%, 0); }
-    70% { transform: translate(0, 10%); }
-    80% { transform: translate(-15%, 0); }
-    90% { transform: translate(10%, 5%); }
-  }
-
-  @keyframes static-scan {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100%); }
-  }
-
-  @keyframes static-flicker {
-    0% { opacity: 0.08; }
-    50% { opacity: 0.12; }
-    100% { opacity: 0.06; }
-  }
-
-  @keyframes signal-sweep {
-    0% { top: -10%; }
-    50% { top: 50%; opacity: 1; }
-    100% { top: 110%; opacity: 0; }
-  }
-
   /* Synopsis container responsive */
   .synopsis-container {
     min-height: 80vh;
@@ -670,39 +552,15 @@
     }
   }
 
-  /* Mobile optimization - reduce noise intensity */
-  @media (max-width: 767px) {
-    .signal-static {
-      opacity: 0.3 !important;
-    }
-    
-    .signal-static.weak {
-      opacity: 0.01 !important;
-    }
-    
-    .signal-static.strong {
-      opacity: 0.04 !important;
-    }
-  }
-
   /* Reduced motion support for accessibility */
   @media (prefers-reduced-motion: reduce) {
     .parallax-text,
     .archive-photo-container,
     .animate-line-reveal,
-    .animate-fade-in,
-    .signal-receive,
-    .text-glitch {
+    .animate-fade-in {
       animation: none !important;
       transform: none !important;
       transition: opacity 0.3s ease !important;
-    }
-    
-    .signal-static,
-    .signal-static::before,
-    .signal-static::after {
-      animation: none !important;
-      display: none !important;
     }
     
     .star-twinkle,
