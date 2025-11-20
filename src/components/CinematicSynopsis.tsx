@@ -457,9 +457,9 @@ export const CinematicSynopsis = memo(({
                 >
                   <div className="flex flex-col items-center gap-1">
                     {/* Point marker */}
-                    <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                       isActive 
-                        ? 'bg-gray-300 scale-125 shadow-[0_0_8px_rgba(209,213,219,0.5)]' 
+                        ? 'bg-gray-300 scale-110 shadow-[0_0_6px_rgba(209,213,219,0.4)]' 
                         : 'bg-gray-600/50 hover:bg-gray-500/70 scale-100'
                     }`} />
                     
