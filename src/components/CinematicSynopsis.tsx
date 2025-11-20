@@ -602,5 +602,8 @@ export const CinematicSynopsis = memo(({
         </button>
       </div>
     </section>
+    </>
   );
 });
+
+CinematicSynopsis.displayName = 'CinematicSynopsis';
