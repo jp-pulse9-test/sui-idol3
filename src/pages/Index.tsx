@@ -61,8 +61,8 @@ const Index = () => {
         {/* Minimal Top Bar */}
         <div className="fixed top-4 right-4 z-50 flex gap-2">
           <WalletConnectButton 
-            variant="default" 
-            className="bg-primary hover:bg-primary-glow text-primary-foreground shadow-lg backdrop-blur-sm"
+            variant="outline" 
+            className="border-primary text-primary hover:bg-primary/10 shadow-lg backdrop-blur-sm"
           />
           {user && (
             <>
