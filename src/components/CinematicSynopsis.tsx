@@ -18,6 +18,7 @@ interface HistoricalPhoto {
 }
 interface Line {
   text: string;
+  textKo?: string;
   emphasis?: boolean;
   color?: 'red' | 'cyan' | 'purple' | 'green';
   spacing?: boolean;
@@ -43,6 +44,7 @@ export const CinematicSynopsis = memo(({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [language, setLanguage] = useState<'en' | 'ko'>('en');
 
   // Detect mobile device
   useEffect(() => {
