@@ -58,33 +58,35 @@ const Index = () => {
       
       {/* Main content */}
       <div className="relative z-10">
-        {/* Minimal Top Bar - Only shows when user is logged in */}
-        {user && (
-          <div className="fixed top-4 right-4 z-50 flex gap-2">
-            <WalletConnectButton 
-              variant="outline" 
-              className="shadow-lg backdrop-blur-sm"
-            />
-            <Button
-              onClick={() => navigate('/photocard-generator')}
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
-              title="Photocard Generator"
-            >
-              <Camera className="h-4 w-4" />
-            </Button>
-            <Button
-              onClick={() => navigate('/settings')}
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
-              title="Settings"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
+        {/* Minimal Top Bar */}
+        <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <WalletConnectButton 
+            variant="outline" 
+            className="shadow-lg backdrop-blur-sm"
+          />
+          {user && (
+            <>
+              <Button
+                onClick={() => navigate('/photocard-generator')}
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
+                title="Photocard Generator"
+              >
+                <Camera className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={() => navigate('/settings')}
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
+                title="Settings"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
 
         {/* Hero Section */}
         <MinimalHero onEnter={handleEnter} />
