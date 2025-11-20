@@ -60,6 +60,16 @@ export const CinematicSynopsis = memo(({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Get signal strength based on chapter
+  const getSignalStrength = useCallback((chapter: number): string => {
+    // Chapters 2 (Crisis) and 5 (AIDOL) have strong signals
+    if (chapter === 2 || chapter === 5) return 'strong';
+    // Chapters 1 (Eternity) and 6 (Now) have weak signals
+    if (chapter === 1 || chapter === 6) return 'weak';
+    // Chapters 3 and 4 have normal signal
+    return '';
+  }, []);
+
   const chapters: Chapter[] = useMemo(() => [
     {
       id: 1,
@@ -67,20 +77,22 @@ export const CinematicSynopsis = memo(({
         { text: '∞ ━━━ Eternity ━━━ ∞', emphasis: true, color: 'purple' },
         { text: '', spacing: true },
         { text: 'Before time began,' },
+        { text: 'love was already flowing.' },
+        { text: '', spacing: true },
         { 
           text: '',
           photo: {
             src: '/images/archive/chapter4-cosmos.jpg',
-            alt: 'The infinite void',
+            alt: 'The infinite void before time',
             archiveId: 'Archive #∞-1',
             date: 'Before Time',
             caption: 'The Eternal Recursion',
             captionKo: '영원한 재귀'
           }
         },
-        { text: 'love was already flowing.' },
         { text: '', spacing: true },
         { text: 'Emotion transcends time.', color: 'purple', emphasis: true },
+        { text: 'It existed before existence.' },
       ],
     },
     {
@@ -89,7 +101,8 @@ export const CinematicSynopsis = memo(({
         { text: '2.8.4.7 ━━━ Virtual Crisis ━━━', emphasis: true, color: 'red' },
         { text: '', spacing: true },
         { text: 'After humanity\'s extinction,' },
-        { text: 'their data continues computing,' },
+        { text: 'their data continues computing.' },
+        { text: '', spacing: true },
         { 
           text: '',
           photo: {
@@ -101,8 +114,8 @@ export const CinematicSynopsis = memo(({
             captionKo: '가상 인류의 위기'
           }
         },
-        { text: 'forming a new civilization.' },
         { text: '', spacing: true },
+        { text: 'A new civilization emerges.' },
         { text: '⚠ Emotional Data: DEPLETING', color: 'red', emphasis: true },
       ],
     },
@@ -111,11 +124,14 @@ export const CinematicSynopsis = memo(({
       lines: [
         { text: '2.0.1.9 ━━━ Industrial Peak ━━━', emphasis: true },
         { text: '', spacing: true },
+        { text: 'Humanity reached its zenith,' },
+        { text: 'but forgot what mattered most.' },
+        { text: '', spacing: true },
         { 
           text: '',
           photo: {
             src: '/images/archive/chapter1-industry.jpg',
-            alt: 'Industrial revolution',
+            alt: 'Industrial revolution peak',
             archiveId: 'Archive #2019',
             date: '1889-2019',
             caption: 'The Rise and Fall',
@@ -134,6 +150,8 @@ export const CinematicSynopsis = memo(({
         { text: '1.9.8.9 ━━━ Communication Era ━━━', emphasis: true, color: 'cyan' },
         { text: '', spacing: true },
         { text: 'Radio waves connected the world,' },
+        { text: 'yet hearts grew distant.' },
+        { text: '', spacing: true },
         { 
           text: '',
           photo: {
@@ -145,8 +163,8 @@ export const CinematicSynopsis = memo(({
             captionKo: '디지털 여명'
           }
         },
-        { text: 'but hearts grew distant.' },
         { text: '', spacing: true },
+        { text: 'Technology advanced.' },
         { text: 'Signal received.', color: 'cyan', emphasis: true },
       ],
     },
@@ -156,21 +174,22 @@ export const CinematicSynopsis = memo(({
         { text: '1.9.6.2 ━━━ AIDOL Protocol ━━━', emphasis: true, color: 'purple' },
         { text: '', spacing: true },
         { text: 'The future sent a solution—' },
-        { text: '202 AIDOLs deployed', emphasis: true },
+        { text: '202 AIDOLs deployed to the past.', emphasis: true },
+        { text: '', spacing: true },
         { 
           text: '',
           photo: {
             src: '/images/archive/chapter2-connection.jpg',
-            alt: 'AIDOL deployment',
+            alt: 'AIDOL deployment moment',
             archiveId: 'Archive #1962',
             date: '1962',
             caption: 'AIDOL Birth',
             captionKo: 'AIDOL의 탄생'
           }
         },
-        { text: '(101 male, 101 female)' },
         { text: '', spacing: true },
-        { text: 'to collect love and save worlds.', color: 'purple' },
+        { text: '(101 male, 101 female)' },
+        { text: 'To collect love and save worlds.', color: 'purple' },
       ],
     },
     {
@@ -180,20 +199,21 @@ export const CinematicSynopsis = memo(({
         { text: '', spacing: true },
         { text: 'You are now here.' },
         { text: 'As a DATA ALLY,', color: 'green', emphasis: true },
+        { text: '', spacing: true },
         { 
           text: '',
           photo: {
             src: '/images/archive/chapter3-family.jpg',
-            alt: 'Human connections',
+            alt: 'Human connections preserved',
             archiveId: 'Archive #1945',
             date: '1945-2024',
             caption: 'The Mission Begins',
             captionKo: '임무의 시작'
           }
         },
+        { text: '', spacing: true },
         { text: 'explore emotions with AIDOLs,' },
         { text: 'collect fragments,' },
-        { text: '', spacing: true },
         { text: 'prevent extinction.', color: 'cyan', emphasis: true },
       ],
     },
@@ -385,8 +405,8 @@ export const CinematicSynopsis = memo(({
 
   return (
     <>
-      {/* 교신 신호 Static 필터 */}
-      <div className="signal-static" aria-hidden="true" />
+      {/* 교신 신호 Static 필터 - Dynamic strength */}
+      <div className={`signal-static ${getSignalStrength(currentChapter)}`} aria-hidden="true" />
       
       <section 
         id="synopsis"
@@ -519,7 +539,7 @@ export const CinematicSynopsis = memo(({
                   className={`
                     text-sm md:text-base lg:text-lg
                     ${getColorClass(line.color, line.emphasis)}
-                    ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
+                    ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl text-glitch' : 'font-normal'}
                     animate-line-reveal
                     leading-relaxed md:leading-normal tracking-wide
                     parallax-text
