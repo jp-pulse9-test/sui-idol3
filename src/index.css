@@ -21,72 +21,64 @@
 
 @layer base {
   :root {
-    /* Pure Black Design */
-    --background: 0 0% 2%;
-    --foreground: 0 0% 98%;
-
-    /* Almost Pure Black surfaces */
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
-
-    /* Ice Pink - Primary */
-    --primary: 330 54% 83%;
-    --primary-foreground: 0 0% 2%;
-    --primary-glow: 330 54% 90%;
-
-    /* Intense Neon Green - Secondary */
-    --secondary: 72 85% 58%;
-    --secondary-foreground: 0 0% 0%;
-    --secondary-glow: 72 90% 65%;
-
-    /* Teal Accent */
-    --accent: 200 50% 65%;
-    --accent-foreground: 0 0% 0%;
-    --accent-glow: 200 50% 75%;
-
-    /* Dark neutral palette */
-    --muted: 0 0% 8%;
+    /* Monotone Color System - White, Black, Gray */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --primary-glow: 0 0% 100%;
+    --secondary: 0 0% 25%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-glow: 0 0% 30%;
+    --accent: 0 0% 25%;
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 0 0% 30%;
+    --muted: 0 0% 25%;
     --muted-foreground: 0 0% 70%;
-
-    /* System colors */
-    --destructive: 0 75% 60%;
+    --destructive: 0 0% 40%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 12%;
-    --input: 0 0% 10%;
-    --ring: 72 85% 58%;
-
+    --border: 0 0% 30%;
+    --input: 0 0% 30%;
+    --ring: 0 0% 80%;
     --radius: 0.75rem;
 
-    /* Neon Green dominated gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(72 85% 58%) 0%, hsl(330 54% 83%) 50%, hsl(200 50% 65%) 100%);
-    --gradient-secondary: linear-gradient(180deg, hsl(72 85% 58%) 0%, hsl(330 54% 83%) 100%);
-    --gradient-accent: linear-gradient(180deg, hsl(72 85% 58%) 0%, hsl(200 50% 65%) 100%);
-    --gradient-background: linear-gradient(135deg, hsl(0 0% 1%) 0%, hsl(0 0% 3%) 50%, hsl(0 0% 1%) 100%);
-    --gradient-neon-green: linear-gradient(135deg, hsl(72 85% 58%) 0%, hsl(72 90% 65%) 100%);
-    --gradient-green-pink: linear-gradient(135deg, hsl(72 85% 58%) 0%, hsl(330 54% 83%) 100%);
+    /* Monotone Variables */
+    --mono-white: 0 0% 100%;
+    --mono-light: 0 0% 90%;
+    --mono-gray: 0 0% 50%;
+    --mono-dark: 0 0% 25%;
+    --mono-black: 0 0% 0%;
+
+    /* Gradients - Monotone */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 80%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 60%), hsl(0 0% 40%));
+    --gradient-accent: linear-gradient(180deg, hsl(0 0% 60%), hsl(0 0% 40%));
+    --gradient-background: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 10%));
+    --gradient-neon-green: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 90%));
+    --gradient-green-pink: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 80%));
     
-    /* Neon Green dominated shadows */
-    --shadow-neon: 0 0 25px rgba(176, 209, 42, 0.6), 0 0 50px rgba(176, 209, 42, 0.3), 0 0 15px rgba(235, 190, 204, 0.2);
-    --shadow-neon-lg: 0 0 40px rgba(176, 209, 42, 0.7), 0 0 80px rgba(176, 209, 42, 0.4), 0 0 20px rgba(235, 190, 204, 0.3);
-    --shadow-green-glow: 0 0 30px rgba(176, 209, 42, 0.8), 0 0 60px rgba(176, 209, 42, 0.5), 0 0 90px rgba(176, 209, 42, 0.2);
+    /* Shadows - Monotone */
+    --shadow-neon: 0 0 25px hsl(0 0% 100% / 0.2);
+    --shadow-neon-lg: 0 0 40px hsl(0 0% 100% / 0.3);
+    --shadow-green-glow: 0 0 30px hsl(0 0% 100% / 0.2);
     
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    /* Sidebar - Pure Black + Neon Green */
+    /* Sidebar - Monotone */
     --sidebar-background: 0 0% 2%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 72 85% 58%;
+    --sidebar-primary: 0 0% 100%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 0 0% 5%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 72 85% 58%;
-    --sidebar-ring: 72 85% 58%;
+    --sidebar-border: 0 0% 30%;
+    --sidebar-ring: 0 0% 80%;
   }
 
   .dark {
@@ -605,37 +597,22 @@
 
   @keyframes signal-disruption {
     0%, 90%, 100% { 
-      filter: grayscale(100%) contrast(1.1) brightness(0.9) sepia(15%);
+      filter: grayscale(100%) contrast(1.1) brightness(0.9);
       transform: translateX(0);
     }
     93% { 
-      filter: grayscale(100%) contrast(1.3) brightness(0.7) sepia(25%) hue-rotate(10deg);
+      filter: grayscale(100%) contrast(1.3) brightness(0.7);
       transform: translateX(-2px);
     }
     96% { 
-      filter: grayscale(100%) contrast(0.9) brightness(1.1) sepia(5%);
+      filter: grayscale(100%) contrast(0.9) brightness(1.1);
       transform: translateX(2px);
     }
   }
 
-  /* Text glitch for emphasis */
-  .text-glitch {
-    animation: text-signal-glitch 5s ease-in-out infinite;
-  }
-
-  @keyframes text-signal-glitch {
-    0%, 95%, 100% { 
-      text-shadow: 0 0 10px currentColor;
-      transform: translateX(0);
-    }
-    96% { 
-      text-shadow: -2px 0 5px rgba(255, 0, 0, 0.5), 2px 0 5px rgba(0, 255, 255, 0.5);
-      transform: translateX(-1px);
-    }
-    98% { 
-      text-shadow: 2px 0 5px rgba(255, 0, 0, 0.5), -2px 0 5px rgba(0, 255, 255, 0.5);
-      transform: translateX(1px);
-    }
+  /* Text emphasis */
+  .text-emphasis {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
   }
 
   @keyframes grain-animation {
@@ -696,11 +673,15 @@
   /* Mobile optimization - reduce noise intensity */
   @media (max-width: 767px) {
     .signal-static {
-      opacity: 0.04 !important;
+      opacity: 0.3 !important;
+    }
+    
+    .signal-static.weak {
+      opacity: 0.01 !important;
     }
     
     .signal-static.strong {
-      opacity: 0.08 !important;
+      opacity: 0.04 !important;
     }
   }
 

@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
-import { ChevronRight, Radio, Sparkles, Zap, Heart, Users, Infinity, Clock, Globe, Database, Cpu, Brain, AlertTriangle } from 'lucide-react';
 import { ArchivePhoto } from './synopsis/ArchivePhoto';
 import { ParallaxText } from './synopsis/ParallaxText';
 interface CinematicSynopsisProps {
@@ -20,7 +19,6 @@ interface HistoricalPhoto {
 interface Line {
   text: string;
   emphasis?: boolean;
-  color?: 'red' | 'cyan' | 'purple' | 'green';
   spacing?: boolean;
   photo?: HistoricalPhoto;
 }
@@ -43,6 +41,8 @@ export const CinematicSynopsis = memo(({
   const [autoProgress, setAutoProgress] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [visibleItems, setVisibleItems] = useState<number>(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Detect mobile device
   useEffect(() => {

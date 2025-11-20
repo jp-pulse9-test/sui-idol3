@@ -96,6 +96,9 @@ export const ArchivePhoto = memo(({ photo, delay = 0, parallaxOffset = 0, index 
           src={photo.src}
           alt={photo.alt}
           className="archive-photo signal-receive object-contain max-h-[30vh] md:max-h-[35vh]"
+          style={{
+            filter: 'grayscale(1) contrast(1.1)'
+          }}
           loading="lazy"
         />
         <ArchivePhotoOverlay />
