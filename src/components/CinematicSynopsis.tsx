@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
-import { ChevronRight, Zap, Heart, Users, Infinity } from 'lucide-react';
+import { ChevronRight, Factory, Zap, Wifi, Rocket, Archive, Sunrise, Infinity } from 'lucide-react';
 import { ArchivePhoto } from './synopsis/ArchivePhoto';
 import { ParallaxText } from './synopsis/ParallaxText';
 interface CinematicSynopsisProps {
@@ -357,31 +357,56 @@ export const CinematicSynopsis = memo(({
   };
   const currentChapterData = chapters.find(c => c.id === currentChapter) || chapters[0];
 
-  // Timeline points configuration
+  // Timeline points configuration - 7 chronological markers
   const timelinePoints = useMemo(() => [{
-    year: '2847',
-    label: 'Future',
+    year: '1889',
+    label: 'Industrial Origin',
     chapter: 1,
-    icon: Zap,
-    color: 'cyan'
-  }, {
-    year: '1962',
-    label: 'AIDOL Birth',
-    chapter: 2,
-    icon: Heart,
-    color: 'purple'
+    icon: Factory,
+    color: 'red',
+    position: 0
   }, {
     year: '1945',
-    label: 'Current State',
+    label: 'Nuclear Age',
+    chapter: 1,
+    icon: Zap,
+    color: 'red',
+    position: 14.3
+  }, {
+    year: '1962',
+    label: 'Connection',
+    chapter: 2,
+    icon: Wifi,
+    color: 'cyan',
+    position: 28.6
+  }, {
+    year: '1967',
+    label: 'Space Race',
+    chapter: 2,
+    icon: Rocket,
+    color: 'cyan',
+    position: 42.9
+  }, {
+    year: '2847',
+    label: 'Archive',
     chapter: 3,
-    icon: Users,
-    color: 'green'
+    icon: Archive,
+    color: 'purple',
+    position: 57.2
+  }, {
+    year: '3024',
+    label: 'New Dawn',
+    chapter: 4,
+    icon: Sunrise,
+    color: 'green',
+    position: 71.5
   }, {
     year: '∞',
-    label: 'Eternal',
+    label: 'Infinity',
     chapter: 4,
     icon: Infinity,
-    color: 'purple'
+    color: 'purple',
+    position: 85.8
   }], []);
   const handleTimelineClick = useCallback((chapter: number) => {
     setCurrentChapter(chapter);
@@ -390,12 +415,65 @@ export const CinematicSynopsis = memo(({
   }, []);
   return <section id="synopsis" className="w-full min-h-screen flex items-center justify-center bg-black px-4 py-16 md:py-20 perspective-container" role="region" aria-label="Story Synopsis" aria-live="polite">
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container">
-        {/* Chapter Progress Bar */}
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-3/5 md:w-2/5 z-10">
+        {/* Chapter Progress Bar with Timeline Chronology */}
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10">
+          {/* Timeline Points */}
+          <div className="relative mb-6">
+            {timelinePoints.map((point, idx) => {
+              const PointIcon = point.icon;
+              const isActive = point.chapter === currentChapter;
+              const colorClasses = {
+                red: 'text-red-500 hover:text-red-400',
+                cyan: 'text-cyan-400 hover:text-cyan-300',
+                purple: 'text-purple-400 hover:text-purple-300',
+                green: 'text-green-400 hover:text-green-300'
+              };
+              const glowClasses = {
+                red: 'drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]',
+                cyan: 'drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]',
+                purple: 'drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]',
+                green: 'drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]'
+              };
+              
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleTimelineClick(point.chapter)}
+                  className={`absolute -translate-x-1/2 group transition-all duration-300 ${
+                    isActive ? 'scale-110' : 'scale-100 hover:scale-105'
+                  }`}
+                  style={{ left: `${point.position}%` }}
+                  aria-label={`${point.year} - ${point.label}`}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <PointIcon 
+                      className={`w-4 h-4 md:w-5 md:h-5 transition-all duration-300 ${
+                        colorClasses[point.color as keyof typeof colorClasses]
+                      } ${isActive ? glowClasses[point.color as keyof typeof glowClasses] : ''}`}
+                    />
+                    <span className={`text-[8px] md:text-xs font-orbitron tracking-wider transition-all duration-300 ${
+                      isActive 
+                        ? `${colorClasses[point.color as keyof typeof colorClasses]} font-bold` 
+                        : 'text-white/40 group-hover:text-white/70'
+                    }`}>
+                      {point.year}
+                    </span>
+                    <span className={`text-[6px] md:text-[10px] font-orbitron opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                      colorClasses[point.color as keyof typeof colorClasses]
+                    }`}>
+                      {point.label}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Progress Bar */}
           <div className="h-1 bg-white/10 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-primary to-purple-400 transition-all duration-200 ease-linear" style={{
-            width: `${(currentChapter - 1) / 4 * 100 + autoProgress / 4}%`
-          }} />
+              width: `${(currentChapter - 1) / 4 * 100 + autoProgress / 4}%`
+            }} />
           </div>
           <p className="text-white/60 text-xs text-center mt-2 tracking-wide font-orbitron">
             Chapter {currentChapter}/4
