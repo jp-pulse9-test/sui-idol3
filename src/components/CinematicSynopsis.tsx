@@ -365,31 +365,31 @@ export const CinematicSynopsis = memo(({
   const timelinePoints = useMemo(() => [{
     year: '1889',
     chapter: 1,
-    position: 0
+    position: 5
   }, {
     year: '1945',
     chapter: 1,
-    position: 14.3
+    position: 19
   }, {
     year: '1962',
     chapter: 2,
-    position: 28.6
+    position: 33
   }, {
     year: '1967',
     chapter: 2,
-    position: 42.9
+    position: 47
   }, {
     year: '2847',
     chapter: 3,
-    position: 57.2
+    position: 61
   }, {
     year: '3024',
     chapter: 4,
-    position: 71.5
+    position: 75
   }, {
     year: '∞',
     chapter: 4,
-    position: 85.8
+    position: 89
   }], []);
   const handleTimelineClick = useCallback((chapter: number) => {
     setIsTransitioning(true);
