@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { secureStorage } from '@/utils/secureStorage';
 import { useWallet } from '@/hooks/useWallet';
 
 interface AuthContextType {
@@ -30,44 +29,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { isConnected, walletAddress, connectWallet: dappKitConnect, disconnectWallet: dappKitDisconnect } = walletHook;
 
   useEffect(() => {
-    const checkWalletConnection = async () => {
-      try {
-        console.log('AuthProvider 초기화 중...');
-        const savedWallet = secureStorage.getWalletAddress();
-        if (savedWallet) {
-          // 보안을 위해 DB 조회 없이 로컬 상태 복원
-          const userId = 'user_' + savedWallet.slice(-12);
-          setUser({ id: userId, wallet_address: savedWallet });
-          console.log('저장된 지갑 연결 복원:', savedWallet);
-        }
-      } catch (error) {
-        console.error('지갑 연결 확인 중 오류:', error);
-        setWalletError(error instanceof Error ? error.message : '알 수 없는 오류');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkWalletConnection();
+    // Let wallet library handle persistence via autoConnect
+    setLoading(false);
   }, []);
 
-  // dapp-kit 지갑 연결 상태 동기화
+  // Sync wallet connection state (wallet library handles persistence)
   useEffect(() => {
     try {
       if (isConnected && walletAddress) {
         const userId = 'user_' + walletAddress.slice(-12);
         setUser({ id: userId, wallet_address: walletAddress });
-        secureStorage.setWalletAddress(walletAddress);
-        console.log('dapp-kit 지갑 연결됨:', walletAddress);
+        console.log('Wallet connected:', walletAddress);
         setWalletError(null);
-      } else if (isConnected === false) {  // 명시적으로 false인 경우만
+      } else if (isConnected === false) {
         setUser(null);
-        secureStorage.removeWalletAddress();
-        console.log('dapp-kit 지갑 연결 해제됨');
+        console.log('Wallet disconnected');
       }
     } catch (error) {
-      console.error('지갑 상태 동기화 오류:', error);
-      setWalletError(error instanceof Error ? error.message : '지갑 상태 동기화 오류');
+      console.error('Wallet sync error:', error);
+      setWalletError(error instanceof Error ? error.message : 'Wallet sync error');
     }
   }, [isConnected, walletAddress]);
 
@@ -124,11 +104,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (dappKitDisconnect) {
         await dappKitDisconnect();
       }
-      secureStorage.removeWalletAddress();
       setUser(null);
-      console.log('✅ 지갑 연결 해제 완료');
+      console.log('Wallet disconnected');
     } catch (error) {
-      console.error('❌ 지갑 연결 해제 오류:', error);
+      console.error('Wallet disconnect error:', error);
     }
   };
 

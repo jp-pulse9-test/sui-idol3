@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, EyeOff, Search, Filter, TrendingUp, TrendingDown, Heart, Link2, ArrowRightLeft } from "lucide-react";
 import { useHeartSystem } from "@/hooks/useHeartSystem";
 import { toast } from "sonner";
-import { secureStorage } from "@/utils/secureStorage";
+import { useWallet } from "@/hooks/useWallet";
 import { crossChainService } from "@/services/crossChainService";
 import { nftBridgeService } from "@/services/nftBridgeService";
 import { NFTBridge } from "@/components/NFTBridge";
@@ -65,7 +65,7 @@ export const PhotoCardGallery = ({
   const [selectedCardForBridge, setSelectedCardForBridge] = useState<PhotoCard | null>(null);
 
   const { dailyHearts, giveHeart, hasGivenHeart } = useHeartSystem();
-  const currentWallet = secureStorage.getWalletAddress();
+  const { walletAddress: currentWallet } = useWallet();
 
   const rarityOrder = { 'SSR': 4, 'SR': 3, 'R': 2, 'N': 1 };
   const rarityColors = {

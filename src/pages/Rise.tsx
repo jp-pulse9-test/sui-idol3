@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Leaderboard } from "@/components/ui/leaderboard";
-import { secureStorage } from "@/utils/secureStorage";
 import { TrendingUp, ArrowLeft, Home } from "lucide-react";
 
 interface SelectedIdol {
@@ -132,14 +131,7 @@ const Rise = () => {
   ];
 
   useEffect(() => {
-    const savedWallet = secureStorage.getWalletAddress();
     const savedIdol = localStorage.getItem('selectedIdol');
-    
-    if (!savedWallet) {
-      toast.error("Please connect your wallet first!");
-      navigate('/');
-      return;
-    }
     
     if (!savedIdol) {
       toast.error("Please select an idol first!");
@@ -147,7 +139,6 @@ const Rise = () => {
       return;
     }
 
-    setWalletAddress(savedWallet);
     setSelectedIdol(JSON.parse(savedIdol));
     
     // Load photocards from local storage
