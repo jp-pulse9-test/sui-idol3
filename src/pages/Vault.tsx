@@ -13,7 +13,6 @@ import { Marketplace } from "@/components/ui/marketplace";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { IdolPhotocardGenerator } from "@/components/IdolPhotocardGenerator";
 import { Heart } from "lucide-react";
-import { secureStorage } from "@/utils/secureStorage";
 import { usePhotoCardMinting } from "@/services/photocardMintingSimple";
 import { useWallet } from "@/hooks/useWallet";
 import { dailyFreeBoxService } from "@/services/dailyFreeBoxService";

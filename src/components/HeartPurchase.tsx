@@ -4,12 +4,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Coins, Crown } from "lucide-react";
 import { useHeartSystem } from "@/hooks/useHeartSystem";
-import { secureStorage } from "@/utils/secureStorage";
+import { useWallet } from "@/hooks/useWallet";
 
 export const HeartPurchase = () => {
   const { fanHearts, purchaseHearts } = useHeartSystem();
+  const { walletAddress } = useWallet();
   const [suiCoins, setSuiCoins] = useState(() => parseFloat(localStorage.getItem('suiCoins') || '0'));
-  const currentWallet = secureStorage.getWalletAddress() || '';
 
   const handlePurchaseHearts = () => {
     if (purchaseHearts(10)) {

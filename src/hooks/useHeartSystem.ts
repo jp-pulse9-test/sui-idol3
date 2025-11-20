@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import { secureStorage } from "@/utils/secureStorage";
 
 interface HeartSystemState {
   dailyHearts: number;
@@ -17,7 +16,7 @@ export const useHeartSystem = () => {
     return { dailyHearts, fanHearts, givenHearts };
   });
 
-  const giveHeart = useCallback((cardId: string, cardOwnerId: string) => {
+  const giveHeart = useCallback((cardId: string, cardOwnerId: string, currentWallet?: string) => {
     if (heartState.dailyHearts <= 0) {
       toast.error('오늘의 하트를 모두 사용했습니다!');
       return false;
@@ -28,9 +27,8 @@ export const useHeartSystem = () => {
       return false;
     }
 
-    // 자신의 포카에는 하트를 줄 수 없음
-    const currentWallet = secureStorage.getWalletAddress();
-    if (cardOwnerId === currentWallet) {
+    // 자신의 포카에는 하트를 줄 수 없음 (currentWallet 전달받음)
+    if (currentWallet && cardOwnerId === currentWallet) {
       toast.error('자신의 포카에는 하트를 줄 수 없습니다!');
       return false;
     }
@@ -50,8 +48,8 @@ export const useHeartSystem = () => {
     // 포카 하트 수 업데이트
     updatePhotoCardHearts(cardId);
     
-    // 포카 소유자의 팬 하트 증가 (실제로는 서버에서 처리)
-    updateOwnerFanHearts(cardOwnerId);
+    // 포카 소유자의 팬 하트 증가 (currentWallet 필요시 전달받음)
+    updateOwnerFanHearts(cardOwnerId, currentWallet);
 
     toast.success('💖 하트를 보냈습니다!');
     return true;
@@ -68,11 +66,9 @@ export const useHeartSystem = () => {
     localStorage.setItem('photoCards', JSON.stringify(updatedCards));
   };
 
-  const updateOwnerFanHearts = (ownerId: string) => {
-    // 실제로는 서버에서 소유자의 팬 하트를 증가시켜야 함
-    // 현재는 로컬에서만 시뮬레이션
-    const currentWallet = secureStorage.getWalletAddress();
-    if (ownerId === currentWallet) {
+  const updateOwnerFanHearts = (ownerId: string, currentWallet?: string) => {
+    // Only update if ownerId matches currentWallet (if provided)
+    if (currentWallet && ownerId === currentWallet) {
       const currentFanHearts = parseInt(localStorage.getItem('fanHearts') || '0');
       const newFanHearts = currentFanHearts + 1;
       localStorage.setItem('fanHearts', newFanHearts.toString());

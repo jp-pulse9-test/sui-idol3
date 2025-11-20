@@ -7,7 +7,6 @@ import { Crown, Heart, Star, Sparkles, BarChart3, Radar, ArrowRight } from "luci
 import { toast } from "sonner";
 import { IdolStatsDisplay, generateRandomStats } from "@/components/IdolStatsDisplay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { secureStorage } from "@/utils/secureStorage";
 import { IdolPreset } from "@/types/idol";
 import { useNavigate } from "react-router-dom";
 import { useWallet } from "@/hooks/useWallet";

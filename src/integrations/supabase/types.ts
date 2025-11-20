@@ -519,6 +519,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string | null
@@ -607,6 +628,7 @@ export type Database = {
           profile_image: string
         }[]
       }
+      get_current_auth_uid: { Args: never; Returns: string }
       get_current_user_wallet: { Args: never; Returns: string }
       get_daily_free_box_status: {
         Args: { user_wallet_param: string }
@@ -641,6 +663,13 @@ export type Database = {
         Args: { user_wallet_param: string }
         Returns: boolean
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       hash_api_key: { Args: { key_to_hash: string }; Returns: string }
       is_admin_user: { Args: never; Returns: boolean }
       migrate_api_key_to_hash: {
@@ -657,7 +686,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -784,6 +813,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
