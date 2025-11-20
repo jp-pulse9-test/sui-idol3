@@ -425,7 +425,7 @@ export const CinematicSynopsis = memo(({
         </div>
 
         {/* Timeline Navigation */}
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50 
                         flex gap-2 md:gap-3 p-2 md:p-3 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
           {timelinePoints.map((point) => {
             const Icon = point.icon;
