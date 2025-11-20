@@ -19,6 +19,35 @@
 
 /* Modern Glassmorphism Design System - Soft Gradient K-POP Idol Theme */
 
+@layer utilities {
+  .typing-animation {
+    overflow: hidden;
+    border-right: 0.15em solid hsl(var(--primary));
+    white-space: nowrap;
+    animation: typing 2s steps(20, end), blink-caret 0.75s step-end infinite;
+    display: inline-block;
+  }
+
+  @keyframes typing {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes blink-caret {
+    from,
+    to {
+      border-color: transparent;
+    }
+    50% {
+      border-color: hsl(var(--primary));
+    }
+  }
+}
+
 @layer base {
   :root {
     /* Pure Black Design */
