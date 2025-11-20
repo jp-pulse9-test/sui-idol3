@@ -522,51 +522,10 @@ export const CinematicSynopsis = memo(({
         </div>
 
         {/* Timeline Navigation */}
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 
-                        flex gap-2 md:gap-3 p-2 md:p-3 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
-          {timelinePoints.map(point => {
-            const Icon = point.icon;
-            const isActive = currentChapter === point.chapter;
-            return <button key={point.chapter} onClick={() => handleTimelineClick(point.chapter)} className={`
-                  flex flex-col items-center gap-1 px-2 md:px-3 py-1.5 md:py-2 rounded-lg
-                  transition-all duration-300 group
-                  ${isActive ? 'bg-white/20 scale-105' : 'bg-transparent hover:bg-white/10'}
-                `} aria-label={`Go to ${point.label} (Year ${point.year})`} aria-current={isActive}>
-                <Icon className={`
-                    w-4 h-4 md:w-5 md:h-5 transition-all duration-300
-                    ${isActive ? `text-${point.color}-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]` : 'text-white/60 group-hover:text-white/80'}
-                  `} />
-                <div className="flex flex-col items-center">
-                  <span className={`
-                    text-[10px] md:text-xs font-orbitron tracking-wider
-                    ${isActive ? 'text-white font-semibold' : 'text-white/60 group-hover:text-white/80'}
-                  `}>
-                    {point.year}
-                  </span>
-                  <span className={`
-                    text-[8px] md:text-[10px] font-orbitron
-                    ${isActive ? 'text-white/80' : 'text-white/40 group-hover:text-white/60'}
-                  `}>
-                    {point.label}
-                  </span>
-                </div>
-              </button>;
-          })}
-        </div>
+        
 
         {/* Skip Button - Immediate display with fade-in */}
-        <button onClick={handleSkip} className={`fixed bottom-6 right-6 z-50 px-4 py-2 md:px-6 md:py-3
-                     bg-white/10 hover:bg-white/20 backdrop-blur-md
-                     border border-white/20 rounded-lg
-                     text-white text-xs md:text-sm font-orbitron tracking-wider
-                     transition-all duration-300 hover:scale-105
-                     flex items-center gap-2
-                     ${showSkip ? 'opacity-100 animate-fade-in' : 'opacity-0'}`} style={{
-          animationDelay: '0ms'
-        }} aria-label="Skip synopsis and go to gateways">
-          <span>SKIP TO GATEWAYS</span>
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        
       </div>
     </section>
     </>;
