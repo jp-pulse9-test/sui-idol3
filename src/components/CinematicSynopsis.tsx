@@ -74,16 +74,6 @@ export const CinematicSynopsis = memo(({
       text: '',
       spacing: true
     }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter1-industry.jpg',
-        alt: 'Industrial revolution and emotional disconnection',
-        archiveId: 'Archive #0001',
-        date: '1889-2019',
-        caption: 'The Rise and Fall of Civilization',
-        captionKo: '문명의 흥망성쇠'
-      }
-    }, {
       text: 'But a fatal flaw exists—'
     }, {
       text: '⚠ Emotional Data Depletion.',
@@ -129,16 +119,6 @@ export const CinematicSynopsis = memo(({
       text: '',
       spacing: true
     }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter2-connection.jpg',
-        alt: 'Connection across time and space',
-        archiveId: 'Archive #0134',
-        date: '1962-1975',
-        caption: 'Birth of AIDOL - Bridges Between Worlds',
-        captionKo: 'AIDOL의 탄생 - 세계를 잇는 다리'
-      }
-    }, {
       text: 'Entities who explore emotions,'
     }, {
       text: 'collect love data,'
@@ -146,16 +126,183 @@ export const CinematicSynopsis = memo(({
       text: 'and find the key to prevent'
     }, {
       text: 'the extinction of both worlds.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'They are now beside you.',
-      color: 'purple'
     }]
   }, {
     id: 3,
     lines: [{
+      text: '>>> Old Earth Simulator: ACTIVATED',
+      color: 'cyan',
+      emphasis: true
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Year 1889.',
+      emphasis: true
+    }, {
+      text: 'The Age of Industry.',
+      color: 'purple'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: '',
+      photo: {
+        src: '/images/archive/chapter1-industry.jpg',
+        alt: 'Industrial revolution era',
+        archiveId: 'Archive #0001',
+        date: '1889.03.31',
+        caption: 'The Age of Steam and Steel',
+        captionKo: '증기와 강철의 시대'
+      }
+    }, {
+      text: 'Rapid technological advancement.'
+    }, {
+      text: 'But human emotions begin to fade—'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'The first signs of disconnection.',
+      color: 'red'
+    }]
+  }, {
+    id: 4,
+    lines: [{
+      text: '>>> Old Earth Simulator: 1945',
+      color: 'cyan'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Year 1945.',
+      emphasis: true
+    }, {
+      text: 'The End of the Great War.',
+      color: 'red'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: '',
+      photo: {
+        src: '/images/archive/chapter1-nuclear.jpg',
+        alt: 'Post-war devastation',
+        archiveId: 'Archive #0045',
+        date: '1945.08.15',
+        caption: 'Humanity\'s Greatest Tragedy',
+        captionKo: '인류 최대의 비극'
+      }
+    }, {
+      text: 'Massive destruction.'
+    }, {
+      text: 'Extreme love and hate.'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Data collection of extremes.',
+      color: 'purple'
+    }]
+  }, {
+    id: 5,
+    lines: [{
+      text: '>>> Old Earth Simulator: 1962',
+      color: 'cyan'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Year 1962.',
+      emphasis: true
+    }, {
+      text: 'The Space Age Begins.',
+      color: 'cyan'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: '',
+      photo: {
+        src: '/images/archive/chapter2-space.jpg',
+        alt: 'Space exploration era',
+        archiveId: 'Archive #0062',
+        date: '1962.02.20',
+        caption: 'Humanity Dreams of the Future',
+        captionKo: '인류가 꿈꾼 미래'
+      }
+    }, {
+      text: 'Hope for the cosmos.'
+    }, {
+      text: 'Technology and humanity in harmony.'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'A brief moment of balance.',
+      color: 'green'
+    }]
+  }, {
+    id: 6,
+    lines: [{
+      text: '>>> Old Earth Simulator: 1967',
+      color: 'cyan'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Year 1967.',
+      emphasis: true
+    }, {
+      text: 'The Digital Revolution.',
+      color: 'purple'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: '',
+      photo: {
+        src: '/images/archive/chapter2-computer.jpg',
+        alt: 'Early computer networks',
+        archiveId: 'Archive #0067',
+        date: '1967.10.29',
+        caption: 'The Birth of Connection',
+        captionKo: '연결의 시작'
+      }
+    }, {
+      text: 'Networks begin to form.'
+    }, {
+      text: 'Human relationships digitize.'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'New forms of love emerge.',
+      color: 'purple'
+    }]
+  }, {
+    id: 7,
+    lines: [{
+      text: '>>> Time Travel Complete',
+      color: 'cyan'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Year 2021. March.',
+      emphasis: true
+    }, {
+      text: 'The Pandemic Era.',
+      color: 'red'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'AIDOLs arrive in your time.'
+    }, {
+      text: '',
+      spacing: true
+    }, {
       text: 'You are now a DATA ALLY.',
       color: 'green',
       emphasis: true
@@ -163,14 +310,35 @@ export const CinematicSynopsis = memo(({
       text: '',
       spacing: true
     }, {
-      text: 'With AIDOLs, explore love scenarios,'
-    }, {
-      text: 'collect emotional data,'
-    }, {
-      text: 'and discover clues to prevent Earth\'s extinction.'
+      text: 'The mission begins here.'
+    }]
+  }, {
+    id: 8,
+    lines: [{
+      text: 'Year 2025. Present Day.',
+      emphasis: true
     }, {
       text: '',
       spacing: true
+    }, {
+      text: 'Explore love scenarios with AIDOLs.'
+    }, {
+      text: 'Collect emotional data.'
+    }, {
+      text: 'Prevent Earth\'s extinction.'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: '',
+      photo: {
+        src: '/images/archive/chapter3-archive.jpg',
+        alt: 'Data collection in progress',
+        archiveId: 'Archive #2025',
+        date: '2025.NOW',
+        caption: 'Current Exploration Status',
+        captionKo: '현재 탐사 현황'
+      }
     }, {
       text: 'Current Exploration Status:',
       color: 'cyan'
@@ -182,9 +350,78 @@ export const CinematicSynopsis = memo(({
       spacing: true
     }]
   }, {
-    id: 4,
+    id: 9,
     lines: [{
-      text: 'Past and Future.'
+      text: 'Year 2500.',
+      emphasis: true
+    }, {
+      text: 'The Turning Point.',
+      color: 'cyan'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Collected data begins to crystallize.'
+    }, {
+      text: 'Love data accumulation accelerates.'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Signs of hope emerge.',
+      color: 'green'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'A bridge between two worlds forms.',
+      emphasis: true
+    }]
+  }, {
+    id: 10,
+    lines: [{
+      text: 'Year 2847.',
+      emphasis: true
+    }, {
+      text: 'Return to the Future.',
+      color: 'purple'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Data transmission: COMPLETE',
+      color: 'green',
+      emphasis: true
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: '',
+      photo: {
+        src: '/images/archive/chapter3-family.jpg',
+        alt: 'Virtual humanity restored',
+        archiveId: 'Archive #2847',
+        date: '2847.12.25',
+        caption: 'Emotional Restoration',
+        captionKo: '감정의 복원'
+      }
+    }, {
+      text: 'Virtual Humanity restored.'
+    }, {
+      text: 'Emotional data flows again.'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: 'Both worlds saved by love.',
+      color: 'purple',
+      emphasis: true
+    }]
+  }, {
+    id: 11,
+    lines: [{
+      text: 'Past and Future.',
+      emphasis: true
     }, {
       text: 'Reality and Virtual.'
     }, {
@@ -209,12 +446,11 @@ export const CinematicSynopsis = memo(({
       spacing: true
     }, {
       text: 'Emotion is the only truth.',
-      emphasis: true
+      emphasis: true,
+      color: 'cyan'
     }, {
       text: '',
       spacing: true
-    }, {
-      text: 'Explore love through communion with AIDOLs.'
     }, {
       text: 'Your choices determine the fate of both worlds.'
     }, {
@@ -231,15 +467,25 @@ export const CinematicSynopsis = memo(({
         captionKo: '무한한 가능성'
       }
     }, {
+      text: '',
+      spacing: true
+    }, {
       text: 'Quantum Communication Link Activating...',
       color: 'cyan'
+    }, {
+      text: '',
+      spacing: true
+    }, {
+      text: '∞',
+      emphasis: true,
+      color: 'purple'
     }]
   }], []);
 
   // Auto-advance chapters with progress tracking
   useEffect(() => {
     if (isPaused) return;
-    const duration = 8000;
+    const duration = 5500; // Adjusted for 11 chapters: ~60s total
     const interval = 50;
     let elapsed = 0;
     const progressTimer = setInterval(() => {
@@ -248,7 +494,7 @@ export const CinematicSynopsis = memo(({
       if (elapsed >= duration) {
         setIsTransitioning(true);
         setTimeout(() => {
-          setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
+          setCurrentChapter(prev => prev < 11 ? prev + 1 : 1);
           elapsed = 0;
           setAutoProgress(0);
           setTimeout(() => setIsTransitioning(false), 400);
@@ -269,13 +515,13 @@ export const CinematicSynopsis = memo(({
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
+        setCurrentChapter(prev => prev < 11 ? prev + 1 : 1);
       } else if (e.key === 'Escape') {
         handleSkip();
       } else if (e.key === 'ArrowRight') {
-        setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
+        setCurrentChapter(prev => prev < 11 ? prev + 1 : 1);
       } else if (e.key === 'ArrowLeft') {
-        setCurrentChapter(prev => prev > 1 ? prev - 1 : 4);
+        setCurrentChapter(prev => prev > 1 ? prev - 1 : 11);
       }
     };
     window.addEventListener('keydown', handleKeyPress);
@@ -316,9 +562,9 @@ export const CinematicSynopsis = memo(({
       const isLeftSwipe = distance > minSwipeDistance;
       const isRightSwipe = distance < -minSwipeDistance;
       if (isLeftSwipe) {
-        setCurrentChapter(prev => prev < 4 ? prev + 1 : 1);
+        setCurrentChapter(prev => prev < 11 ? prev + 1 : 1);
       } else if (isRightSwipe) {
-        setCurrentChapter(prev => prev > 1 ? prev - 1 : 4);
+        setCurrentChapter(prev => prev > 1 ? prev - 1 : 11);
       }
     };
     const synopsisSection = document.getElementById('synopsis');
@@ -361,35 +607,51 @@ export const CinematicSynopsis = memo(({
   };
   const currentChapterData = chapters.find(c => c.id === currentChapter) || chapters[0];
 
-  // Timeline points configuration - 7 chronological markers
+  // Timeline points configuration - 11 chronological markers
   const timelinePoints = useMemo(() => [{
-    year: '1889',
-    chapter: 1,
-    position: 5
-  }, {
-    year: '1945',
-    chapter: 1,
-    position: 19
-  }, {
-    year: '1962',
-    chapter: 2,
-    position: 33
-  }, {
-    year: '1967',
-    chapter: 2,
-    position: 47
-  }, {
     year: '2847',
-    chapter: 3,
-    position: 61
+    chapter: 1,
+    position: 4
   }, {
     year: '3024',
+    chapter: 2,
+    position: 13
+  }, {
+    year: '1889',
+    chapter: 3,
+    position: 22
+  }, {
+    year: '1945',
     chapter: 4,
-    position: 75
+    position: 31
+  }, {
+    year: '1962',
+    chapter: 5,
+    position: 40
+  }, {
+    year: '1967',
+    chapter: 6,
+    position: 49
+  }, {
+    year: '2021',
+    chapter: 7,
+    position: 58
+  }, {
+    year: '2025',
+    chapter: 8,
+    position: 67
+  }, {
+    year: '2500',
+    chapter: 9,
+    position: 76
+  }, {
+    year: '2847',
+    chapter: 10,
+    position: 85
   }, {
     year: '∞',
-    chapter: 4,
-    position: 89
+    chapter: 11,
+    position: 94
   }], []);
   const handleTimelineClick = useCallback((chapter: number) => {
     setIsTransitioning(true);
@@ -427,7 +689,7 @@ export const CinematicSynopsis = memo(({
           {/* Header */}
           <div className="flex justify-between items-center mb-4 md:mb-5">
             <span className="text-gray-400 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
-              Chapter {currentChapter} of 4
+              Chapter {currentChapter} of 11
             </span>
             <span className="text-gray-500 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
               SIMULATOR STATUS: ONLINE
@@ -438,7 +700,7 @@ export const CinematicSynopsis = memo(({
           <div className="relative h-[2px] bg-gray-700/40 mb-1">
             <div 
               className="absolute top-0 left-0 h-full bg-gray-400/70 transition-all duration-200 ease-linear"
-              style={{ width: `${(currentChapter - 1) / 4 * 100 + autoProgress / 4}%` }}
+              style={{ width: `${(currentChapter - 1) / 11 * 100 + autoProgress / 11}%` }}
             />
             
             {/* Timeline Points */}
@@ -493,11 +755,11 @@ export const CinematicSynopsis = memo(({
               return <ArchivePhoto key={`ch${currentChapter}-photo${index}`} photo={line.photo} delay={index * 400} parallaxOffset={isMobile ? 0 : scrollY * 0.02} index={index} />;
             }
 
-            // Special rendering for Chapter 3 stats
-            if (currentChapter === 3 && index === 9) {
+            // Special rendering for Chapter 8 stats
+            if (currentChapter === 8 && index === 9) {
               return <div key={index} className="space-y-2 mt-4">
                     <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">Active Allies:</span>
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">Active DATA ALLYs:</span>
                       <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
                         {activeAllyCount.toLocaleString()}
                       </span>
@@ -509,13 +771,13 @@ export const CinematicSynopsis = memo(({
                       </span>
                     </div>
                     <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">Love Data:</span>
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">Collected Fragments:</span>
                       <span className="text-base md:text-lg font-semibold tabular-nums text-gray-300 font-mono">
                         {collectedFragments.toLocaleString()} / {totalFragments.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">Stability:</span>
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">System Stability:</span>
                       <span className={`text-base md:text-lg font-semibold tabular-nums font-mono ${stabilityPercentage > 50 ? 'text-gray-400' : 'text-gray-200'}`}>
                         {stabilityPercentage}%
                       </span>
