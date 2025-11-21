@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
-import { Settings, Camera } from "lucide-react";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { Settings } from "lucide-react";
 import { CinematicSynopsis } from "@/components/CinematicSynopsis";
 import { MinimalHero } from "@/components/MinimalHero";
 import { GatewaySection } from "@/components/GatewaySection";
@@ -13,6 +15,7 @@ import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   
   // Ally Status Data for CinematicSynopsis
   const [collectedFragments] = useState(1247);
@@ -60,31 +63,21 @@ const Index = () => {
       <div className="relative z-10">
         {/* Minimal Top Bar */}
         <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <LanguageSelector />
           <WalletConnectButton 
             variant="outline" 
             className="border-primary text-primary hover:bg-primary/10 shadow-lg backdrop-blur-sm"
           />
           {user && (
-            <>
-              <Button
-                onClick={() => navigate('/photocard-generator')}
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
-                title="Photocard Generator"
-              >
-                <Camera className="h-4 w-4" />
-              </Button>
-              <Button
-                onClick={() => navigate('/settings')}
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
-                title="Settings"
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-            </>
+            <Button
+              onClick={() => navigate('/settings')}
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
+              title={t('nav.settings')}
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
           )}
         </div>
 
