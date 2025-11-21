@@ -1,4 +1,4 @@
-import { Languages } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ export const LanguageSelector = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Languages className="h-5 w-5" />
+          <Globe className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-sm border-border/50">
