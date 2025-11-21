@@ -50,9 +50,9 @@
 
 @layer base {
   :root {
-    /* White Background Design */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 2%;
+    /* Pure Black Design */
+    --background: 0 0% 2%;
+    --foreground: 0 0% 98%;
 
     /* Almost Pure Black surfaces */
     --card: 0 0% 4%;
