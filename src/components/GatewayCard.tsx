@@ -26,9 +26,9 @@ export const GatewayCard = ({
       onClick={onClick}
       aria-label={`${gatewayName}: ${title}`}
       className={cn(
-        "group relative p-6 md:p-8 border border-border/50 bg-card/50 backdrop-blur-sm",
-        "hover:border-primary/50 hover:bg-card/80 transition-all duration-500",
-        "hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/20",
+        "group relative p-6 md:p-8 border border-accent/30 bg-card/50 backdrop-blur-sm",
+        "hover:border-accent/60 hover:bg-card/80 transition-all duration-500",
+        "hover:scale-[1.02] hover:shadow-xl hover:shadow-accent/20",
         "text-left w-full min-h-[280px] md:min-h-[320px] touch-action-manipulation",
         "flex flex-col items-start justify-start gap-3 md:gap-4",
         className
