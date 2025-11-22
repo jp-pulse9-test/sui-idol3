@@ -84,8 +84,8 @@ const Index = () => {
         {/* Hero Section */}
         <MinimalHero onEnter={handleEnter} />
 
-        {/* Cinematic Synopsis */}
-        <div id="synopsis" className="py-20">
+        {/* Cinematic Synopsis - Sticky */}
+        <div className="sticky top-0 z-40">
           <CinematicSynopsis
             activeAllyCount={activeAllyCount}
             onlineEchoEntities={onlineEchoEntities}
