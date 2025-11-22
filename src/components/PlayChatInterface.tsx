@@ -344,8 +344,8 @@ export const PlayChatInterface = () => {
       case 'system':
         return (
           <div key={index} className="retro-terminal-box mb-3 animate-fade-in">
-            <p className="text-lime-400 font-mono text-sm">
-              <span className="text-green-500">SYSTEM:</span>{' '}
+            <p className="text-teal-600 font-mono text-sm retro-text-glow">
+              <span className="text-emerald-600">SYSTEM:</span>{' '}
               {isTypingEffect && index === currentTypingIndex ? typingText : msg.content}
               {isTypingEffect && index === currentTypingIndex && (
                 <span className="typing-cursor">▋</span>
@@ -357,7 +357,7 @@ export const PlayChatInterface = () => {
       case 'branch-select':
         return (
           <div key={index} className="retro-terminal-box mb-3">
-            <p className="text-lime-400 font-mono text-sm mb-3">타임라인 선택:</p>
+            <p className="text-teal-600 font-mono text-sm mb-3 retro-text-glow">타임라인 선택:</p>
             <div className="space-y-2">
               {msg.branches.map((branch) => (
                 <button
@@ -367,13 +367,13 @@ export const PlayChatInterface = () => {
                   className={`w-full text-left px-4 py-3 border transition-all font-mono text-sm
                     ${
                       branch.isUnlocked
-                        ? 'border-lime-500/30 hover:border-lime-500 hover:bg-lime-500/10 text-lime-400'
+                        ? 'border-emerald-600/30 hover:border-emerald-600 hover:bg-emerald-900/20 text-green-600'
                         : 'border-gray-700 text-gray-600 cursor-not-allowed'
                     }`}
                 >
                   <div className="flex items-center justify-between">
                     <span>
-                      <span className="text-green-500">▶</span> [{branch.year}] {branch.name}
+                      <span className="text-emerald-600">▶</span> [{branch.year}] {branch.name}
                     </span>
                     {!branch.isUnlocked && (
                       <span className="text-xs text-gray-500">🔒 VRI {branch.requiredVRI}</span>
@@ -388,23 +388,23 @@ export const PlayChatInterface = () => {
       case 'mission-select':
         return (
           <div key={index} className="retro-terminal-box mb-3">
-            <p className="text-lime-400 font-mono text-sm mb-3">미션 선택:</p>
+            <p className="text-teal-600 font-mono text-sm mb-3 retro-text-glow">미션 선택:</p>
             <div className="space-y-2">
               {msg.missions.map((mission) => (
                 <button
                   key={mission.id}
                   onClick={() => handleMissionSelect(mission)}
-                  className="w-full text-left px-4 py-3 border border-lime-500/30 
-                           hover:border-lime-500 hover:bg-lime-500/10 
+                  className="w-full text-left px-4 py-3 border border-emerald-600/30 
+                           hover:border-emerald-600 hover:bg-emerald-900/20 
                            transition-all font-mono text-sm"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-lime-400">
-                      <span className="text-green-500">▶</span> {mission.title}
+                    <span className="text-green-600">
+                      <span className="text-emerald-600">▶</span> {mission.title}
                     </span>
                     <div className="flex gap-2 items-center">
-                      <span className="text-lime-500/50 text-xs">{mission.difficulty}</span>
-                      <span className="text-green-400 text-xs">+{mission.vriReward} VRI</span>
+                      <span className="text-emerald-500/50 text-xs">{mission.difficulty}</span>
+                      <span className="text-teal-600 text-xs">+{mission.vriReward} VRI</span>
                     </div>
                   </div>
                 </button>
@@ -413,7 +413,7 @@ export const PlayChatInterface = () => {
             <button
               onClick={handleBackToBranch}
               className="w-full mt-3 px-4 py-2 border border-gray-600 text-gray-400 
-                       hover:border-lime-500 hover:text-lime-400 font-mono text-xs"
+                       hover:border-emerald-600 hover:text-green-600 font-mono text-xs"
             >
               ← 타임라인 선택으로
             </button>
@@ -422,25 +422,25 @@ export const PlayChatInterface = () => {
 
       case 'user':
         return (
-          <div key={index} className="retro-terminal-box bg-green-500/10 ml-12 mb-3">
-            <p className="text-green-400 font-mono text-sm">{msg.content}</p>
+          <div key={index} className="retro-terminal-box bg-emerald-900/10 ml-12 mb-3">
+            <p className="text-green-600 font-mono text-sm">{msg.content}</p>
           </div>
         );
 
       case 'idol':
         return (
-          <div key={index} className="retro-terminal-box bg-lime-500/5 mb-3 animate-fade-in">
+          <div key={index} className="retro-terminal-box bg-emerald-900/10 mb-3 animate-fade-in">
             <div className="flex items-start gap-3">
               {selectedIdol?.image && (
                 <img
                   src={selectedIdol.image}
                   alt={selectedIdol.name}
-                  className="w-10 h-10 rounded-full border border-lime-500/50"
+                  className="w-10 h-10 rounded-full border border-emerald-600/50"
                 />
               )}
               <div className="flex-1">
-                <p className="text-green-500 font-mono text-xs mb-1">{selectedIdol?.name || '아이돌'}</p>
-                <p className="text-lime-300 font-mono text-sm leading-relaxed">
+                <p className="text-emerald-600 font-mono text-xs mb-1">{selectedIdol?.name || '아이돌'}</p>
+                <p className="text-emerald-500 font-mono text-sm leading-relaxed retro-text-glow">
                   {isTypingEffect && index === currentTypingIndex ? typingText : msg.content}
                   {isTypingEffect && index === currentTypingIndex && (
                     <span className="typing-cursor">▋</span>
@@ -450,7 +450,7 @@ export const PlayChatInterface = () => {
                   <img
                     src={msg.imageUrl}
                     alt="Memory"
-                    className="mt-3 border border-lime-500/30 max-w-full"
+                    className="mt-3 border border-emerald-600/30 max-w-full"
                   />
                 )}
               </div>
@@ -460,16 +460,16 @@ export const PlayChatInterface = () => {
 
       case 'completion':
         return (
-          <div key={index} className="retro-terminal-box border-green-500 bg-green-500/20 mb-3">
+          <div key={index} className="retro-terminal-box border-emerald-600 bg-emerald-900/30 mb-3">
             <div className="text-center">
-              <p className="text-green-400 font-mono text-lg mb-2">✓ 미션 완료!</p>
-              <div className="space-y-1 text-lime-300 font-mono text-sm">
+              <p className="text-emerald-600 font-mono text-lg mb-2">✓ 미션 완료!</p>
+              <div className="space-y-1 text-teal-600 font-mono text-sm">
                 <p>VRI 보상: +{msg.vriReward}</p>
               </div>
               <button
                 onClick={handleBackToMission}
-                className="mt-4 px-6 py-2 border border-lime-500 text-lime-400 
-                         hover:bg-lime-500 hover:text-black font-mono text-sm"
+                className="mt-4 px-6 py-2 border border-emerald-600 text-green-600 
+                         hover:bg-emerald-900/40 hover:text-emerald-500 font-mono text-sm"
               >
                 다른 미션 선택
               </button>
@@ -487,10 +487,10 @@ export const PlayChatInterface = () => {
       {/* 헤더 */}
       <div className="retro-terminal-box m-4 mb-2">
         <div className="flex items-center justify-between">
-          <h1 className="text-lime-400 font-mono text-lg retro-glow">
-            <span className="text-green-500">{'>'}</span> 2028 구원 작전
+          <h1 className="text-teal-600 font-mono text-lg retro-text-glow">
+            <span className="text-emerald-600">{'>'}</span> 2028 구원 작전
           </h1>
-          <div className="text-xs font-mono text-lime-500/70">
+          <div className="text-xs font-mono text-emerald-500/70">
             {currentMode === 'branch' && 'TIMELINE SELECT'}
             {currentMode === 'mission' && `${selectedBranch?.year} / MISSION SELECT`}
             {currentMode === 'episode' && 'EPISODE PLAY'}
@@ -500,7 +500,7 @@ export const PlayChatInterface = () => {
 
       {/* Pull-to-Refresh 표시 */}
       {isPulling && pullDistance > 50 && (
-        <div className="text-center py-2 text-lime-400 font-mono text-sm animate-pulse">
+        <div className="text-center py-2 text-emerald-500 font-mono text-sm retro-text-glow animate-pulse">
           {pullDistance > 80 ? '↓ 놓아서 빠른 모드 활성화' : '↓ 당겨서 새로고침'}
         </div>
       )}
@@ -509,9 +509,9 @@ export const PlayChatInterface = () => {
       <div className="messages-container flex-1 overflow-y-auto px-4 pb-24">
         {messages.map((msg, idx) => renderMessage(msg, idx))}
         {isEpisodeLoading && (
-          <div className="retro-terminal-box mb-3 bg-lime-500/5 animate-pulse">
-            <p className="text-lime-400 font-mono text-sm">
-              <span className="text-green-500">SYSTEM:</span> 응답 생성 중
+          <div className="retro-terminal-box mb-3 bg-emerald-900/10 animate-pulse">
+            <p className="text-teal-600 font-mono text-sm retro-text-glow">
+              <span className="text-emerald-600">SYSTEM:</span> 응답 생성 중
               <span className="typing-cursor">▋</span>
             </p>
           </div>
@@ -520,7 +520,7 @@ export const PlayChatInterface = () => {
       </div>
 
       {/* Input 영역 */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 border-t border-lime-500/30">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 border-t border-emerald-600/30">
         {currentMode === 'episode' ? (
           <div className="flex gap-2">
             <input
@@ -530,15 +530,15 @@ export const PlayChatInterface = () => {
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="당신의 행동이나 응답을 입력하세요..."
               disabled={isEpisodeLoading}
-              className="flex-1 bg-black border border-lime-500/30 text-lime-400 
-                       font-mono px-4 py-2 focus:border-lime-500 focus:outline-none
+              className="flex-1 bg-black border border-emerald-600/30 text-emerald-500 
+                       font-mono px-4 py-2 focus:border-emerald-600 focus:outline-none
                        disabled:opacity-50"
             />
             <button
               onClick={handleSendMessage}
               disabled={isEpisodeLoading || !inputMessage.trim()}
-              className="px-6 py-2 border border-lime-500 text-lime-400 
-                       hover:bg-lime-500 hover:text-black font-mono
+              className="px-6 py-2 border border-emerald-600 text-green-600 
+                       hover:bg-emerald-900/30 hover:text-emerald-500 font-mono
                        disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isEpisodeLoading ? '...' : 'SEND'}
@@ -546,13 +546,13 @@ export const PlayChatInterface = () => {
             <button
               onClick={handleBackToMission}
               className="px-4 py-2 border border-gray-600 text-gray-400 
-                       hover:border-lime-500 hover:text-lime-400 font-mono text-sm"
+                       hover:border-emerald-600 hover:text-green-600 font-mono text-sm"
             >
               ← 종료
             </button>
           </div>
         ) : (
-          <p className="text-center text-lime-500/50 font-mono text-sm">
+          <p className="text-center text-emerald-500/50 font-mono text-sm">
             위 버튼을 클릭하여 선택하세요
           </p>
         )}
