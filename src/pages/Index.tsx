@@ -61,37 +61,28 @@ const Index = () => {
       
       {/* Main content */}
       <div className="relative z-10">
-        {/* Fixed Top Bar */}
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/20">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="font-orbitron text-sm text-muted-foreground">
-              SIMKUNG • AIDOL 101
-            </div>
-            <div className="flex gap-2">
-              <LanguageSelector />
-              <WalletConnectButton 
-                variant="outline" 
-                className="border-white/50 hover:border-white text-white hover:bg-white/10"
-              />
-              {user && (
-                <Button
-                  onClick={() => navigate('/settings')}
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:text-white hover:bg-white/10"
-                  title={t('nav.settings')}
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </div>
+        {/* Minimal Top Bar */}
+        <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <LanguageSelector />
+          <WalletConnectButton 
+            variant="outline" 
+            className="border-primary text-primary hover:bg-primary/10 shadow-lg backdrop-blur-sm"
+          />
+          {user && (
+            <Button
+              onClick={() => navigate('/settings')}
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
+              title={t('nav.settings')}
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         {/* Hero Section */}
-        <div className="pt-20">
-          <MinimalHero onEnter={handleEnter} />
-        </div>
+        <MinimalHero onEnter={handleEnter} />
 
         {/* Cinematic Synopsis */}
         <div id="synopsis" className="py-20">
