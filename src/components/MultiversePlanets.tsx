@@ -5,8 +5,7 @@ interface Planet {
   x: number;
   y: number;
   radius: number;
-  baseColor: string;
-  glowColor: string;
+  color: string;
   rotation: number;
   rotationSpeed: number;
 }
@@ -70,8 +69,7 @@ export const MultiversePlanets = ({ className = "" }: MultiversePlanetsProps) =>
       x: canvas.width / (2 * window.devicePixelRatio) - planetDistance / 2,
       y: canvas.height / (2 * window.devicePixelRatio),
       radius: planetRadius,
-      baseColor: 'hsl(217, 91%, 60%)', // primary blue
-      glowColor: 'hsl(217, 91%, 70%)',
+      color: '#2a2a2a',
       rotation: 0,
       rotationSpeed: 0.001,
     };
@@ -80,8 +78,7 @@ export const MultiversePlanets = ({ className = "" }: MultiversePlanetsProps) =>
       x: canvas.width / (2 * window.devicePixelRatio) + planetDistance / 2,
       y: canvas.height / (2 * window.devicePixelRatio),
       radius: planetRadius,
-      baseColor: 'hsl(280, 89%, 66%)', // purple
-      glowColor: 'hsl(280, 89%, 76%)',
+      color: '#2a2a2a',
       rotation: 0,
       rotationSpeed: 0.0008,
     };
@@ -167,55 +164,41 @@ export const MultiversePlanets = ({ className = "" }: MultiversePlanetsProps) =>
 
     // Draw functions
     const drawPlanet = (planet: Planet) => {
-      const width = canvas.width / window.devicePixelRatio;
-      const height = canvas.height / window.devicePixelRatio;
-
-      // Outer glow
-      const glowGradient = ctx.createRadialGradient(
-        planet.x, planet.y, planet.radius * 0.5,
-        planet.x, planet.y, planet.radius * 2
-      );
-      glowGradient.addColorStop(0, planet.glowColor.replace(')', ', 0.3)').replace('hsl', 'hsla'));
-      glowGradient.addColorStop(0.5, planet.glowColor.replace(')', ', 0.1)').replace('hsl', 'hsla'));
-      glowGradient.addColorStop(1, planet.glowColor.replace(')', ', 0)').replace('hsl', 'hsla'));
-      
-      ctx.fillStyle = glowGradient;
+      // Subtle outer stroke
+      ctx.strokeStyle = 'rgba(96, 96, 96, 0.3)';
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(planet.x, planet.y, planet.radius * 2, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.arc(planet.x, planet.y, planet.radius + 5, 0, Math.PI * 2);
+      ctx.stroke();
 
-      // Planet sphere
-      const gradient = ctx.createRadialGradient(
-        planet.x - planet.radius * 0.3,
-        planet.y - planet.radius * 0.3,
-        planet.radius * 0.1,
-        planet.x,
-        planet.y,
-        planet.radius
-      );
-      gradient.addColorStop(0, planet.glowColor);
-      gradient.addColorStop(0.7, planet.baseColor);
-      gradient.addColorStop(1, planet.baseColor.replace('60%', '40%'));
-      
-      ctx.fillStyle = gradient;
+      // Solid planet body
+      ctx.fillStyle = planet.color;
       ctx.beginPath();
       ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
       ctx.fill();
+      
+      // Planet border
+      ctx.strokeStyle = '#606060';
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
-      // Surface details (rotating)
+      // Grid pattern surface detail
       ctx.save();
       ctx.translate(planet.x, planet.y);
       ctx.rotate(planet.rotation);
       
-      for (let i = 0; i < 5; i++) {
-        const angle = (Math.PI * 2 * i) / 5;
-        const x = Math.cos(angle) * planet.radius * 0.5;
-        const y = Math.sin(angle) * planet.radius * 0.5;
-        
-        ctx.fillStyle = planet.baseColor.replace('60%', '50%').replace(')', ', 0.3)').replace('hsl', 'hsla');
+      ctx.strokeStyle = 'rgba(64, 64, 64, 0.4)';
+      ctx.lineWidth = 1;
+      
+      for (let i = 0; i < 8; i++) {
+        const angle = (Math.PI * 2 * i) / 8;
         ctx.beginPath();
-        ctx.arc(x, y, planet.radius * 0.15, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(
+          Math.cos(angle) * planet.radius * 0.8,
+          Math.sin(angle) * planet.radius * 0.8
+        );
+        ctx.stroke();
       }
       
       ctx.restore();
@@ -233,15 +216,15 @@ export const MultiversePlanets = ({ className = "" }: MultiversePlanetsProps) =>
         const cpX = (leftPlanet.x + rightPlanet.x) / 2;
         const curveY = cpY - (rightPlanet.x - leftPlanet.x) * path.curve;
 
-        // Energy line
-        ctx.strokeStyle = 'hsla(217, 91%, 60%, 0.2)';
-        ctx.lineWidth = 2;
+        // Strong visible energy line
+        ctx.strokeStyle = 'rgba(80, 80, 80, 0.8)';
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(leftPlanet.x + leftPlanet.radius, leftPlanet.y);
         ctx.quadraticCurveTo(cpX, curveY, rightPlanet.x - rightPlanet.radius, rightPlanet.y);
         ctx.stroke();
 
-        // Particles along the path
+        // Solid particles along the path
         particles.filter(p => p.pathIndex === idx).forEach(particle => {
           const t = particle.progress;
           const x = (1 - t) * (1 - t) * (leftPlanet.x + leftPlanet.radius) +
@@ -250,23 +233,19 @@ export const MultiversePlanets = ({ className = "" }: MultiversePlanetsProps) =>
           const y = (1 - t) * (1 - t) * leftPlanet.y +
                    2 * (1 - t) * t * curveY +
                    t * t * rightPlanet.y;
-
-          const gradient = ctx.createRadialGradient(x, y, 0, x, y, particle.size * 3);
-          gradient.addColorStop(0, 'hsla(45, 93%, 58%, 0.8)'); // amber
-          gradient.addColorStop(1, 'hsla(45, 93%, 58%, 0)');
           
-          ctx.fillStyle = gradient;
+          ctx.fillStyle = 'rgba(128, 128, 128, 0.9)';
           ctx.beginPath();
-          ctx.arc(x, y, particle.size * 3, 0, Math.PI * 2);
+          ctx.arc(x, y, particle.size * 2, 0, Math.PI * 2);
           ctx.fill();
         });
       });
     };
 
     const drawBranchNodes = () => {
-      // Draw connections between nearby nodes
-      ctx.strokeStyle = 'hsla(217, 91%, 60%, 0.1)';
-      ctx.lineWidth = 0.5;
+      // Draw connections with better visibility
+      ctx.strokeStyle = 'rgba(112, 112, 112, 0.5)';
+      ctx.lineWidth = 1.5;
       
       for (let i = 0; i < branchNodes.length; i++) {
         const node1 = branchNodes[i];
@@ -291,28 +270,26 @@ export const MultiversePlanets = ({ className = "" }: MultiversePlanetsProps) =>
         const isHovered = hoveredNode === node;
         const size = isHovered ? node.size * 1.5 : node.size;
 
-        // Glow effect
-        if (node.label || isHovered) {
-          const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, size * 4);
-          gradient.addColorStop(0, `hsla(142, 76%, 36%, ${pulseOpacity * 0.6})`); // green
-          gradient.addColorStop(1, 'hsla(142, 76%, 36%, 0)');
-          ctx.fillStyle = gradient;
+        // Hover outline only
+        if (isHovered) {
+          ctx.strokeStyle = `rgba(176, 176, 176, ${pulseOpacity})`;
+          ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.arc(node.x, node.y, size * 4, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.arc(node.x, node.y, size + 3, 0, Math.PI * 2);
+          ctx.stroke();
         }
 
-        // Node
+        // Solid node
         ctx.fillStyle = node.label 
-          ? `hsla(142, 76%, 36%, ${pulseOpacity})` 
-          : `hsla(215, 16%, 47%, ${pulseOpacity})`;
+          ? `rgba(144, 144, 144, ${pulseOpacity})` 
+          : `rgba(96, 96, 96, ${pulseOpacity})`;
         ctx.beginPath();
         ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
         ctx.fill();
 
         // Label
         if (node.label && (isHovered || size > 4)) {
-          ctx.fillStyle = 'hsl(0, 0%, 98%)';
+          ctx.fillStyle = '#e0e0e0';
           ctx.font = '12px "Press Start 2P", monospace';
           ctx.textAlign = 'center';
           ctx.fillText(node.label, node.x, node.y - size - 10);
