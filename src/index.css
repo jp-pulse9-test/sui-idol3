@@ -15,19 +15,19 @@
     --popover: 220 8% 4%;
     --popover-foreground: 0 0% 98%;
 
-    /* PRIMARY = NEON GREEN (햄버거 버튼 색상 기준) */
-    --primary: 160 84% 39%;            /* #10b981 - emerald-500 네온 그린 */
+    /* PRIMARY = LIME GREEN (햄버거 버튼 색상 기준) */
+    --primary: 78 81% 45%;             /* #84cc16 - lime-500 라임 그린 */
     --primary-foreground: 0 0% 0%;     /* 검은색 */
 
-    /* SECONDARY = NEON GREEN (동일하게) */
-    --secondary: 160 84% 39%;          
+    /* SECONDARY = LIME GREEN (동일하게) */
+    --secondary: 78 81% 45%;          
     --secondary-foreground: 0 0% 0%;
 
     --muted: 220 8% 15%;
     --muted-foreground: 220 10% 65%;
 
-    /* Accent - Ice Pink */
-    --accent: 330 81% 60%;
+    /* Accent - Baby Pink */
+    --accent: 326 77% 92%;             /* #FBCFE8 - pink-200 베이비 핑크 */
     --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84.2% 60.2%;
@@ -35,7 +35,7 @@
 
     --border: 220 10% 20%;
     --input: 220 10% 20%;
-    --ring: 160 84% 39%;               /* 네온 그린 */
+    --ring: 78 81% 45%;                /* 라임 그린 */
 
     --radius: 0.5rem;
 
@@ -43,14 +43,14 @@
     --terminal-green: #16a34a;
     --terminal-cursor: #059669;
 
-    /* Gradients - 네온 그린과 아이스 핑크 */
-    --gradient-neon-green: linear-gradient(135deg, #10b981 0%, #16a34a 100%);
-    --gradient-ice-pink: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-    --gradient-neon-to-pink: linear-gradient(135deg, #10b981 0%, #ec4899 100%);
+    /* Gradients - 라임 그린과 베이비 핑크 */
+    --gradient-neon-green: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+    --gradient-ice-pink: linear-gradient(135deg, #FBCFE8 0%, #F9A8D4 100%);
+    --gradient-neon-to-pink: linear-gradient(135deg, #84cc16 0%, #FBCFE8 100%);
 
-    /* Shadows - 네온 그린 글로우 */
-    --shadow-neon-green: 0 0 30px rgba(16, 185, 129, 0.5), 0 0 60px rgba(16, 185, 129, 0.2);
-    --shadow-ice-pink: 0 0 30px rgba(236, 72, 153, 0.3), 0 0 60px rgba(236, 72, 153, 0.1);
+    /* Shadows - 라임 그린 글로우 */
+    --shadow-neon-green: 0 0 30px rgba(132, 204, 22, 0.5), 0 0 60px rgba(132, 204, 22, 0.2);
+    --shadow-ice-pink: 0 0 30px rgba(251, 207, 232, 0.4), 0 0 60px rgba(251, 207, 232, 0.2);
   }
 
   .dark {
@@ -63,16 +63,16 @@
     --popover: 220 8% 4%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 160 84% 39%;
+    --primary: 78 81% 45%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 160 84% 39%;
+    --secondary: 78 81% 45%;
     --secondary-foreground: 0 0% 0%;
 
     --muted: 220 8% 15%;
     --muted-foreground: 220 10% 65%;
 
-    --accent: 330 81% 60%;
+    --accent: 326 77% 92%;
     --accent-foreground: 0 0% 0%;
 
     --destructive: 0 62.8% 30.6%;
@@ -80,7 +80,7 @@
 
     --border: 220 10% 20%;
     --input: 220 10% 20%;
-    --ring: 160 84% 39%;
+    --ring: 78 81% 45%;
   }
 
   * {
@@ -111,8 +111,8 @@
   bottom: 0;
   background: repeating-linear-gradient(
     0deg,
-    rgba(16, 185, 129, 0.015) 0px,
-    rgba(16, 185, 129, 0.015) 1px,
+    rgba(132, 204, 22, 0.015) 0px,
+    rgba(132, 204, 22, 0.015) 1px,
     transparent 1px,
     transparent 2px
   );
@@ -188,15 +188,15 @@
   background-clip: text;
 }
 
-/* ===== NEON GREEN UTILITIES ===== */
+/* ===== LIME GREEN UTILITIES ===== */
 .text-neon-green {
-  color: #10b981;
-  text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  color: #84cc16;
+  text-shadow: 0 0 10px rgba(132, 204, 22, 0.5);
 }
 
 .border-neon-green {
-  border-color: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+  border-color: #84cc16;
+  box-shadow: 0 0 10px rgba(132, 204, 22, 0.3);
 }
 
 /* ===== BUTTONS ===== */
@@ -208,7 +208,7 @@
 
 .btn-modern:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 40px rgba(16, 185, 129, 0.4), 0 0 80px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 40px rgba(132, 204, 22, 0.4), 0 0 80px rgba(132, 204, 22, 0.2);
 }
 
 /* ===== CARDS ===== */
@@ -218,7 +218,7 @@
 
 .card-hover:hover {
   transform: translateY(-8px);
-  box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 40px rgba(132, 204, 22, 0.3);
 }
 
 /* ===== ANIMATIONS ===== */
@@ -326,13 +326,13 @@
 }
 
 .glitch-effect::before {
-  color: #10b981;
+  color: #84cc16;
   z-index: -1;
   animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
 }
 
 .glitch-effect::after {
-  color: #ec4899;
+  color: #FBCFE8;
   z-index: -2;
   animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
 }
@@ -404,7 +404,7 @@
   box-shadow: 
     0 25px 70px rgba(0, 0, 0, 0.9),
     inset 0 0 50px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(16, 185, 129, 0.15);
+    0 0 0 1px rgba(132, 204, 22, 0.15);
   transition: box-shadow 0.5s ease;
 }
 
