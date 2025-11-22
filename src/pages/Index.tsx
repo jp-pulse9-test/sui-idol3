@@ -49,8 +49,8 @@ const Index = () => {
   }, []);
 
   const handleEnter = () => {
-    // Navigate to game start (gender selection)
-    navigate('/gender-select');
+    // Navigate directly to simplified pick (tournament)
+    navigate('/pick');
   };
 
   return (
