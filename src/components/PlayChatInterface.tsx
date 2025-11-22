@@ -3,6 +3,7 @@ import { BRANCHES } from '@/data/branches';
 import { getMissionsByBranch } from '@/data/salvationMissions';
 import { useEpisodeStory } from '@/hooks/useEpisodeStory';
 import { Branch, SalvationMission } from '@/types/branch';
+import { toast } from 'sonner';
 
 type ChatMessage =
   | { type: 'system'; content: string; timestamp: Date }
@@ -21,9 +22,94 @@ export const PlayChatInterface = () => {
   const [selectedMission, setSelectedMission] = useState<SalvationMission | null>(null);
   const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // 타이핑 효과 상태
+  const [typingText, setTypingText] = useState('');
+  const [isTypingEffect, setIsTypingEffect] = useState(false);
+  const [currentTypingIndex, setCurrentTypingIndex] = useState(-1);
+  const [skipTyping, setSkipTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Pull-to-refresh 상태
+  const [isPulling, setIsPulling] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const touchStartY = useRef<number>(0);
 
   // 선택된 아이돌 (localStorage에서 가져오기)
   const selectedIdol = JSON.parse(localStorage.getItem('selectedIdol') || 'null');
+
+  // 사운드 효과 함수
+  const playTypeSound = () => {
+    if (Math.random() > 0.7) {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.frequency.setValueAtTime(800 + Math.random() * 200, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.05);
+    }
+  };
+
+  const playClickSound = () => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.05);
+  };
+
+  // 타이핑 효과 함수
+  const typeMessage = async (text: string, messageIndex: number) => {
+    return new Promise<void>((resolve) => {
+      setIsTypingEffect(true);
+      setCurrentTypingIndex(messageIndex);
+      setTypingText('');
+      let currentIndex = 0;
+      
+      const typeNextChar = () => {
+        if (skipTyping) {
+          setTypingText(text);
+          setIsTypingEffect(false);
+          setCurrentTypingIndex(-1);
+          if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+          }
+          resolve();
+          return;
+        }
+
+        if (currentIndex < text.length) {
+          setTypingText(text.substring(0, currentIndex + 1));
+          currentIndex++;
+          
+          playTypeSound();
+          
+          typingTimeoutRef.current = setTimeout(typeNextChar, 30);
+        } else {
+          setIsTypingEffect(false);
+          setCurrentTypingIndex(-1);
+          resolve();
+        }
+      };
+      
+      typeNextChar();
+    });
+  };
 
   // 에피소드 스토리 훅
   const {
@@ -44,13 +130,22 @@ export const PlayChatInterface = () => {
     selectedIdol || { name: '아이돌', personality: '', persona_prompt: '', image: '' }
   );
 
-  // 초기 메시지 로드
+  // 초기 메시지 로드 (타이핑 효과 적용)
   useEffect(() => {
-    setMessages([
-      { type: 'system', content: '⚡ 2028 구원 작전 시스템 부팅 완료', timestamp: new Date() },
-      { type: 'system', content: '지구를 구할 타임라인을 선택하세요:', timestamp: new Date() },
-      { type: 'branch-select', branches: BRANCHES, timestamp: new Date() },
-    ]);
+    const initMessages = async () => {
+      const msg1 = '⚡ 2028 구원 작전 시스템 부팅 완료';
+      const msg2 = '지구를 구할 타임라인을 선택하세요:';
+      
+      setMessages([{ type: 'system', content: msg1, timestamp: new Date() }]);
+      await typeMessage(msg1, 0);
+      
+      setMessages((prev) => [...prev, { type: 'system', content: msg2, timestamp: new Date() }]);
+      await typeMessage(msg2, 1);
+      
+      setMessages((prev) => [...prev, { type: 'branch-select', branches: BRANCHES, timestamp: new Date() }]);
+    };
+    
+    initMessages();
   }, []);
 
   // 에피소드 메시지를 채팅 히스토리에 추가
@@ -87,33 +182,130 @@ export const PlayChatInterface = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleBranchSelect = (branch: Branch) => {
+  // TV Static 노이즈 효과
+  useEffect(() => {
+    if (messages.length === 0) return;
+
+    const playStaticSound = () => {
+      const randomDelay = Math.random() * 50000 + 10000;
+      
+      const timeout = setTimeout(() => {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(Math.random() * 1000 + 500, audioContext.currentTime);
+        
+        gainNode.gain.setValueAtTime(0.03, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+        
+        playStaticSound();
+      }, randomDelay);
+
+      return () => clearTimeout(timeout);
+    };
+
+    const cleanup = playStaticSound();
+    return cleanup;
+  }, [messages.length]);
+
+  // Pull-to-Refresh 기능
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      const scrollElement = document.querySelector('.messages-container');
+      if (!scrollElement) return;
+      
+      const scrollTop = scrollElement.scrollTop;
+      if (scrollTop === 0) {
+        touchStartY.current = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const scrollElement = document.querySelector('.messages-container');
+      if (!scrollElement || touchStartY.current === 0) return;
+      
+      const scrollTop = scrollElement.scrollTop;
+      if (scrollTop === 0) {
+        const currentY = e.touches[0].clientY;
+        const distance = currentY - touchStartY.current;
+        
+        if (distance > 0) {
+          setPullDistance(Math.min(distance, 100));
+          if (distance > 80) {
+            setIsPulling(true);
+          }
+        }
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (isPulling && pullDistance > 80) {
+        setSkipTyping(true);
+        toast.info("⚡ 빠른 모드 활성화");
+      }
+      setIsPulling(false);
+      setPullDistance(0);
+      touchStartY.current = 0;
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isPulling, pullDistance]);
+
+  const handleBranchSelect = async (branch: Branch) => {
+    playClickSound();
+    
     if (!branch.isUnlocked) {
-      setMessages((prev) => [
-        ...prev,
-        { type: 'system', content: `⚠️ ${branch.name}은(는) 아직 잠겨있습니다. VRI ${branch.requiredVRI}가 필요합니다.`, timestamp: new Date() },
-      ]);
+      const warningMsg = `⚠️ ${branch.name}은(는) 아직 잠겨있습니다. VRI ${branch.requiredVRI}가 필요합니다.`;
+      const currentLength = messages.length;
+      setMessages((prev) => [...prev, { type: 'system', content: warningMsg, timestamp: new Date() }]);
+      await typeMessage(warningMsg, currentLength);
       return;
     }
 
     setSelectedBranch(branch);
     const missions = getMissionsByBranch(branch.id);
-    setMessages((prev) => [
-      ...prev,
-      { type: 'user', content: `> ${branch.name} 선택`, timestamp: new Date() },
-      { type: 'system', content: `${branch.year}년 타임라인 로드 완료. 미션을 선택하세요:`, timestamp: new Date() },
-      { type: 'mission-select', missions, timestamp: new Date() },
-    ]);
+    
+    const userMsg = `> ${branch.name} 선택`;
+    setMessages((prev) => [...prev, { type: 'user', content: userMsg, timestamp: new Date() }]);
+    
+    const systemMsg = `${branch.year}년 타임라인 로드 완료. 미션을 선택하세요:`;
+    const currentLength = messages.length + 1;
+    setMessages((prev) => [...prev, { type: 'system', content: systemMsg, timestamp: new Date() }]);
+    await typeMessage(systemMsg, currentLength);
+    
+    setMessages((prev) => [...prev, { type: 'mission-select', missions, timestamp: new Date() }]);
     setCurrentMode('mission');
   };
 
-  const handleMissionSelect = (mission: SalvationMission) => {
+  const handleMissionSelect = async (mission: SalvationMission) => {
+    playClickSound();
+    
     setSelectedMission(mission);
-    setMessages((prev) => [
-      ...prev,
-      { type: 'user', content: `> [${mission.title}] 선택`, timestamp: new Date() },
-      { type: 'system', content: '미션 시작. 아이돌과의 대화를 시작합니다...', timestamp: new Date() },
-    ]);
+    
+    const userMsg = `> [${mission.title}] 선택`;
+    setMessages((prev) => [...prev, { type: 'user', content: userMsg, timestamp: new Date() }]);
+    
+    const systemMsg = '미션 시작. 아이돌과의 대화를 시작합니다...';
+    const currentLength = messages.length + 1;
+    setMessages((prev) => [...prev, { type: 'system', content: systemMsg, timestamp: new Date() }]);
+    await typeMessage(systemMsg, currentLength);
+    
     setCurrentMode('episode');
     resetStory();
   };
@@ -151,9 +343,13 @@ export const PlayChatInterface = () => {
     switch (msg.type) {
       case 'system':
         return (
-          <div key={index} className="retro-terminal-box mb-3">
+          <div key={index} className="retro-terminal-box mb-3 animate-fade-in">
             <p className="text-lime-400 font-mono text-sm">
-              <span className="text-green-500">SYSTEM:</span> {msg.content}
+              <span className="text-green-500">SYSTEM:</span>{' '}
+              {isTypingEffect && index === currentTypingIndex ? typingText : msg.content}
+              {isTypingEffect && index === currentTypingIndex && (
+                <span className="typing-cursor">▋</span>
+              )}
             </p>
           </div>
         );
@@ -233,7 +429,7 @@ export const PlayChatInterface = () => {
 
       case 'idol':
         return (
-          <div key={index} className="retro-terminal-box bg-lime-500/5 mb-3">
+          <div key={index} className="retro-terminal-box bg-lime-500/5 mb-3 animate-fade-in">
             <div className="flex items-start gap-3">
               {selectedIdol?.image && (
                 <img
@@ -244,8 +440,13 @@ export const PlayChatInterface = () => {
               )}
               <div className="flex-1">
                 <p className="text-green-500 font-mono text-xs mb-1">{selectedIdol?.name || '아이돌'}</p>
-                <p className="text-lime-300 font-mono text-sm leading-relaxed">{msg.content}</p>
-                {msg.imageUrl && (
+                <p className="text-lime-300 font-mono text-sm leading-relaxed">
+                  {isTypingEffect && index === currentTypingIndex ? typingText : msg.content}
+                  {isTypingEffect && index === currentTypingIndex && (
+                    <span className="typing-cursor">▋</span>
+                  )}
+                </p>
+                {msg.imageUrl && !isTypingEffect && (
                   <img
                     src={msg.imageUrl}
                     alt="Memory"
@@ -297,9 +498,24 @@ export const PlayChatInterface = () => {
         </div>
       </div>
 
+      {/* Pull-to-Refresh 표시 */}
+      {isPulling && pullDistance > 50 && (
+        <div className="text-center py-2 text-lime-400 font-mono text-sm animate-pulse">
+          {pullDistance > 80 ? '↓ 놓아서 빠른 모드 활성화' : '↓ 당겨서 새로고침'}
+        </div>
+      )}
+
       {/* 메시지 영역 */}
-      <div className="flex-1 overflow-y-auto px-4 pb-24">
+      <div className="messages-container flex-1 overflow-y-auto px-4 pb-24">
         {messages.map((msg, idx) => renderMessage(msg, idx))}
+        {isEpisodeLoading && (
+          <div className="retro-terminal-box mb-3 bg-lime-500/5 animate-pulse">
+            <p className="text-lime-400 font-mono text-sm">
+              <span className="text-green-500">SYSTEM:</span> 응답 생성 중
+              <span className="typing-cursor">▋</span>
+            </p>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
