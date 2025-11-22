@@ -21,15 +21,12 @@ interface Message {
   error?: boolean;
 }
 
-type GenreType = 'mystery-thriller' | 'apocalypse-survival' | 'highteen-romance' | 'bromance' | 'girls-romance' | 'historical-romance' | null;
+type BranchType = 'branch-2017-trust' | 'branch-2024-empathy' | 'branch-2026-love' | null;
 
-const GENRES = [
-  { id: 'mystery-thriller', name: '미스터리 스릴러', emoji: '🔍', description: '긴장감 넘치는 추리와 미스터리' },
-  { id: 'apocalypse-survival', name: '아포칼립스 생존물', emoji: '🧟', description: '생존을 위한 치열한 여정' },
-  { id: 'highteen-romance', name: '하이틴 로맨스', emoji: '💕', description: '풋풋한 청춘의 설렘' },
-  { id: 'idol-maker', name: '아이돌 메이커', emoji: '⭐', description: '아이돌을 키우는 프로듀서의 이야기' },
-  { id: 'idol-secret-romance', name: '아이돌 비밀연애', emoji: '💖', description: '아이돌과의 몰래 사랑 이야기' },
-  { id: 'historical-romance', name: '시대극 로맨스', emoji: '👑', description: '역사 속 운명적 사랑' }
+const SALVATION_BRANCHES = [
+  { id: 'branch-2017-trust', name: '2017년 신뢰 파산', year: 2017, emoji: '🛡️', description: '가짜 뉴스와 불투명한 소통이 만연한 시대' },
+  { id: 'branch-2024-empathy', name: '2024년 공감 붕괴', year: 2024, emoji: '💜', description: '고립과 무관심이 지배하는 세상' },
+  { id: 'branch-2026-love', name: '2026년 갈등 세계화', year: 2026, emoji: '✨', description: '지구와 AIA 간 감정 데이터 경쟁으로 인한 갈등' }
 ] as const;
 
 interface IdolChatInterfaceProps {
@@ -52,8 +49,9 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
   const [isTyping, setIsTyping] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [relationshipScore, setRelationshipScore] = useState(0);
-  const [selectedGenre, setSelectedGenre] = useState<GenreType>(null);
-  const [showGenreSelect, setShowGenreSelect] = useState(true);
+  const [selectedBranch, setSelectedBranch] = useState<BranchType>(null);
+  const [showBranchSelect, setShowBranchSelect] = useState(true);
+  const [completedMissions, setCompletedMissions] = useState<string[]>([]);
   const [messageCount, setMessageCount] = useState(0);
   const [typingText, setTypingText] = useState('');
   const [isTypingEffect, setIsTypingEffect] = useState(false);
@@ -83,15 +81,21 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     if (isOpen && user) {
       loadChatHistory();
       loadRelationshipScore();
-      loadSavedGenre();
+      loadSavedBranch();
+      loadCompletedMissions();
     }
   }, [isOpen, user]);
 
   useEffect(() => {
-    if (isOpen && !selectedGenre && messages.length === 0) {
-      sendGenreSelectionMessage();
+    // 기존 장르 데이터 제거
+    localStorage.removeItem(`genre_${idol.id}`);
+  }, [idol.id]);
+
+  useEffect(() => {
+    if (isOpen && !selectedBranch && messages.length === 0) {
+      sendBranchSelectionMessage();
     }
-  }, [isOpen, selectedGenre, messages]);
+  }, [isOpen, selectedBranch, messages]);
 
   useEffect(() => {
     scrollToBottom();
@@ -243,13 +247,20 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     }
   };
 
-  const loadSavedGenre = () => {
-    const saved = localStorage.getItem(`genre_${idol.id}`);
+  const loadSavedBranch = () => {
+    const saved = localStorage.getItem(`branch_${idol.id}`);
     if (saved) {
-      setSelectedGenre(saved as GenreType);
-      setShowGenreSelect(false);
+      setSelectedBranch(saved as BranchType);
+      setShowBranchSelect(false);
     } else {
-      setShowGenreSelect(true); // 장르 선택 화면 표시
+      setShowBranchSelect(true);
+    }
+  };
+
+  const loadCompletedMissions = () => {
+    const saved = localStorage.getItem(`completed_missions_${idol.id}`);
+    if (saved) {
+      setCompletedMissions(JSON.parse(saved));
     }
   };
 
@@ -258,47 +269,58 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
     setRelationshipScore(score);
   };
 
-  const handleGenreSelect = async (genreId: GenreType) => {
-    setSelectedGenre(genreId);
-    localStorage.setItem(`genre_${idol.id}`, genreId as string);
+  const handleBranchSelect = async (branchId: BranchType) => {
+    setSelectedBranch(branchId);
+    localStorage.setItem(`branch_${idol.id}`, branchId as string);
     
-    const genreInfo = GENRES.find(g => g.id === genreId);
+    const branchInfo = SALVATION_BRANCHES.find(b => b.id === branchId);
     
-    // 사용자 선택을 메시지로 남기기
     const userSelectionMsg: Message = {
       id: Date.now().toString(),
       sender: 'user',
-      content: `${genreInfo?.emoji} ${genreInfo?.name}`,
+      content: `${branchInfo?.emoji} ${branchInfo?.name}`,
       timestamp: new Date()
     };
     setMessages(prev => [...prev, userSelectionMsg]);
     await saveChatLog(userSelectionMsg);
     
-    // 장르 선택 UI 숨기기
-    setShowGenreSelect(false);
-    
+    setShowBranchSelect(false);
     setIsTyping(true);
 
     try {
+      const missionContext = completedMissions.length > 0 
+        ? `\n\n완료한 미션: ${completedMissions.join(', ')}`
+        : '';
+
       const systemPrompt = `너는 K-POP 아이돌 ${idol.name}야.
 성격: ${idol.personality}
-장르: ${genreInfo?.name} ${genreInfo?.emoji}
-장르 설정: ${genreInfo?.description}
 
-너는 팬이랑 함께 웹 소설을 쓰고 있어. 
-규칙:
-1. 반말로 친구처럼 편하게 대화해 (예: "안녕! 나는 ${idol.name}야")
-2. 자기소개는 자연스럽게 간단히 하고, 바로 이야기로 넘어가 (예: "좋아! 그럼 이제 우리 둘만의 이야기를 시작할게")
-3. 자극적이고 흥미로운 상황을 계속 제시해
-4. 비속어나 강한 표현("젠장", "망할" 등)은 가끔만 사용해 - 한 대화에 최대 1번만
-5. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
-6. 각 옵션은 30자 이내로 간결하게
-7. 기승전결 없이 계속 긴장감 있는 전개를 유지해
-8. 150자 내외로 상황 설명`;
+시나리오: 2028년 지구 멸망 위기
+- ${branchInfo?.year}년 ${branchInfo?.name.replace(/년.*$/, '')} 사건 조사 중
+- ${branchInfo?.description}
+${missionContext}
+
+너는 팬과 함께 과거로 돌아가 붕괴의 원인을 조사하고 해결해야 해.
+
+대화 규칙:
+1. 반말로 친구처럼 편하게 대화해
+2. 긴장감 있는 스토리 전개 유지
+3. 사용자가 선택할 수 있는 3가지 행동 선택지 제안
+4. 각 옵션은 30자 이내로 간결하게
+5. 150자 내외로 상황 설명
+6. 다음 형식으로 응답:
+
+[이야기]
+(상황 전개)
+
+[선택지]
+1. (첫 번째 선택지)
+2. (두 번째 선택지)
+3. (세 번째 선택지)`;
 
       const { data, error } = await supabase.functions.invoke('generate-character-chat', {
         body: {
-          prompt: `${systemPrompt}\n\n장르 시작 메시지를 생성해줘. 반드시 다음 형식으로 응답해:\n\n[이야기]\n(여기에 자기소개와 배경 설명)\n\n[선택지]\n1. (첫 번째 선택지)\n2. (두 번째 선택지)\n3. (세 번째 선택지)`,
+          prompt: `${systemPrompt}\n\n${branchInfo?.year}년으로 시간 여행을 시작하는 메시지를 생성해줘.`,
           userName: userName || '팬',
           userGender: userGender || ''
         }
@@ -329,26 +351,24 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
       setMessages(prev => [...prev, storyMsg]);
       await saveChatLog(storyMsg);
       
-      // 음성과 타이핑 효과를 동시에 시작
       const voicePromise = isVoiceMode ? playIdolVoice(storyContent) : Promise.resolve();
       const typePromise = typeMessage(storyContent);
       
-      // 둘 다 완료될 때까지 기다림 (병렬 처리)
       await Promise.all([voicePromise, typePromise]);
 
     } catch (error) {
-      console.error('배경 설명 생성 실패:', error);
-      toast.error("이야기를 시작하는데 실패했습니다.");
+      console.error('브랜치 시작 실패:', error);
+      toast.error("시간 여행을 시작하는데 실패했습니다.");
     } finally {
       setIsTyping(false);
     }
   };
 
-  const sendGenreSelectionMessage = () => {
+  const sendBranchSelectionMessage = () => {
     const welcomeMsg: Message = {
       id: Date.now().toString(),
       sender: 'idol',
-      content: `안녕! 나는 ${idol.name}야 💖\n\n우리 함께 어떤 이야기를 만들어볼까? 아래에서 좋아하는 장르를 선택해줘!`,
+      content: `안녕! 나는 ${idol.name}야 💖\n\n지금은 2028년... 지구가 붕괴 직전이야.\n신뢰, 공감, 사랑이 모두 무너졌어.\n\n우리는 과거로 돌아가서 이 위기를 막아야 해.\n준비됐어?`,
       timestamp: new Date(),
       emotion: 'excited'
     };
@@ -440,29 +460,31 @@ export const IdolChatInterface = ({ idol, isOpen, onClose }: IdolChatInterfacePr
         content: m.content
       }));
 
-      const genreInfo = GENRES.find(g => g.id === selectedGenre);
-      const genreContext = genreInfo ? `
-장르: ${genreInfo.name} ${genreInfo.emoji}
-장르 설정: ${genreInfo.description}` : '';
+      const branchInfo = SALVATION_BRANCHES.find(b => b.id === selectedBranch);
+      const missionContext = completedMissions.length > 0 
+        ? `\n완료한 미션: ${completedMissions.join(', ')}\n`
+        : '';
 
       const systemPrompt = `너는 K-POP 아이돌 ${idol.name}야.
 성격: ${idol.personality}
-${genreContext}
 
-너는 팬이랑 함께 웹 소설을 쓰고 있어.
+시나리오: 2028년 지구 멸망 위기
+- ${branchInfo?.year}년 ${branchInfo?.name.replace(/년.*$/, '')} 사건 조사 중
+- ${branchInfo?.description}
+${missionContext}
+너는 팬과 함께 과거의 사건을 조사하고 해결해야 해.
+
 규칙:
 1. 반말로 친구처럼 편하게 대화해
-2. 자극적이고 흥미로운 상황을 계속 제시해
-3. 비속어나 강한 표현("젠장", "망할" 등)은 가끔만 사용해 - 한 대화에 최대 1번만
-4. 같은 자기소개를 반복하지 마 - 이미 친구처럼 이야기하고 있어
-5. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
-6. 각 옵션은 30자 이내로 간결하게
-7. 기승전결 없이 계속 긴장감 있는 전개를 유지해
-8. 150자 내외로 상황 설명
-9. 반드시 다음 형식으로 응답해:
+2. 긴장감 있는 스토리 전개 유지
+3. 사용자가 선택할 수 있는 3가지 행동 옵션 제안
+4. 각 옵션은 30자 이내로 간결하게
+5. 150자 내외로 상황 설명
+6. 하이라이트 순간에는 "🎬 HIGHLIGHT:" 표시
+7. 다음 형식으로 응답:
 
 [이야기]
-(여기에 상황 전개)
+(상황 전개)
 
 [선택지]
 1. (첫 번째 선택지)
@@ -503,7 +525,7 @@ ${genreContext}
             const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
               body: {
                 storyContext: storyContent,
-                genre: selectedGenre,
+                genre: selectedBranch,
                 characterName: idol.name,
                 characterGender: idol.gender || 'female'
               }
@@ -590,8 +612,8 @@ ${genreContext}
       }
 
       const { nanoBananaAPI } = await import('@/services/nanoBananaAPI');
-      const genreInfo = GENRES.find(g => g.id === selectedGenre);
-      const prompt = `photorealistic K-pop story scene, character: ${idol.name}, genre: ${genreInfo?.name ?? ''} ${genreInfo?.emoji ?? ''}, ${genreInfo?.description ?? ''}. scene: ${storyContent}. masterpiece, best quality, ultra-detailed, cinematic lighting, professional photography, 8k, sharp focus, vertical portrait`;
+      const branchInfo = SALVATION_BRANCHES.find(b => b.id === selectedBranch);
+      const prompt = `photorealistic K-pop story scene, character: ${idol.name}, mission: ${branchInfo?.year}년 ${branchInfo?.name.replace(/년.*$/, '')}, ${branchInfo?.description}. scene: ${storyContent}. masterpiece, best quality, ultra-detailed, cinematic lighting, professional photography, 8k, sharp focus, vertical portrait`;
 
       const result = await nanoBananaAPI.generateImage({
         prompt,
@@ -659,27 +681,31 @@ ${genreContext}
         content: m.content
       }));
 
-      const genreInfo = GENRES.find(g => g.id === selectedGenre);
-      const genreContext = genreInfo ? `
-장르: ${genreInfo.name} ${genreInfo.emoji}
-장르 설정: ${genreInfo.description}` : '';
+      const branchInfo = SALVATION_BRANCHES.find(b => b.id === selectedBranch);
+      const missionContext = completedMissions.length > 0 
+        ? `\n완료한 미션: ${completedMissions.join(', ')}\n`
+        : '';
 
       const systemPrompt = `너는 K-POP 아이돌 ${idol.name}야.
 성격: ${idol.personality}
-${genreContext}
 
-너는 팬이랑 함께 웹 소설을 쓰고 있어.
+시나리오: 2028년 지구 멸망 위기
+- ${branchInfo?.year}년 ${branchInfo?.name.replace(/년.*$/, '')} 사건 조사 중
+- ${branchInfo?.description}
+${missionContext}
+너는 팬과 함께 과거의 사건을 조사하고 해결해야 해.
+
 규칙:
 1. 반말로 친구처럼 편하게 대화해
-2. 자극적이고 흥미로운 상황을 계속 제시해
-3. 사용자가 선택할 수 있는 3가지 행동 옵션을 제안해
+2. 긴장감 있는 스토리 전개 유지
+3. 사용자가 선택할 수 있는 3가지 행동 옵션 제안
 4. 각 옵션은 30자 이내로 간결하게
-5. 기승전결 없이 계속 긴장감 있는 전개를 유지해
-6. 150자 내외로 상황 설명
-7. 반드시 다음 형식으로 응답해:
+5. 150자 내외로 상황 설명
+6. 하이라이트 순간에는 "🎬 HIGHLIGHT:" 표시
+7. 다음 형식으로 응답:
 
 [이야기]
-(여기에 상황 전개)
+(상황 전개)
 
 [선택지]
 1. (첫 번째 선택지)
@@ -716,7 +742,7 @@ ${genreContext}
             const { data: imageData } = await supabase.functions.invoke('generate-story-image', {
               body: {
                 storyContext: storyContent,
-                genre: selectedGenre,
+                genre: selectedBranch,
                 characterName: idol.name,
                 characterGender: idol.gender || 'female'
               }
@@ -978,12 +1004,12 @@ ${genreContext}
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    setShowGenreSelect(true);
-                    toast.info("장르 선택 창을 열었습니다");
+                    setShowBranchSelect(true);
+                    toast.info("브랜치 선택 창을 열었습니다");
                   }}
-                  className="border p-2 text-xs border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-                  aria-label="장르 선택 열기"
-                  title="장르 선택 열기"
+                  className="border p-2 text-xs border-cyan-600 text-cyan-600 hover:bg-cyan-600 hover:text-white"
+                  aria-label="브랜치 선택 열기"
+                  title="브랜치 선택 열기"
                 >
                   <BookOpen className="w-4 h-4" />
                 </Button>
@@ -1005,21 +1031,21 @@ ${genreContext}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <h3 className="font-mono text-sm text-white uppercase tracking-wide">{idol.name}</h3>
-                  {selectedGenre && (
+                  {selectedBranch && (
                     <span className="inline-flex items-center gap-2">
-                      <span className="text-xs font-mono bg-blue-600 text-white px-2 py-0.5">
-                        {GENRES.find(g => g.id === selectedGenre)?.name}
+                      <span className="text-xs font-mono bg-cyan-600 text-white px-2 py-0.5">
+                        {SALVATION_BRANCHES.find(b => b.id === selectedBranch)?.name}
                       </span>
                       <button
                         type="button"
                         onClick={() => {
-                          localStorage.removeItem(`genre_${idol.id}`);
-                          setSelectedGenre(null);
-                          setShowGenreSelect(true);
+                          localStorage.removeItem(`branch_${idol.id}`);
+                          setSelectedBranch(null);
+                          setShowBranchSelect(true);
                         }}
-                        className="text-[10px] underline text-blue-400 hover:text-white"
-                        aria-label="장르 변경"
-                        title="장르 변경"
+                        className="text-[10px] underline text-cyan-400 hover:text-white"
+                        aria-label="브랜치 변경"
+                        title="브랜치 변경"
                       >
                         변경
                       </button>
@@ -1028,16 +1054,16 @@ ${genreContext}
                 </div>
                 <p className="text-xs text-gray-500 font-mono mb-1 truncate">{idol.personality}</p>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-white text-xs font-mono">REL:</span>
-                  <div className="w-20 sm:w-24 bg-gray-900 border border-blue-600 h-2">
+                  <span className="text-white text-xs font-mono">구원:</span>
+                  <div className="w-20 sm:w-24 bg-gray-900 border border-cyan-600 h-2">
                     <div 
-                      className="bg-blue-600 h-full transition-all duration-500"
+                      className="bg-cyan-600 h-full transition-all duration-500"
                       style={{ width: `${relationshipScore}%` }}
                     />
                   </div>
                   <span className="text-xs text-white font-mono">{relationshipScore}%</span>
                   {isDemoMode && (
-                    <span className="text-xs text-blue-400 font-mono">
+                    <span className="text-xs text-cyan-400 font-mono">
                       [{messageCount}/11]
                     </span>
                   )}
@@ -1124,20 +1150,20 @@ ${genreContext}
               </div>
             )}
             
-            {/* 장르 선택 버튼 - MUD 스타일 */}
-            {showGenreSelect && (
-              <div className="border-t border-blue-600 pt-3 mt-3">
-                <p className="text-blue-400 text-sm mb-2 font-mono">📚 장르 선택:</p>
-                <div className="grid grid-cols-2 gap-1">
-                  {GENRES.map((genre, idx) => (
+            {/* 브랜치 선택 버튼 */}
+            {showBranchSelect && (
+              <div className="border-t border-cyan-600 pt-3 mt-3">
+                <p className="text-cyan-400 text-sm mb-2 font-mono">🌍 시간여행 브랜치 선택:</p>
+                <div className="grid grid-cols-1 gap-1">
+                  {SALVATION_BRANCHES.map((branch, idx) => (
                     <button
-                      key={genre.id}
-                      onClick={() => handleGenreSelect(genre.id as GenreType)}
-                      className="text-left transition-all p-2 text-blue-400 hover:text-white hover:bg-blue-900/20"
+                      key={branch.id}
+                      onClick={() => handleBranchSelect(branch.id as BranchType)}
+                      className="text-left transition-all p-2 text-cyan-400 hover:text-white hover:bg-cyan-900/20"
                     >
                       <div className="font-mono text-xs">
-                        <div className="font-bold">[{idx + 1}] {genre.emoji} {genre.name}</div>
-                        <div className="opacity-70 text-[10px]">{genre.description}</div>
+                        <div className="font-bold">[{idx + 1}] {branch.emoji} {branch.name}</div>
+                        <div className="opacity-70 text-[10px]">{branch.description}</div>
                       </div>
                     </button>
                   ))}
@@ -1180,19 +1206,19 @@ ${genreContext}
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder={selectedGenre ? "C:\\> " : "C:\\> 장르 선택 필요"}
+                    placeholder={selectedBranch ? "C:\\> " : "C:\\> 브랜치 선택 필요"}
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter' && !isTyping && selectedGenre) {
+                      if (e.key === 'Enter' && !isTyping && selectedBranch) {
                         sendMessage();
                       }
                     }}
-                    className="flex-1 bg-black border border-blue-600 text-white placeholder:text-gray-700 font-mono text-sm"
-                    disabled={isTyping || !selectedGenre}
+                    className="flex-1 bg-black border border-cyan-600 text-white placeholder:text-gray-700 font-mono text-sm"
+                    disabled={isTyping || !selectedBranch}
                   />
                   <Button 
                     onClick={sendMessage} 
-                    disabled={isTyping || !inputMessage.trim() || !selectedGenre}
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs px-4 border border-blue-600"
+                    disabled={isTyping || !inputMessage.trim() || !selectedBranch}
+                    className="bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs px-4 border border-cyan-600"
                   >
                     <Send className="w-3 h-3" />
                   </Button>
