@@ -262,7 +262,7 @@ export const CinematicSynopsis = memo(({
       
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container z-10">
         {/* Unified Timeline Container */}
-        <div className="absolute -top-6 md:-top-4 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10 border border-gray-700/50 bg-gray-900/80 backdrop-blur-md rounded-sm px-4 md:px-6 py-2 md:py-3">
+        <div className="absolute -top-12 md:-top-10 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10 border border-gray-700/50 bg-gray-900/80 backdrop-blur-md rounded-sm px-4 md:px-6 py-2 md:py-3 mb-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-4 md:mb-5">
             <span className="text-gray-400 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
@@ -318,7 +318,7 @@ export const CinematicSynopsis = memo(({
         </div>
 
         {/* Main Content */}
-        <div className={`w-full flex items-center justify-center px-4 md:px-8 lg:px-16 py-8 md:py-12 transition-opacity duration-400 ${
+        <div className={`w-full flex items-center justify-center px-4 md:px-8 lg:px-16 py-8 md:py-12 mt-16 md:mt-20 transition-opacity duration-400 ${
           isTransitioning ? 'opacity-0' : 'opacity-100'
         }`}>
           <div className="text-center space-y-3 md:space-y-2 max-w-5xl w-full font-orbitron">
