@@ -3,6 +3,7 @@ import { BRANCHES } from '@/data/branches';
 import { getMissionsByBranch } from '@/data/salvationMissions';
 import { getScenesByMissionId } from '@/data/missionScenes';
 import { useEpisodeStory } from '@/hooks/useEpisodeStory';
+import { useFreeInputTickets } from '@/hooks/useFreeInputTickets';
 import { Branch, SalvationMission } from '@/types/branch';
 import { toast } from 'sonner';
 
@@ -22,7 +23,10 @@ export const PlayChatInterface = () => {
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
   const [selectedMission, setSelectedMission] = useState<SalvationMission | null>(null);
   const [inputMessage, setInputMessage] = useState('');
+  const [isFreeInputMode, setIsFreeInputMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  const { tickets, useTicket } = useFreeInputTickets();
   
   // 타이핑 효과 상태
   const [typingText, setTypingText] = useState('');
@@ -309,6 +313,7 @@ export const PlayChatInterface = () => {
 
     sendEpisodeMessage(inputMessage);
     setInputMessage('');
+    setIsFreeInputMode(false); // Reset free input mode after sending
   };
 
   const handleBackToBranch = () => {
@@ -331,6 +336,39 @@ export const PlayChatInterface = () => {
       { type: 'system', content: '미션 선택 화면으로 돌아갑니다', timestamp: new Date() },
       { type: 'mission-select', missions, timestamp: new Date() },
     ]);
+  };
+
+  // 선택지 파싱 함수
+  const parseChoices = (content: string): { text: string; choices: string[] } | null => {
+    if (!content.includes('[선택지]')) return null;
+    
+    const [mainText, choicesText] = content.split('[선택지]');
+    const choicePattern = /[1-9]️⃣\s*(.+?)(?=\n[1-9]️⃣|$)/gs;
+    const matches = [...choicesText.matchAll(choicePattern)];
+    const choices = matches.map(m => m[1].trim());
+    
+    return choices.length > 0 ? { text: mainText.trim(), choices } : null;
+  };
+
+  // 선택지 클릭 핸들러
+  const handleChoiceSelect = (choice: string, choiceNumber: number) => {
+    playClickSound();
+    if (isEpisodeLoading) return;
+    
+    const message = `${choiceNumber}번 선택: ${choice}`;
+    sendEpisodeMessage(message);
+    setIsFreeInputMode(false);
+  };
+
+  // 자유 입력권 사용 핸들러
+  const handleUseFreeInputTicket = () => {
+    if (useTicket()) {
+      setIsFreeInputMode(true);
+      playClickSound();
+      toast.success("🎫 자유 입력권 사용! 원하는 답변을 입력하세요.");
+    } else {
+      toast.error("자유 입력권이 부족합니다. Settings에서 구매하세요.");
+    }
   };
 
   const renderMessage = (msg: ChatMessage, index: number) => {
@@ -425,6 +463,9 @@ export const PlayChatInterface = () => {
         );
 
       case 'idol':
+        const parsed = parseChoices(msg.content);
+        const displayContent = parsed ? parsed.text : msg.content;
+        
         return (
           <div key={index} className="retro-terminal-box bg-emerald-900/10 mb-3 animate-fade-in">
             <div className="flex items-start gap-3">
@@ -437,18 +478,55 @@ export const PlayChatInterface = () => {
               )}
               <div className="flex-1">
                 <p className="text-emerald-600 font-mono text-xs mb-1">{selectedIdol?.name || '아이돌'}</p>
+                
+                {/* 본문 텍스트 */}
                 <p className="font-mono text-sm leading-relaxed" style={{ color: 'var(--terminal-green)' }}>
-                  {isTypingEffect && index === currentTypingIndex ? typingText : msg.content}
+                  {isTypingEffect && index === currentTypingIndex ? typingText : displayContent}
                   {isTypingEffect && index === currentTypingIndex && (
                     <span className="typing-cursor">▋</span>
                   )}
                 </p>
+                
+                {/* 이미지 */}
                 {msg.imageUrl && !isTypingEffect && (
                   <img
                     src={msg.imageUrl}
                     alt="Memory"
                     className="mt-3 border border-emerald-600/30 max-w-full"
                   />
+                )}
+                
+                {/* 선택지 버튼 */}
+                {parsed && parsed.choices.length > 0 && !isTypingEffect && (
+                  <div className="mt-4 space-y-2">
+                    <p className="text-emerald-600/70 font-mono text-xs mb-2">[선택지]</p>
+                    {parsed.choices.map((choice, choiceIdx) => (
+                      <button
+                        key={choiceIdx}
+                        onClick={() => handleChoiceSelect(choice, choiceIdx + 1)}
+                        disabled={isEpisodeLoading}
+                        className="w-full text-left px-4 py-3 border border-emerald-600/30 
+                                 hover:border-emerald-600 hover:bg-emerald-900/30 
+                                 transition-all font-mono text-sm
+                                 disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ color: 'var(--terminal-green)' }}
+                      >
+                        <span className="text-emerald-600">{choiceIdx + 1}️⃣</span> {choice}
+                      </button>
+                    ))}
+                    
+                    {/* 자유 입력권 사용 버튼 */}
+                    <button
+                      onClick={handleUseFreeInputTicket}
+                      disabled={isEpisodeLoading || tickets === 0 || isFreeInputMode}
+                      className="w-full px-4 py-2 border border-purple-600/50 
+                               hover:border-purple-600 hover:bg-purple-900/20
+                               text-purple-400 font-mono text-sm transition-all
+                               disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      🎫 자유 입력권 사용 ({tickets}개 보유)
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -519,35 +597,64 @@ export const PlayChatInterface = () => {
       {/* Input 영역 */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 border-t border-emerald-600/30">
         {currentMode === 'episode' ? (
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="당신의 행동이나 응답을 입력하세요..."
-              disabled={isEpisodeLoading}
-              className="flex-1 bg-black border border-emerald-600/30 text-emerald-500 
-                       font-mono px-4 py-2 focus:border-emerald-600 focus:outline-none
-                       disabled:opacity-50"
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={isEpisodeLoading || !inputMessage.trim()}
-              className="px-6 py-2 border border-emerald-600 text-green-600 
-                       hover:bg-emerald-900/30 hover:text-emerald-500 font-mono
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isEpisodeLoading ? '...' : 'SEND'}
-            </button>
-            <button
-              onClick={handleBackToMission}
-              className="px-4 py-2 border border-gray-600 text-gray-400 
-                       hover:border-emerald-600 hover:text-green-600 font-mono text-sm"
-            >
-              ← 종료
-            </button>
-          </div>
+          <>
+            {(() => {
+              const lastMsg = messages[messages.length - 1];
+              const hasChoices = lastMsg?.type === 'idol' && 
+                                parseChoices(lastMsg.content)?.choices.length > 0;
+              
+              // 선택지가 있고 자유 입력 모드가 아니면 입력 차단
+              if (hasChoices && !isFreeInputMode && !isEpisodeLoading) {
+                return (
+                  <p className="text-center text-emerald-500/70 font-mono text-sm">
+                    ⬆️ 위 선택지를 클릭하거나 자유 입력권을 사용하세요
+                  </p>
+                );
+              }
+              
+              // 자유 입력 모드 또는 선택지가 없으면 입력 필드 표시
+              return (
+                <div className="relative">
+                  {isFreeInputMode && (
+                    <div className="absolute -top-8 left-0 right-0 text-center">
+                      <span className="text-purple-400 font-mono text-xs bg-purple-900/30 px-3 py-1 rounded-full">
+                        🎫 자유 입력 모드
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                      placeholder={isFreeInputMode ? "자유롭게 입력하세요..." : "답변을 입력하세요..."}
+                      disabled={isEpisodeLoading}
+                      className="flex-1 bg-black border border-emerald-600/30 text-emerald-500 
+                               font-mono px-4 py-2 focus:border-emerald-600 focus:outline-none
+                               disabled:opacity-50"
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={isEpisodeLoading || !inputMessage.trim()}
+                      className="px-6 py-2 border border-emerald-600 text-green-600 
+                               hover:bg-emerald-900/30 hover:text-emerald-500 font-mono
+                               disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isEpisodeLoading ? '...' : 'SEND'}
+                    </button>
+                    <button
+                      onClick={handleBackToMission}
+                      className="px-4 py-2 border border-gray-600 text-gray-400 
+                               hover:border-emerald-600 hover:text-green-600 font-mono text-sm"
+                    >
+                      ← 종료
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+          </>
         ) : (
           <p className="text-center text-emerald-500/50 font-mono text-sm">
             위 버튼을 클릭하여 선택하세요
