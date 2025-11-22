@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, memo } from 'react';
 import { ArchivePhotoOverlay } from './ArchivePhotoOverlay';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HistoricalPhoto {
   src: string;
@@ -18,6 +19,7 @@ interface ArchivePhotoProps {
 }
 
 export const ArchivePhoto = memo(({ photo, delay = 0, parallaxOffset = 0, index = 0 }: ArchivePhotoProps) => {
+  const { language } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const [scrollOpacity, setScrollOpacity] = useState(0);
   const photoRef = useRef<HTMLDivElement>(null);
@@ -106,15 +108,12 @@ export const ArchivePhoto = memo(({ photo, delay = 0, parallaxOffset = 0, index 
         <span>{photo.archiveId}</span>
       </div>
       
-      {/* Captions: always visible */}
+      {/* Caption: language-aware */}
       {(photo.captionKo || photo.caption) && (
         <div className="archive-caption-bilingual">
-          {photo.captionKo && (
-            <div className="caption-ko">{photo.captionKo}</div>
-          )}
-          {photo.caption && (
-            <div className="caption-en text-xs opacity-60">{photo.caption}</div>
-          )}
+          <div className="caption-ko">
+            {language === 'ko' && photo.captionKo ? photo.captionKo : photo.caption}
+          </div>
         </div>
       )}
     </div>
