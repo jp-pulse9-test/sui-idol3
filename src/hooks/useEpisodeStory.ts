@@ -54,6 +54,16 @@ export const useEpisodeStory = (
       return data.imageUrl;
     } catch (error) {
       console.error("Failed to generate scene image:", error);
+      
+      // Import toast dynamically to show error notification
+      import('@/hooks/use-toast').then(({ toast }) => {
+        toast({
+          title: "Image generation failed",
+          description: "The story continues, but we couldn't create a memory card for this moment.",
+          variant: "destructive",
+        });
+      });
+      
       return null;
     } finally {
       setIsGeneratingImage(false);
@@ -92,7 +102,8 @@ export const useEpisodeStory = (
         body: JSON.stringify({
           messages: apiMessages,
           episodeContext,
-          idolPersona
+          idolPersona,
+          language: 'ko' // Add language support
         }),
         signal: abortControllerRef.current.signal,
       });

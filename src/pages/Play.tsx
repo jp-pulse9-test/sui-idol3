@@ -133,25 +133,14 @@ const Play = () => {
       return;
     }
 
-    // Get scenes for this mission
-    const scenes = getScenesByMissionId(mission.id);
-    
-    if (scenes.length === 0) {
-      toast.error('This mission story is not yet available');
-      return;
-    }
-
-    // Convert SalvationMission to StoryEpisode format
+    // Convert SalvationMission to Episode format
     const episode = {
       id: mission.id,
       title: language === 'en' ? mission.titleEn : mission.title,
       description: language === 'en' ? mission.descriptionEn : mission.description,
       category: mission.valueType,
-      difficulty: selectedBranch?.difficulty || 'normal',
-      turns: scenes.length,
-      unlocked: !mission.isCompleted,
-      completed: mission.isCompleted,
-      scenes: scenes
+      difficulty: selectedBranch?.difficulty || 'Normal',
+      turns: 8
     };
 
     // Create idol data for story
@@ -482,55 +471,80 @@ const Play = () => {
             console.log('Episode completed!', result);
             
             // Update VRI
-            const vriReward = selectedMission?.vriReward || 0;
-            const valueType = selectedMission?.valueType;
+            const vriReward = result.vriReward || 50;
+            const valueType = selectedMission?.valueType || 'love';
             
-            if (valueType && userId) {
-              // Update VRI in state
-              const newVRI = {
-                ...userVRI,
-                [valueType]: userVRI[valueType] + vriReward,
-                total: userVRI.total + vriReward
-              };
+            // Update VRI in state
+            const vriMap: { [key: string]: keyof VRI } = {
+              'Love': 'love',
+              'Trust': 'trust',
+              'Empathy': 'empathy'
+            };
+            
+            const vriKey = vriMap[valueType] || 'love';
+            
+            const newVRI = {
+              ...userVRI,
+              [vriKey]: (userVRI[vriKey] as number) + vriReward,
+              total: userVRI.total + vriReward
+            };
+            
+            setUserVRI(newVRI);
+            
+            // Update mission completion
+            if (selectedMission && selectedBranch) {
+              const currentProgress = getBranchProgressData(selectedBranch.id);
+              const completedMissions = currentProgress?.completedMissions || [];
               
-              setUserVRI(newVRI);
-              
-              // Update mission completion
-              if (selectedMission && selectedBranch) {
-                const currentProgress = getBranchProgressData(selectedBranch.id);
-                const completedMissions = currentProgress?.completedMissions || [];
+              if (!completedMissions.includes(selectedMission.id)) {
+                const updatedProgress = branchProgress.map(p => 
+                  p.branchId === selectedBranch.id
+                    ? { ...p, completedMissions: [...p.completedMissions, selectedMission.id], currentVRI: p.currentVRI + vriReward }
+                    : p
+                );
                 
-                if (!completedMissions.includes(selectedMission.id)) {
-                  const updatedProgress = branchProgress.map(p => 
-                    p.branchId === selectedBranch.id
-                      ? { ...p, completedMissions: [...p.completedMissions, selectedMission.id], currentVRI: p.currentVRI + vriReward }
-                      : p
-                  );
+                // If no existing progress for this branch, create it
+                if (!currentProgress) {
+                  updatedProgress.push({
+                    branchId: selectedBranch.id,
+                    currentVRI: vriReward,
+                    maxVRI: selectedBranch.maxVRI || 1000,
+                    completedMissions: [selectedMission.id],
+                    isCleared: false,
+                    lastPlayedAt: new Date()
+                  });
+                }
+                
+                setBranchProgress(updatedProgress);
+                
+                // Save to Supabase if logged in
+                if (userId) {
+                  supabase.from('user_vri').upsert({
+                    user_id: userId,
+                    total_vri: newVRI.total,
+                    love_vri: newVRI.love,
+                    trust_vri: newVRI.trust,
+                    empathy_vri: newVRI.empathy
+                  });
                   
-                  // If no existing progress for this branch, create it
-                  if (!currentProgress) {
-                    updatedProgress.push({
-                      branchId: selectedBranch.id,
-                      currentVRI: vriReward,
-                      maxVRI: selectedBranch.maxVRI || 1000,
-                      completedMissions: [selectedMission.id],
-                      isCleared: false,
-                      lastPlayedAt: new Date()
-                    });
-                  }
-                  
-                  setBranchProgress(updatedProgress);
-                  
+                  supabase.from('branch_progress').upsert({
+                    user_id: userId,
+                    branch_id: selectedBranch.id,
+                    current_vri: (currentProgress?.currentVRI || 0) + vriReward,
+                    max_vri: selectedBranch.maxVRI || 1000,
+                    completed_missions: [...completedMissions, selectedMission.id],
+                    is_cleared: false,
+                    last_played_at: new Date().toISOString()
+                  });
+                } else {
                   // Save to localStorage for guest mode
-                  if (!userId) {
-                    localStorage.setItem('guestProgress', JSON.stringify(updatedProgress));
-                    localStorage.setItem('guestVRI', JSON.stringify(newVRI));
-                  }
+                  localStorage.setItem('guestProgress', JSON.stringify(updatedProgress));
+                  localStorage.setItem('guestVRI', JSON.stringify(newVRI));
                 }
               }
-
-              toast.success(`Episode completed! +${vriReward} VRI earned. ${result.memoryCards} memory cards created!`);
             }
+
+            toast.success(`${language === 'en' ? 'Episode completed!' : '에피소드 완료!'} +${vriReward} VRI, ${result.memoryCards} ${language === 'en' ? 'memory cards!' : '메모리 카드!'}`);
 
             setCurrentEpisode(null);
             setSelectedIdolForStory(null);
