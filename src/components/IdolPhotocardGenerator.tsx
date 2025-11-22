@@ -32,6 +32,7 @@ interface IdolPhotocardGeneratorProps {
   hasAdvancedAccess?: boolean;
   onCostDeduction: (suiCost: number, heartCost: number) => void;
   onNavigateToCollection?: () => void;
+  onWalrusError?: () => void;
 }
 
 interface ConceptOption {
@@ -49,7 +50,8 @@ export const IdolPhotocardGenerator = ({
   fanHearts,
   hasAdvancedAccess = false,
   onCostDeduction,
-  onNavigateToCollection
+  onNavigateToCollection,
+  onWalrusError
 }: IdolPhotocardGeneratorProps) => {
   const { mintPhotoCard, isPending } = usePhotoCardMinting();
   const { currentAccount } = useWallet();
@@ -279,7 +281,11 @@ export const IdolPhotocardGenerator = ({
       toast.info('🔄 Initializing Walrus client...');
 
       // Dynamically import Walrus to prevent WASM errors
-      const { WalrusClient, WalrusFile } = await import('@mysten/walrus');
+      const { WalrusClient, WalrusFile } = await import('@mysten/walrus').catch(err => {
+        console.warn('Walrus WASM import failed:', err);
+        onWalrusError?.();
+        throw new Error('Walrus is not available in this environment');
+      });
 
       // Initialize Walrus client
       const walrusClient = new WalrusClient({
