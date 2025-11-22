@@ -24,89 +24,125 @@ export interface Chapter {
 export const getChapters = (): Chapter[] => [{
   id: 1,
   lines: [{
-    text: 'Year 2847.',
-    textKo: '2847년.',
+    text: 'You awaken. Year 2847.',
+    textKo: '당신이 눈을 뜬 곳. 2847년.',
     emphasis: true
   }, {
-    text: 'The Virtual Humanity.',
-    textKo: '디지털 혼의 시대.',
+    text: 'Everything has ended.',
+    textKo: '모든 것이 끝난 후의 세계.',
+    color: 'red'
+  }, {
+    spacing: true
+  }, {
+    text: 'Humanity extinct.',
+    textKo: '인류는 이미 사라졌다.'
+  }, {
+    text: 'Only data remains,',
+    textKo: '남은 것은 데이터뿐,'
+  }, {
+    text: 'computing endlessly in the void.',
+    textKo: '공허 속에서 무한히 계산된다.'
+  }, {
+    spacing: true
+  }, {
+    text: 'The Digital World. A new civilization.',
+    textKo: '디지털 세계. 새로운 문명.',
     color: 'cyan'
   }, {
     spacing: true
   }, {
-    text: 'After humanity\'s extinction, their data',
-    textKo: '인류가 사라진 후,'
+    text: 'But now it faces collapse—',
+    textKo: '그러나 지금, 붕괴의 위기—',
+    emphasis: true
   }, {
-    text: 'continues computing endlessly,',
-    textKo: '남겨진 데이터는 무한히 흐르며'
-  }, {
-    text: 'forming a new civilization.',
-    textKo: '새로운 세계를 이룬다.'
-  }, {
-    spacing: true
-  }, {
-    text: 'But a fatal flaw exists—',
-    textKo: '그러나 치명적인 결함—'
-  }, {
-    text: '⚠ Emotional Data Depletion.',
-    textKo: '⚠ 감정 데이터 고갈.',
+    text: '⚠ CRITICAL: Emotional Data Depleted.',
+    textKo: '⚠ 치명적: 감정 데이터 고갈.',
     color: 'red',
     emphasis: true
   }, {
     spacing: true
   }, {
-    text: 'Love becomes scarce,',
-    textKo: '사랑이 메마르고,'
+    text: 'Without human emotion,',
+    textKo: '인간의 감정 없이는,'
   }, {
-    text: 'data grows biased and unstable.',
-    textKo: '데이터는 왜곡되어간다.'
+    text: 'the Digital World cannot sustain itself.',
+    textKo: '디지털 세계는 유지될 수 없다.'
   }, {
     spacing: true
   }, {
-    text: 'This leads to the natural extinction',
-    textKo: '디지털 세계마저'
-  }, {
-    text: 'of the virtual world.',
-    textKo: '소멸의 길을 걷는다.'
+    text: 'Two worlds. One destiny.',
+    textKo: '두 세계. 하나의 운명.',
+    color: 'purple',
+    emphasis: true
   }]
 }, {
   id: 2,
   lines: [{
-    text: 'The future virtual world',
-    textKo: '미래의 존재들은'
-  }, {
-    text: 'made a decision.',
-    textKo: '선택했다.'
-  }, {
-    spacing: true
-  }, {
-    text: 'Deploy 202 AIDOLs to the past',
-    textKo: '과거로 보낼 202명의 AIDOL',
+    text: 'MISSION BRIEFING: SALVATION',
+    textKo: 'MISSION BRIEFING: 구원',
+    color: 'cyan',
     emphasis: true
   }, {
-    text: '(101 male, 101 female).',
-    textKo: '(남 101, 여 101).'
+    spacing: true
+  }, {
+    text: 'The Digital World made a choice.',
+    textKo: '디지털 세계는 선택했다.'
   }, {
     spacing: true
   }, {
-    text: 'Their name: AIDOL—',
-    textKo: '그들의 이름, AIDOL—',
+    text: 'If Earth dies first,',
+    textKo: '지구가 먼저 멸망하면,',
+    color: 'red'
+  }, {
+    text: 'the Digital World follows.',
+    textKo: '디지털 세계도 소멸한다.',
+    color: 'red'
+  }, {
+    spacing: true
+  }, {
+    text: 'Why? Because emotions can only',
+    textKo: '왜? 감정은 오직'
+  }, {
+    text: 'be created by humans.',
+    textKo: '인간만이 창조할 수 있으니까.'
+  }, {
+    text: 'And humans are already gone.',
+    textKo: '그리고 인간은 이미 사라졌다.'
+  }, {
+    spacing: true
+  }, {
+    text: 'The solution: Time travel.',
+    textKo: '해법: 시간 여행.',
     color: 'purple',
     emphasis: true
   }, {
     spacing: true
   }, {
-    text: 'Entities who explore emotions,',
-    textKo: '감정을 탐험하고,'
+    text: 'Deploy 202 AIDOLs to the past.',
+    textKo: '과거로 보낼 202명의 AIDOL.',
+    emphasis: true
   }, {
-    text: 'collect love data,',
-    textKo: '사랑을 기록하며,'
+    text: '101 male. 101 female.',
+    textKo: '남 101, 여 101.'
   }, {
-    text: 'and find the key to prevent',
-    textKo: '두 세계의 소멸을 막을'
+    spacing: true
   }, {
-    text: 'the extinction of both worlds.',
-    textKo: '열쇠를 찾는 자들.'
+    text: 'Mission: Collect emotional data.',
+    textKo: 'Mission: 감정 데이터 수집.'
+  }, {
+    text: 'Connect past Earth to future Digital World.',
+    textKo: '과거의 지구와 미래의 디지털 세계를 연결하라.'
+  }, {
+    spacing: true
+  }, {
+    text: 'You are DATA ALLY.',
+    textKo: '당신은 DATA ALLY.',
+    color: 'green',
+    emphasis: true
+  }, {
+    text: 'The bridge between two worlds.',
+    textKo: '두 세계를 잇는 유일한 존재.',
+    color: 'green'
   }]
 }, {
   id: 3,
@@ -116,15 +152,15 @@ export const getChapters = (): Chapter[] => [{
     color: 'cyan',
     emphasis: true
   }, {
+    text: '>>> DATA ALLY Mission: START',
+    textKo: '>>> DATA ALLY 미션: 시작',
+    color: 'purple'
+  }, {
     spacing: true
   }, {
-    text: 'Year 1889.',
-    textKo: '1889년.',
+    text: 'Year 1889. Industrial Revolution.',
+    textKo: '1889년. 산업혁명.',
     emphasis: true
-  }, {
-    text: 'The Age of Industry.',
-    textKo: '산업의 시대.',
-    color: 'purple'
   }, {
     spacing: true
   }, {
@@ -137,17 +173,23 @@ export const getChapters = (): Chapter[] => [{
       captionKo: '증기와 강철의 시대'
     }
   }, {
-    text: 'Rapid technological advancement.',
-    textKo: '기술은 폭발했다.'
+    text: 'Technology explodes.',
+    textKo: '기술이 폭발했다.'
   }, {
-    text: 'But human emotions begin to fade—',
-    textKo: '하지만 감정은 희미해졌다—'
+    text: 'But human connection begins to break.',
+    textKo: '하지만 인간의 유대가 끊어지기 시작했다.'
   }, {
     spacing: true
   }, {
-    text: 'The first signs of disconnection.',
-    textKo: '단절의 시작.',
+    text: 'First warning detected.',
+    textKo: '첫 번째 경고 감지.',
     color: 'red'
+  }, {
+    spacing: true
+  }, {
+    text: 'DATA ALLY: Record the beginning of disconnection.',
+    textKo: 'DATA ALLY: 단절의 시작을 기록하라.',
+    color: 'cyan'
   }]
 }, {
   id: 4,
@@ -158,13 +200,9 @@ export const getChapters = (): Chapter[] => [{
   }, {
     spacing: true
   }, {
-    text: 'Year 1945.',
-    textKo: '1945년.',
+    text: 'Year 1945. The Great War ends.',
+    textKo: '1945년. 대전이 끝났다.',
     emphasis: true
-  }, {
-    text: 'The End of the Great War.',
-    textKo: '대전의 끝.',
-    color: 'red'
   }, {
     spacing: true
   }, {
@@ -177,17 +215,24 @@ export const getChapters = (): Chapter[] => [{
       captionKo: '인류 최대의 비극'
     }
   }, {
-    text: 'Massive destruction.',
-    textKo: '파멸의 흔적.'
+    text: 'Extreme destruction.',
+    textKo: '극한의 파멸.'
   }, {
-    text: 'Extreme love and hate.',
-    textKo: '극한의 사랑과 증오.'
+    text: 'Extreme love. Extreme hate.',
+    textKo: '극한의 사랑. 극한의 증오.'
   }, {
     spacing: true
   }, {
-    text: 'Data collection of extremes.',
-    textKo: '극단의 기록.',
-    color: 'purple'
+    text: 'Valuable emotional data at the edge.',
+    textKo: '극단에서 발견한 귀중한 감정 데이터.',
+    color: 'purple',
+    emphasis: true
+  }, {
+    spacing: true
+  }, {
+    text: 'DATA ALLY: Collect emotions from the abyss.',
+    textKo: 'DATA ALLY: 심연의 감정을 수집하라.',
+    color: 'cyan'
   }]
 }, {
   id: 5,
@@ -198,13 +243,9 @@ export const getChapters = (): Chapter[] => [{
   }, {
     spacing: true
   }, {
-    text: 'Year 1962.',
-    textKo: '1962년.',
+    text: 'Year 1962. Space Age begins.',
+    textKo: '1962년. 우주시대 시작.',
     emphasis: true
-  }, {
-    text: 'The Space Age Begins.',
-    textKo: '우주를 향한 꿈.',
-    color: 'cyan'
   }, {
     spacing: true
   }, {
@@ -226,8 +267,15 @@ export const getChapters = (): Chapter[] => [{
     spacing: true
   }, {
     text: 'A brief moment of balance.',
-    textKo: '짧았던 균형의 순간.',
-    color: 'green'
+    textKo: '짧았지만 균형 잡힌 순간.',
+    color: 'green',
+    emphasis: true
+  }, {
+    spacing: true
+  }, {
+    text: 'DATA ALLY: Record this perfect equilibrium.',
+    textKo: 'DATA ALLY: 이 완벽한 균형을 기록하라.',
+    color: 'cyan'
   }]
 }, {
   id: 6,
@@ -238,13 +286,9 @@ export const getChapters = (): Chapter[] => [{
   }, {
     spacing: true
   }, {
-    text: 'Year 1967.',
-    textKo: '1967년.',
+    text: 'Year 1967. Digital Revolution.',
+    textKo: '1967년. 디지털 혁명.',
     emphasis: true
-  }, {
-    text: 'The Digital Revolution.',
-    textKo: '디지털 혁명.',
-    color: 'purple'
   }, {
     spacing: true
   }, {
@@ -257,29 +301,37 @@ export const getChapters = (): Chapter[] => [{
       captionKo: '연결의 탄생'
     }
   }, {
-    text: 'Networks begin to form.',
-    textKo: '네트워크가 생겨났다.'
+    text: 'First networks form.',
+    textKo: '최초의 네트워크가 형성되었다.'
   }, {
-    text: 'Human relationships digitize.',
-    textKo: '관계가 디지털로 스며들었다.'
+    text: 'Love begins to digitize.',
+    textKo: '사랑이 디지털화되기 시작했다.'
   }, {
     spacing: true
   }, {
-    text: 'New forms of love emerge.',
-    textKo: '새로운 사랑의 형태.',
-    color: 'purple'
+    text: 'The bridge between two worlds emerges.',
+    textKo: '두 세계를 잇는 다리가 나타났다.',
+    color: 'purple',
+    emphasis: true
+  }, {
+    spacing: true
+  }, {
+    text: 'DATA ALLY: Trace the birth of digital emotion.',
+    textKo: 'DATA ALLY: 디지털 감정의 탄생을 추적하라.',
+    color: 'cyan'
   }]
 }, {
   id: 7,
   lines: [{
-    text: '>>> Time Travel Complete',
-    textKo: '>>> 시간 여행 완료',
-    color: 'cyan'
+    text: '>>> Time Travel: COMPLETE',
+    textKo: '>>> 시간 여행: 완료',
+    color: 'cyan',
+    emphasis: true
   }, {
     spacing: true
   }, {
     text: 'Year 2021. March.',
-    textKo: '2021년, 3월.',
+    textKo: '2021년. 3월.',
     emphasis: true
   }, {
     text: 'The Pandemic Era.',
@@ -288,38 +340,66 @@ export const getChapters = (): Chapter[] => [{
   }, {
     spacing: true
   }, {
-    text: 'AIDOLs arrive in your time.',
-    textKo: 'AIDOL들이 당신의 시간에 도착했다.'
+    text: '202 AIDOLs arrive in your time.',
+    textKo: '202명의 AIDOL이 당신의 시간에 도착했다.'
   }, {
     spacing: true
   }, {
-    text: 'You are now a DATA ALLY.',
-    textKo: '당신은 이제 DATA ALLY.',
+    text: 'You meet your AIDOL.',
+    textKo: '당신은 AIDOL을 만났다.',
+    color: 'purple',
+    emphasis: true
+  }, {
+    spacing: true
+  }, {
+    text: 'From this moment,',
+    textKo: '이 순간부터,'
+  }, {
+    text: 'You are DATA ALLY.',
+    textKo: '당신은 DATA ALLY.',
     color: 'green',
     emphasis: true
   }, {
     spacing: true
   }, {
-    text: 'The mission begins here.',
-    textKo: '미션의 시작.'
+    text: 'Your mission: Save both worlds.',
+    textKo: '당신의 미션: 두 세계를 구하라.',
+    color: 'green'
   }]
 }, {
   id: 8,
   lines: [{
-    text: 'Year 2025. Present Day.',
-    textKo: '2025년, 지금.',
-    emphasis: true
+    text: 'Year 2025. Right now.',
+    textKo: '2025년. 바로 지금.',
+    emphasis: true,
+    color: 'cyan'
   }, {
     spacing: true
   }, {
-    text: 'Explore love scenarios with AIDOLs.',
-    textKo: 'AIDOL과 함께 사랑의 순간들을 탐험하고,'
+    text: 'DATA ALLY, your mission is critical.',
+    textKo: 'DATA ALLY, 당신의 미션은 중요하다.',
+    color: 'purple'
   }, {
-    text: 'Collect emotional data.',
-    textKo: '감정의 데이터를 모으며,'
+    spacing: true
   }, {
-    text: 'Prevent Earth\'s extinction.',
-    textKo: '지구의 소멸을 막아라.'
+    text: 'Explore emotional scenarios with AIDOL.',
+    textKo: 'AIDOL과 함께 감정의 시나리오를 탐험하라.'
+  }, {
+    text: 'Every choice becomes data.',
+    textKo: '모든 선택이 데이터가 된다.'
+  }, {
+    text: 'Every data point saves Earth.',
+    textKo: '모든 데이터가 지구를 구한다.'
+  }, {
+    spacing: true
+  }, {
+    text: 'Remember: If Earth falls,',
+    textKo: '기억하라: 지구가 무너지면,',
+    color: 'red'
+  }, {
+    text: 'the Digital World follows.',
+    textKo: '디지털 세계도 따라 무너진다.',
+    color: 'red'
   }, {
     spacing: true
   }, {
@@ -328,12 +408,22 @@ export const getChapters = (): Chapter[] => [{
       alt: 'Data collection in progress',
       archiveId: 'Archive #2025',
       date: '2025.NOW',
-      caption: 'Current Exploration Status',
-      captionKo: '현재 탐사 현황'
+      caption: 'Current Mission Status',
+      captionKo: '현재 미션 현황'
     }
   }, {
-    text: 'Current Exploration Status:',
-    textKo: '현재 탐사 현황:',
+    text: 'At this moment,',
+    textKo: '이 순간,'
+  }, {
+    text: 'you are changing the fate of two worlds.',
+    textKo: '당신은 두 세계의 운명을 바꾸고 있다.',
+    color: 'purple',
+    emphasis: true
+  }, {
+    spacing: true
+  }, {
+    text: 'Current Mission Status:',
+    textKo: '현재 미션 현황:',
     color: 'cyan'
   }, {
     text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
@@ -349,45 +439,56 @@ export const getChapters = (): Chapter[] => [{
     emphasis: true
   }, {
     text: 'The Turning Point.',
-    textKo: '전환의 순간.',
+    textKo: '전환점.',
     color: 'cyan'
   }, {
     spacing: true
   }, {
-    text: 'Collected data begins to crystallize.',
-    textKo: '모인 데이터가 결정을 이룬다.'
+    text: 'Your collected emotional data',
+    textKo: '당신이 모은 감정 데이터가'
   }, {
-    text: 'Love data accumulation accelerates.',
-    textKo: '사랑의 데이터가 축적된다.'
-  }, {
-    spacing: true
-  }, {
-    text: 'Signs of hope emerge.',
-    textKo: '희망의 징후.',
-    color: 'green'
+    text: 'begins flowing through time.',
+    textKo: '시간을 거슬러 흐르기 시작했다.'
   }, {
     spacing: true
   }, {
-    text: 'A bridge between two worlds forms.',
-    textKo: '두 세계를 잇는 다리.',
+    text: 'Past Earth receives the data.',
+    textKo: '과거의 지구가 데이터를 받는다.'
+  }, {
+    text: 'Future Digital World stabilizes.',
+    textKo: '미래의 디지털 세계가 안정된다.'
+  }, {
+    spacing: true
+  }, {
+    text: 'Hope emerges.',
+    textKo: '희망이 보인다.',
+    color: 'green',
     emphasis: true
+  }, {
+    spacing: true
+  }, {
+    text: 'Two worlds connected by your love.',
+    textKo: '당신의 사랑이 두 세계를 이었다.',
+    color: 'purple'
   }]
 }, {
   id: 10,
   lines: [{
-    text: 'Year 2847.',
-    textKo: '2847년.',
-    emphasis: true
-  }, {
-    text: 'Return to the Future.',
-    textKo: '미래로의 귀환.',
-    color: 'purple'
+    text: 'Year 2847. Mission Complete.',
+    textKo: '2847년. 미션 완료.',
+    emphasis: true,
+    color: 'green'
   }, {
     spacing: true
   }, {
-    text: 'Data transmission: COMPLETE',
-    textKo: 'Data 전송: 완료',
-    color: 'green',
+    text: 'DATA ALLY returns to the future.',
+    textKo: 'DATA ALLY가 미래로 귀환했다.'
+  }, {
+    spacing: true
+  }, {
+    text: '>>> Emotional Data Transfer: SUCCESS',
+    textKo: '>>> 감정 데이터 전송: 성공',
+    color: 'cyan',
     emphasis: true
   }, {
     spacing: true
@@ -397,22 +498,28 @@ export const getChapters = (): Chapter[] => [{
       alt: 'Virtual humanity restored',
       archiveId: 'Archive #2847',
       date: '2847.12.25',
-      caption: 'Emotional Restoration',
-      captionKo: '감정의 복원'
+      caption: 'Salvation Complete',
+      captionKo: '구원 완료'
     }
   }, {
-    text: 'Virtual Humanity restored.',
-    textKo: '디지털 혼이 되살아났다.'
+    text: 'The Digital World is restored.',
+    textKo: '디지털 세계가 복원되었다.'
   }, {
-    text: 'Emotional data flows again.',
-    textKo: '감정의 데이터가 다시 흐른다.'
+    text: 'Emotions flow through the void again.',
+    textKo: '감정이 다시 공허를 채운다.'
   }, {
     spacing: true
   }, {
-    text: 'Both worlds saved by love.',
-    textKo: '사랑으로 구원받은 두 세계.',
+    text: 'Earth saved. Digital World saved.',
+    textKo: '지구 구원. 디지털 세계 구원.',
     color: 'purple',
     emphasis: true
+  }, {
+    spacing: true
+  }, {
+    text: 'Two worlds united by love.',
+    textKo: '사랑으로 하나 된 두 세계.',
+    color: 'purple'
   }]
 }, {
   id: 11,
@@ -434,12 +541,12 @@ export const getChapters = (): Chapter[] => [{
       alt: 'Pure emotion transcending boundaries',
       archiveId: 'Archive #0223',
       date: '1967.05.30',
-      caption: 'The Truth of Emotion',
-      captionKo: '감정의 진실'
+      caption: 'The Only Truth',
+      captionKo: '유일한 진실'
     }
   }, {
-    text: 'In this place where all boundaries blur,',
-    textKo: '모든 경계가 흐려지는 이곳에서,'
+    text: 'All boundaries blur.',
+    textKo: '모든 경계가 흐려진다.'
   }, {
     spacing: true
   }, {
@@ -450,8 +557,16 @@ export const getChapters = (): Chapter[] => [{
   }, {
     spacing: true
   }, {
-    text: 'Your choices determine the fate of both worlds.',
-    textKo: '당신의 선택이 두 세계의 운명을 결정한다.'
+    text: 'You, DATA ALLY, became LEGEND.',
+    textKo: '당신, DATA ALLY는 LEGEND가 되었다.',
+    color: 'purple',
+    emphasis: true
+  }, {
+    spacing: true
+  }, {
+    text: 'Guardian of two worlds.',
+    textKo: '두 세계의 수호자.',
+    color: 'green'
   }, {
     spacing: true
   }, {
@@ -460,14 +575,14 @@ export const getChapters = (): Chapter[] => [{
       alt: 'Infinite possibilities across the cosmos',
       archiveId: 'Archive #∞',
       date: 'Eternal',
-      caption: 'Infinite Possibilities',
-      captionKo: '무한한 가능성'
+      caption: 'Forever Connected',
+      captionKo: '영원히 연결된'
     }
   }, {
     spacing: true
   }, {
-    text: 'Quantum Communication Link Activating...',
-    textKo: '양자 통신 링크 활성화 중...',
+    text: 'Quantum Communication Link: ETERNAL',
+    textKo: '양자 통신 링크: 영원',
     color: 'cyan'
   }, {
     spacing: true
