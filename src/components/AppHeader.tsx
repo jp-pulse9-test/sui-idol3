@@ -38,27 +38,19 @@ export function AppHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Left: Logo & Home */}
-        <div className="flex items-center gap-4">
-          <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="text-2xl font-bold gradient-text">SIMKUNG</div>
-          </NavLink>
-          
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              cn(
-                'hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200',
-                'text-muted-foreground hover:text-foreground hover:bg-muted/50',
-                isActive && 'bg-primary/10 text-primary font-medium'
-              )
-            }
-            end
-          >
-            <Home className="w-4 h-4" />
-            <span>{language === 'ko' ? '홈' : 'Home'}</span>
-          </NavLink>
-        </div>
+        {/* Left: Logo (홈 링크 통합) */}
+        <NavLink 
+          to="/" 
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200',
+              'hover:opacity-80',
+              isActive && 'bg-primary/10'
+            )
+          }
+        >
+          <div className="text-2xl font-bold gradient-text">AIDOL101</div>
+        </NavLink>
 
         {/* Right: Hamburger Menu */}
         <div className="flex items-center gap-2">
