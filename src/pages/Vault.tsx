@@ -12,10 +12,11 @@ import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { Marketplace } from "@/components/ui/marketplace";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { IdolPhotocardGenerator } from "@/components/IdolPhotocardGenerator";
-import { Heart, Lock } from "lucide-react";
+import { Heart, Lock, Info } from "lucide-react";
 import { usePhotoCardMinting } from "@/services/photocardMintingSimple";
 import { useWallet } from "@/hooks/useWallet";
 import { dailyFreeBoxService } from "@/services/dailyFreeBoxService";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface SelectedIdol {
   id: number;
@@ -69,6 +70,7 @@ const Vault = () => {
   const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection' | 'generator' | 'marketplace'>('storage');
   const [isMinting, setIsMinting] = useState(false);
   const [hasAdvancedAccess, setHasAdvancedAccess] = useState(false);
+  const [walrusUnavailable, setWalrusUnavailable] = useState(false);
 
   // Check URL params for tab and filters
   useEffect(() => {
@@ -405,6 +407,30 @@ const Vault = () => {
               </CardContent>
             </Card>
           )}
+          
+          {/* Walrus Unavailable Alert */}
+          {walrusUnavailable && (
+            <Alert className="max-w-2xl mx-auto border-amber-500/50 bg-amber-500/10">
+              <Info className="h-5 w-5 text-amber-500" />
+              <AlertTitle className="text-amber-500">Walrus 스토리지를 사용할 수 없습니다</AlertTitle>
+              <AlertDescription className="text-sm text-muted-foreground">
+                <p className="mb-2">
+                  Walrus 분산 스토리지는 현재 사용 불가능합니다 (cross-origin 격리 필요).
+                </p>
+                <p className="font-medium text-foreground">🎉 여전히 사용 가능한 기능:</p>
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>📦 Random Box로 포토카드 수집 (로컬 저장)</li>
+                  <li>🎴 포토카드 컬렉션 관리</li>
+                  <li>❤️ Fan Hearts 시스템</li>
+                  <li>💎 게스트 모드로 모든 기능 체험</li>
+                </ul>
+                <p className="mt-3 text-xs">
+                  💡 지갑을 연결하면 나중에 블록체인에 영구 저장할 수 있습니다
+                </p>
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div className="flex items-center justify-center gap-4">
             <Badge variant="outline" className="px-4 py-2">
               🔗 {walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(38)}` : isGuest ? '게스트 모드' : 'Connecting wallet...'}
@@ -583,24 +609,35 @@ const Vault = () => {
 
             <TabsContent value="generator" className="mt-8">
               {selectedIdol ? (
-                <IdolPhotocardGenerator
-                  selectedIdol={selectedIdol}
-                  userCoins={parseFloat(balance)}
-                  fanHearts={fanHearts}
-                  hasAdvancedAccess={hasAdvancedAccess}
-                  onCostDeduction={(suiCost, heartCost) => {
-                    // Note: SUI coin deduction happens automatically in blockchain transaction
-                    // Balance will auto-refresh from blockchain
+                <div className="space-y-4">
+                  {walrusUnavailable && (
+                    <Alert className="border-info/50 bg-info/10">
+                      <Info className="h-4 w-4" />
+                      <AlertDescription className="text-sm">
+                        <span className="font-medium">💡 Tip:</span> Walrus 스토리지 사용 불가 시에도 포토카드를 로컬에 저장하고, 나중에 지갑 연결 시 블록체인에 업로드할 수 있습니다.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  <IdolPhotocardGenerator
+                    selectedIdol={selectedIdol}
+                    userCoins={parseFloat(balance)}
+                    fanHearts={fanHearts}
+                    hasAdvancedAccess={hasAdvancedAccess}
+                    onCostDeduction={(suiCost, heartCost) => {
+                      // Note: SUI coin deduction happens automatically in blockchain transaction
+                      // Balance will auto-refresh from blockchain
 
-                    // Only update Fan Hearts locally
-                    setFanHearts(prev => {
-                      const newValue = prev - heartCost;
-                      localStorage.setItem('fanHearts', newValue.toString());
-                      return newValue;
-                    });
-                  }}
-                  onNavigateToCollection={() => setActiveTab('collection')}
-                />
+                      // Only update Fan Hearts locally
+                      setFanHearts(prev => {
+                        const newValue = prev - heartCost;
+                        localStorage.setItem('fanHearts', newValue.toString());
+                        return newValue;
+                      });
+                    }}
+                    onNavigateToCollection={() => setActiveTab('collection')}
+                    onWalrusError={() => setWalrusUnavailable(true)}
+                  />
+                </div>
               ) : (
                 <Card className="p-8 glass-dark border-white/10">
                   <div className="text-center space-y-4">
