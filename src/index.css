@@ -15,12 +15,12 @@
     --popover: 220 8% 4%;
     --popover-foreground: 0 0% 98%;
 
-    /* PRIMARY = NEON GREEN (메인 화면용) */
-    --primary: 142 76% 45%;
-    --primary-foreground: 0 0% 0%;
+    /* PRIMARY = NEON GREEN (햄버거 버튼 색상 기준) */
+    --primary: 160 84% 39%;            /* #10b981 - emerald-500 네온 그린 */
+    --primary-foreground: 0 0% 0%;     /* 검은색 */
 
-    /* SECONDARY = NEON GREEN */
-    --secondary: 142 76% 45%;
+    /* SECONDARY = NEON GREEN (동일하게) */
+    --secondary: 160 84% 39%;          
     --secondary-foreground: 0 0% 0%;
 
     --muted: 220 8% 15%;
@@ -35,7 +35,7 @@
 
     --border: 220 10% 20%;
     --input: 220 10% 20%;
-    --ring: 142 76% 45%;
+    --ring: 160 84% 39%;               /* 네온 그린 */
 
     --radius: 0.5rem;
 
@@ -43,12 +43,13 @@
     --terminal-green: #16a34a;
     --terminal-cursor: #059669;
 
-    /* Neon Gradients */
-    --gradient-neon-green: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    /* Gradients - 네온 그린과 아이스 핑크 */
+    --gradient-neon-green: linear-gradient(135deg, #10b981 0%, #16a34a 100%);
     --gradient-ice-pink: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    --gradient-neon-to-pink: linear-gradient(135deg, #10b981 0%, #ec4899 100%);
 
-    /* Shadows */
-    --shadow-neon-green: 0 0 30px rgba(34, 197, 94, 0.5), 0 0 60px rgba(34, 197, 94, 0.2);
+    /* Shadows - 네온 그린 글로우 */
+    --shadow-neon-green: 0 0 30px rgba(16, 185, 129, 0.5), 0 0 60px rgba(16, 185, 129, 0.2);
     --shadow-ice-pink: 0 0 30px rgba(236, 72, 153, 0.3), 0 0 60px rgba(236, 72, 153, 0.1);
   }
 
@@ -62,10 +63,10 @@
     --popover: 220 8% 4%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 142 76% 45%;
+    --primary: 160 84% 39%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 142 76% 45%;
+    --secondary: 160 84% 39%;
     --secondary-foreground: 0 0% 0%;
 
     --muted: 220 8% 15%;
@@ -79,7 +80,7 @@
 
     --border: 220 10% 20%;
     --input: 220 10% 20%;
-    --ring: 142 76% 45%;
+    --ring: 160 84% 39%;
   }
 
   * {
@@ -160,10 +161,24 @@
 
 /* ===== GRADIENT TEXT UTILITIES ===== */
 .gradient-text {
-  background: var(--gradient-neon-green);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-neon-pink {
+  background: var(--gradient-neon-to-pink);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .gradient-text-pink {
@@ -210,6 +225,24 @@
 @keyframes typing-animation {
   from { width: 0; }
   to { width: 100%; }
+}
+
+.typing-effect {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid hsl(var(--primary));
+  animation: typing 2s steps(30, end), blink-caret 0.75s step-end infinite;
+  display: inline-block;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: hsl(var(--primary)); }
 }
 
 @keyframes fade-in {

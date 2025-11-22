@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { ArchivePhoto } from './synopsis/ArchivePhoto';
 import { ParallaxText } from './synopsis/ParallaxText';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getChapters } from '@/data/synopsisChapters';
+import { getChapters } from '@/data/synopsisChaptersSplit';
 interface CinematicSynopsisProps {
   activeAllyCount: number;
   onlineEchoEntities: number;
@@ -62,7 +62,7 @@ export const CinematicSynopsis = memo(({
   // Auto-advance chapters with progress tracking
   useEffect(() => {
     if (isPaused) return;
-    const duration = 5500; // Adjusted for 11 chapters: ~60s total
+    const duration = 8000; // 8초 per chapter: ~88s total (느리게 조정)
     const interval = 50;
     let elapsed = 0;
     const progressTimer = setInterval(() => {
@@ -71,7 +71,7 @@ export const CinematicSynopsis = memo(({
       if (elapsed >= duration) {
         setIsTransitioning(true);
         setTimeout(() => {
-          setCurrentChapter(prev => prev < 11 ? prev + 1 : 1);
+          setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
           elapsed = 0;
           setAutoProgress(0);
           setTimeout(() => setIsTransitioning(false), 400);
@@ -92,13 +92,13 @@ export const CinematicSynopsis = memo(({
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        setCurrentChapter(prev => prev < 11 ? prev + 1 : 1);
+        setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
       } else if (e.key === 'Escape') {
         handleSkip();
       } else if (e.key === 'ArrowRight') {
-        setCurrentChapter(prev => prev < 11 ? prev + 1 : 1);
+        setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
       } else if (e.key === 'ArrowLeft') {
-        setCurrentChapter(prev => prev > 1 ? prev - 1 : 11);
+        setCurrentChapter(prev => prev > 1 ? prev - 1 : 20);
       }
     };
     window.addEventListener('keydown', handleKeyPress);
@@ -139,9 +139,9 @@ export const CinematicSynopsis = memo(({
       const isLeftSwipe = distance > minSwipeDistance;
       const isRightSwipe = distance < -minSwipeDistance;
       if (isLeftSwipe) {
-        setCurrentChapter(prev => prev < 11 ? prev + 1 : 1);
+        setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
       } else if (isRightSwipe) {
-        setCurrentChapter(prev => prev > 1 ? prev - 1 : 11);
+        setCurrentChapter(prev => prev > 1 ? prev - 1 : 20);
       }
     };
     const synopsisSection = document.getElementById('synopsis');
@@ -184,51 +184,47 @@ export const CinematicSynopsis = memo(({
   };
   const currentChapterData = chapters.find(c => c.id === currentChapter) || chapters[0];
 
-  // Timeline points configuration - 11 chronological markers
+  // Timeline points configuration - 20 chronological markers (simplified)
   const timelinePoints = useMemo(() => [{
     year: '2847',
     chapter: 1,
-    position: 4
+    position: 2
   }, {
     year: '3024',
-    chapter: 2,
-    position: 13
+    chapter: 4,
+    position: 12
   }, {
     year: '1889',
-    chapter: 3,
+    chapter: 7,
     position: 22
   }, {
     year: '1945',
-    chapter: 4,
-    position: 31
+    chapter: 8,
+    position: 32
   }, {
     year: '1962',
-    chapter: 5,
-    position: 40
+    chapter: 9,
+    position: 42
   }, {
     year: '1967',
-    chapter: 6,
-    position: 49
+    chapter: 10,
+    position: 52
   }, {
     year: '2021',
-    chapter: 7,
-    position: 58
+    chapter: 11,
+    position: 62
   }, {
     year: '2025',
-    chapter: 8,
-    position: 67
+    chapter: 14,
+    position: 72
   }, {
     year: '2500',
-    chapter: 9,
-    position: 76
-  }, {
-    year: '2847',
-    chapter: 10,
-    position: 85
+    chapter: 15,
+    position: 82
   }, {
     year: '∞',
-    chapter: 11,
-    position: 94
+    chapter: 20,
+    position: 98
   }], []);
   const handleTimelineClick = useCallback((chapter: number) => {
     setIsTransitioning(true);
@@ -266,7 +262,7 @@ export const CinematicSynopsis = memo(({
           {/* Header */}
           <div className="flex justify-between items-center mb-4 md:mb-5">
             <span className="text-gray-400 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
-              Chapter {currentChapter} of 11
+              Chapter {currentChapter} of 20
             </span>
             <span className="text-gray-500 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
               SIMULATOR STATUS: ONLINE
@@ -277,7 +273,7 @@ export const CinematicSynopsis = memo(({
           <div className="relative h-[2px] bg-gray-700/40 mb-1">
             <div 
               className="absolute top-0 left-0 h-full bg-gray-400/70 transition-all duration-200 ease-linear"
-              style={{ width: `${(currentChapter - 1) / 11 * 100 + autoProgress / 11}%` }}
+              style={{ width: `${(currentChapter - 1) / 20 * 100 + autoProgress / 20}%` }}
             />
             
             {/* Timeline Points */}
@@ -332,8 +328,8 @@ export const CinematicSynopsis = memo(({
               return <ArchivePhoto key={`ch${currentChapter}-photo${index}`} photo={line.photo} delay={index * 400} parallaxOffset={isMobile ? 0 : scrollY * 0.02} index={index} />;
             }
 
-            // Special rendering for Chapter 8 stats
-            if (currentChapter === 8 && index === 9) {
+            // Special rendering for Chapter 14 stats (was Chapter 8)
+            if (currentChapter === 14 && index === 3) {
               return <div key={index} className="space-y-2 mt-4">
                     <div className="flex justify-center items-center gap-4 text-gray-300">
                       <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.activeAllies')}:</span>
