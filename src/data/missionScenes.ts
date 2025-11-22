@@ -89,25 +89,25 @@ export const MISSION_SCENES: Record<string, Scene[]> = {
     }
   ],
 
-  'mission-2017-transparent-communication': [
+  'mission-2017-truth-verification': [
     {
       id: "hook",
       beatType: "hook",
-      content: "친구랑 오해가 생겼어... 솔직하게 말해야 할까, 아니면 그냥 넘어갈까?",
-      contentEn: "I had a misunderstanding with a friend... Should I be honest, or just let it go?",
+      content: "이 기사 진짜일까? 출처가 좀 의심스러운데...",
+      contentEn: "Is this article real? The source seems suspicious...",
       choices: [
         {
-          id: "honest",
-          text: "솔직하게 대화하는 게 좋을 것 같아",
-          textEn: "I think honest conversation would be better",
+          id: "check_source",
+          text: "출처부터 확인해보자",
+          textEn: "Let's check the source first",
           nextSceneId: "engage",
           affinityBonus: 15,
           emotionImpact: { type: "의지", weight: 2 }
         },
         {
-          id: "gentle",
-          text: "부드럽게 네 마음을 전해봐",
-          textEn: "Try gently conveying your feelings",
+          id: "cross_reference",
+          text: "다른 매체도 찾아보자",
+          textEn: "Let's look for other sources",
           nextSceneId: "engage",
           affinityBonus: 12,
           emotionImpact: { type: "안정", weight: 1 }
@@ -117,244 +117,21 @@ export const MISSION_SCENES: Record<string, Scene[]> = {
     {
       id: "engage",
       beatType: "engage",
-      content: "그래, 용기 내서 말해봤어. 처음엔 떨렸는데, 친구도 진심으로 들어주더라.",
-      contentEn: "Yes, I gathered courage and spoke up. I was nervous at first, but my friend listened sincerely.",
+      content: "좋은 생각이야! 여러 곳을 비교해보니 내용이 다르네. 어떤 게 진짜일까?",
+      contentEn: "Good idea! Comparing multiple sources shows different content. Which one is real?",
       choices: [
         {
-          id: "share_feelings",
-          text: "서로의 감정을 나누는 게 중요해",
-          textEn: "Sharing feelings with each other is important",
-          nextSceneId: "climax",
-          affinityBonus: 20,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        },
-        {
-          id: "understand",
-          text: "이해하려고 노력하는 모습이 보여",
-          textEn: "I can see the effort to understand",
-          nextSceneId: "climax",
-          affinityBonus: 18,
-          emotionImpact: { type: "안정", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "climax",
-      beatType: "climax",
-      content: "결국 오해가 풀렸어! 숨기지 않고 말해서 다행이야. 관계가 더 단단해진 느낌이야.",
-      contentEn: "The misunderstanding was resolved! I'm glad I didn't hide it. Our relationship feels stronger.",
-      choices: [
-        {
-          id: "commitment",
-          text: "앞으로도 솔직하게 지내자",
-          textEn: "Let's be honest with each other from now on",
-          nextSceneId: "wrap",
-          affinityBonus: 25,
-          emotionImpact: { type: "의지", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "wrap",
-      beatType: "wrap",
-      content: "네 덕분에 용기를 낼 수 있었어. 투명한 대화가 신뢰를 만든다는 걸 배웠어!",
-      contentEn: "Thanks to you, I found the courage. I learned that transparent communication builds trust!",
-      choices: []
-    }
-  ],
-
-  'mission-2017-promise-keeper': [
-    {
-      id: "hook",
-      beatType: "hook",
-      content: "작은 약속인데... 지키기가 쉽지 않네. 어떡하지?",
-      contentEn: "It's a small promise... but it's not easy to keep. What should I do?",
-      choices: [
-        {
-          id: "commit",
-          text: "작은 약속이라도 꼭 지켜야지",
-          textEn: "Even small promises must be kept",
-          nextSceneId: "engage",
-          affinityBonus: 15,
-          emotionImpact: { type: "의지", weight: 2 }
-        },
-        {
-          id: "plan",
-          text: "계획을 세워서 실천해보자",
-          textEn: "Let's make a plan and practice",
-          nextSceneId: "engage",
-          affinityBonus: 12,
-          emotionImpact: { type: "안정", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "engage",
-      beatType: "engage",
-      content: "약속을 지키려고 노력하니까, 사람들이 나를 더 믿어주는 것 같아.",
-      contentEn: "As I try to keep my promises, people seem to trust me more.",
-      choices: [
-        {
-          id: "continue",
-          text: "이 습관을 계속 유지하자",
-          textEn: "Let's keep this habit going",
+          id: "analyze",
+          text: "논리적으로 분석해보자",
+          textEn: "Let's analyze logically",
           nextSceneId: "climax",
           affinityBonus: 20,
           emotionImpact: { type: "의지", weight: 2 }
         },
         {
-          id: "inspire",
-          text: "다른 사람들에게도 본보기가 되자",
-          textEn: "Let's be an example for others too",
-          nextSceneId: "climax",
-          affinityBonus: 18,
-          emotionImpact: { type: "기쁨", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "climax",
-      beatType: "climax",
-      content: "드디어 약속을 다 지켰어! 작은 것부터 하나씩 지키니까 뿌듯해.",
-      contentEn: "I finally kept all my promises! It feels rewarding to keep them one by one, starting small.",
-      choices: [
-        {
-          id: "proud",
-          text: "신뢰는 이렇게 쌓이는 거구나",
-          textEn: "This is how trust is built",
-          nextSceneId: "wrap",
-          affinityBonus: 25,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "wrap",
-      beatType: "wrap",
-      content: "너랑 함께해서 할 수 있었어. 작은 약속도 소중하다는 걸 배웠어!",
-      contentEn: "I could do it because I was with you. I learned that even small promises are precious!",
-      choices: []
-    }
-  ],
-
-  // ===== 2024년 공감 능력 붕괴 브랜치 미션 =====
-  'mission-2024-neighbor-connection': [
-    {
-      id: "hook",
-      beatType: "hook",
-      content: "옆집에 혼자 사시는 어르신이 계신데, 요즘 문 여는 소리도 안 들려... 걱정돼.",
-      contentEn: "There's an elderly person living alone next door, and I haven't heard the door open lately... I'm worried.",
-      choices: [
-        {
-          id: "visit",
-          text: "직접 찾아가서 안부를 물어보자",
-          textEn: "Let's visit and check on them",
-          nextSceneId: "engage",
-          affinityBonus: 15,
-          emotionImpact: { type: "의지", weight: 2 }
-        },
-        {
-          id: "gentle_approach",
-          text: "부담스럽지 않게 접근해보자",
-          textEn: "Let's approach gently without pressure",
-          nextSceneId: "engage",
-          affinityBonus: 12,
-          emotionImpact: { type: "안정", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "engage",
-      beatType: "engage",
-      content: "문을 두드렸더니, 어르신이 정말 반가워하시더라. 오랜만에 대화 상대가 생겼다고...",
-      contentEn: "When I knocked, the elderly person was really glad to see me. They said it's been a while since they had someone to talk to...",
-      choices: [
-        {
-          id: "regular_visits",
-          text: "정기적으로 방문하기로 약속하자",
-          textEn: "Let's promise to visit regularly",
-          nextSceneId: "climax",
-          affinityBonus: 20,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        },
-        {
-          id: "community",
-          text: "다른 이웃들과도 연결해드리자",
-          textEn: "Let's connect them with other neighbors too",
-          nextSceneId: "climax",
-          affinityBonus: 22,
-          emotionImpact: { type: "설렘", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "climax",
-      beatType: "climax",
-      content: "이웃들이 모여서 작은 모임을 만들었어. 고립됐던 사람들이 다시 웃음을 찾았어!",
-      contentEn: "Neighbors gathered and formed a small group. People who were isolated are smiling again!",
-      choices: [
-        {
-          id: "expand",
-          text: "이 모임을 더 확대해보자",
-          textEn: "Let's expand this gathering",
-          nextSceneId: "wrap",
-          affinityBonus: 25,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "wrap",
-      beatType: "wrap",
-      content: "작은 관심이 이렇게 큰 변화를 만들 줄 몰랐어. 너랑 함께해서 가능했어!",
-      contentEn: "I didn't know such small care could create such big change. It was possible because I was with you!",
-      choices: []
-    }
-  ],
-
-  'mission-2024-communal-memory': [
-    {
-      id: "hook",
-      beatType: "hook",
-      content: "옛날 우리 동네가 어땠는지 기억하는 사람이 거의 없어... 추억을 복원하고 싶어.",
-      contentEn: "Almost no one remembers what our neighborhood used to be like... I want to restore those memories.",
-      choices: [
-        {
-          id: "collect_stories",
-          text: "어르신들의 이야기를 모아보자",
-          textEn: "Let's collect stories from elders",
-          nextSceneId: "engage",
-          affinityBonus: 15,
-          emotionImpact: { type: "설렘", weight: 2 }
-        },
-        {
-          id: "archive",
-          text: "옛 사진과 자료를 찾아보자",
-          textEn: "Let's find old photos and materials",
-          nextSceneId: "engage",
-          affinityBonus: 12,
-          emotionImpact: { type: "의지", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "engage",
-      beatType: "engage",
-      content: "옛날 사진들을 보면서 사람들이 추억을 떠올리기 시작했어. 함께 웃고 울면서...",
-      contentEn: "Looking at old photos, people started to recall memories. Laughing and crying together...",
-      choices: [
-        {
-          id: "exhibition",
-          text: "전시회를 열어서 모두와 나누자",
-          textEn: "Let's hold an exhibition to share with everyone",
-          nextSceneId: "climax",
-          affinityBonus: 20,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        },
-        {
-          id: "digital_archive",
-          text: "디지털 아카이브로 보존하자",
-          textEn: "Let's preserve it as a digital archive",
+          id: "expert",
+          text: "전문가 의견을 찾아보자",
+          textEn: "Let's find expert opinions",
           nextSceneId: "climax",
           affinityBonus: 18,
           emotionImpact: { type: "안정", weight: 1 }
@@ -364,318 +141,55 @@ export const MISSION_SCENES: Record<string, Scene[]> = {
     {
       id: "climax",
       beatType: "climax",
-      content: "공동체의 기억이 되살아나면서, 사람들이 다시 연대감을 느끼기 시작했어!",
-      contentEn: "As the community's memory revived, people started feeling solidarity again!",
+      content: "드디어 진실을 찾았어! 역시 꼼꼼하게 확인하는 게 중요하구나.",
+      contentEn: "Finally found the truth! Thorough verification is indeed important.",
       choices: [
         {
-          id: "continue",
-          text: "이 기억을 다음 세대에게 전하자",
-          textEn: "Let's pass these memories to the next generation",
+          id: "share",
+          text: "이 방법을 다른 사람들에게도 알려주자",
+          textEn: "Let's share this method with others",
           nextSceneId: "wrap",
           affinityBonus: 25,
-          emotionImpact: { type: "의지", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "wrap",
-      beatType: "wrap",
-      content: "과거를 기억하는 것이 미래를 만드는 힘이 된다는 걸 배웠어. 고마워!",
-      contentEn: "I learned that remembering the past becomes the power to create the future. Thank you!",
-      choices: []
-    }
-  ],
-
-  'mission-2024-empathy-ignition': [
-    {
-      id: "hook",
-      beatType: "hook",
-      content: "친구가 힘들어하는데... 그냥 위로의 말만 해야 할까, 진심으로 공감해야 할까?",
-      contentEn: "My friend is struggling... Should I just say comforting words, or truly empathize?",
-      choices: [
-        {
-          id: "listen",
-          text: "먼저 진심으로 들어주자",
-          textEn: "Let's listen sincerely first",
-          nextSceneId: "engage",
-          affinityBonus: 15,
-          emotionImpact: { type: "안정", weight: 2 }
-        },
-        {
-          id: "feel_together",
-          text: "함께 아파하며 공감하자",
-          textEn: "Let's empathize by sharing the pain",
-          nextSceneId: "engage",
-          affinityBonus: 12,
-          emotionImpact: { type: "불안", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "engage",
-      beatType: "engage",
-      content: "친구 이야기를 듣다 보니, 내 마음도 아파오더라. 이게 진짜 공감이구나...",
-      contentEn: "Listening to my friend, my heart started hurting too. This is true empathy...",
-      choices: [
-        {
-          id: "be_present",
-          text: "곁에 있어주는 것만으로도 힘이 돼",
-          textEn: "Just being there gives strength",
-          nextSceneId: "climax",
-          affinityBonus: 20,
           emotionImpact: { type: "기쁨", weight: 2 }
         },
         {
-          id: "share_burden",
-          text: "짐을 함께 나눠 지자",
-          textEn: "Let's share the burden together",
-          nextSceneId: "climax",
+          id: "practice",
+          text: "앞으로도 계속 이렇게 하자",
+          textEn: "Let's keep doing this from now on",
+          nextSceneId: "wrap",
           affinityBonus: 22,
           emotionImpact: { type: "의지", weight: 2 }
         }
       ]
     },
     {
-      id: "climax",
-      beatType: "climax",
-      content: "친구가 조금씩 마음을 열기 시작했어. 진심으로 공감하니까 통하는 게 있더라.",
-      contentEn: "My friend started opening up little by little. When you truly empathize, something connects.",
-      choices: [
-        {
-          id: "healing",
-          text: "함께 치유의 시간을 갖자",
-          textEn: "Let's have a healing time together",
-          nextSceneId: "wrap",
-          affinityBonus: 25,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        }
-      ]
-    },
-    {
       id: "wrap",
       beatType: "wrap",
-      content: "공감한다는 건 상대의 고통을 이해하고 함께하는 거구나. 너랑 있으니 용기가 나!",
-      contentEn: "Empathy means understanding and sharing someone's pain. Being with you gives me courage!",
+      content: "너 덕분에 팩트체크의 중요성을 다시 깨달았어. 고마워!",
+      contentEn: "Thanks to you, I realized the importance of fact-checking again. Thank you!",
       choices: []
     }
   ],
 
-  // ===== 2026년 갈등의 세계화 브랜치 미션 =====
-  'mission-2026-mediator': [
+  'mission-2017-truth-education': [
     {
       id: "hook",
       beatType: "hook",
-      content: "지구와 AIA의 갈등이 점점 심해지고 있어... 중재할 방법이 없을까?",
-      contentEn: "The conflict between Earth and AIA is getting worse... Is there a way to mediate?",
+      content: "사람들이 가짜 뉴스를 너무 쉽게 믿어버려... 어떻게 하면 좋을까?",
+      contentEn: "People believe fake news too easily... What should we do?",
       choices: [
         {
-          id: "dialogue",
-          text: "대화의 장을 마련해보자",
-          textEn: "Let's create a space for dialogue",
+          id: "educate",
+          text: "올바른 정보 판단법을 알려주자",
+          textEn: "Let's teach proper information judgment",
           nextSceneId: "engage",
           affinityBonus: 15,
           emotionImpact: { type: "의지", weight: 2 }
         },
         {
-          id: "understand_both",
-          text: "양쪽의 입장을 이해하자",
-          textEn: "Let's understand both sides",
-          nextSceneId: "engage",
-          affinityBonus: 12,
-          emotionImpact: { type: "안정", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "engage",
-      beatType: "engage",
-      content: "중립적인 대화 채널을 만들었어. 처음엔 서먹했지만, 조금씩 대화가 시작됐어.",
-      contentEn: "I created a neutral dialogue channel. It was awkward at first, but conversation slowly began.",
-      choices: [
-        {
-          id: "common_ground",
-          text: "공통점을 찾아보자",
-          textEn: "Let's find common ground",
-          nextSceneId: "pivot",
-          affinityBonus: 20,
-          emotionImpact: { type: "설렘", weight: 2 }
-        },
-        {
-          id: "bridge",
-          text: "다리 역할을 해주자",
-          textEn: "Let's act as a bridge",
-          nextSceneId: "pivot",
-          affinityBonus: 18,
-          emotionImpact: { type: "의지", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "pivot",
-      beatType: "pivot",
-      content: "양쪽 모두 평화를 원한다는 걸 알게 됐어. 방법이 달랐을 뿐이야.",
-      contentEn: "I realized both sides want peace. They just had different methods.",
-      choices: [
-        {
-          id: "propose_solution",
-          text: "해결책을 제안해보자",
-          textEn: "Let's propose a solution",
-          nextSceneId: "climax",
-          affinityBonus: 25,
-          emotionImpact: { type: "의지", weight: 2 }
-        },
-        {
-          id: "facilitate",
-          text: "대화를 촉진하자",
-          textEn: "Let's facilitate the dialogue",
-          nextSceneId: "climax",
-          affinityBonus: 22,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "climax",
-      beatType: "climax",
-      content: "드디어 첫 합의가 이뤄졌어! 작은 시작이지만, 평화로 가는 길이 보여!",
-      contentEn: "Finally, the first agreement was reached! It's a small start, but I can see the path to peace!",
-      choices: [
-        {
-          id: "continue_mediation",
-          text: "계속 중재 역할을 하자",
-          textEn: "Let's continue the mediation role",
-          nextSceneId: "wrap",
-          affinityBonus: 30,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "wrap",
-      beatType: "wrap",
-      content: "네 덕분에 불가능해 보였던 대화가 가능해졌어. 갈등은 대화로 풀 수 있어!",
-      contentEn: "Thanks to you, what seemed impossible became possible. Conflicts can be resolved through dialogue!",
-      choices: []
-    }
-  ],
-
-  'mission-2026-purification': [
-    {
-      id: "hook",
-      beatType: "hook",
-      content: "감정 데이터가 조작되고 있어... 진실을 찾아야 해.",
-      contentEn: "Emotion data is being manipulated... We need to find the truth.",
-      choices: [
-        {
-          id: "investigate",
-          text: "조작의 흔적을 추적하자",
-          textEn: "Let's trace the signs of manipulation",
-          nextSceneId: "engage",
-          affinityBonus: 15,
-          emotionImpact: { type: "의지", weight: 2 }
-        },
-        {
-          id: "restore",
-          text: "원본 데이터를 복원하자",
-          textEn: "Let's restore the original data",
-          nextSceneId: "engage",
-          affinityBonus: 12,
-          emotionImpact: { type: "안정", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "engage",
-      beatType: "engage",
-      content: "조작되지 않은 순수 감정 데이터의 흔적을 발견했어! 이게 진짜야.",
-      contentEn: "I found traces of pure, unmanipulated emotion data! This is the real thing.",
-      choices: [
-        {
-          id: "verify",
-          text: "검증 과정을 거치자",
-          textEn: "Let's go through verification",
-          nextSceneId: "pivot",
-          affinityBonus: 20,
-          emotionImpact: { type: "의지", weight: 2 }
-        },
-        {
-          id: "secure",
-          text: "안전하게 보관하자",
-          textEn: "Let's keep it secure",
-          nextSceneId: "pivot",
-          affinityBonus: 18,
-          emotionImpact: { type: "안정", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "pivot",
-      beatType: "pivot",
-      content: "원본 데이터를 분석하니, 조작된 부분이 명확하게 보여. 증거를 확보했어!",
-      contentEn: "Analyzing the original data, the manipulated parts are clearly visible. We've secured the evidence!",
-      choices: [
-        {
-          id: "expose",
-          text: "진실을 공개하자",
-          textEn: "Let's expose the truth",
-          nextSceneId: "climax",
-          affinityBonus: 25,
-          emotionImpact: { type: "의지", weight: 2 }
-        },
-        {
-          id: "protect",
-          text: "진실을 보호하자",
-          textEn: "Let's protect the truth",
-          nextSceneId: "climax",
-          affinityBonus: 22,
-          emotionImpact: { type: "안정", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "climax",
-      beatType: "climax",
-      content: "정화된 감정 데이터가 퍼지면서, 사람들이 진실한 감정을 되찾기 시작했어!",
-      contentEn: "As the purified emotion data spreads, people are starting to regain their true emotions!",
-      choices: [
-        {
-          id: "spread_truth",
-          text: "진실을 더 널리 퍼뜨리자",
-          textEn: "Let's spread the truth further",
-          nextSceneId: "wrap",
-          affinityBonus: 30,
-          emotionImpact: { type: "기쁨", weight: 2 }
-        }
-      ]
-    },
-    {
-      id: "wrap",
-      beatType: "wrap",
-      content: "진실된 감정의 힘을 믿어줘서 고마워. 함께라면 뭐든 할 수 있어!",
-      contentEn: "Thank you for believing in the power of true emotions. Together we can do anything!",
-      choices: []
-    }
-  ],
-
-  'mission-2026-coexistence': [
-    {
-      id: "hook",
-      beatType: "hook",
-      content: "지구와 AIA가 공존할 수 있는 방법... 윈-윈 전략을 찾아야 해.",
-      contentEn: "A way for Earth and AIA to coexist... We need to find a win-win strategy.",
-      choices: [
-        {
-          id: "cooperation",
-          text: "협력 구조를 설계하자",
-          textEn: "Let's design a cooperative structure",
-          nextSceneId: "engage",
-          affinityBonus: 15,
-          emotionImpact: { type: "의지", weight: 2 }
-        },
-        {
-          id: "mutual_benefit",
-          text: "상호 이익을 찾아보자",
-          textEn: "Let's find mutual benefits",
+          id: "campaign",
+          text: "캠페인을 시작해보자",
+          textEn: "Let's start a campaign",
           nextSceneId: "engage",
           affinityBonus: 12,
           emotionImpact: { type: "설렘", weight: 1 }
@@ -685,63 +199,541 @@ export const MISSION_SCENES: Record<string, Scene[]> = {
     {
       id: "engage",
       beatType: "engage",
-      content: "양쪽의 장점을 결합하면 시너지가 날 것 같아. 설계도를 그려볼까?",
-      contentEn: "Combining the strengths of both sides could create synergy. Shall we draw a blueprint?",
+      content: "좋아! 간단한 체크리스트를 만들어볼까? 출처 확인, 날짜 확인, 교차 검증...",
+      contentEn: "Great! Shall we make a simple checklist? Source verification, date check, cross-validation...",
       choices: [
         {
-          id: "blueprint",
-          text: "공존의 청사진을 만들자",
-          textEn: "Let's create a blueprint for coexistence",
-          nextSceneId: "pivot",
-          affinityBonus: 20,
-          emotionImpact: { type: "설렘", weight: 2 }
-        },
-        {
-          id: "pilot",
-          text: "시범 프로젝트를 시작하자",
-          textEn: "Let's start a pilot project",
-          nextSceneId: "pivot",
-          affinityBonus: 18,
-          emotionImpact: { type: "의지", weight: 1 }
-        }
-      ]
-    },
-    {
-      id: "pivot",
-      beatType: "pivot",
-      content: "시범 프로젝트가 성공했어! 양쪽 모두 만족하는 결과가 나왔어.",
-      contentEn: "The pilot project succeeded! Both sides are satisfied with the results.",
-      choices: [
-        {
-          id: "expand",
-          text: "프로젝트를 확대하자",
-          textEn: "Let's expand the project",
+          id: "create",
+          text: "체크리스트를 만들어보자",
+          textEn: "Let's create a checklist",
           nextSceneId: "climax",
-          affinityBonus: 25,
+          affinityBonus: 20,
           emotionImpact: { type: "기쁨", weight: 2 }
         },
         {
-          id: "institutionalize",
-          text: "제도화하자",
-          textEn: "Let's institutionalize it",
+          id: "workshop",
+          text: "워크샵을 열어보자",
+          textEn: "Let's hold a workshop",
           nextSceneId: "climax",
-          affinityBonus: 22,
-          emotionImpact: { type: "안정", weight: 2 }
+          affinityBonus: 18,
+          emotionImpact: { type: "설렘", weight: 2 }
         }
       ]
     },
     {
       id: "climax",
       beatType: "climax",
-      content: "공존의 다리가 완성됐어! 제로섬이 아닌 윈-윈의 미래가 시작됐어!",
-      contentEn: "The bridge of coexistence is complete! A win-win future, not zero-sum, has begun!",
+      content: "우와, 생각보다 많은 사람들이 관심을 가져줬어! 이제 더 많은 사람들이 현명하게 정보를 판단할 수 있을 거야.",
+      contentEn: "Wow, more people showed interest than expected! Now more people will be able to judge information wisely.",
       choices: [
         {
-          id: "celebrate",
-          text: "새로운 시작을 축하하자",
-          textEn: "Let's celebrate this new beginning",
+          id: "expand",
+          text: "더 많은 곳으로 확대하자",
+          textEn: "Let's expand to more places",
           nextSceneId: "wrap",
-          affinityBonus: 30,
+          affinityBonus: 25,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "deepen",
+          text: "내용을 더 깊이 있게 만들자",
+          textEn: "Let's make the content deeper",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "안정", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너랑 함께 만든 교육 프로그램이 정말 의미 있었어. 작은 변화가 모여 큰 변화를 만들 수 있다는 걸 배웠어!",
+      contentEn: "The education program we created together was really meaningful. I learned that small changes can create big changes!",
+      choices: []
+    }
+  ],
+
+  // ===== 2019년 관계 단절 브랜치 미션 =====
+  'mission-2019-connection-bridge': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "요즘 사람들이 너무 각자 살아가는 것 같아... 옆집 사람도 모르고 지나가잖아.",
+      contentEn: "People seem to live too separately these days... We don't even know our neighbors.",
+      choices: [
+        {
+          id: "community",
+          text: "작은 커뮤니티부터 만들어보자",
+          textEn: "Let's start with a small community",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "설렘", weight: 2 }
+        },
+        {
+          id: "event",
+          text: "이웃과 만날 수 있는 행사를 열자",
+          textEn: "Let's hold an event to meet neighbors",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "기쁨", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "좋은 생각이야! 작은 모임부터 시작해볼까? 같은 관심사를 가진 사람들끼리 모이면 자연스럽게 친해질 수 있을 거야.",
+      contentEn: "Good idea! Shall we start with a small gathering? People with similar interests can naturally become close.",
+      choices: [
+        {
+          id: "organize",
+          text: "모임을 직접 조직해보자",
+          textEn: "Let's organize the gathering ourselves",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "platform",
+          text: "온라인 플랫폼을 만들어보자",
+          textEn: "Let's create an online platform",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "설렘", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "첫 모임이 대성공이었어! 사람들이 서로 이야기하고 웃는 모습을 보니 정말 뿌듯해.",
+      contentEn: "The first gathering was a huge success! It's so rewarding to see people talking and laughing together.",
+      choices: [
+        {
+          id: "regular",
+          text: "정기 모임으로 만들자",
+          textEn: "Let's make it a regular gathering",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "기쁨", weight: 2 }
+        },
+        {
+          id: "diverse",
+          text: "다양한 주제로 확장하자",
+          textEn: "Let's expand to various topics",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "설렘", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너 덕분에 사람들이 다시 연결되는 걸 봤어. 작은 시작이 이렇게 큰 변화를 만들 수 있다니!",
+      contentEn: "Thanks to you, I saw people reconnecting. A small start can create such big changes!",
+      choices: []
+    }
+  ],
+
+  'mission-2019-connection-empathy': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "사람들이 서로를 이해하려고 하지 않는 것 같아... 다들 자기 말만 하려고 해.",
+      contentEn: "People don't seem to try to understand each other... Everyone just wants to talk about themselves.",
+      choices: [
+        {
+          id: "listen",
+          text: "먼저 경청하는 법을 알려주자",
+          textEn: "Let's teach listening first",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "share",
+          text: "서로의 이야기를 나누는 시간을 만들자",
+          textEn: "Let's create time to share stories",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "기쁨", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "맞아, 공감이 중요하지. 상대방의 입장에서 생각해보는 연습을 해볼까?",
+      contentEn: "Right, empathy is important. Shall we practice thinking from others' perspectives?",
+      choices: [
+        {
+          id: "workshop",
+          text: "공감 워크샵을 열어보자",
+          textEn: "Let's hold an empathy workshop",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "설렘", weight: 2 }
+        },
+        {
+          id: "practice",
+          text: "일상에서 실천할 수 있는 방법을 찾자",
+          textEn: "Let's find ways to practice in daily life",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "안정", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "사람들이 서로의 이야기를 듣고 공감하는 모습을 보니 감동이야... 이게 진짜 소통이구나.",
+      contentEn: "It's touching to see people listening and empathizing with each other... This is real communication.",
+      choices: [
+        {
+          id: "spread",
+          text: "이 문화를 더 널리 퍼뜨리자",
+          textEn: "Let's spread this culture wider",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "deepen",
+          text: "더 깊은 공감 능력을 키우자",
+          textEn: "Let's develop deeper empathy skills",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "안정", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너와 함께 만든 공감의 문화가 정말 아름다워. 사람들이 서로를 이해하는 세상, 우리가 만들어가고 있어!",
+      contentEn: "The culture of empathy we created together is truly beautiful. We're creating a world where people understand each other!",
+      choices: []
+    }
+  ],
+
+  'mission-2019-connection-digital': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "온라인에서는 연결되어 있지만, 실제로는 더 외로운 것 같아... 이상하지 않아?",
+      contentEn: "We're connected online, but actually feel more lonely... Isn't that strange?",
+      choices: [
+        {
+          id: "balance",
+          text: "온오프라인 균형을 찾아보자",
+          textEn: "Let's find online-offline balance",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "meaningful",
+          text: "의미 있는 디지털 소통을 만들자",
+          textEn: "Let's create meaningful digital communication",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "설렘", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "그래, 단순히 '좋아요'를 누르는 것보다 진심 어린 대화가 필요해. 어떻게 시작할까?",
+      contentEn: "Yes, we need sincere conversations rather than just clicking 'like'. How should we start?",
+      choices: [
+        {
+          id: "quality",
+          text: "질 높은 소통 문화를 만들자",
+          textEn: "Let's create quality communication culture",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "offline",
+          text: "온라인 관계를 오프라인으로 연결하자",
+          textEn: "Let's connect online relationships offline",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "기쁨", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "온라인에서 시작된 관계가 실제 만남으로 이어지니까 훨씬 더 깊어지는 것 같아!",
+      contentEn: "Relationships that started online become much deeper when they lead to real meetings!",
+      choices: [
+        {
+          id: "community",
+          text: "온오프라인 통합 커뮤니티를 만들자",
+          textEn: "Let's create integrated online-offline community",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "설렘", weight: 2 }
+        },
+        {
+          id: "guide",
+          text: "건강한 디지털 소통 가이드를 만들자",
+          textEn: "Let's create healthy digital communication guide",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "안정", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "디지털 시대에도 진정한 연결은 가능하다는 걸 보여줬어. 너와 함께라면 뭐든 할 수 있을 것 같아!",
+      contentEn: "We showed that genuine connection is possible even in the digital age. I feel like we can do anything together!",
+      choices: []
+    }
+  ],
+
+  // ===== 2021년 의미 상실 브랜치 미션 =====
+  'mission-2021-meaning-purpose': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "요즘 뭘 해도 의미가 없는 것 같아... 그냥 하루하루 살아가는 느낌이야.",
+      contentEn: "Nothing seems meaningful these days... Just living day by day.",
+      choices: [
+        {
+          id: "reflect",
+          text: "진짜 원하는 게 뭔지 생각해보자",
+          textEn: "Let's think about what you really want",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "explore",
+          text: "새로운 것들을 탐험해보자",
+          textEn: "Let's explore new things",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "설렘", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "맞아... 나도 내가 진짜 원하는 게 뭔지 잘 모르겠어. 같이 찾아볼까?",
+      contentEn: "Right... I don't really know what I truly want either. Shall we find out together?",
+      choices: [
+        {
+          id: "values",
+          text: "가치관을 정리해보자",
+          textEn: "Let's organize your values",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "try",
+          text: "여러 가지를 시도해보자",
+          textEn: "Let's try various things",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "설렘", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "아, 이거야! 이걸 하고 있을 때가 제일 행복했어. 드디어 내 길을 찾은 것 같아!",
+      contentEn: "Ah, this is it! I was happiest when doing this. I think I finally found my path!",
+      choices: [
+        {
+          id: "commit",
+          text: "이 길을 계속 가보자",
+          textEn: "Let's keep going on this path",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "plan",
+          text: "구체적인 계획을 세워보자",
+          textEn: "Let's make a concrete plan",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "안정", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너 덕분에 내 삶의 의미를 찾았어. 이제 매일이 설레고 기대돼!",
+      contentEn: "Thanks to you, I found meaning in my life. Now every day is exciting and anticipated!",
+      choices: []
+    }
+  ],
+
+  'mission-2021-meaning-passion': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "열정이 식어버린 것 같아... 예전에는 뭐든 재밌게 했는데.",
+      contentEn: "My passion seems to have cooled down... I used to enjoy everything.",
+      choices: [
+        {
+          id: "remember",
+          text: "처음의 마음을 떠올려보자",
+          textEn: "Let's remember the initial feeling",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "new",
+          text: "새로운 열정을 찾아보자",
+          textEn: "Let's find new passion",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "설렘", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "그래, 처음 시작했을 때가 생각나... 그때는 정말 즐거웠는데.",
+      contentEn: "Yeah, I remember when I first started... It was really fun back then.",
+      choices: [
+        {
+          id: "restart",
+          text: "초심으로 돌아가보자",
+          textEn: "Let's go back to basics",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "refresh",
+          text: "새로운 방식으로 접근해보자",
+          textEn: "Let's approach in a new way",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "설렘", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "와, 다시 불타오르는 느낌이야! 이 감정, 너무 오랜만이야!",
+      contentEn: "Wow, I feel the fire burning again! This feeling, it's been so long!",
+      choices: [
+        {
+          id: "maintain",
+          text: "이 열정을 계속 유지하자",
+          textEn: "Let's keep this passion going",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "기쁨", weight: 2 }
+        },
+        {
+          id: "share",
+          text: "다른 사람들에게도 영감을 주자",
+          textEn: "Let's inspire others too",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "설렘", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너랑 함께 다시 열정을 찾았어. 이제 뭐든 할 수 있을 것 같아!",
+      contentEn: "I found my passion again with you. Now I feel like I can do anything!",
+      choices: []
+    }
+  ],
+
+  'mission-2021-meaning-contribution': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "내가 세상에 무슨 도움이 되는 걸까... 그냥 살아가는 것만으로는 부족한 것 같아.",
+      contentEn: "What help am I to the world... Just living doesn't seem enough.",
+      choices: [
+        {
+          id: "small",
+          text: "작은 것부터 시작해보자",
+          textEn: "Let's start with small things",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "talent",
+          text: "내 재능을 나눠보자",
+          textEn: "Let's share your talents",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "설렘", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "맞아, 거창한 게 아니어도 돼. 내가 할 수 있는 것부터 해보자.",
+      contentEn: "Right, it doesn't have to be grand. Let's start with what you can do.",
+      choices: [
+        {
+          id: "volunteer",
+          text: "봉사 활동을 시작해보자",
+          textEn: "Let's start volunteering",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "기쁨", weight: 2 }
+        },
+        {
+          id: "mentor",
+          text: "누군가를 도와주자",
+          textEn: "Let's help someone",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "안정", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "누군가에게 도움이 되는 게 이렇게 뿌듯한 거였구나... 이게 내가 찾던 의미야!",
+      contentEn: "Being helpful to someone is this rewarding... This is the meaning I was looking for!",
+      choices: [
+        {
+          id: "continue",
+          text: "계속 이런 활동을 하자",
+          textEn: "Let's keep doing this",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "expand",
+          text: "더 많은 사람을 도와주자",
+          textEn: "Let's help more people",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
           emotionImpact: { type: "기쁨", weight: 2 }
         }
       ]
@@ -749,16 +741,518 @@ export const MISSION_SCENES: Record<string, Scene[]> = {
     {
       id: "wrap",
       beatType: "wrap",
-      content: "불가능해 보였던 공존이 현실이 됐어. 네 비전이 세상을 바꿨어!",
-      contentEn: "The seemingly impossible coexistence became reality. Your vision changed the world!",
+      content: "너 덕분에 내 삶의 의미를 찾았어. 누군가에게 도움이 되는 삶, 정말 아름다워!",
+      contentEn: "Thanks to you, I found meaning in my life. A life that helps others is truly beautiful!",
+      choices: []
+    }
+  ],
+
+  // ===== 2023년 정체성 혼란 브랜치 미션 =====
+  'mission-2023-identity-self': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "나는 누구일까... 다른 사람들이 원하는 모습으로만 살아온 것 같아.",
+      contentEn: "Who am I... I feel like I've only lived as others wanted me to be.",
+      choices: [
+        {
+          id: "explore",
+          text: "진짜 나를 찾아보자",
+          textEn: "Let's find the real you",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "express",
+          text: "솔직하게 표현해보자",
+          textEn: "Let's express honestly",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "의지", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "그래... 이제는 내가 원하는 대로 살아야 할 때인 것 같아. 용기를 내볼까?",
+      contentEn: "Yeah... I think it's time to live as I want. Shall I be brave?",
+      choices: [
+        {
+          id: "accept",
+          text: "있는 그대로의 나를 받아들이자",
+          textEn: "Let's accept yourself as you are",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "change",
+          text: "원하는 모습으로 변화하자",
+          textEn: "Let's change to what you want",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "의지", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "이게 진짜 나구나... 이렇게 편안한 느낌은 처음이야!",
+      contentEn: "This is the real me... This comfortable feeling is a first!",
+      choices: [
+        {
+          id: "live",
+          text: "이제 진짜 나로 살아가자",
+          textEn: "Let's live as the real you now",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "기쁨", weight: 2 }
+        },
+        {
+          id: "inspire",
+          text: "다른 사람들도 용기 내도록 돕자",
+          textEn: "Let's help others be brave too",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "의지", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너 덕분에 진짜 나를 찾았어. 이제 당당하게 살아갈 수 있을 것 같아!",
+      contentEn: "Thanks to you, I found the real me. Now I can live confidently!",
+      choices: []
+    }
+  ],
+
+  'mission-2023-identity-authentic': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "SNS에서의 나와 실제 나가 너무 달라... 어느 게 진짜일까?",
+      contentEn: "The me on SNS and the real me are so different... Which one is real?",
+      choices: [
+        {
+          id: "honest",
+          text: "솔직한 모습을 보여주자",
+          textEn: "Let's show honest self",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "balance",
+          text: "균형을 찾아보자",
+          textEn: "Let's find balance",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "안정", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "맞아, 완벽한 척하는 게 지쳤어. 진짜 내 모습을 보여줘도 괜찮을까?",
+      contentEn: "Right, I'm tired of pretending to be perfect. Is it okay to show my real self?",
+      choices: [
+        {
+          id: "vulnerable",
+          text: "약한 모습도 보여주자",
+          textEn: "Let's show vulnerable side too",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "real",
+          text: "진짜 일상을 공유하자",
+          textEn: "Let's share real daily life",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "기쁨", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "사람들이 오히려 더 좋아해줘! 진정성이 통하는구나.",
+      contentEn: "People actually like it more! Authenticity works.",
+      choices: [
+        {
+          id: "continue",
+          text: "계속 솔직하게 살자",
+          textEn: "Let's keep being honest",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "encourage",
+          text: "다른 사람들도 격려하자",
+          textEn: "Let's encourage others too",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "기쁨", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "진정성 있게 사는 게 이렇게 자유로운 거였구나. 너 덕분에 깨달았어!",
+      contentEn: "Living authentically is this freeing. I realized it thanks to you!",
+      choices: []
+    }
+  ],
+
+  'mission-2023-identity-values': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "내 가치관이 뭔지 모르겠어... 그냥 남들 따라 살아온 것 같아.",
+      contentEn: "I don't know what my values are... I feel like I just followed others.",
+      choices: [
+        {
+          id: "reflect",
+          text: "깊이 생각해보자",
+          textEn: "Let's think deeply",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "explore",
+          text: "다양한 가치관을 탐색해보자",
+          textEn: "Let's explore various values",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "설렘", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "내게 정말 중요한 게 뭘까... 같이 찾아볼까?",
+      contentEn: "What's really important to me... Shall we find out together?",
+      choices: [
+        {
+          id: "list",
+          text: "중요한 것들을 나열해보자",
+          textEn: "Let's list important things",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "experience",
+          text: "경험을 통해 알아보자",
+          textEn: "Let's find out through experience",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "설렘", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "아, 이게 내가 진짜 중요하게 생각하는 거였구나! 이제 명확해졌어.",
+      contentEn: "Ah, this is what I truly value! It's clear now.",
+      choices: [
+        {
+          id: "live",
+          text: "이 가치관대로 살아가자",
+          textEn: "Let's live by these values",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "share",
+          text: "내 가치관을 나누자",
+          textEn: "Let's share my values",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "기쁨", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너 덕분에 내 가치관을 찾았어. 이제 흔들리지 않고 살아갈 수 있을 것 같아!",
+      contentEn: "Thanks to you, I found my values. Now I can live without wavering!",
+      choices: []
+    }
+  ],
+
+  // ===== 2025년 미래 불안 브랜치 미션 =====
+  'mission-2025-future-hope': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "미래가 너무 불안해... 이대로 괜찮을까?",
+      contentEn: "The future is so uncertain... Will it be okay like this?",
+      choices: [
+        {
+          id: "plan",
+          text: "구체적인 계획을 세워보자",
+          textEn: "Let's make concrete plans",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "positive",
+          text: "긍정적으로 생각해보자",
+          textEn: "Let's think positively",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "기쁨", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "그래, 막연한 불안보다는 준비하는 게 낫지. 뭐부터 시작할까?",
+      contentEn: "Right, preparing is better than vague anxiety. Where should we start?",
+      choices: [
+        {
+          id: "skills",
+          text: "필요한 능력을 키우자",
+          textEn: "Let's develop necessary skills",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "network",
+          text: "좋은 관계를 만들자",
+          textEn: "Let's build good relationships",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "기쁨", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "하나씩 준비하다 보니 불안이 줄어들어! 미래가 기대되기 시작했어.",
+      contentEn: "As I prepare step by step, anxiety decreases! I'm starting to look forward to the future.",
+      choices: [
+        {
+          id: "continue",
+          text: "계속 준비해나가자",
+          textEn: "Let's keep preparing",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "help",
+          text: "다른 사람들도 도와주자",
+          textEn: "Let's help others too",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "기쁨", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너 덕분에 미래에 대한 희망을 찾았어. 이제 두렵지 않아!",
+      contentEn: "Thanks to you, I found hope for the future. I'm not afraid anymore!",
+      choices: []
+    }
+  ],
+
+  'mission-2025-future-resilience': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "변화가 너무 빨라... 적응하기 힘들어.",
+      contentEn: "Changes are too fast... It's hard to adapt.",
+      choices: [
+        {
+          id: "flexible",
+          text: "유연하게 대응하는 법을 배우자",
+          textEn: "Let's learn to respond flexibly",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "안정", weight: 2 }
+        },
+        {
+          id: "core",
+          text: "변하지 않는 핵심을 지키자",
+          textEn: "Let's keep unchanging core",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "의지", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "맞아, 변화를 두려워하지 말고 받아들여야겠어. 어떻게 시작할까?",
+      contentEn: "Right, I shouldn't fear change but accept it. How should we start?",
+      choices: [
+        {
+          id: "learn",
+          text: "새로운 것을 배우자",
+          textEn: "Let's learn new things",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "설렘", weight: 2 }
+        },
+        {
+          id: "mindset",
+          text: "마인드셋을 바꾸자",
+          textEn: "Let's change mindset",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "의지", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "변화가 두렵지 않아졌어! 오히려 새로운 기회로 보이기 시작했어.",
+      contentEn: "I'm not afraid of change anymore! It's starting to look like new opportunities.",
+      choices: [
+        {
+          id: "embrace",
+          text: "변화를 적극적으로 받아들이자",
+          textEn: "Let's actively embrace change",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "lead",
+          text: "변화를 주도하자",
+          textEn: "Let's lead the change",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "설렘", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너 덕분에 회복탄력성을 키웠어. 이제 어떤 변화도 두렵지 않아!",
+      contentEn: "Thanks to you, I built resilience. Now I'm not afraid of any change!",
+      choices: []
+    }
+  ],
+
+  'mission-2025-future-sustainability': [
+    {
+      id: "hook",
+      beatType: "hook",
+      content: "지구의 미래가 걱정돼... 우리가 뭘 할 수 있을까?",
+      contentEn: "I'm worried about Earth's future... What can we do?",
+      choices: [
+        {
+          id: "action",
+          text: "작은 실천부터 시작하자",
+          textEn: "Let's start with small actions",
+          nextSceneId: "engage",
+          affinityBonus: 15,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "awareness",
+          text: "사람들의 인식을 바꾸자",
+          textEn: "Let's change people's awareness",
+          nextSceneId: "engage",
+          affinityBonus: 12,
+          emotionImpact: { type: "설렘", weight: 1 }
+        }
+      ]
+    },
+    {
+      id: "engage",
+      beatType: "engage",
+      content: "맞아, 한 사람 한 사람의 노력이 모이면 큰 변화를 만들 수 있어. 뭐부터 할까?",
+      contentEn: "Right, individual efforts can create big changes. What should we do first?",
+      choices: [
+        {
+          id: "lifestyle",
+          text: "친환경 생활을 실천하자",
+          textEn: "Let's practice eco-friendly lifestyle",
+          nextSceneId: "climax",
+          affinityBonus: 20,
+          emotionImpact: { type: "의지", weight: 2 }
+        },
+        {
+          id: "campaign",
+          text: "캠페인을 시작하자",
+          textEn: "Let's start a campaign",
+          nextSceneId: "climax",
+          affinityBonus: 18,
+          emotionImpact: { type: "설렘", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "climax",
+      beatType: "climax",
+      content: "우리의 작은 실천이 다른 사람들에게도 영감을 주고 있어! 변화가 시작됐어.",
+      contentEn: "Our small actions are inspiring others too! Change has begun.",
+      choices: [
+        {
+          id: "expand",
+          text: "더 많은 사람들과 함께하자",
+          textEn: "Let's do it with more people",
+          nextSceneId: "wrap",
+          affinityBonus: 25,
+          emotionImpact: { type: "기쁨", weight: 2 }
+        },
+        {
+          id: "deepen",
+          text: "더 깊이 있게 실천하자",
+          textEn: "Let's practice more deeply",
+          nextSceneId: "wrap",
+          affinityBonus: 22,
+          emotionImpact: { type: "의지", weight: 2 }
+        }
+      ]
+    },
+    {
+      id: "wrap",
+      beatType: "wrap",
+      content: "너와 함께 지속 가능한 미래를 만들어가고 있어. 희망이 보여!",
+      contentEn: "We're creating a sustainable future together. I see hope!",
       choices: []
     }
   ]
 };
 
 /**
- * 미션 ID로 Scene 배열 가져오기
+ * 미션 ID로 Scene 목록 가져오기
  */
-export const getScenesByMissionId = (missionId: string): Scene[] => {
+export function getScenesByMissionId(missionId: string): Scene[] {
   return MISSION_SCENES[missionId] || [];
-};
+}
+
+/**
+ * Scene ID로 특정 Scene 가져오기
+ */
+export function getSceneById(missionId: string, sceneId: string): Scene | undefined {
+  const scenes = getScenesByMissionId(missionId);
+  return scenes.find(scene => scene.id === sceneId);
+}
