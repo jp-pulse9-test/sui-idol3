@@ -12,9 +12,11 @@ import { getMissionsByBranch } from "@/data/salvationMissions";
 import { branchService } from "@/services/branchService";
 import type { Branch, SalvationMission, BranchProgress, VRI } from "@/types/branch";
 import StoryGameModalEnhanced from "@/components/StoryGameModalEnhanced";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Play = () => {
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
   const [selectedIdol, setSelectedIdol] = useState<any>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [userVRI, setUserVRI] = useState<VRI>({
@@ -116,7 +118,7 @@ const Play = () => {
 
   const handleBranchSelect = (branch: Branch) => {
     if (!branch.isUnlocked && branch.requiredVRI && userVRI.total < branch.requiredVRI) {
-      toast.error(`Unlock this branch with ${branch.requiredVRI} total VRI`);
+      toast.error(`${t('play.branch.unlock')} ${branch.requiredVRI} ${t('play.branch.totalVRI')}`);
       return;
     }
     setSelectedBranch(branch);
@@ -124,7 +126,7 @@ const Play = () => {
 
   const handleMissionStart = (mission: SalvationMission) => {
     if (mission.isCompleted) {
-      toast.info("You've already completed this mission");
+      toast.info(t('play.mission.alreadyCompleted'));
       return;
     }
     setSelectedMission(mission);
@@ -132,7 +134,7 @@ const Play = () => {
 
   const handleSaveProgress = async () => {
     if (!userId) {
-      toast.error('지갑을 연결하여 진행 상황을 저장하세요');
+      toast.error(t('play.save.error'));
       navigate('/auth');
       return;
     }
@@ -167,10 +169,10 @@ const Play = () => {
         }
       }
       
-      toast.success('진행 상황이 블록체인에 저장되었습니다!');
+      toast.success(t('play.save.success'));
     } catch (error) {
       console.error('Save error:', error);
-      toast.error('저장 중 오류가 발생했습니다');
+      toast.error(t('play.save.failed'));
     }
   };
 
@@ -178,10 +180,23 @@ const Play = () => {
     return branchProgress.find(p => p.branchId === branchId);
   };
 
+  // Language utility functions
+  const getLocalizedBranchName = (branch: Branch) => 
+    language === 'en' ? branch.nameEn : branch.name;
+
+  const getLocalizedBranchDescription = (branch: Branch) => 
+    language === 'en' ? branch.descriptionEn : branch.description;
+
+  const getLocalizedMissionTitle = (mission: SalvationMission) => 
+    language === 'en' ? mission.titleEn : mission.title;
+
+  const getLocalizedMissionDescription = (mission: SalvationMission) => 
+    language === 'en' ? mission.descriptionEn : mission.description;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading salvation data...</p>
+        <p className="text-muted-foreground">{t('play.loading')}</p>
       </div>
     );
   }
@@ -206,14 +221,14 @@ const Play = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-foreground mb-1">
-                Salvation Missions
+                {t('play.salvation.title')}
               </h1>
               <p className="text-sm text-muted-foreground">
-                Restore lost values across the timelines
+                {t('play.salvation.subtitle')}
               </p>
               {!userId && (
                 <Badge variant="outline" className="mt-2">
-                  게스트 모드 (저장하려면 지갑 연결)
+                  {t('play.guest.badge')}
                 </Badge>
               )}
             </div>
@@ -222,14 +237,14 @@ const Play = () => {
                 <div className="flex items-center gap-2 justify-end mb-1">
                   <Clock className="w-5 h-5 text-destructive" />
                   <span className="text-2xl font-bold text-destructive">
-                    {daysUntil2028} days
+                    {daysUntil2028} {t('play.countdown.days')}
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground">until 2028 decay</p>
+                <p className="text-xs text-muted-foreground">{t('play.countdown.until')}</p>
               </div>
               {!userId && (
                 <Button onClick={handleSaveProgress} size="sm" variant="outline">
-                  지갑 연결하여 저장
+                  {t('play.guest.saveButton')}
                 </Button>
               )}
             </div>
@@ -239,7 +254,7 @@ const Play = () => {
           <div className="mt-6 p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-border/50">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-foreground">
-                Total VRI (Value Restoration Index)
+                {t('play.vri.total')}
               </span>
               <span className="text-lg font-bold text-primary">
                 {userVRI.total}
@@ -249,15 +264,15 @@ const Play = () => {
             <div className="flex gap-4 text-xs">
               <div className="flex items-center gap-1">
                 <Heart className="w-3 h-3 text-pink-500" />
-                <span className="text-muted-foreground">Love: {userVRI.love}</span>
+                <span className="text-muted-foreground">{t('play.vri.love')}: {userVRI.love}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Sparkles className="w-3 h-3 text-blue-500" />
-                <span className="text-muted-foreground">Trust: {userVRI.trust}</span>
+                <span className="text-muted-foreground">{t('play.vri.trust')}: {userVRI.trust}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Flame className="w-3 h-3 text-orange-500" />
-                <span className="text-muted-foreground">Empathy: {userVRI.empathy}</span>
+                <span className="text-muted-foreground">{t('play.vri.empathy')}: {userVRI.empathy}</span>
               </div>
             </div>
           </div>
@@ -268,7 +283,7 @@ const Play = () => {
       {!selectedBranch ? (
         <div className="max-w-6xl mx-auto px-4 py-8">
           <h2 className="text-xl font-bold text-foreground mb-4">
-            Choose a Timeline Branch
+            {t('play.branch.choose')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {BRANCHES.map((branch) => {
@@ -296,15 +311,15 @@ const Play = () => {
                       {!isUnlocked && <Lock className="w-4 h-4 text-muted-foreground" />}
                       {progress?.isCleared && <Trophy className="w-4 h-4 text-yellow-500" />}
                     </div>
-                    <CardTitle className="text-lg">{branch.name}</CardTitle>
+                    <CardTitle className="text-lg">{getLocalizedBranchName(branch)}</CardTitle>
                     <CardDescription className="text-xs">
-                      {branch.description}
+                      {getLocalizedBranchDescription(branch)}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Difficulty:</span>
+                        <span className="text-muted-foreground">{t('play.branch.difficulty')}:</span>
                         <Badge variant={
                           branch.difficulty === 'normal' ? 'secondary' :
                           branch.difficulty === 'hard' ? 'default' : 'destructive'
@@ -315,7 +330,7 @@ const Play = () => {
                       {progress && (
                         <div>
                           <div className="flex items-center justify-between text-xs mb-1">
-                            <span className="text-muted-foreground">Progress:</span>
+                            <span className="text-muted-foreground">{t('play.branch.progress')}:</span>
                             <span className="font-medium">{progress.currentVRI} / {progress.maxVRI} VRI</span>
                           </div>
                           <Progress value={(progress.currentVRI / progress.maxVRI) * 100} className="h-1" />
@@ -323,7 +338,7 @@ const Play = () => {
                       )}
                       {!isUnlocked && branch.requiredVRI && (
                         <p className="text-xs text-destructive">
-                          Requires {branch.requiredVRI} total VRI
+                          {t('play.branch.requires')} {branch.requiredVRI} {t('play.branch.totalVRI')}
                         </p>
                       )}
                     </div>
@@ -342,12 +357,12 @@ const Play = () => {
               onClick={() => setSelectedBranch(null)}
               className="mb-4"
             >
-              ← Back to Branches
+              {t('play.branch.back')}
             </Button>
             <h2 className="text-2xl font-bold text-foreground mb-2">
-              {selectedBranch.name}
+              {getLocalizedBranchName(selectedBranch)}
             </h2>
-            <p className="text-muted-foreground">{selectedBranch.description}</p>
+            <p className="text-muted-foreground">{getLocalizedBranchDescription(selectedBranch)}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -366,26 +381,26 @@ const Play = () => {
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-base">{mission.title}</CardTitle>
+                      <CardTitle className="text-base">{getLocalizedMissionTitle(mission)}</CardTitle>
                       {isCompleted && <Trophy className="w-5 h-5 text-green-500" />}
                     </div>
                     <CardDescription className="text-sm">
-                      {mission.description}
+                      {getLocalizedMissionDescription(mission)}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">VRI Reward:</span>
+                        <span className="text-muted-foreground">{t('play.mission.vriReward')}:</span>
                         <span className="font-bold text-primary">+{mission.vriReward}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Value Type:</span>
+                        <span className="text-muted-foreground">{t('play.mission.valueType')}:</span>
                         <Badge variant="outline">{mission.valueType}</Badge>
                       </div>
                       {isCompleted && (
                         <Badge variant="secondary" className="w-full justify-center">
-                          Completed ✓
+                          {t('play.mission.completed')}
                         </Badge>
                       )}
                     </div>
@@ -406,14 +421,14 @@ const Play = () => {
             className="flex-1"
           >
             <Trophy className="w-4 h-4 mr-2" />
-            Pantheon
+            {t('play.nav.pantheon')}
           </Button>
           <Button
             variant="outline"
             onClick={() => navigate('/')}
             className="flex-1"
           >
-            Home
+            {t('play.nav.home')}
           </Button>
         </div>
       </div>
@@ -423,16 +438,16 @@ const Play = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setSelectedMission(null)}>
           <Card className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
             <CardHeader>
-              <CardTitle>{selectedMission.title}</CardTitle>
-              <CardDescription>{selectedMission.description}</CardDescription>
+              <CardTitle>{getLocalizedMissionTitle(selectedMission)}</CardTitle>
+              <CardDescription>{getLocalizedMissionDescription(selectedMission)}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
-                Mission gameplay will be implemented here. For now, this is a placeholder.
+                {t('play.modal.placeholder')}
               </p>
               <div className="flex gap-2">
                 <Button onClick={() => setSelectedMission(null)} className="flex-1">
-                  Close
+                  {t('play.modal.close')}
                 </Button>
               </div>
             </CardContent>
