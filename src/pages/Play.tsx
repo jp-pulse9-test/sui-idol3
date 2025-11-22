@@ -1,271 +1,374 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import ChatModal from "@/components/ChatModal";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Lock, Heart, Trophy, Clock, Flame, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { BRANCHES } from "@/data/branches";
+import { getMissionsByBranch } from "@/data/salvationMissions";
+import { branchService } from "@/services/branchService";
+import type { Branch, SalvationMission, BranchProgress, VRI } from "@/types/branch";
 import StoryGameModalEnhanced from "@/components/StoryGameModalEnhanced";
-
-interface StoryChoice {
-  id: string;
-  text: string;
-  result: string;
-  nextSceneId?: string;
-  nftReward?: string;
-}
-
-interface StoryScene {
-  id: string;
-  title: string;
-  content: string;
-  choices: StoryChoice[];
-  isEnding?: boolean;
-  nftReward?: string;
-}
-
-interface StoryScenario {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  emoji: string;
-  unlocked: boolean;
-  progress: number;
-  scenes: StoryScene[];
-  category: 'daily' | 'debut' | 'special';
-  difficulty: 'easy' | 'normal' | 'hard';
-  estimatedTime: string;
-}
 
 const Play = () => {
   const navigate = useNavigate();
   const [selectedIdol, setSelectedIdol] = useState<any>(null);
-  const [showChat, setShowChat] = useState(false);
-  const [currentScenario, setCurrentScenario] = useState<StoryScenario | null>(null);
-  const [showStoryGame, setShowStoryGame] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userVRI, setUserVRI] = useState<VRI>({
+    total: 0,
+    love: 0,
+    trust: 0,
+    empathy: 0,
+    lastUpdated: new Date()
+  });
+  const [branchProgress, setBranchProgress] = useState<BranchProgress[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
+  const [selectedMission, setSelectedMission] = useState<SalvationMission | null>(null);
+  const [daysUntil2028, setDaysUntil2028] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const finalPick = localStorage.getItem('finalPick');
-    if (!finalPick) {
+    const stored = localStorage.getItem('selectedIdol');
+    if (stored) {
+      setSelectedIdol(JSON.parse(stored));
+    } else {
+      toast.error("Please select your idol first");
       navigate('/pick');
       return;
     }
-    setSelectedIdol(JSON.parse(finalPick));
+
+    loadUserData();
   }, [navigate]);
 
-  const scenarios: StoryScenario[] = [
-    {
-      id: 'morning_routine',
-      title: '🌅 첫 만남의 아침',
-      description: '데뷔를 앞둔 아이돌과의 첫 만남',
-      location: '연습생 기숙사',
-      emoji: '🌅',
-      unlocked: true,
-      progress: 0,
-      category: 'daily',
-      difficulty: 'easy',
-      estimatedTime: '5분',
-      scenes: [
-        {
-          id: 'morning_start',
-          title: '기숙사 복도에서',
-          content: `새벽 6시, 기숙사 복도에서 ${selectedIdol?.name || '아이돌'}을 마주쳤습니다.\n긴장한 듯 보이지만 당신을 보자 살짝 미소를 짓습니다.`,
-          choices: [
-            {
-              id: 'encourage',
-              text: '응원의 말을 건네기',
-              result: '당신의 따뜻한 말에 용기를 얻었습니다.',
-              nextSceneId: 'morning_end'
-            },
-            {
-              id: 'casual_talk',
-              text: '자연스럽게 인사하기',
-              result: '편안한 분위기가 만들어졌습니다.',
-              nextSceneId: 'morning_end'
-            }
-          ]
-        },
-        {
-          id: 'morning_end',
-          title: '특별한 순간',
-          content: `연습실 앞에서 ${selectedIdol?.name || '아이돌'}이 당신에게 특별한 포토카드를 건네줍니다.\n"고마워요, 이거 받아주세요!"`,
-          choices: [
-            {
-              id: 'accept_gift',
-              text: '감사히 받기',
-              result: '첫 만남 기념 포토카드를 획득했습니다!',
-              nftReward: 'first_meeting_photocard'
-            }
-          ],
-          isEnding: true,
-          nftReward: 'first_meeting_photocard'
-        }
-      ]
-    },
-    {
-      id: 'debut_stage',
-      title: '🎤 데뷔 무대의 기적',
-      description: '운명의 데뷔 무대, 그 특별한 순간들',
-      location: '음악방송 스튜디오',
-      emoji: '🎤',
-      unlocked: false,
-      progress: 0,
-      category: 'debut',
-      difficulty: 'hard',
-      estimatedTime: '10분',
-      scenes: [
-        {
-          id: 'debut_preparation',
-          title: '데뷔 무대 준비',
-          content: `드디어 데뷔 무대 당일! ${selectedIdol?.name || '아이돌'}이 대기실에서 긴장하고 있습니다.\n당신만이 이 순간을 함께할 수 있습니다.`,
-          choices: [
-            {
-              id: 'calm_nerves',
-              text: '긴장을 풀어주기',
-              result: '당신의 도움으로 마음이 차분해졌습니다.',
-              nextSceneId: 'debut_success'
-            }
-          ]
-        },
-        {
-          id: 'debut_success',
-          title: '데뷔의 완성',
-          content: `무대를 성공적으로 마친 ${selectedIdol?.name || '아이돌'}이 눈물을 흘리며 당신에게 달려옵니다.\n"당신이 있어서 가능했어요!"`,
-          choices: [
-            {
-              id: 'celebrate_debut',
-              text: '데뷔를 축하하기',
-              result: '데뷔 기념 특별 포토카드와 Rookie 뱃지를 획득했습니다!',
-              nftReward: 'debut_special_badge'
-            }
-          ],
-          isEnding: true,
-          nftReward: 'debut_special_badge'
-        }
-      ]
-    }
-  ];
+  const loadUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
 
-  const handleScenarioSelect = (scenario: StoryScenario) => {
-    if (!scenario.unlocked) {
-      toast.error("이 스토리는 아직 잠겨있습니다!");
-      return;
+      setUserId(user.id);
+
+      // Load VRI
+      const { data: vriData } = await supabase
+        .from('user_vri')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (vriData) {
+        setUserVRI({
+          total: vriData.total_vri,
+          love: vriData.love_vri,
+          trust: vriData.trust_vri,
+          empathy: vriData.empathy_vri,
+          lastUpdated: new Date(vriData.last_updated)
+        });
+      }
+
+      // Load branch progress
+      const { data: progressData } = await supabase
+        .from('branch_progress')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (progressData) {
+        const progress: BranchProgress[] = progressData.map(p => ({
+          branchId: p.branch_id,
+          currentVRI: p.current_vri,
+          maxVRI: p.max_vri,
+          completedMissions: p.completed_missions as string[],
+          isCleared: p.is_cleared,
+          firstClearedAt: p.first_cleared_at ? new Date(p.first_cleared_at) : undefined,
+          lastPlayedAt: new Date(p.last_played_at)
+        }));
+        setBranchProgress(progress);
+      }
+
+      // Calculate days until 2028
+      setDaysUntil2028(branchService.getDaysUntil2028());
+
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      toast.error('Failed to load progress');
+    } finally {
+      setLoading(false);
     }
-    setCurrentScenario(scenario);
-    setShowStoryGame(true);
   };
 
-  if (!selectedIdol) {
-    return <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-      <div className="text-center">로딩 중...</div>
-    </div>;
+  const handleBranchSelect = (branch: Branch) => {
+    if (!branch.isUnlocked && branch.requiredVRI && userVRI.total < branch.requiredVRI) {
+      toast.error(`Unlock this branch with ${branch.requiredVRI} total VRI`);
+      return;
+    }
+    setSelectedBranch(branch);
+  };
+
+  const handleMissionStart = (mission: SalvationMission) => {
+    if (mission.isCompleted) {
+      toast.info("You've already completed this mission");
+      return;
+    }
+    setSelectedMission(mission);
+  };
+
+  const getBranchProgressData = (branchId: string): BranchProgress | undefined => {
+    return branchProgress.find(p => p.branchId === branchId);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading salvation data...</p>
+      </div>
+    );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-background p-4">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4 pt-8">
-          <h1 className="text-4xl font-bold gradient-text">
-            {selectedIdol.name}의 일상 스토리
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            텍스트 게임을 클리어하며 특별한 NFT 포토카드를 획득하세요
-          </p>
-        </div>
+  if (!selectedIdol) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
-        {/* Idol Profile Card */}
-        <Card className="glass-dark border-white/10 p-6">
-          <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-full overflow-hidden">
-              <img src={selectedIdol.image} alt={selectedIdol.name} className="w-full h-full object-cover" />
+  const availableBranches = BRANCHES.filter(b => 
+    b.isUnlocked || (b.requiredVRI && userVRI.total >= b.requiredVRI)
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-destructive/5 pb-20">
+      {/* 2028 Countdown Header */}
+      <div className="relative bg-gradient-to-r from-destructive/20 via-destructive/10 to-background border-b border-destructive/30 p-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground mb-1">
+                Salvation Missions
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Restore lost values across the timelines
+              </p>
             </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold gradient-text">{selectedIdol.name}</h2>
-              <Badge className="bg-primary/20 text-primary border-primary/30">
-                {selectedIdol.personality}
-              </Badge>
-              <Button onClick={() => setShowChat(true)} variant="outline" size="sm">
-                💬 대화하기
-              </Button>
+            <div className="text-right">
+              <div className="flex items-center gap-2 justify-end mb-1">
+                <Clock className="w-5 h-5 text-destructive" />
+                <span className="text-2xl font-bold text-destructive">
+                  {daysUntil2028} days
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">until 2028 decay</p>
             </div>
           </div>
-        </Card>
 
-        {/* Scenarios Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {scenarios.map((scenario) => (
-            <Card
-              key={scenario.id}
-              className={`group cursor-pointer transition-all duration-300 glass-dark border-white/10 card-hover relative overflow-hidden ${
-                !scenario.unlocked ? 'opacity-50' : ''
-              }`}
-              onClick={() => handleScenarioSelect(scenario)}
-            >
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-3xl">{scenario.emoji}</span>
-                  <div className="flex gap-2">
-                    <Badge className={`text-xs ${scenario.difficulty === 'easy' ? 'bg-green-500' : scenario.difficulty === 'normal' ? 'bg-yellow-500' : 'bg-red-500'} text-white`}>
-                      {scenario.difficulty.toUpperCase()}
-                    </Badge>
-                    {!scenario.unlocked && <div className="text-gray-500">🔒</div>}
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="font-bold text-lg gradient-text">{scenario.title}</h3>
-                  <p className="text-muted-foreground text-sm">{scenario.description}</p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>📍 {scenario.location}</span>
-                    <span>⏱️ {scenario.estimatedTime}</span>
-                    <span>{scenario.category === 'daily' ? '📅' : scenario.category === 'debut' ? '🌟' : '💎'}</span>
-                  </div>
-                </div>
-
-                <Button 
-                  variant={scenario.unlocked ? "default" : "secondary"}
-                  size="sm"
-                  className="w-full"
-                  disabled={!scenario.unlocked}
-                >
-                  {scenario.unlocked ? "🎮 텍스트 게임 시작" : "잠김"}
-                </Button>
+          {/* VRI Progress */}
+          <div className="mt-6 p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-border/50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-foreground">
+                Total VRI (Value Restoration Index)
+              </span>
+              <span className="text-lg font-bold text-primary">
+                {userVRI.total}
+              </span>
+            </div>
+            <Progress value={(userVRI.total / 3000) * 100} className="h-2 mb-3" />
+            <div className="flex gap-4 text-xs">
+              <div className="flex items-center gap-1">
+                <Heart className="w-3 h-3 text-pink-500" />
+                <span className="text-muted-foreground">Love: {userVRI.love}</span>
               </div>
-            </Card>
-          ))}
+              <div className="flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-blue-500" />
+                <span className="text-muted-foreground">Trust: {userVRI.trust}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Flame className="w-3 h-3 text-orange-500" />
+                <span className="text-muted-foreground">Empathy: {userVRI.empathy}</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Navigation */}
-        <div className="flex justify-center gap-4 pt-8">
-          <Button onClick={() => navigate('/collection')} variant="outline">
-            🗃️ 컬렉션 보기
+      {/* Branch Selection */}
+      {!selectedBranch ? (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-xl font-bold text-foreground mb-4">
+            Choose a Timeline Branch
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {BRANCHES.map((branch) => {
+              const progress = getBranchProgressData(branch.id);
+              const isUnlocked = branch.isUnlocked || (branch.requiredVRI ? userVRI.total >= branch.requiredVRI : false);
+              
+              return (
+                <Card
+                  key={branch.id}
+                  className={`cursor-pointer transition-all ${
+                    isUnlocked
+                      ? 'hover:shadow-lg hover:border-primary/50'
+                      : 'opacity-50 cursor-not-allowed'
+                  }`}
+                  style={{
+                    background: isUnlocked ? `linear-gradient(135deg, ${branch.theme.primary}10, transparent)` : undefined
+                  }}
+                  onClick={() => isUnlocked && handleBranchSelect(branch)}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between mb-2">
+                      <Badge variant="outline" style={{ borderColor: branch.theme.primary }}>
+                        {branch.year}
+                      </Badge>
+                      {!isUnlocked && <Lock className="w-4 h-4 text-muted-foreground" />}
+                      {progress?.isCleared && <Trophy className="w-4 h-4 text-yellow-500" />}
+                    </div>
+                    <CardTitle className="text-lg">{branch.name}</CardTitle>
+                    <CardDescription className="text-xs">
+                      {branch.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Difficulty:</span>
+                        <Badge variant={
+                          branch.difficulty === 'normal' ? 'secondary' :
+                          branch.difficulty === 'hard' ? 'default' : 'destructive'
+                        }>
+                          {branch.difficulty}
+                        </Badge>
+                      </div>
+                      {progress && (
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-muted-foreground">Progress:</span>
+                            <span className="font-medium">{progress.currentVRI} / {progress.maxVRI} VRI</span>
+                          </div>
+                          <Progress value={(progress.currentVRI / progress.maxVRI) * 100} className="h-1" />
+                        </div>
+                      )}
+                      {!isUnlocked && branch.requiredVRI && (
+                        <p className="text-xs text-destructive">
+                          Requires {branch.requiredVRI} total VRI
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        /* Mission List for Selected Branch */
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="mb-6">
+            <Button
+              variant="ghost"
+              onClick={() => setSelectedBranch(null)}
+              className="mb-4"
+            >
+              ← Back to Branches
+            </Button>
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              {selectedBranch.name}
+            </h2>
+            <p className="text-muted-foreground">{selectedBranch.description}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {getMissionsByBranch(selectedBranch.id).map((mission) => {
+              const isCompleted = getBranchProgressData(selectedBranch.id)?.completedMissions.includes(mission.id);
+              
+              return (
+                <Card
+                  key={mission.id}
+                  className={`cursor-pointer transition-all ${
+                    isCompleted
+                      ? 'opacity-60 border-green-500/50'
+                      : 'hover:shadow-lg hover:border-primary/50'
+                  }`}
+                  onClick={() => handleMissionStart(mission)}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between mb-2">
+                      <CardTitle className="text-base">{mission.title}</CardTitle>
+                      {isCompleted && <Trophy className="w-5 h-5 text-green-500" />}
+                    </div>
+                    <CardDescription className="text-sm">
+                      {mission.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">VRI Reward:</span>
+                        <span className="font-bold text-primary">+{mission.vriReward}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Value Type:</span>
+                        <Badge variant="outline">{mission.valueType}</Badge>
+                      </div>
+                      {isCompleted && (
+                        <Badge variant="secondary" className="w-full justify-center">
+                          Completed ✓
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 p-4">
+        <div className="max-w-6xl mx-auto flex gap-4">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/pantheon')}
+            className="flex-1"
+          >
+            <Trophy className="w-4 h-4 mr-2" />
+            Pantheon
           </Button>
-          <Button onClick={() => navigate('/growth')} variant="outline">
-            📈 성장 현황
-          </Button>
-          <Button onClick={() => navigate('/')} variant="outline">
-            🏠 홈으로
+          <Button
+            variant="outline"
+            onClick={() => navigate('/')}
+            className="flex-1"
+          >
+            Home
           </Button>
         </div>
       </div>
 
-      {/* Modals */}
-      {showChat && selectedIdol && (
-        <ChatModal
-          isOpen={showChat}
-          onClose={() => setShowChat(false)}
-          character={{
-            id: selectedIdol.id || 1,
-            name: selectedIdol.name,
-            image: selectedIdol.image,
-            personality: selectedIdol.personality
-          }}
-        />
+      {/* Placeholder for Future Mission Modal */}
+      {selectedMission && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setSelectedMission(null)}>
+          <Card className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+            <CardHeader>
+              <CardTitle>{selectedMission.title}</CardTitle>
+              <CardDescription>{selectedMission.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                Mission gameplay will be implemented here. For now, this is a placeholder.
+              </p>
+              <div className="flex gap-2">
+                <Button onClick={() => setSelectedMission(null)} className="flex-1">
+                  Close
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
-
-      {/* Commented out old StoryGameModal - using new implementation in Vault */}
     </div>
   );
 };
