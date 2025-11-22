@@ -1,0 +1,158 @@
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Home, Target, Gamepad2, Archive, TrendingUp, User, Settings, Wallet, Menu, X, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { WalletConnectButton } from '@/components/WalletConnectButton';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+  { path: '/', icon: Home, label: 'Home', labelKo: '홈' },
+  { path: '/pick', icon: Target, label: 'PICK', labelKo: 'PICK', requiresAuth: false },
+  { path: '/play', icon: Gamepad2, label: 'PLAY', labelKo: 'PLAY', requiresAuth: false },
+  { path: '/vault', icon: Archive, label: 'VAULT', labelKo: 'VAULT', requiresAuth: false },
+  { path: '/rise', icon: TrendingUp, label: 'RISE', labelKo: 'RISE', requiresAuth: false },
+  { path: '/my', icon: User, label: 'MY', labelKo: 'MY', requiresAuth: false },
+];
+
+export function AppHeader() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const { isGuest } = useAuthGuard('/', false);
+  const { language } = useLanguage();
+  const navigate = useNavigate();
+
+  const getLabel = (item: typeof navItems[0]) => {
+    return language === 'ko' ? item.labelKo : item.label;
+  };
+
+  const handleNavClick = (path: string, requiresAuth: boolean = false) => {
+    setMobileMenuOpen(false);
+    navigate(path);
+  };
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        {/* Left: Logo */}
+        <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div className="text-2xl font-bold gradient-text">SIMKUNG</div>
+        </NavLink>
+
+        {/* Center: Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-1">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
+                  'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                  isActive && 'bg-primary/10 text-primary font-medium'
+                )
+              }
+              end={item.path === '/'}
+            >
+              <item.icon className="w-4 h-4" />
+              <span>{getLabel(item)}</span>
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
+          {/* Search Button (Desktop) */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden md:flex text-muted-foreground hover:text-foreground"
+            onClick={() => setSearchOpen(!searchOpen)}
+          >
+            <Search className="w-5 h-5" />
+          </Button>
+
+          {/* Language Selector */}
+          <LanguageSelector />
+
+          {/* Wallet Connect */}
+          <div className="hidden md:block">
+            <WalletConnectButton />
+          </div>
+
+          {/* Settings */}
+          <NavLink to="/settings">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+              <Settings className="w-5 h-5" />
+            </Button>
+          </NavLink>
+
+          {/* Mobile Menu Toggle */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-80">
+              <div className="flex flex-col gap-6 pt-8">
+                {/* Mobile Wallet */}
+                <div className="mb-4">
+                  <WalletConnectButton />
+                </div>
+
+                {/* Mobile Navigation */}
+                <nav className="flex flex-col gap-2">
+                  {navItems.map((item) => (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
+                          'text-foreground hover:bg-muted',
+                          isActive && 'bg-primary/10 text-primary font-medium'
+                        )
+                      }
+                      end={item.path === '/'}
+                    >
+                      <item.icon className="w-5 h-5" />
+                      <span className="text-base">{getLabel(item)}</span>
+                    </NavLink>
+                  ))}
+                </nav>
+
+                {/* Guest Mode Badge */}
+                {isGuest && (
+                  <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                    <p className="text-sm text-muted-foreground">
+                      {language === 'ko' ? '게스트 모드 - 지갑을 연결하여 더 많은 기능 이용' : 'Guest Mode - Connect wallet for more features'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      {/* Search Bar (when open) */}
+      {searchOpen && (
+        <div className="border-t border-border bg-background/95 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <input
+              type="text"
+              placeholder={language === 'ko' ? '아이돌, 미션, 포토카드 검색...' : 'Search idols, missions, photocards...'}
+              className="w-full px-4 py-2 bg-muted/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              autoFocus
+            />
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}

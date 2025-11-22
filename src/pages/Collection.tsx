@@ -213,15 +213,6 @@ const Collection = () => {
                 ✨ 새 캐릭터 프로필 만들기
               </Button>
               
-              <div>
-                <Button
-                  onClick={() => navigate('/')}
-                  variant="ghost"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  홈으로 돌아가기
-                </Button>
-              </div>
             </div>
           </TabsContent>
 

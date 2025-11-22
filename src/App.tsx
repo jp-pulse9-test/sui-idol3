@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { DevTools } from "@/components/DevTools";
+import { AppHeader } from "@/components/AppHeader";
+import { MobileNavBar } from "@/components/MobileNavBar";
+import { CommandPalette } from "@/components/CommandPalette";
 import Index from "./pages/Index";
 import PickSimplified from "./pages/PickSimplified";
 import IdolGallery from "./pages/IdolGallery";
@@ -70,38 +73,47 @@ const App = () => (
         <TooltipProvider>
           <LanguageProvider>
             <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/my" element={<My />} />
-          <Route path="/demo-chat" element={<DemoChat />} />
-          <Route path="/idol-detail" element={<IdolDetail />} />
-          <Route path="/gallery" element={<IdolGallery />} />
-          
-          {/* 간소화된 플로우: Pick → Vault → Rise */}
-          <Route path="/pick" element={<PickSimplified />} />
-          <Route path="/vault" element={<Vault />} />
-          <Route path="/rise" element={<Rise />} />
-          
-          {/* 기타 페이지들 */}
-          <Route path="/play" element={<Play />} />
-          <Route path="/pantheon" element={<Pantheon />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/photocard" element={<PhotoCard />} />
-          <Route path="/collection" element={<Collection />} />
-          
-          <Route path="/growth" element={<Growth />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/photocard-generator" element={<PhotocardGenerator />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-        <AdminButton />
-          </AuthProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <div className="min-h-screen flex flex-col w-full">
+                  <AppHeader />
+                  <CommandPalette />
+                  
+                  <main className="flex-1 pt-16 pb-20 md:pb-4">
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/my" element={<My />} />
+                      <Route path="/demo-chat" element={<DemoChat />} />
+                      <Route path="/idol-detail" element={<IdolDetail />} />
+                      <Route path="/gallery" element={<IdolGallery />} />
+                      
+                      {/* 간소화된 플로우: Pick → Vault → Rise */}
+                      <Route path="/pick" element={<PickSimplified />} />
+                      <Route path="/vault" element={<Vault />} />
+                      <Route path="/rise" element={<Rise />} />
+                      
+                      {/* 기타 페이지들 */}
+                      <Route path="/play" element={<Play />} />
+                      <Route path="/pantheon" element={<Pantheon />} />
+                      <Route path="/progress" element={<Progress />} />
+                      <Route path="/photocard" element={<PhotoCard />} />
+                      <Route path="/collection" element={<Collection />} />
+                      
+                      <Route path="/growth" element={<Growth />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="/photocard-generator" element={<PhotocardGenerator />} />
+                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+
+                  <MobileNavBar />
+                  <AdminButton />
+                </div>
+              </BrowserRouter>
+            </AuthProvider>
           </LanguageProvider>
         </TooltipProvider>
       </WalletProviderWrapper>
