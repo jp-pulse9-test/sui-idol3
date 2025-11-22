@@ -54,7 +54,7 @@ export function AppHeader() {
               <Button 
                 variant="outline" 
                 size="icon"
-                className="border-2 border-lime-500 text-lime-500 hover:bg-lime-500 hover:text-black transition-colors"
+                className="border border-lime-500 text-lime-500 hover:bg-lime-500 hover:text-black transition-colors"
               >
                 <Menu className="w-5 h-5" />
               </Button>
