@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Sparkles, Target, Trophy } from "lucide-react";
 import { GatewayCard } from "./GatewayCard";
+import { JourneyDetailDialog } from "./JourneyDetailDialog";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MultiversePlanets } from "./MultiversePlanets";
@@ -7,6 +9,14 @@ import { MultiversePlanets } from "./MultiversePlanets";
 export const GatewaySection = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [selectedGateway, setSelectedGateway] = useState<{
+    icon: any;
+    gatewayName: string;
+    title: string;
+    description: string;
+    detailedInfo: string;
+    path: string;
+  } | null>(null);
 
   const gateways = [
     {
@@ -15,7 +25,8 @@ export const GatewaySection = () => {
       title: t('journey.awaken.title'),
       subtitle: "",
       description: t('journey.awaken.description'),
-      action: () => navigate("/pick"),
+      detailedInfo: t('journey.awaken.detailedInfo'),
+      path: "/pick",
     },
     {
       icon: Target,
@@ -23,7 +34,8 @@ export const GatewaySection = () => {
       title: t('journey.mission.title'),
       subtitle: "",
       description: t('journey.mission.description'),
-      action: () => navigate("/play"),
+      detailedInfo: t('journey.mission.detailedInfo'),
+      path: "/play",
     },
     {
       icon: Trophy,
@@ -31,7 +43,8 @@ export const GatewaySection = () => {
       title: t('journey.ascend.title'),
       subtitle: "",
       description: t('journey.ascend.description'),
-      action: () => navigate("/pantheon"),
+      detailedInfo: t('journey.ascend.detailedInfo'),
+      path: "/pantheon",
     },
   ];
 
@@ -61,11 +74,25 @@ export const GatewaySection = () => {
               title={gateway.title}
               subtitle={gateway.subtitle}
               description={gateway.description}
-              onClick={gateway.action}
+              onClick={() => setSelectedGateway(gateway)}
             />
           ))}
         </div>
       </div>
+      
+      {/* Journey Detail Dialog */}
+      {selectedGateway && (
+        <JourneyDetailDialog
+          open={!!selectedGateway}
+          onOpenChange={(open) => !open && setSelectedGateway(null)}
+          icon={selectedGateway.icon}
+          gatewayName={selectedGateway.gatewayName}
+          title={selectedGateway.title}
+          description={selectedGateway.description}
+          detailedInfo={selectedGateway.detailedInfo}
+          onStart={() => navigate(selectedGateway.path)}
+        />
+      )}
     </section>
   );
 };
