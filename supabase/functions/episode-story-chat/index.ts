@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,9 +21,61 @@ serve(async (req) => {
       language 
     });
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    // Extract user's wallet address from JWT
+    const authHeader = req.headers.get('authorization');
+    let userWallet: string | null = null;
+    
+    if (authHeader) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: authHeader } }
+      });
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('wallet_address')
+          .eq('id', user.id)
+          .single();
+        
+        userWallet = userData?.wallet_address;
+        console.log("User wallet found:", userWallet);
+      }
+    }
+
+    // Try to get user's personal Gemini API key
+    let personalGeminiKey: string | null = null;
+    
+    if (userWallet && authHeader) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: authHeader } }
+      });
+      
+      const { data: keyData } = await supabase
+        .from('user_gemini_keys')
+        .select('api_key')
+        .eq('user_wallet', userWallet)
+        .single();
+      
+      if (keyData?.api_key) {
+        personalGeminiKey = keyData.api_key;
+        console.log("Using user's personal Gemini API key");
+      }
+    }
+
+    // If no personal key, return error (no fallback to Lovable AI)
+    if (!personalGeminiKey) {
+      console.error("No personal Gemini API key found");
+      return new Response(
+        JSON.stringify({ 
+          error: "Personal Gemini API key required. Please add your Gemini API key in Settings > Image Generation." 
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Detect if this is the first message (auto-start)
@@ -117,46 +170,100 @@ For highlight moments:
 
 Stay immersive, emotional, and engaging. Make the user feel like they're in a real story with you.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // Use Google Generative AI API directly with user's personal key
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=" + personalGeminiKey, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages,
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: systemPrompt },
+              ...messages.map(msg => ({ text: `${msg.role}: ${msg.content}` }))
+            ]
+          }
         ],
-        stream: true,
-        temperature: 0.9,
-        max_tokens: 600,
+        generationConfig: {
+          temperature: 0.9,
+          maxOutputTokens: 600,
+        }
       }),
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Gemini API error:", response.status, errorText);
+      
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Payment required. Please add credits to your Lovable AI workspace." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      
       return new Response(
-        JSON.stringify({ error: "AI gateway error" }),
+        JSON.stringify({ error: "Gemini API error: " + errorText }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    return new Response(response.body, {
+    // Convert Gemini streaming format to OpenAI-compatible format
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error("No response body");
+    }
+
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+              controller.close();
+              break;
+            }
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n').filter(line => line.trim());
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const jsonData = JSON.parse(line.slice(6));
+                  const text = jsonData.candidates?.[0]?.content?.parts?.[0]?.text;
+                  
+                  if (text) {
+                    // Convert to OpenAI format
+                    const openAIFormat = {
+                      choices: [{
+                        delta: {
+                          content: text
+                        }
+                      }]
+                    };
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify(openAIFormat)}\n\n`));
+                  }
+                } catch (e) {
+                  console.error("Error parsing Gemini response:", e);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Stream error:", error);
+          controller.error(error);
+        }
+      }
+    });
+
+    return new Response(stream, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (error) {

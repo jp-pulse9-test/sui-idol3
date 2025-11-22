@@ -112,6 +112,15 @@ export const useEpisodeStory = (
       if (!response.ok || !response.body) {
         const errorData = await response.json().catch(() => ({}));
         
+        // Handle 400 Bad Request (missing Gemini key)
+        if (response.status === 400) {
+          toast.error('🔑 Gemini API Key 필요', {
+            description: 'Settings > Image Generation에서 개인 Gemini API key를 추가해주세요.',
+            duration: 6000,
+          });
+          throw new Error('Personal Gemini API key required');
+        }
+        
         // Handle 402 Payment Required error
         if (response.status === 402) {
           toast.error('💳 Lovable AI 크레딧 부족', {
