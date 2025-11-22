@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -110,6 +111,25 @@ export const useEpisodeStory = (
 
       if (!response.ok || !response.body) {
         const errorData = await response.json().catch(() => ({}));
+        
+        // Handle 402 Payment Required error
+        if (response.status === 402) {
+          toast.error('💳 Lovable AI 크레딧 부족', {
+            description: 'Lovable AI 워크스페이스에 크레딧을 추가해주세요. Settings에서 확인할 수 있습니다.',
+            duration: 6000,
+          });
+          throw new Error('Payment required. Please add credits to your Lovable AI workspace.');
+        }
+        
+        // Handle 429 Rate Limit error
+        if (response.status === 429) {
+          toast.error('⏱️ 요청 한도 초과', {
+            description: '잠시 후 다시 시도해주세요.',
+            duration: 5000,
+          });
+          throw new Error('Rate limit exceeded. Please try again later.');
+        }
+        
         throw new Error(errorData.error || 'Failed to start stream');
       }
 
@@ -200,14 +220,18 @@ export const useEpisodeStory = (
         return;
       }
       console.error('Story chat error:', error);
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: `Sorry, I encountered an error: ${error.message}`,
-          timestamp: new Date()
-        }
-      ]);
+      
+      // Don't add error message to chat if it's a payment/rate limit error (already shown via toast)
+      if (!error.message.includes('Payment required') && !error.message.includes('Rate limit')) {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: `죄송합니다, 오류가 발생했습니다: ${error.message}`,
+            timestamp: new Date()
+          }
+        ]);
+      }
     } finally {
       setIsLoading(false);
       abortControllerRef.current = null;
