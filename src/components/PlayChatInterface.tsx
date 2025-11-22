@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BRANCHES } from '@/data/branches';
 import { getMissionsByBranch } from '@/data/salvationMissions';
+import { getScenesByMissionId } from '@/data/missionScenes';
 import { useEpisodeStory } from '@/hooks/useEpisodeStory';
 import { Branch, SalvationMission } from '@/types/branch';
 import { toast } from 'sonner';
@@ -286,6 +287,21 @@ export const PlayChatInterface = () => {
     
     setCurrentMode('episode');
     resetStory();
+    
+    // 자동으로 첫 Scene 시작 - 미션의 첫 번째 Scene 데이터 활용
+    const scenes = getScenesByMissionId(mission.id);
+    const firstScene = scenes[0];
+    
+    setTimeout(() => {
+      if (firstScene) {
+        // Scene 데이터를 기반으로 자동 시작 메시지 전송
+        const startMessage = `미션을 시작합니다. Scene: ${firstScene.beatType}`;
+        sendEpisodeMessage(startMessage);
+      } else {
+        // Scene 데이터가 없으면 기본 시작 메시지
+        sendEpisodeMessage('미션을 시작합니다.');
+      }
+    }, 800);
   };
 
   const handleSendMessage = () => {

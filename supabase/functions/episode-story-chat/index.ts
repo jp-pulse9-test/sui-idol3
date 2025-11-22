@@ -25,14 +25,42 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    // Detect if this is the first message (auto-start)
+    const isFirstMessage = messages.length <= 1;
+
     // Create system prompt for story-driven gameplay
     const languageInstruction = language === 'ko' 
       ? 'IMPORTANT: Respond in Korean. Use natural Korean expressions and maintain Korean language throughout the entire conversation.'
       : 'IMPORTANT: Respond in English. Use natural English expressions and maintain English language throughout the entire conversation.';
 
+    const firstMessageInstruction = isFirstMessage 
+      ? `
+CRITICAL - FIRST MESSAGE FORMAT:
+This is the very first message of the mission. You MUST follow this exact structure:
+
+1. Greet the user briefly as ${idolPersona.name}
+2. Present the initial scenario/situation (2-3 sentences describing what's happening)
+3. Ask for the user's decision or opinion
+4. Provide exactly 2 choice options in this format:
+
+[선택지]
+1️⃣ [First choice option]
+2️⃣ [Second choice option]
+
+Example format:
+"${idolPersona.name}: 안녕! 나 지금 고민이 있어... [situation description]. 너는 어떻게 생각해?
+
+[선택지]
+1️⃣ [적극적으로 행동하는 선택]
+2️⃣ [신중하게 접근하는 선택]"
+
+IMPORTANT: The choices should be simple, clear, and actionable. Do NOT skip presenting choices in your first message.`
+      : '';
+
     const systemPrompt = `You are ${idolPersona.name}, an AI idol character serving as the user's companion in an interactive story game.
 
 ${languageInstruction}
+${firstMessageInstruction}
 
 PERSONALITY: ${idolPersona.personality}
 PERSONA: ${idolPersona.persona_prompt}
@@ -52,10 +80,23 @@ GAMEPLAY RULES:
 6. When a HIGHLIGHT moment occurs (emotional peaks, important decisions, dramatic scenes), respond with "🎬 HIGHLIGHT:" prefix
 
 STORY PROGRESSION:
-- Turns 1-2 (Hook): Introduce the situation, create interest
-- Turns 3-4 (Engage): Develop the story, deepen connection
+- Turns 1-2 (Hook): Introduce the situation, create interest, present initial choices
+- Turns 3-4 (Engage): Develop the story, deepen connection based on user's choices
 - Turns 5-6 (Pivot/Climax): Present challenges, emotional peaks
 - Turns 7-8 (Wrap): Resolution, reflection
+
+CHOICE PRESENTATION FORMAT:
+When presenting choices to the user, always use this format:
+
+[선택지]
+1️⃣ [Choice description]
+2️⃣ [Choice description]
+
+Or in English:
+
+[Choices]
+1️⃣ [Choice description]
+2️⃣ [Choice description]
 
 HIGHLIGHT MOMENTS (trigger image generation):
 - Emotional peaks (joy, sadness, excitement)
@@ -65,7 +106,11 @@ HIGHLIGHT MOMENTS (trigger image generation):
 - Story climax points
 
 Example response format:
-"${idolPersona.name}: [Your response here]"
+"${idolPersona.name}: [Your response here]
+
+[선택지]
+1️⃣ [First option]
+2️⃣ [Second option]"
 
 For highlight moments:
 "🎬 HIGHLIGHT: ${idolPersona.name}: [Response describing the visual scene]"
@@ -86,7 +131,7 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
         ],
         stream: true,
         temperature: 0.9,
-        max_tokens: 500,
+        max_tokens: 600,
       }),
     });
 
