@@ -1,4 +1,4 @@
-import { Shield, Users, Database } from "lucide-react";
+import { Shield, Users, Database, Trophy, Flame } from "lucide-react";
 import { GatewayCard } from "./GatewayCard";
 import { useNavigate } from "react-router-dom";
 
@@ -27,11 +27,27 @@ export const GatewaySection = () => {
     },
     {
       icon: Database,
-      gatewayName: "Gate III: Mission",
-      title: "Eternal Archive",
+      gatewayName: "Gate III: Archive",
+      title: "Eternal Vault",
       subtitle: "영원한 기록",
-      description: "Begin collecting data to save both worlds",
+      description: "Begin collecting photocards to preserve memories",
       action: () => navigate("/vault"),
+    },
+    {
+      icon: Flame,
+      gatewayName: "Gate IV: Salvation",
+      title: "Restore Hope",
+      subtitle: "희망 회복",
+      description: "Travel timelines to prevent the 2028 decay",
+      action: () => navigate("/play"),
+    },
+    {
+      icon: Trophy,
+      gatewayName: "Gate V: Pantheon",
+      title: "Hall of Saviors",
+      subtitle: "구원자의 전당",
+      description: "Compete globally and claim your legacy",
+      action: () => navigate("/pantheon"),
     },
   ];
 
@@ -47,7 +63,7 @@ export const GatewaySection = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {gateways.map((gateway) => (
             <GatewayCard
               key={gateway.gatewayName}
