@@ -12,10 +12,12 @@ import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { Marketplace } from "@/components/ui/marketplace";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { IdolPhotocardGenerator } from "@/components/IdolPhotocardGenerator";
+import { CommunityGoalPool } from "@/components/CommunityGoalPool";
 import { Heart, Lock, Info } from "lucide-react";
 import { usePhotoCardMinting } from "@/services/photocardMintingSimple";
 import { useWallet } from "@/hooks/useWallet";
 import { dailyFreeBoxService } from "@/services/dailyFreeBoxService";
+import { purchaseHistoryService } from "@/services/purchaseHistoryService";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface SelectedIdol {
@@ -364,6 +366,18 @@ const Vault = () => {
       // Authenticated mode: blockchain transaction handles balance automatically
 
       const modeText = isGuest ? ' (로컬 저장)' : ' (블록체인 저장)';
+      
+      // Track paid purchases in database
+      if (type === 'paid' && user) {
+        await purchaseHistoryService.recordPurchase({
+          purchase_type: 'random_box',
+          item_name: `Random Box (${cost} SUI)`,
+          amount_sui: cost,
+          quantity: cardCount,
+          metadata: { idol_id: selectedIdol?.id, cards_received: cardCount }
+        });
+      }
+      
       toast.success(`🎉 ${cardCount}개의 포토카드를 받았습니다!${modeText}`);
     } catch (error) {
       console.error('Photocard minting failed:', error);
@@ -449,6 +463,9 @@ const Vault = () => {
             </Badge>
           </div>
         </div>
+
+        {/* Community Goal Reward Pool */}
+        <CommunityGoalPool />
 
         {/* Selected idol information */}
         {selectedIdol ? (
