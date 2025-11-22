@@ -12,7 +12,8 @@ import { useWallet } from "@/hooks/useWallet";
 import { toast } from "sonner";
 import { Camera, Sparkles, Heart, Star, Zap, ArrowRight, RotateCcw, Loader2, ArrowRightLeft, Database } from "lucide-react";
 import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import { WalrusClient, WalrusFile } from "@mysten/walrus";
+// Lazy load walrus to prevent WASM errors
+// import { WalrusClient, WalrusFile } from "@mysten/walrus";
 import { suiCrossChainStorageService } from "@/services/suiCrossChainStorageService";
 
 interface SelectedIdol {
@@ -276,6 +277,9 @@ export const IdolPhotocardGenerator = ({
 
     try {
       toast.info('🔄 Initializing Walrus client...');
+
+      // Dynamically import Walrus to prevent WASM errors
+      const { WalrusClient, WalrusFile } = await import('@mysten/walrus');
 
       // Initialize Walrus client
       const walrusClient = new WalrusClient({
