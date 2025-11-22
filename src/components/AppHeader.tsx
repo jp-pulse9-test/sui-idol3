@@ -41,15 +41,9 @@ export function AppHeader() {
         {/* Left: Logo (홈 링크 통합) */}
         <NavLink 
           to="/" 
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200',
-              'hover:opacity-80',
-              isActive && 'bg-primary/10'
-            )
-          }
+          className="flex items-center gap-2 transition-opacity hover:opacity-80"
         >
-          <div className="text-2xl font-bold gradient-text">AIDOL101</div>
+          <div className="text-2xl font-bold text-white">AIDOL101</div>
         </NavLink>
 
         {/* Right: Hamburger Menu */}
@@ -57,7 +51,11 @@ export function AppHeader() {
           {/* Mobile Menu Toggle */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="border-2 border-lime-500 text-lime-500 hover:bg-lime-500 hover:text-black transition-colors"
+              >
                 <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>
