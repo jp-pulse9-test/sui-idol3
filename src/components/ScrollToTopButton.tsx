@@ -32,8 +32,8 @@ export const ScrollToTopButton = () => {
       size="icon"
       className={cn(
         "fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full shadow-lg",
-        "bg-primary hover:bg-primary/90 transition-all duration-300",
-        "hover:scale-110 border border-primary/50",
+        "bg-accent hover:bg-accent/90 transition-all duration-300",
+        "hover:scale-110 border border-accent/50 shadow-accent/30",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
       )}
       aria-label="Scroll to top"

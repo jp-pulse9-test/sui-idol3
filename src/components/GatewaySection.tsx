@@ -49,7 +49,7 @@ export const GatewaySection = () => {
   ];
 
   return (
-    <section className="min-h-screen relative flex items-center justify-center py-20 px-4 gateway-section">
+    <section className="min-h-screen relative flex items-center justify-center py-32 mt-20 px-4 gateway-section">
       {/* Multiverse background */}
       <div className="absolute inset-0 opacity-40">
         <MultiversePlanets />

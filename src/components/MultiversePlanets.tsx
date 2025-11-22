@@ -216,9 +216,9 @@ export const MultiversePlanets = ({ className = "" }: MultiversePlanetsProps) =>
         const cpX = (leftPlanet.x + rightPlanet.x) / 2;
         const curveY = cpY - (rightPlanet.x - leftPlanet.x) * path.curve;
 
-        // Strong visible energy line
-        ctx.strokeStyle = 'rgba(80, 80, 80, 0.8)';
-        ctx.lineWidth = 3;
+        // Delicate energy line
+        ctx.strokeStyle = 'rgba(100, 100, 100, 0.4)';
+        ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(leftPlanet.x + leftPlanet.radius, leftPlanet.y);
         ctx.quadraticCurveTo(cpX, curveY, rightPlanet.x - rightPlanet.radius, rightPlanet.y);
@@ -243,9 +243,9 @@ export const MultiversePlanets = ({ className = "" }: MultiversePlanetsProps) =>
     };
 
     const drawBranchNodes = () => {
-      // Draw connections with better visibility
-      ctx.strokeStyle = 'rgba(112, 112, 112, 0.5)';
-      ctx.lineWidth = 1.5;
+      // Draw delicate connections
+      ctx.strokeStyle = 'rgba(120, 120, 120, 0.3)';
+      ctx.lineWidth = 0.8;
       
       for (let i = 0; i < branchNodes.length; i++) {
         const node1 = branchNodes[i];
