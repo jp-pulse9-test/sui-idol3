@@ -11,6 +11,9 @@ import { CinematicSynopsis } from "@/components/CinematicSynopsis";
 import { MinimalHero } from "@/components/MinimalHero";
 import { GatewaySection } from "@/components/GatewaySection";
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
+import { ElevenScenariosHighlight } from "@/components/ElevenScenariosHighlight";
+import { ServiceFlowSection } from "@/components/ServiceFlowSection";
+import { FeatureHighlights } from "@/components/FeatureHighlights";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -83,6 +86,15 @@ const Index = () => {
 
         {/* Hero Section */}
         <MinimalHero onEnter={handleEnter} />
+
+        {/* 11 Scenarios Highlight */}
+        <ElevenScenariosHighlight />
+
+        {/* Service Flow Section */}
+        <ServiceFlowSection />
+
+        {/* Feature Highlights */}
+        <FeatureHighlights />
 
         {/* Cinematic Synopsis */}
         <div id="synopsis" className="py-20">
