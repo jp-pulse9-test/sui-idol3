@@ -44,8 +44,8 @@ export const BRANCHES: Branch[] = [
   },
   {
     id: 'branch-2026-love',
-    name: '사랑 소멸의 2026년',
-    nameEn: 'Love Extinction of 2026',
+    name: '갈등의 세계화, 2026년',
+    nameEn: 'Globalization of Conflict, 2026',
     year: 2026,
     valueType: 'love',
     difficulty: 'expert',
@@ -54,8 +54,8 @@ export const BRANCHES: Branch[] = [
       primary: 'hsl(330, 100%, 50%)', // 핑크
       gradient: 'linear-gradient(135deg, hsl(330, 100%, 50%), hsl(350, 100%, 60%))',
     },
-    description: '모든 관계가 계산적이 되고, 조건부 애정만 남은 시대. 순수한 사랑은 사라졌습니다. 비논리적 애정을 발화시키세요.',
-    descriptionEn: 'An age where all relationships become transactional, leaving only conditional affection. Pure love has vanished. Ignite illogical affection.',
+    description: '지구와 AIA 간 감정 데이터 이전 경쟁으로 인한 갈등이 세계화됩니다. 대립은 증폭되고 화해는 불가능해 보입니다. 중재와 정화로 공존의 길을 여세요.',
+    descriptionEn: 'Conflicts globalize due to emotion data transfer competition between Earth and AIA. Opposition amplifies and reconciliation seems impossible. Open the path to coexistence through mediation and purification.',
     isUnlocked: false,
     requiredVRI: 800, // 2024년 브랜치까지 클리어 (총 800 VRI) 시 해금
     icon: 'Sparkles',
