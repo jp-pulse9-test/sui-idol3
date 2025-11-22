@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { EpisodeFlow } from "@/components/EpisodeFlow";
-import { Scene, HybridProfile, EpisodeState } from "@/types/episode";
+import { Scene, HybridProfile, EpisodeState, PhotoCard as EpisodePhotoCard } from "@/types/episode";
 import { Heart, Clock, Star, Target } from "lucide-react";
 
 interface StoryEpisode {
@@ -17,6 +17,7 @@ interface StoryEpisode {
   turns: number;
   unlocked: boolean;
   completed: boolean;
+  scenes: Scene[];
 }
 
 interface SelectedIdol {
@@ -95,30 +96,28 @@ const StoryGameModalEnhanced = ({
     }
   };
 
-  const handleEpisodeComplete = (finalState: EpisodeState) => {
+  const handleEpisodeComplete = (photoCard: EpisodePhotoCard) => {
     setGamePhase('completing');
+    
+    // Convert PhotoCard rarity to determine affinity score
+    const rarityToAffinity = {
+      'N': 40,
+      'R': 60,
+      'SR': 80,
+      'SSR': 95
+    };
+
+    const estimatedAffinity = rarityToAffinity[photoCard.rarity] || 50;
     
     // Generate memory card based on episode completion
     setTimeout(() => {
-      const rarityRoll = Math.random();
-      let rarity: 'N' | 'R' | 'SR' | 'SSR' = 'N';
-      
-      // Rarity based on affinity and choices
-      if (finalState.affinity >= 80) {
-        rarity = rarityRoll < 0.1 ? 'SSR' : rarityRoll < 0.3 ? 'SR' : 'R';
-      } else if (finalState.affinity >= 60) {
-        rarity = rarityRoll < 0.05 ? 'SSR' : rarityRoll < 0.2 ? 'SR' : 'R';
-      } else if (finalState.affinity >= 40) {
-        rarity = rarityRoll < 0.15 ? 'SR' : 'R';
-      }
-
       const memoryCard: MemoryCard = {
-        id: `memory_${Date.now()}`,
-        episodeId: episode.id,
-        title: `${selectedIdol.name} - ${episode.title}`,
-        rarity: rarity,
-        image: selectedIdol.image,
-        earnedAt: new Date()
+        id: photoCard.id,
+        episodeId: photoCard.episodeId,
+        title: photoCard.title,
+        rarity: photoCard.rarity,
+        image: photoCard.image,
+        earnedAt: photoCard.earnedAt
       };
 
       onComplete(memoryCard);
@@ -143,18 +142,42 @@ const StoryGameModalEnhanced = ({
   const difficultyInfo = getDifficultyInfo(episode.difficulty);
 
   if (gamePhase === 'playing') {
+    // Convert StoryEpisode to Episode format for EpisodeFlow
+    const episodeForFlow = {
+      id: episode.id,
+      title: episode.title,
+      description: episode.description,
+      scenes: episode.scenes.map(scene => ({
+        id: scene.id,
+        beat: scene.beatType || 'engage' as const,
+        turnNumber: scene.choices.length > 0 ? 1 : 0,
+        idolDialogue: {
+          korean: scene.content,
+          english: scene.contentEn || scene.content,
+        },
+        choices: scene.choices,
+        isEnding: scene.choices.length === 0,
+      })),
+      isUnlocked: episode.unlocked,
+      completedPaths: [],
+      rewardCard: {
+        episodeId: episode.id,
+        rarity: 'N' as const,
+        title: episode.title,
+        image: selectedIdol.image,
+        choicePath: '',
+      },
+    };
+
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 bg-transparent border-none">
-          <div className="text-center space-y-4">
-            <div className="text-6xl animate-pulse">🎮</div>
-            <h3 className="text-xl font-bold gradient-text">
-              에피소드 시작하기
-            </h3>
-            <p className="text-muted-foreground">
-              곧 {selectedIdol.name}와의 특별한 이야기가 시작됩니다...
-            </p>
-          </div>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-auto p-6 bg-card/95 backdrop-blur-md border-border">
+          <EpisodeFlow
+            episode={episodeForFlow}
+            hybridProfile={hybridProfile}
+            onComplete={handleEpisodeComplete}
+            onExit={onClose}
+          />
         </DialogContent>
       </Dialog>
     );
