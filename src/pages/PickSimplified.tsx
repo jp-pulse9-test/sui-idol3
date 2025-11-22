@@ -9,7 +9,7 @@ import { IdolPreset } from "@/types/idol";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
-type GamePhase = 'loading' | 'gender-select' | 'tournament' | 'preview' | 'minting' | 'complete';
+type GamePhase = 'loading' | 'tournament' | 'preview' | 'minting' | 'complete';
 
 const PickSimplified = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const PickSimplified = () => {
   const [heartEffect, setHeartEffect] = useState<'left' | 'right' | null>(null);
   const [isMinting, setIsMinting] = useState(false);
 
-  // Fetch idols from database
+  // Fetch idols from database and start tournament automatically
   useEffect(() => {
     const fetchIdols = async () => {
       try {
@@ -33,7 +33,14 @@ const PickSimplified = () => {
         
         if (data && data.length > 0) {
           setAllIdols(data);
-          setGamePhase('gender-select');
+          // Auto-start tournament with all idols
+          const shuffled = [...data].sort(() => Math.random() - 0.5);
+          const selected = shuffled.slice(0, Math.min(16, data.length));
+          
+          setTournamentIdols(selected);
+          setCurrentRound(selected);
+          setCurrentPair([selected[0], selected[1]]);
+          setGamePhase('tournament');
         } else {
           toast({
             title: "데이터 없음",
@@ -54,33 +61,6 @@ const PickSimplified = () => {
     fetchIdols();
   }, []);
 
-  // Start tournament with selected gender
-  const startTournament = (gender: 'all' | 'Male' | 'Female') => {
-    setSelectedGender(gender);
-    
-    let filtered = allIdols;
-    if (gender !== 'all') {
-      filtered = allIdols.filter(idol => idol.gender === gender);
-    }
-    
-    if (filtered.length < 2) {
-      toast({
-        title: "아이돌 부족",
-        description: "토너먼트를 시작하기에 아이돌이 부족합니다.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Shuffle and select 16 idols (or less if not enough)
-    const shuffled = [...filtered].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, Math.min(16, filtered.length));
-    
-    setTournamentIdols(selected);
-    setCurrentRound(selected);
-    setCurrentPair([selected[0], selected[1]]);
-    setGamePhase('tournament');
-  };
 
   // Handle idol choice in tournament
   const handleChoice = (selectedIdol: IdolPreset, side: 'left' | 'right') => {
@@ -183,74 +163,6 @@ const PickSimplified = () => {
     );
   }
 
-  // Gender select phase
-  if (gamePhase === 'gender-select') {
-    return (
-      <div className="min-h-screen bg-gradient-background p-4">
-        <div className="max-w-4xl mx-auto space-y-8 pt-12">
-          <Button
-            onClick={() => navigate('/')}
-            variant="ghost"
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            홈으로
-          </Button>
-          
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold gradient-text">
-              Pick Your Ideal AIDOL
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              얼굴로 고르는 16강 토너먼트
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card
-              className="p-8 glass-dark border-white/10 card-hover cursor-pointer text-center"
-              onClick={() => startTournament('all')}
-            >
-              <div className="space-y-4">
-                <div className="text-6xl">🌟</div>
-                <h3 className="text-2xl font-bold gradient-text">전체</h3>
-                <p className="text-muted-foreground">모든 아이돌 중에서 선택</p>
-                <Badge variant="outline">{allIdols.length}명</Badge>
-              </div>
-            </Card>
-
-            <Card
-              className="p-8 glass-dark border-white/10 card-hover cursor-pointer text-center"
-              onClick={() => startTournament('Male')}
-            >
-              <div className="space-y-4">
-                <div className="text-6xl">👨</div>
-                <h3 className="text-2xl font-bold gradient-text">남성</h3>
-                <p className="text-muted-foreground">남성 아이돌만</p>
-                <Badge variant="outline">
-                  {allIdols.filter(i => i.gender === 'Male').length}명
-                </Badge>
-              </div>
-            </Card>
-
-            <Card
-              className="p-8 glass-dark border-white/10 card-hover cursor-pointer text-center"
-              onClick={() => startTournament('Female')}
-            >
-              <div className="space-y-4">
-                <div className="text-6xl">👩</div>
-                <h3 className="text-2xl font-bold gradient-text">여성</h3>
-                <p className="text-muted-foreground">여성 아이돌만</p>
-                <Badge variant="outline">
-                  {allIdols.filter(i => i.gender === 'Female').length}명
-                </Badge>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Tournament phase
   if (gamePhase === 'tournament' && currentPair) {
@@ -405,7 +317,7 @@ const PickSimplified = () => {
             {gamePhase === 'preview' && (
               <div className="flex gap-4 justify-center pt-4">
                 <Button
-                  onClick={() => setGamePhase('gender-select')}
+                  onClick={() => window.location.reload()}
                   variant="outline"
                   size="lg"
                 >
