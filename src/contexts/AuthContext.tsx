@@ -5,6 +5,7 @@ import { useWallet } from '@/hooks/useWallet';
 interface AuthContextType {
   user: { id: string; wallet_address: string } | null;
   loading: boolean;
+  isGuest: boolean;
   connectWallet: () => Promise<{ error: any }>;
   disconnectWallet: () => Promise<void>;
 }
@@ -22,6 +23,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<{ id: string; wallet_address: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(true);
   const [walletError, setWalletError] = useState<string | null>(null);
   
   // 지갑 상태를 안전하게 가져오기
@@ -39,11 +41,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isConnected && walletAddress) {
         const userId = 'user_' + walletAddress.slice(-12);
         setUser({ id: userId, wallet_address: walletAddress });
+        setIsGuest(false);
         console.log('Wallet connected:', walletAddress);
         setWalletError(null);
       } else if (isConnected === false) {
         setUser(null);
-        console.log('Wallet disconnected');
+        setIsGuest(true);
+        console.log('Guest mode - no wallet connected');
       }
     } catch (error) {
       console.error('Wallet sync error:', error);
@@ -114,6 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user,
     loading,
+    isGuest,
     connectWallet,
     disconnectWallet,
   };

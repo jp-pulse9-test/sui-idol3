@@ -46,8 +46,22 @@ const Play = () => {
   const loadUserData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // 게스트 모드: 로컬 저장소에서 데이터 로드
       if (!user) {
-        navigate('/auth');
+        const localVRI = localStorage.getItem('guestVRI');
+        const localProgress = localStorage.getItem('guestProgress');
+        
+        if (localVRI) {
+          setUserVRI(JSON.parse(localVRI));
+        }
+        
+        if (localProgress) {
+          setBranchProgress(JSON.parse(localProgress));
+        }
+        
+        setDaysUntil2028(branchService.getDaysUntil2028());
+        setLoading(false);
         return;
       }
 
@@ -116,6 +130,50 @@ const Play = () => {
     setSelectedMission(mission);
   };
 
+  const handleSaveProgress = async () => {
+    if (!userId) {
+      toast.error('지갑을 연결하여 진행 상황을 저장하세요');
+      navigate('/auth');
+      return;
+    }
+    
+    try {
+      // 로컬 데이터를 Supabase로 동기화
+      const localVRI = localStorage.getItem('guestVRI');
+      const localProgress = localStorage.getItem('guestProgress');
+      
+      if (localVRI) {
+        const vriData = JSON.parse(localVRI);
+        await supabase.from('user_vri').upsert({
+          user_id: userId,
+          total_vri: vriData.total,
+          love_vri: vriData.love,
+          trust_vri: vriData.trust,
+          empathy_vri: vriData.empathy
+        });
+      }
+      
+      if (localProgress) {
+        const progressData = JSON.parse(localProgress);
+        for (const progress of progressData) {
+          await supabase.from('branch_progress').upsert({
+            user_id: userId,
+            branch_id: progress.branchId,
+            current_vri: progress.currentVRI,
+            max_vri: progress.maxVRI,
+            completed_missions: progress.completedMissions,
+            is_cleared: progress.isCleared
+          });
+        }
+      }
+      
+      toast.success('진행 상황이 블록체인에 저장되었습니다!');
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error('저장 중 오류가 발생했습니다');
+    }
+  };
+
   const getBranchProgressData = (branchId: string): BranchProgress | undefined => {
     return branchProgress.find(p => p.branchId === branchId);
   };
@@ -153,15 +211,27 @@ const Play = () => {
               <p className="text-sm text-muted-foreground">
                 Restore lost values across the timelines
               </p>
+              {!userId && (
+                <Badge variant="outline" className="mt-2">
+                  게스트 모드 (저장하려면 지갑 연결)
+                </Badge>
+              )}
             </div>
-            <div className="text-right">
-              <div className="flex items-center gap-2 justify-end mb-1">
-                <Clock className="w-5 h-5 text-destructive" />
-                <span className="text-2xl font-bold text-destructive">
-                  {daysUntil2028} days
-                </span>
+            <div className="text-right flex flex-col gap-2">
+              <div>
+                <div className="flex items-center gap-2 justify-end mb-1">
+                  <Clock className="w-5 h-5 text-destructive" />
+                  <span className="text-2xl font-bold text-destructive">
+                    {daysUntil2028} days
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">until 2028 decay</p>
               </div>
-              <p className="text-xs text-muted-foreground">until 2028 decay</p>
+              {!userId && (
+                <Button onClick={handleSaveProgress} size="sm" variant="outline">
+                  지갑 연결하여 저장
+                </Button>
+              )}
             </div>
           </div>
 
