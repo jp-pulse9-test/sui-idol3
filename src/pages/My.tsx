@@ -230,68 +230,6 @@ const My = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
-      {/* 헤더 */}
-      <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/')}
-                className="hover:bg-muted/50"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                뒤로
-              </Button>
-              <h1 className="text-2xl font-bold">내 보관함, 내 최애</h1>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button
-                variant="premium"
-                size="sm"
-                onClick={() => navigate('/vault')}
-                className="hidden sm:flex"
-              >
-                <Gift className="w-4 h-4 mr-2" />
-                랜덤박스 열기
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/rise')}
-                className="hidden sm:flex"
-              >
-                <BarChart3 className="w-4 h-4 mr-2" />
-                리더보드
-              </Button>
-              
-              {/* 지갑 칩 */}
-              <div className="flex items-center gap-2 bg-card/60 backdrop-blur-sm p-2 rounded-lg border border-border">
-                <Badge variant="secondary" className="px-2 py-1">
-                  🟢 연결됨
-                </Badge>
-                <span className="text-sm font-mono text-muted-foreground">
-                  {walletAddress?.substring(0, 6)}...{walletAddress?.substring(38)}
-                </span>
-                <Button
-                  onClick={handleCopyAddress}
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-1"
-                >
-                  {copied ? (
-                    <Check className="w-3 h-3 text-green-500" />
-                  ) : (
-                    <Copy className="w-3 h-3" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div className="max-w-7xl mx-auto p-4 space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
