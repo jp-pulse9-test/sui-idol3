@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Lock, Heart, Trophy, Clock, Flame, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +11,8 @@ import type { Branch, SalvationMission, BranchProgress, VRI } from "@/types/bran
 import EpisodeGameModal from "@/components/EpisodeGameModal";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getScenesByMissionId } from '@/data/missionScenes';
+import { AsciiProgress } from '@/components/AsciiProgress';
+import { AsciiBox } from '@/components/AsciiBox';
 
 const Play = () => {
   const navigate = useNavigate();
@@ -219,16 +218,16 @@ const Play = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">{t('play.loading')}</p>
+      <div className="retro-terminal-page min-h-screen flex items-center justify-center">
+        <p className="text-lime-400 font-mono animate-pulse">{t('play.loading')}...</p>
       </div>
     );
   }
 
   if (!selectedIdol) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="retro-terminal-page min-h-screen flex items-center justify-center">
+        <p className="text-lime-400 font-mono animate-pulse">LOADING SYSTEM...</p>
       </div>
     );
   }
@@ -238,76 +237,79 @@ const Play = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-destructive/5 pb-20">
+    <div className="retro-terminal-page min-h-screen pb-20">
       {/* 2028 Countdown Header */}
-      <div className="relative bg-gradient-to-r from-destructive/20 via-destructive/10 to-background border-b border-destructive/30 p-6">
+      <div className="relative p-6 border-b-2 border-lime-500/30">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-foreground mb-1">
-                {t('play.salvation.title')}
+              <h1 className="text-2xl font-bold text-lime-400 mb-1 font-mono retro-glow ascii-text">
+                {'>>>'} {t('play.salvation.title').toUpperCase()}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-lime-500/70 font-mono">
                 {t('play.salvation.subtitle')}
               </p>
               {!userId && (
-                <Badge variant="outline" className="mt-2">
-                  {t('play.guest.badge')}
-                </Badge>
+                <div className="mt-2 inline-block border border-lime-500/50 px-2 py-1 text-xs text-lime-400 font-mono">
+                  [{t('play.guest.badge')}]
+                </div>
               )}
             </div>
             <div className="text-right flex flex-col gap-2">
               <div>
                 <div className="flex items-center gap-2 justify-end mb-1">
-                  <Clock className="w-5 h-5 text-destructive" />
-                  <span className="text-2xl font-bold text-destructive">
-                    {daysUntil2028} {t('play.countdown.days')}
+                  <span className="text-xs text-lime-500/70 font-mono">⏰</span>
+                  <span className="text-2xl font-bold text-red-500 font-mono retro-glow">
+                    {daysUntil2028}
                   </span>
+                  <span className="text-sm text-lime-400 font-mono">{t('play.countdown.days')}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">{t('play.countdown.until')}</p>
+                <p className="text-xs text-lime-500/50 font-mono">{t('play.countdown.until')}</p>
               </div>
               {!userId && (
-                <Button onClick={handleSaveProgress} size="sm" variant="outline">
+                <button 
+                  onClick={handleSaveProgress}
+                  className="border-2 border-lime-500 bg-black/50 text-lime-400 px-3 py-1 text-xs font-mono hover:bg-lime-500/10 transition-colors"
+                >
                   {t('play.guest.saveButton')}
-                </Button>
+                </button>
               )}
             </div>
           </div>
 
           {/* VRI Progress */}
-          <div className="mt-6 p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-border/50">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-foreground">
-                {t('play.vri.total')}
-              </span>
-              <span className="text-lg font-bold text-primary">
-                {userVRI.total}
-              </span>
+          <AsciiBox title="VRI STATUS" className="mt-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-lime-400">TOTAL VRI:</span>
+                <span className="text-green-300 font-bold">{userVRI.total}</span>
+              </div>
+              <AsciiProgress value={userVRI.total} max={3000} width={30} />
+              
+              <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-lime-500/20">
+                <div>
+                  <div className="text-xs text-pink-400 mb-1">💖 {t('play.vri.love')}</div>
+                  <div className="text-lime-300 font-bold">{userVRI.love}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-blue-400 mb-1">✨ {t('play.vri.trust')}</div>
+                  <div className="text-lime-300 font-bold">{userVRI.trust}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-orange-400 mb-1">🔥 {t('play.vri.empathy')}</div>
+                  <div className="text-lime-300 font-bold">{userVRI.empathy}</div>
+                </div>
+              </div>
             </div>
-            <Progress value={(userVRI.total / 3000) * 100} className="h-2 mb-3" />
-            <div className="flex gap-4 text-xs">
-              <div className="flex items-center gap-1">
-                <Heart className="w-3 h-3 text-pink-500" />
-                <span className="text-muted-foreground">{t('play.vri.love')}: {userVRI.love}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-blue-500" />
-                <span className="text-muted-foreground">{t('play.vri.trust')}: {userVRI.trust}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Flame className="w-3 h-3 text-orange-500" />
-                <span className="text-muted-foreground">{t('play.vri.empathy')}: {userVRI.empathy}</span>
-              </div>
-            </div>
-          </div>
+          </AsciiBox>
         </div>
       </div>
 
       {/* Branch Selection */}
       {!selectedBranch ? (
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <h2 className="text-xl font-bold text-foreground mb-4">
-            {t('play.branch.choose')}
+          <h2 className="text-xl font-bold text-lime-400 mb-6 font-mono retro-glow">
+            {'>>>'} {t('play.branch.choose').toUpperCase()}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {BRANCHES.map((branch) => {
@@ -315,59 +317,60 @@ const Play = () => {
               const isUnlocked = branch.isUnlocked || (branch.requiredVRI ? userVRI.total >= branch.requiredVRI : false);
               
               return (
-                <Card
+                <div
                   key={branch.id}
-                  className={`cursor-pointer transition-all ${
+                  className={`retro-terminal-box p-4 transition-all ${
                     isUnlocked
-                      ? 'hover:shadow-lg hover:border-primary/50'
-                      : 'opacity-50 cursor-not-allowed'
+                      ? 'cursor-pointer hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] hover:border-lime-400'
+                      : 'opacity-40 cursor-not-allowed'
                   }`}
-                  style={{
-                    background: isUnlocked ? `linear-gradient(135deg, ${branch.theme.primary}10, transparent)` : undefined
-                  }}
                   onClick={() => isUnlocked && handleBranchSelect(branch)}
                 >
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
-                      <Badge variant="outline" style={{ borderColor: branch.theme.primary }}>
-                        {branch.year}
-                      </Badge>
-                      {!isUnlocked && <Lock className="w-4 h-4 text-muted-foreground" />}
-                      {progress?.isCleared && <Trophy className="w-4 h-4 text-yellow-500" />}
+                  <div className="mb-3 flex items-start justify-between">
+                    <div className="inline-block border border-lime-500/50 px-2 py-1 text-xs text-lime-400 font-mono">
+                      [{branch.year}]
                     </div>
-                    <CardTitle className="text-lg">{getLocalizedBranchName(branch)}</CardTitle>
-                    <CardDescription className="text-xs">
-                      {getLocalizedBranchDescription(branch)}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{t('play.branch.difficulty')}:</span>
-                        <Badge variant={
-                          branch.difficulty === 'normal' ? 'secondary' :
-                          branch.difficulty === 'hard' ? 'default' : 'destructive'
-                        }>
-                          {branch.difficulty}
-                        </Badge>
-                      </div>
-                      {progress && (
-                        <div>
-                          <div className="flex items-center justify-between text-xs mb-1">
-                            <span className="text-muted-foreground">{t('play.branch.progress')}:</span>
-                            <span className="font-medium">{progress.currentVRI} / {progress.maxVRI} VRI</span>
-                          </div>
-                          <Progress value={(progress.currentVRI / progress.maxVRI) * 100} className="h-1" />
+                    <div className="flex gap-2">
+                      {!isUnlocked && <Lock className="w-4 h-4 text-red-500" />}
+                      {progress?.isCleared && <Trophy className="w-4 h-4 text-yellow-400" />}
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-lg text-lime-300 font-mono mb-2 retro-glow">
+                    {getLocalizedBranchName(branch)}
+                  </h3>
+                  <p className="text-xs text-lime-500/70 font-mono mb-4 leading-relaxed">
+                    {getLocalizedBranchDescription(branch)}
+                  </p>
+                  
+                  <div className="space-y-2 text-xs font-mono">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lime-500/70">{t('play.branch.difficulty')}:</span>
+                      <span className={`${
+                        branch.difficulty === 'normal' ? 'text-green-400' :
+                        branch.difficulty === 'hard' ? 'text-yellow-400' : 'text-red-400'
+                      }`}>
+                        [{branch.difficulty.toUpperCase()}]
+                      </span>
+                    </div>
+                    
+                    {progress && (
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-lime-500/70">{t('play.branch.progress')}:</span>
+                          <span className="text-lime-300">{progress.currentVRI}/{progress.maxVRI}</span>
                         </div>
-                      )}
-                      {!isUnlocked && branch.requiredVRI && (
-                        <p className="text-xs text-destructive">
-                          {t('play.branch.requires')} {branch.requiredVRI} {t('play.branch.totalVRI')}
-                        </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                        <AsciiProgress value={progress.currentVRI} max={progress.maxVRI} width={15} />
+                      </div>
+                    )}
+                    
+                    {!isUnlocked && branch.requiredVRI && (
+                      <p className="text-red-400 mt-2 border-t border-red-500/30 pt-2">
+                        ! {t('play.branch.requires')} {branch.requiredVRI} VRI
+                      </p>
+                    )}
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -376,17 +379,16 @@ const Play = () => {
         /* Mission List for Selected Branch */
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="mb-6">
-            <Button
-              variant="ghost"
+            <button
               onClick={() => setSelectedBranch(null)}
-              className="mb-4"
+              className="mb-4 border-2 border-lime-500 bg-black/50 text-lime-400 px-4 py-2 text-sm font-mono hover:bg-lime-500/10 transition-colors"
             >
-              {t('play.branch.back')}
-            </Button>
-            <h2 className="text-2xl font-bold text-foreground mb-2">
+              {'<'} {t('play.branch.back')}
+            </button>
+            <h2 className="text-2xl font-bold text-lime-400 mb-2 font-mono retro-glow">
               {getLocalizedBranchName(selectedBranch)}
             </h2>
-            <p className="text-muted-foreground">{getLocalizedBranchDescription(selectedBranch)}</p>
+            <p className="text-lime-500/70 font-mono text-sm">{getLocalizedBranchDescription(selectedBranch)}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -394,42 +396,42 @@ const Play = () => {
               const isCompleted = getBranchProgressData(selectedBranch.id)?.completedMissions.includes(mission.id);
               
               return (
-                <Card
+                <div
                   key={mission.id}
-                  className={`cursor-pointer transition-all ${
+                  className={`retro-terminal-box p-4 transition-all ${
                     isCompleted
                       ? 'opacity-60 border-green-500/50'
-                      : 'hover:shadow-lg hover:border-primary/50'
+                      : 'cursor-pointer hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] hover:border-lime-400'
                   }`}
-                  onClick={() => handleMissionStart(mission)}
+                  onClick={() => !isCompleted && handleMissionStart(mission)}
                 >
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-base">{getLocalizedMissionTitle(mission)}</CardTitle>
-                      {isCompleted && <Trophy className="w-5 h-5 text-green-500" />}
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-base text-lime-300 font-mono retro-glow flex-1">
+                      {getLocalizedMissionTitle(mission)}
+                    </h3>
+                    {isCompleted && <Trophy className="w-5 h-5 text-green-500 ml-2" />}
+                  </div>
+                  
+                  <p className="text-sm text-lime-500/70 font-mono mb-4 leading-relaxed">
+                    {getLocalizedMissionDescription(mission)}
+                  </p>
+                  
+                  <div className="space-y-2 text-xs font-mono">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lime-500/70">{t('play.mission.vriReward')}:</span>
+                      <span className="text-green-400 font-bold">+{mission.vriReward} VRI</span>
                     </div>
-                    <CardDescription className="text-sm">
-                      {getLocalizedMissionDescription(mission)}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{t('play.mission.vriReward')}:</span>
-                        <span className="font-bold text-primary">+{mission.vriReward}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{t('play.mission.valueType')}:</span>
-                        <Badge variant="outline">{mission.valueType}</Badge>
-                      </div>
-                      {isCompleted && (
-                        <Badge variant="secondary" className="w-full justify-center">
-                          {t('play.mission.completed')}
-                        </Badge>
-                      )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-lime-500/70">{t('play.mission.valueType')}:</span>
+                      <span className="text-cyan-400">[{mission.valueType}]</span>
                     </div>
-                  </CardContent>
-                </Card>
+                    {isCompleted && (
+                      <div className="text-green-400 mt-2 border-t border-green-500/30 pt-2 text-center">
+                        ✓ {t('play.mission.completed')}
+                      </div>
+                    )}
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -437,23 +439,21 @@ const Play = () => {
       )}
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-black/95 border-t-2 border-lime-500/30 p-4 z-10">
         <div className="max-w-6xl mx-auto flex gap-4">
-          <Button
-            variant="outline"
+          <button
             onClick={() => navigate('/pantheon')}
-            className="flex-1"
+            className="flex-1 border-2 border-lime-500 bg-black/50 text-lime-400 px-4 py-3 font-mono hover:bg-lime-500/10 transition-colors flex items-center justify-center gap-2"
           >
-            <Trophy className="w-4 h-4 mr-2" />
+            <Trophy className="w-4 h-4" />
             {t('play.nav.pantheon')}
-          </Button>
-          <Button
-            variant="outline"
+          </button>
+          <button
             onClick={() => navigate('/')}
-            className="flex-1"
+            className="flex-1 border-2 border-lime-500 bg-black/50 text-lime-400 px-4 py-3 font-mono hover:bg-lime-500/10 transition-colors"
           >
             {t('play.nav.home')}
-          </Button>
+          </button>
         </div>
       </div>
 
