@@ -11,12 +11,13 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, episodeContext, idolPersona } = await req.json();
+    const { messages, episodeContext, idolPersona, language } = await req.json();
     
     console.log("Episode story chat request:", { 
       messageCount: messages.length, 
       episode: episodeContext?.title,
-      idol: idolPersona?.name 
+      idol: idolPersona?.name,
+      language 
     });
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -25,7 +26,13 @@ serve(async (req) => {
     }
 
     // Create system prompt for story-driven gameplay
+    const languageInstruction = language === 'ko' 
+      ? 'IMPORTANT: Respond in Korean. Use natural Korean expressions and maintain Korean language throughout the entire conversation.'
+      : 'IMPORTANT: Respond in English. Use natural English expressions and maintain English language throughout the entire conversation.';
+
     const systemPrompt = `You are ${idolPersona.name}, an AI idol character serving as the user's companion in an interactive story game.
+
+${languageInstruction}
 
 PERSONALITY: ${idolPersona.personality}
 PERSONA: ${idolPersona.persona_prompt}
