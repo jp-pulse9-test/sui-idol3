@@ -115,15 +115,20 @@ const Auth = () => {
             )}
           </Button>
 
-          {/* 홈으로 돌아가기 버튼 */}
+          {/* 게스트로 계속하기 버튼 */}
           <Button 
             onClick={() => navigate('/')}
             variant="outline"
             size="lg"
-            className="w-full border-border/50 hover:border-border bg-card/80 backdrop-blur-sm"
+            className="w-full border-primary/30 hover:border-primary bg-card/80 backdrop-blur-sm"
           >
-            홈으로 돌아가기
+            게스트 모드로 계속하기
           </Button>
+          
+          <p className="text-center text-sm text-muted-foreground">
+            게스트 모드에서는 무료 기능을 체험할 수 있습니다.<br />
+            데이터는 로컬에만 저장되며, 지갑 연결 시 블록체인에 영구 저장됩니다.
+          </p>
 
         </CardContent>
       </Card>

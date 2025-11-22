@@ -80,17 +80,18 @@ const Vault = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Vault useEffect triggered - User:', user, 'Loading:', loading);
+    console.log('Vault useEffect triggered - User:', user, 'Loading:', loading, 'IsGuest:', isGuest);
     
-    // Execute only when user exists (wallet connection verified by AuthContext)
-    if (!user) return;
-
-    console.log('Vault useEffect - User:', user);
-
+    // Load data for both guest and authenticated users
     const savedIdol = localStorage.getItem('selectedIdol');
     console.log('Vault useEffect - Saved Idol:', savedIdol);
 
-    setWalletAddress(user.wallet_address);
+    // Set wallet address if user is authenticated
+    if (user) {
+      setWalletAddress(user.wallet_address);
+    } else {
+      setWalletAddress(''); // Guest mode
+    }
 
     if (!savedIdol) {
       console.log('No idol selected - user can still access vault but some features will be limited');
@@ -106,12 +107,21 @@ const Vault = () => {
       }
     }
     
-    // Load photocards from local storage
+    // Load photocards from local storage (works for both guest and authenticated)
     const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
     setPhotoCards(savedCards);
 
-    // Note: SUI balance is now loaded from blockchain via useWallet hook
-    // No need to load from localStorage
+    // Load SUI balance from localStorage for guest mode, or use blockchain balance for authenticated users
+    if (isGuest) {
+      const guestBalance = localStorage.getItem('guestWalletBalance');
+      if (guestBalance) {
+        setSuiCoins(parseFloat(guestBalance));
+      } else {
+        // Give guest users starting balance
+        setSuiCoins(1.0);
+        localStorage.setItem('guestWalletBalance', '1.0');
+      }
+    }
     
     const savedFanHearts = localStorage.getItem('fanHearts');
     if (savedFanHearts) {
@@ -132,9 +142,35 @@ const Vault = () => {
     }
     
     // Load daily free box status (handle asynchronously to prevent rendering blocking)
-    setTimeout(() => {
-      loadDailyFreeStatus(user.wallet_address);
-    }, 0);
+    // Only for authenticated users with wallet
+    if (user?.wallet_address) {
+      setTimeout(() => {
+        loadDailyFreeStatus(user.wallet_address);
+      }, 0);
+    } else {
+      // Guest mode: use local storage for free box tracking
+      const guestFreeBoxClaimed = localStorage.getItem('guestFreeBoxClaimed');
+      const today = new Date().toDateString();
+      const lastClaimed = localStorage.getItem('guestLastFreeBoxDate');
+      
+      if (lastClaimed === today && guestFreeBoxClaimed === 'true') {
+        setDailyFreeStatus({
+          canClaim: false,
+          remainingSlots: 0,
+          totalClaimsToday: 10,
+          userHasClaimedToday: true,
+          maxDailyClaims: 10
+        });
+      } else {
+        setDailyFreeStatus({
+          canClaim: true,
+          remainingSlots: 10,
+          totalClaimsToday: 0,
+          userHasClaimedToday: false,
+          maxDailyClaims: 10
+        });
+      }
+    }
 
     // Load advanced access permissions
     const savedAdvancedAccess = localStorage.getItem('hasAdvancedAccess');
@@ -151,7 +187,7 @@ const Vault = () => {
       localStorage.setItem('dailyHearts', dailyAmount.toString());
       localStorage.setItem('lastHeartReset', today);
     }
-  }, [user]);
+  }, [user, loading, isGuest]);
 
   const loadDailyFreeStatus = async (walletAddress: string) => {
     try {
@@ -181,9 +217,11 @@ const Vault = () => {
   }
 
   const handleOpenRandomBox = async (type: "free" | "paid", boxCost?: number) => {
-    // 실제 민팅이 필요한 경우 지갑 연결 필요
+    // Paid boxes require wallet connection for blockchain storage
     if (!isConnected && type === 'paid') {
-      toast.error('블록체인 저장을 위해 지갑을 연결하세요');
+      toast.error('💎 유료 박스는 블록체인 저장을 위해 지갑 연결이 필요합니다', {
+        description: '무료 박스는 게스트 모드에서도 사용 가능합니다 (로컬 저장)'
+      });
       navigate('/auth');
       return;
     }
@@ -191,17 +229,18 @@ const Vault = () => {
     // Random box opening logic
     if (type === 'free' && !dailyFreeStatus.canClaim) {
       if (dailyFreeStatus.userHasClaimedToday) {
-        toast.error('You have already opened a free box today.');
+        toast.error('오늘 이미 무료 박스를 받으셨습니다.');
       } else {
-        toast.error('Today\'s limited free boxes have been depleted.');
+        toast.error('오늘의 무료 박스가 모두 소진되었습니다.');
       }
       return;
     }
     
-    const cost = type === 'free' ? 0 : (boxCost || 0.15); // Based on SUI coins
-    const currentBalance = parseFloat(balance);
+    const cost = type === 'free' ? 0 : (boxCost || 0.15);
+    const currentBalance = isGuest ? suiCoins : parseFloat(balance);
+    
     if (type !== 'free' && currentBalance < cost) {
-      toast.error(`Insufficient SUI coins. Need ${cost} SUI, have ${balance} SUI`);
+      toast.error(`SUI 코인이 부족합니다. 필요: ${cost} SUI, 보유: ${currentBalance} SUI`);
       return;
     }
 
@@ -210,21 +249,36 @@ const Vault = () => {
     try {
       // Handle claim for free box
       if (type === 'free') {
-        const claimResult = await dailyFreeBoxService.claimFreeBox(walletAddress);
-        if (!claimResult.success) {
-          toast.error(claimResult.error || 'Failed to claim free box.');
-          setIsMinting(false);
-          return;
+        if (isGuest) {
+          // Guest mode: use local storage tracking
+          const today = new Date().toDateString();
+          localStorage.setItem('guestFreeBoxClaimed', 'true');
+          localStorage.setItem('guestLastFreeBoxDate', today);
+          
+          setDailyFreeStatus(prev => ({
+            ...prev,
+            userHasClaimedToday: true,
+            canClaim: false
+          }));
+          
+          toast.success('🎁 게스트 모드 무료 박스 개봉! (로컬 저장)');
+        } else {
+          // Authenticated: use blockchain tracking
+          const claimResult = await dailyFreeBoxService.claimFreeBox(walletAddress);
+          if (!claimResult.success) {
+            toast.error(claimResult.error || '무료 박스 받기에 실패했습니다.');
+            setIsMinting(false);
+            return;
+          }
+          
+          setDailyFreeStatus(prev => ({
+            ...prev,
+            userHasClaimedToday: true,
+            canClaim: false,
+            totalClaimsToday: claimResult.totalClaimsToday,
+            remainingSlots: claimResult.remainingSlots
+          }));
         }
-        
-        // Update status
-        setDailyFreeStatus(prev => ({
-          ...prev,
-          userHasClaimedToday: true,
-          canClaim: false,
-          totalClaimsToday: claimResult.totalClaimsToday,
-          remainingSlots: claimResult.remainingSlots
-        }));
       }
       // Grant advanced generation permission for ultra box
       if (type === 'paid' && cost >= 0.45) {
@@ -298,10 +352,17 @@ const Vault = () => {
       setPhotoCards(updatedCards);
       localStorage.setItem('photoCards', JSON.stringify(updatedCards));
 
-      // Note: SUI coin deduction happens automatically in blockchain transaction
-      // No need to manually update balance - it will refresh from blockchain
+      // Handle balance update
+      if (isGuest && type !== 'free') {
+        // Guest mode: update local balance
+        const newBalance = currentBalance - cost;
+        setSuiCoins(newBalance);
+        localStorage.setItem('guestWalletBalance', newBalance.toString());
+      }
+      // Authenticated mode: blockchain transaction handles balance automatically
 
-      toast.success(`🎉 Minted ${cardCount} photocards!`);
+      const modeText = isGuest ? ' (로컬 저장)' : ' (블록체인 저장)';
+      toast.success(`🎉 ${cardCount}개의 포토카드를 받았습니다!${modeText}`);
     } catch (error) {
       console.error('Photocard minting failed:', error);
       toast.error('Failed to mint photocards.');
@@ -349,7 +410,7 @@ const Vault = () => {
               🔗 {walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(38)}` : isGuest ? '게스트 모드' : 'Connecting wallet...'}
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
-              💰 {balance} SUI
+              💰 {isGuest ? `${suiCoins.toFixed(2)} SUI (로컬)` : `${balance} SUI`}
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
               ❤️ {fanHearts} Fan Hearts
@@ -444,7 +505,9 @@ const Vault = () => {
                     </div>
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
                       <span>Owned SUI Coins</span>
-                      <Badge variant="outline">{balance} 💰</Badge>
+                      <Badge variant="outline">
+                        {isGuest ? `${suiCoins.toFixed(2)} 💰 (로컬)` : `${balance} 💰`}
+                      </Badge>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-card/50 rounded-lg">
                       <span>Fan Heart Points</span>

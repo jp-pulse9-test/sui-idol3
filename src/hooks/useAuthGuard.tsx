@@ -14,5 +14,13 @@ export const useAuthGuard = (redirectTo: string = '/auth', requireWallet: boolea
     }
   }, [user, loading, navigate, redirectTo, requireWallet]);
 
-  return { user, loading, isAuthenticated: !!user, isGuest };
+  // Provide basic user info even in guest mode for compatibility
+  const guestUser = isGuest ? { id: 'guest', wallet_address: '' } : null;
+  
+  return { 
+    user: user || guestUser, 
+    loading, 
+    isAuthenticated: !!user, 
+    isGuest 
+  };
 };
