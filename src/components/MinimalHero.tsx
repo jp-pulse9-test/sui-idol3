@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MinimalHeroProps {
   onEnter: () => void;
 }
 
 export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
+  const { t } = useLanguage();
+  
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Background Video */}
@@ -25,16 +28,16 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
       <div className="relative z-10 text-center space-y-6 md:space-y-8 px-4">
         <div className="flex justify-center">
           <p className="text-xs sm:text-sm md:text-base text-primary font-orbitron tracking-widest uppercase typing-animation">
-            AIDOL 101 : DATA ALLY
+            {t('hero.tagline')}
           </p>
         </div>
         
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-bold tracking-wider text-foreground">
-          SIMKUNG
+          {t('hero.title')}
         </h1>
         
         <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-orbitron tracking-wide max-w-2xl mx-auto px-4">
-          Where digital consciousness awakens
+          {t('hero.subtitle')}
         </p>
         
         <Button
@@ -42,7 +45,7 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
           size="lg"
           className="mt-6 md:mt-8 px-10 py-5 md:px-12 md:py-6 text-base md:text-lg font-orbitron tracking-widest hover:scale-105 transition-transform touch-action-manipulation"
         >
-          ENTER
+          {t('hero.enter')}
         </Button>
       </div>
       
