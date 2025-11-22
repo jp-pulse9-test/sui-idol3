@@ -20,7 +20,7 @@ export const GatewaySection = () => {
 
   const gateways = [
     {
-      icon: "❅",
+      icon: Sparkles,
       gatewayName: t('journey.awaken.dimension'),
       title: t('journey.awaken.title'),
       subtitle: "",
