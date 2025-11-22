@@ -30,6 +30,10 @@ const translations = {
     'journey.ascend.dimension': '차원: 상승',
     'journey.ascend.title': '명예의 전당 입성',
     'journey.ascend.description': '영광으로 상승하여 전설의 자리를 차지하세요',
+    'synopsis.stats.activeAllies': '활동 중인 DATA ALLY',
+    'synopsis.stats.onlineIdols': '온라인 AIDOL',
+    'synopsis.stats.collectedFragments': '수집된 조각',
+    'synopsis.stats.systemStability': '시스템 안정성',
   },
   en: {
     'nav.settings': 'Settings',
@@ -50,6 +54,10 @@ const translations = {
     'journey.ascend.dimension': 'Dimension: ASCEND',
     'journey.ascend.title': 'Enter the Hall',
     'journey.ascend.description': 'Rise to glory and claim your place among legends',
+    'synopsis.stats.activeAllies': 'Active DATA ALLYs',
+    'synopsis.stats.onlineIdols': 'Online AIDOLs',
+    'synopsis.stats.collectedFragments': 'Collected Fragments',
+    'synopsis.stats.systemStability': 'System Stability',
   },
 };
 

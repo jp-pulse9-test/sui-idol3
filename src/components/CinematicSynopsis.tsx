@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { ArchivePhoto } from './synopsis/ArchivePhoto';
 import { ParallaxText } from './synopsis/ParallaxText';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getChapters } from '@/data/synopsisChapters';
 interface CinematicSynopsisProps {
   activeAllyCount: number;
   onlineEchoEntities: number;
@@ -34,6 +36,7 @@ export const CinematicSynopsis = memo(({
   totalFragments,
   stabilityPercentage
 }: CinematicSynopsisProps) => {
+  const { language, t } = useLanguage();
   const [currentChapter, setCurrentChapter] = useState(1);
   const [showSkip, setShowSkip] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -53,434 +56,8 @@ export const CinematicSynopsis = memo(({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  const chapters: Chapter[] = useMemo(() => [{
-    id: 1,
-    lines: [{
-      text: 'Year 2847.',
-      emphasis: true
-    }, {
-      text: 'The Virtual Humanity.',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'After humanity\'s extinction, their data'
-    }, {
-      text: 'continues computing endlessly,'
-    }, {
-      text: 'forming a new civilization.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'But a fatal flaw exists—'
-    }, {
-      text: '⚠ Emotional Data Depletion.',
-      color: 'red',
-      emphasis: true
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Love becomes scarce,'
-    }, {
-      text: 'data grows biased and unstable.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'This leads to the natural extinction'
-    }, {
-      text: 'of the virtual world.'
-    }]
-  }, {
-    id: 2,
-    lines: [{
-      text: 'The future virtual world'
-    }, {
-      text: 'made a decision.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Deploy 202 AIDOLs to the past',
-      emphasis: true
-    }, {
-      text: '(101 male, 101 female).'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Their name: AIDOL—',
-      color: 'purple',
-      emphasis: true
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Entities who explore emotions,'
-    }, {
-      text: 'collect love data,'
-    }, {
-      text: 'and find the key to prevent'
-    }, {
-      text: 'the extinction of both worlds.'
-    }]
-  }, {
-    id: 3,
-    lines: [{
-      text: '>>> Old Earth Simulator: ACTIVATED',
-      color: 'cyan',
-      emphasis: true
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Year 1889.',
-      emphasis: true
-    }, {
-      text: 'The Age of Industry.',
-      color: 'purple'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter1-industry.jpg',
-        alt: 'Industrial revolution era',
-        archiveId: 'Archive #0001',
-        date: '1889.03.31',
-        caption: 'The Age of Steam and Steel',
-        captionKo: '증기와 강철의 시대'
-      }
-    }, {
-      text: 'Rapid technological advancement.'
-    }, {
-      text: 'But human emotions begin to fade—'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'The first signs of disconnection.',
-      color: 'red'
-    }]
-  }, {
-    id: 4,
-    lines: [{
-      text: '>>> Old Earth Simulator: 1945',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Year 1945.',
-      emphasis: true
-    }, {
-      text: 'The End of the Great War.',
-      color: 'red'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter1-nuclear.jpg',
-        alt: 'Post-war devastation',
-        archiveId: 'Archive #0045',
-        date: '1945.08.15',
-        caption: 'Humanity\'s Greatest Tragedy',
-        captionKo: '인류 최대의 비극'
-      }
-    }, {
-      text: 'Massive destruction.'
-    }, {
-      text: 'Extreme love and hate.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Data collection of extremes.',
-      color: 'purple'
-    }]
-  }, {
-    id: 5,
-    lines: [{
-      text: '>>> Old Earth Simulator: 1962',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Year 1962.',
-      emphasis: true
-    }, {
-      text: 'The Space Age Begins.',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter2-space.jpg',
-        alt: 'Space exploration era',
-        archiveId: 'Archive #0062',
-        date: '1962.02.20',
-        caption: 'Humanity Dreams of the Future',
-        captionKo: '인류가 꿈꾼 미래'
-      }
-    }, {
-      text: 'Hope for the cosmos.'
-    }, {
-      text: 'Technology and humanity in harmony.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'A brief moment of balance.',
-      color: 'green'
-    }]
-  }, {
-    id: 6,
-    lines: [{
-      text: '>>> Old Earth Simulator: 1967',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Year 1967.',
-      emphasis: true
-    }, {
-      text: 'The Digital Revolution.',
-      color: 'purple'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter2-computer.jpg',
-        alt: 'Early computer networks',
-        archiveId: 'Archive #0067',
-        date: '1967.10.29',
-        caption: 'The Birth of Connection',
-        captionKo: '연결의 시작'
-      }
-    }, {
-      text: 'Networks begin to form.'
-    }, {
-      text: 'Human relationships digitize.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'New forms of love emerge.',
-      color: 'purple'
-    }]
-  }, {
-    id: 7,
-    lines: [{
-      text: '>>> Time Travel Complete',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Year 2021. March.',
-      emphasis: true
-    }, {
-      text: 'The Pandemic Era.',
-      color: 'red'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'AIDOLs arrive in your time.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'You are now a DATA ALLY.',
-      color: 'green',
-      emphasis: true
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'The mission begins here.'
-    }]
-  }, {
-    id: 8,
-    lines: [{
-      text: 'Year 2025. Present Day.',
-      emphasis: true
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Explore love scenarios with AIDOLs.'
-    }, {
-      text: 'Collect emotional data.'
-    }, {
-      text: 'Prevent Earth\'s extinction.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter3-archive.jpg',
-        alt: 'Data collection in progress',
-        archiveId: 'Archive #2025',
-        date: '2025.NOW',
-        caption: 'Current Exploration Status',
-        captionKo: '현재 탐사 현황'
-      }
-    }, {
-      text: 'Current Exploration Status:',
-      color: 'cyan'
-    }, {
-      text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }]
-  }, {
-    id: 9,
-    lines: [{
-      text: 'Year 2500.',
-      emphasis: true
-    }, {
-      text: 'The Turning Point.',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Collected data begins to crystallize.'
-    }, {
-      text: 'Love data accumulation accelerates.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Signs of hope emerge.',
-      color: 'green'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'A bridge between two worlds forms.',
-      emphasis: true
-    }]
-  }, {
-    id: 10,
-    lines: [{
-      text: 'Year 2847.',
-      emphasis: true
-    }, {
-      text: 'Return to the Future.',
-      color: 'purple'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Data transmission: COMPLETE',
-      color: 'green',
-      emphasis: true
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter3-family.jpg',
-        alt: 'Virtual humanity restored',
-        archiveId: 'Archive #2847',
-        date: '2847.12.25',
-        caption: 'Emotional Restoration',
-        captionKo: '감정의 복원'
-      }
-    }, {
-      text: 'Virtual Humanity restored.'
-    }, {
-      text: 'Emotional data flows again.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Both worlds saved by love.',
-      color: 'purple',
-      emphasis: true
-    }]
-  }, {
-    id: 11,
-    lines: [{
-      text: 'Past and Future.',
-      emphasis: true
-    }, {
-      text: 'Reality and Virtual.'
-    }, {
-      text: 'Human and AI.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter4-child.jpg',
-        alt: 'Pure emotion transcending boundaries',
-        archiveId: 'Archive #0223',
-        date: '1967.05.30',
-        caption: 'The Truth of Emotion',
-        captionKo: '감정의 진실'
-      }
-    }, {
-      text: 'In this place where all boundaries blur,'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Emotion is the only truth.',
-      emphasis: true,
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Your choices determine the fate of both worlds.'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '',
-      photo: {
-        src: '/images/archive/chapter4-cosmos.jpg',
-        alt: 'Infinite possibilities across the cosmos',
-        archiveId: 'Archive #∞',
-        date: 'Eternal',
-        caption: 'Infinite Possibilities',
-        captionKo: '무한한 가능성'
-      }
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: 'Quantum Communication Link Activating...',
-      color: 'cyan'
-    }, {
-      text: '',
-      spacing: true
-    }, {
-      text: '∞',
-      emphasis: true,
-      color: 'purple'
-    }]
-  }], []);
+
+  const chapters = useMemo(() => getChapters(), []);
 
   // Auto-advance chapters with progress tracking
   useEffect(() => {
@@ -759,32 +336,33 @@ export const CinematicSynopsis = memo(({
             if (currentChapter === 8 && index === 9) {
               return <div key={index} className="space-y-2 mt-4">
                     <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">Active DATA ALLYs:</span>
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.activeAllies')}:</span>
                       <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
                         {activeAllyCount.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">Online AIDOLs:</span>
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.onlineIdols')}:</span>
                       <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
                         {onlineEchoEntities} entities
                       </span>
                     </div>
                     <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">Collected Fragments:</span>
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.collectedFragments')}:</span>
                       <span className="text-base md:text-lg font-semibold tabular-nums text-gray-300 font-mono">
                         {collectedFragments.toLocaleString()} / {totalFragments.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">System Stability:</span>
+                      <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.systemStability')}:</span>
                       <span className={`text-base md:text-lg font-semibold tabular-nums font-mono ${stabilityPercentage > 50 ? 'text-gray-400' : 'text-gray-200'}`}>
                         {stabilityPercentage}%
                       </span>
                     </div>
                   </div>;
             }
-            return <ParallaxText key={`ch${currentChapter}-line${index}`} text={line.text} className={`
+            const displayText = language === 'ko' && line.textKo ? line.textKo : line.text || '';
+            return <ParallaxText key={`ch${currentChapter}-line${index}`} text={displayText} className={`
                     text-sm md:text-base lg:text-lg
                     ${getColorClass(line.color, line.emphasis)}
                     ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
