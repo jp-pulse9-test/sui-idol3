@@ -34,18 +34,18 @@ export const GatewayCard = ({
       )}
     >
       {/* Gateway Label */}
-      <div className="text-xs md:text-sm font-orbitron text-primary/60 group-hover:text-primary transition-colors tracking-wider uppercase">
+      <div className="text-xs md:text-sm font-orbitron text-accent/70 group-hover:text-accent transition-colors tracking-wider uppercase">
         {gatewayName}
       </div>
       
       {/* Icon */}
-      <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full border border-border/50 group-hover:border-primary/50 group-hover:bg-primary/5 transition-all duration-300">
-        <Icon className="w-7 h-7 md:w-8 md:h-8 text-muted-foreground group-hover:text-primary transition-colors" />
+      <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full border border-accent/30 group-hover:border-accent/60 group-hover:bg-accent/10 transition-all duration-300">
+        <Icon className="w-7 h-7 md:w-8 md:h-8 text-muted-foreground group-hover:text-accent transition-colors" />
       </div>
       
       {/* Content */}
       <div className="flex-1 flex flex-col gap-2">
-        <h3 className="text-xl md:text-2xl font-orbitron font-bold text-foreground group-hover:text-primary transition-colors">
+        <h3 className="text-xl md:text-2xl font-orbitron font-bold text-foreground group-hover:text-accent transition-colors">
           {title}
         </h3>
         {subtitle && (
@@ -59,7 +59,7 @@ export const GatewayCard = ({
       </div>
       
       {/* Hover effect line */}
-      <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-primary to-primary/50 group-hover:w-full transition-all duration-500" />
+      <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-accent to-accent/50 group-hover:w-full transition-all duration-500" />
     </button>
   );
 };
