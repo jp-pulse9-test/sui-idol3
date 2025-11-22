@@ -32,7 +32,7 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
       {/* Content */}
       <div className="relative z-10 text-center space-y-6 md:space-y-8 px-4">
         <div className="flex justify-center">
-          <p className="text-xs sm:text-sm md:text-base text-primary font-orbitron tracking-widest uppercase typing-effect">
+          <p className="text-xs sm:text-sm md:text-base text-accent font-orbitron tracking-widest uppercase typing-effect">
             {t('hero.tagline')}
           </p>
         </div>
