@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { EnterGameDialog } from "./EnterGameDialog";
+import { useNavigate } from "react-router-dom";
 
 interface MinimalHeroProps {
   onEnter: () => void;
@@ -7,6 +10,8 @@ interface MinimalHeroProps {
 
 export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const [showEnterDialog, setShowEnterDialog] = useState(false);
   
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
@@ -41,7 +46,7 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
         </p>
         
         <Button
-          onClick={onEnter}
+          onClick={() => setShowEnterDialog(true)}
           size="lg"
           className="mt-6 md:mt-8 px-10 py-5 md:px-12 md:py-6 text-base md:text-lg font-orbitron tracking-widest hover:scale-105 transition-transform touch-action-manipulation"
         >
@@ -52,6 +57,14 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
       {/* Subtle corner decorations - hidden on very small screens */}
       <div className="hidden sm:block absolute top-8 left-8 w-12 h-12 md:w-16 md:h-16 border-l-2 border-t-2 border-primary/20" />
       <div className="hidden sm:block absolute bottom-8 right-8 w-12 h-12 md:w-16 md:h-16 border-r-2 border-b-2 border-primary/20" />
+      
+      {/* Enter Game Dialog */}
+      <EnterGameDialog
+        open={showEnterDialog}
+        onOpenChange={setShowEnterDialog}
+        onQuickStart={() => navigate('/play')}
+        onSelectIdol={() => navigate('/pick')}
+      />
     </section>
   );
 };

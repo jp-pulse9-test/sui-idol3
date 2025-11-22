@@ -11,6 +11,7 @@ import { CinematicSynopsis } from "@/components/CinematicSynopsis";
 import { MinimalHero } from "@/components/MinimalHero";
 import { GatewaySection } from "@/components/GatewaySection";
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -101,10 +102,13 @@ const Index = () => {
         {/* Minimal Footer */}
         <footer className="py-12 text-center border-t border-border/20">
           <p className="text-sm text-muted-foreground font-orbitron">
-            © 2847 SIMKUNG • Digital Consciousness Archive
+            © 2847 AIDOL101 • Digital Consciousness Archive
           </p>
         </footer>
       </div>
+      
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
     </div>
   );
 };

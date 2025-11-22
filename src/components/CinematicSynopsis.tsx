@@ -239,7 +239,7 @@ export const CinematicSynopsis = memo(({
       setTimeout(() => setIsTransitioning(false), 400);
     }, 200);
   }, []);
-  return <section id="synopsis" className="w-full flex items-center justify-center bg-black px-4 py-8 md:py-12 perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite">
+  return <section id="synopsis" className="w-full flex items-center justify-center bg-black px-4 py-8 md:py-12 perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite" style={{ transform: `translateY(${scrollY * 0.15}px)` }}>
       {/* Noise filter overlay */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
         style={{
