@@ -13,6 +13,7 @@ import { branchService } from "@/services/branchService";
 import type { Branch, SalvationMission, BranchProgress, VRI } from "@/types/branch";
 import StoryGameModalEnhanced from "@/components/StoryGameModalEnhanced";
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getScenesByMissionId } from '@/data/missionScenes';
 
 const Play = () => {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ const Play = () => {
   const [selectedMission, setSelectedMission] = useState<SalvationMission | null>(null);
   const [daysUntil2028, setDaysUntil2028] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [currentEpisode, setCurrentEpisode] = useState<any | null>(null);
+  const [selectedIdolForStory, setSelectedIdolForStory] = useState<any | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('selectedIdol');
@@ -129,7 +132,39 @@ const Play = () => {
       toast.info(t('play.mission.alreadyCompleted'));
       return;
     }
-    setSelectedMission(mission);
+
+    // Get scenes for this mission
+    const scenes = getScenesByMissionId(mission.id);
+    
+    if (scenes.length === 0) {
+      toast.error('This mission story is not yet available');
+      return;
+    }
+
+    // Convert SalvationMission to StoryEpisode format
+    const episode = {
+      id: mission.id,
+      title: language === 'en' ? mission.titleEn : mission.title,
+      description: language === 'en' ? mission.descriptionEn : mission.description,
+      category: mission.valueType,
+      difficulty: selectedBranch?.difficulty || 'normal',
+      turns: scenes.length,
+      unlocked: !mission.isCompleted,
+      completed: mission.isCompleted,
+      scenes: scenes
+    };
+
+    // Create idol data for story
+    const idol = {
+      id: selectedIdol?.id || 1,
+      name: selectedIdol?.name || 'Idol',
+      personality: selectedIdol?.personality || 'friendly',
+      image: selectedIdol?.profile_image || '/placeholder.svg',
+      persona_prompt: selectedIdol?.persona_prompt || ''
+    };
+
+    setCurrentEpisode(episode);
+    setSelectedIdolForStory(idol);
   };
 
   const handleSaveProgress = async () => {
@@ -433,26 +468,75 @@ const Play = () => {
         </div>
       </div>
 
-      {/* Placeholder for Future Mission Modal */}
-      {selectedMission && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setSelectedMission(null)}>
-          <Card className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
-            <CardHeader>
-              <CardTitle>{getLocalizedMissionTitle(selectedMission)}</CardTitle>
-              <CardDescription>{getLocalizedMissionDescription(selectedMission)}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground">
-                {t('play.modal.placeholder')}
-              </p>
-              <div className="flex gap-2">
-                <Button onClick={() => setSelectedMission(null)} className="flex-1">
-                  {t('play.modal.close')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Story Game Modal */}
+      {currentEpisode && selectedIdolForStory && (
+        <StoryGameModalEnhanced
+          episode={currentEpisode}
+          selectedIdol={selectedIdolForStory}
+          isOpen={true}
+          onClose={() => {
+            setCurrentEpisode(null);
+            setSelectedIdolForStory(null);
+          }}
+          onComplete={(memoryCard) => {
+            console.log('Mission completed!', memoryCard);
+            
+            // Update VRI
+            const vriReward = selectedMission?.vriReward || 0;
+            const valueType = selectedMission?.valueType;
+            
+            if (valueType && userId) {
+              // Update VRI in state
+              const newVRI = {
+                ...userVRI,
+                [valueType]: userVRI[valueType] + vriReward,
+                total: userVRI.total + vriReward
+              };
+              
+              setUserVRI(newVRI);
+              
+              // Update mission completion
+              if (selectedMission && selectedBranch) {
+                const currentProgress = getBranchProgressData(selectedBranch.id);
+                const completedMissions = currentProgress?.completedMissions || [];
+                
+                if (!completedMissions.includes(selectedMission.id)) {
+                  const updatedProgress = branchProgress.map(p => 
+                    p.branchId === selectedBranch.id
+                      ? { ...p, completedMissions: [...p.completedMissions, selectedMission.id], currentVRI: p.currentVRI + vriReward }
+                      : p
+                  );
+                  
+                  // If no existing progress for this branch, create it
+                  if (!currentProgress) {
+                    updatedProgress.push({
+                      branchId: selectedBranch.id,
+                      currentVRI: vriReward,
+                      maxVRI: selectedBranch.maxVRI || 1000,
+                      completedMissions: [selectedMission.id],
+                      isCleared: false,
+                      lastPlayedAt: new Date()
+                    });
+                  }
+                  
+                  setBranchProgress(updatedProgress);
+                  
+                  // Save to localStorage for guest mode
+                  if (!userId) {
+                    localStorage.setItem('guestProgress', JSON.stringify(updatedProgress));
+                    localStorage.setItem('guestVRI', JSON.stringify(newVRI));
+                  }
+                }
+              }
+
+              toast.success(`Mission completed! +${vriReward} VRI earned`);
+            }
+
+            setCurrentEpisode(null);
+            setSelectedIdolForStory(null);
+            setSelectedMission(null);
+          }}
+        />
       )}
     </div>
   );
