@@ -23,7 +23,7 @@ export const EnterGameDialog = ({
       <DialogContent className="max-w-lg bg-background/95 backdrop-blur-lg border-primary/30">
         <DialogHeader>
           <DialogTitle className="text-xl md:text-2xl font-orbitron text-white">
-            🌍 {t('enterDialog.title')}
+            {t('enterDialog.title')}
           </DialogTitle>
           <DialogDescription className="text-sm md:text-base text-muted-foreground font-orbitron">
             {t('enterDialog.subtitle')}
