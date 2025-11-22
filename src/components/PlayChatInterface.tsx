@@ -322,7 +322,7 @@ export const PlayChatInterface = () => {
       case 'system':
         return (
           <div key={index} className="retro-terminal-box mb-3 animate-fade-in">
-            <p className="text-teal-600 font-mono text-sm retro-text-glow">
+            <p className="font-mono text-sm" style={{ color: 'var(--terminal-green)' }}>
               <span className="text-emerald-600">SYSTEM:</span>{' '}
               {isTypingEffect && index === currentTypingIndex ? typingText : msg.content}
               {isTypingEffect && index === currentTypingIndex && (
@@ -335,7 +335,7 @@ export const PlayChatInterface = () => {
       case 'branch-select':
         return (
           <div key={index} className="retro-terminal-box mb-3">
-            <p className="text-teal-600 font-mono text-sm mb-3 retro-text-glow">타임라인 선택:</p>
+            <p className="font-mono text-sm mb-3" style={{ color: 'var(--terminal-green)' }}>타임라인 선택:</p>
             <div className="space-y-2">
               {msg.branches.map((branch) => (
                 <button
@@ -345,9 +345,10 @@ export const PlayChatInterface = () => {
                   className={`w-full text-left px-4 py-3 border transition-all font-mono text-sm
                     ${
                       branch.isUnlocked
-                        ? 'border-emerald-600/30 hover:border-emerald-600 hover:bg-emerald-900/20 text-green-600'
+                        ? 'border-emerald-600/30 hover:border-emerald-600 hover:bg-emerald-900/20'
                         : 'border-gray-700 text-gray-600 cursor-not-allowed'
                     }`}
+                  style={branch.isUnlocked ? { color: 'var(--terminal-green)' } : {}}
                 >
                   <div className="flex items-center justify-between">
                     <span>
@@ -366,7 +367,7 @@ export const PlayChatInterface = () => {
       case 'mission-select':
         return (
           <div key={index} className="retro-terminal-box mb-3">
-            <p className="text-teal-600 font-mono text-sm mb-3 retro-text-glow">미션 선택:</p>
+            <p className="font-mono text-sm mb-3" style={{ color: 'var(--terminal-green)' }}>미션 선택:</p>
             <div className="space-y-2">
               {msg.missions.map((mission) => (
                 <button
@@ -375,14 +376,15 @@ export const PlayChatInterface = () => {
                   className="w-full text-left px-4 py-3 border border-emerald-600/30 
                            hover:border-emerald-600 hover:bg-emerald-900/20 
                            transition-all font-mono text-sm"
+                  style={{ color: 'var(--terminal-green)' }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-green-600">
+                    <span>
                       <span className="text-emerald-600">▶</span> {mission.title}
                     </span>
                     <div className="flex gap-2 items-center">
                       <span className="text-emerald-500/50 text-xs">{mission.difficulty}</span>
-                      <span className="text-teal-600 text-xs">+{mission.vriReward} VRI</span>
+                      <span className="text-xs" style={{ color: 'var(--terminal-green)' }}>+{mission.vriReward} VRI</span>
                     </div>
                   </div>
                 </button>
@@ -391,7 +393,8 @@ export const PlayChatInterface = () => {
             <button
               onClick={handleBackToBranch}
               className="w-full mt-3 px-4 py-2 border border-gray-600 text-gray-400 
-                       hover:border-emerald-600 hover:text-green-600 font-mono text-xs"
+                       hover:border-emerald-600 font-mono text-xs"
+              style={{ color: 'var(--terminal-green)' }}
             >
               ← 타임라인 선택으로
             </button>
@@ -401,7 +404,7 @@ export const PlayChatInterface = () => {
       case 'user':
         return (
           <div key={index} className="retro-terminal-box bg-emerald-900/10 ml-12 mb-3">
-            <p className="text-green-600 font-mono text-sm">{msg.content}</p>
+            <p className="font-mono text-sm" style={{ color: 'var(--terminal-green)' }}>{msg.content}</p>
           </div>
         );
 
@@ -418,7 +421,7 @@ export const PlayChatInterface = () => {
               )}
               <div className="flex-1">
                 <p className="text-emerald-600 font-mono text-xs mb-1">{selectedIdol?.name || '아이돌'}</p>
-                <p className="text-emerald-500 font-mono text-sm leading-relaxed retro-text-glow">
+                <p className="font-mono text-sm leading-relaxed" style={{ color: 'var(--terminal-green)' }}>
                   {isTypingEffect && index === currentTypingIndex ? typingText : msg.content}
                   {isTypingEffect && index === currentTypingIndex && (
                     <span className="typing-cursor">▋</span>
