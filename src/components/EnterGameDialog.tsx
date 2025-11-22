@@ -34,7 +34,7 @@ export const EnterGameDialog = ({
           {/* Quick Start */}
           <Button
             onClick={onQuickStart}
-            className="w-full h-auto py-4 flex items-center justify-start gap-3 md:gap-4 px-4 md:px-6 bg-black border-2 border-accent hover:bg-accent/10 group"
+            className="w-full h-auto py-4 flex items-center justify-start gap-3 md:gap-4 px-4 md:px-6 bg-black border-2 border-accent hover:bg-accent/10 group text-white"
           >
             <Zap className="w-6 h-6 md:w-8 md:h-8 flex-shrink-0 group-hover:scale-110 transition-transform text-accent" />
             <div className="text-left flex-1 min-w-0">
