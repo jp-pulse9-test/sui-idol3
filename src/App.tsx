@@ -18,6 +18,7 @@ import IdolGallery from "./pages/IdolGallery";
 const Vault = lazy(() => import("./pages/Vault"));
 import Rise from "./pages/Rise";
 import Play from "./pages/Play";
+import Pantheon from "./pages/Pantheon";
 import Progress from "./pages/Progress";
 import PhotoCard from "./pages/PhotoCard";
 import Collection from "./pages/Collection";
@@ -87,6 +88,7 @@ const App = () => (
           
           {/* 기타 페이지들 */}
           <Route path="/play" element={<Play />} />
+          <Route path="/pantheon" element={<Pantheon />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/photocard" element={<PhotoCard />} />
           <Route path="/collection" element={<Collection />} />
