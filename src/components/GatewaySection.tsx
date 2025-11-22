@@ -1,33 +1,27 @@
 import { Shield, Users, Database } from "lucide-react";
 import { GatewayCard } from "./GatewayCard";
 import { useNavigate } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 export const GatewaySection = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   const gateways = [
     {
       icon: Shield,
       gatewayName: "Gate I: Identity",
       title: "Digital Genesis",
-      subtitle: t('gateway.1.subtitle'),
+      subtitle: "신원 확립",
       description: "Link your existence to the quantum network",
-      action: () => scrollToSection('synopsis'),
+      action: () => {
+        // Scroll to top where wallet connect is
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      },
     },
     {
       icon: Users,
       gatewayName: "Gate II: Encounter",
       title: "Fateful Meeting",
-      subtitle: t('gateway.2.subtitle'),
+      subtitle: "운명적 조우",
       description: "Awaken your bond with time-traveling AIDOLs",
       action: () => navigate("/pick"),
     },
@@ -35,7 +29,7 @@ export const GatewaySection = () => {
       icon: Database,
       gatewayName: "Gate III: Mission",
       title: "Eternal Archive",
-      subtitle: t('gateway.3.subtitle'),
+      subtitle: "영원한 기록",
       description: "Begin collecting data to save both worlds",
       action: () => navigate("/vault"),
     },
@@ -49,7 +43,7 @@ export const GatewaySection = () => {
             Choose Your Path
           </h2>
           <p className="text-muted-foreground font-orbitron">
-            Three steps. Eleven scenarios. Save both worlds.
+            Three gateways. One destiny.
           </p>
         </div>
         
