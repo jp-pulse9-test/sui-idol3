@@ -37,7 +37,7 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
           </p>
         </div>
         
-        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-bold tracking-wider gradient-text-neon-pink">
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-bold tracking-wider text-foreground">
           {t('hero.title')}
         </h1>
         
