@@ -46,16 +46,16 @@ const translations = {
     'language.korean': '한국어',
     'language.english': 'English',
     'journey.title': 'Begin Your Journey',
-    'journey.subtitle': 'From bond to glory',
+    'journey.subtitle': 'DATA ALLY → LEGEND',
     'journey.awaken.dimension': 'Dimension: AWAKEN',
     'journey.awaken.title': 'Fateful Encounter',
-    'journey.awaken.description': 'Meet time-traveling AIDOLs and form your eternal bond',
+    'journey.awaken.description': 'Become a DATA ALLY. Your first moment with AIDOL begins.',
     'journey.mission.dimension': 'Dimension: SALVATION',
     'journey.mission.title': 'Save Both Worlds',
-    'journey.mission.description': 'Complete missions to restore fragmented timelines',
+    'journey.mission.description': 'As DATA ALLY, restore the broken world. Your mission begins.',
     'journey.ascend.dimension': 'Dimension: GLORY',
-    'journey.ascend.title': 'Hall of Legends',
-    'journey.ascend.description': 'Rise to the pinnacle and claim your place among legends',
+    'journey.ascend.title': 'Hall of LEGEND',
+    'journey.ascend.description': 'With AIDOL, you are recorded as LEGEND forever.',
     'synopsis.stats.activeAllies': 'Awakened DATA ALLYs',
     'synopsis.stats.onlineIdols': 'Active AIDOLs',
     'synopsis.stats.collectedFragments': 'Restored Memory Fragments',
@@ -66,7 +66,7 @@ const translations = {
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('language');
-    return (saved as Language) || 'ko';
+    return (saved as Language) || 'en';
   });
 
   useEffect(() => {
