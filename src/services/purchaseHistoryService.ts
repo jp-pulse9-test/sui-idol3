@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { rewardPoolUpdateService } from './rewardPoolUpdateService';
 
 export interface PurchaseRecord {
   purchase_type: 'random_box' | 'fan_hearts' | 'photocard_key';
@@ -33,6 +34,11 @@ export const purchaseHistoryService = {
 
     if (error) {
       console.error('Failed to record purchase:', error);
+    } else {
+      // Update participant scores in active reward pools
+      await rewardPoolUpdateService.updateParticipantScore('purchase', {
+        purchaseAmount: purchase.amount_sui
+      });
     }
   },
 

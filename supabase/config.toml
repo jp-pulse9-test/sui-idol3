@@ -1,5 +1,8 @@
 project_id = "lylblbckiwabbnjasahu"
 
+[functions.update-participant-score]
+verify_jwt = false
+
 [functions.generate-batch-idols]
 verify_jwt = false
 

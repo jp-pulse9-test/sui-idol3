@@ -1,6 +1,7 @@
 import { Branch, BranchProgress, SalvationPortfolio, VRI, HopeShard } from '@/types/branch';
 import { BRANCHES, getUnlockedBranches, getBranchById } from '@/data/branches';
 import { SALVATION_MISSIONS, getMissionsByBranch, getMissionById } from '@/data/salvationMissions';
+import { rewardPoolUpdateService } from './rewardPoolUpdateService';
 
 /**
  * 브랜치 관리 서비스
@@ -148,6 +149,15 @@ class BranchService {
 
     // VRI 업데이트
     portfolio.vri = this.calculateTotalVRI(portfolio.branches);
+
+    // Update reward pool participant scores
+    rewardPoolUpdateService.updateParticipantScore('vri_update', {
+      vriIncrease: mission.vriReward
+    });
+
+    rewardPoolUpdateService.updateParticipantScore('mission_complete', {
+      missionId
+    });
 
     // 희망의 파편 생성
     let hopeShard: HopeShard | null = null;
