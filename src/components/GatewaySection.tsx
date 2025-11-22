@@ -1,33 +1,35 @@
 import { Sparkles, Target, Trophy } from "lucide-react";
 import { GatewayCard } from "./GatewayCard";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const GatewaySection = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const gateways = [
     {
       icon: Sparkles,
-      gatewayName: "Dimension: AWAKEN",
-      title: "Choose Your AIDOL",
-      subtitle: "아이돌 선택",
-      description: "Meet time-traveling AIDOLs and form your eternal bond",
+      gatewayName: t('journey.awaken.dimension'),
+      title: t('journey.awaken.title'),
+      subtitle: "",
+      description: t('journey.awaken.description'),
       action: () => navigate("/pick"),
     },
     {
       icon: Target,
-      gatewayName: "Dimension: MISSION",
-      title: "Save Both Worlds",
-      subtitle: "세계 구원",
-      description: "Complete salvation missions across fragmented timelines",
+      gatewayName: t('journey.mission.dimension'),
+      title: t('journey.mission.title'),
+      subtitle: "",
+      description: t('journey.mission.description'),
       action: () => navigate("/play"),
     },
     {
       icon: Trophy,
-      gatewayName: "Dimension: ASCEND",
-      title: "Enter the Hall",
-      subtitle: "명예의 전당",
-      description: "Rise to glory and claim your place among legends",
+      gatewayName: t('journey.ascend.dimension'),
+      title: t('journey.ascend.title'),
+      subtitle: "",
+      description: t('journey.ascend.description'),
       action: () => navigate("/pantheon"),
     },
   ];
@@ -37,10 +39,10 @@ export const GatewaySection = () => {
       <div className="max-w-6xl w-full">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-orbitron font-bold mb-4 text-foreground">
-            Begin Your Journey
+            {t('journey.title')}
           </h2>
           <p className="text-muted-foreground font-orbitron">
-            From bond to glory
+            {t('journey.subtitle')}
           </p>
         </div>
         
