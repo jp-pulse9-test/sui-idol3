@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,7 +12,7 @@ import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { Marketplace } from "@/components/ui/marketplace";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { IdolPhotocardGenerator } from "@/components/IdolPhotocardGenerator";
-import { Heart } from "lucide-react";
+import { Heart, Lock } from "lucide-react";
 import { usePhotoCardMinting } from "@/services/photocardMintingSimple";
 import { useWallet } from "@/hooks/useWallet";
 import { dailyFreeBoxService } from "@/services/dailyFreeBoxService";
@@ -45,7 +45,7 @@ interface PhotoCard {
 
 const Vault = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuthGuard('/', true);
+  const { user, loading, isGuest } = useAuthGuard('/', false);
   const { mintPhotoCard } = usePhotoCardMinting();
   const { isConnected, walletAddress: currentWalletAddress, balance } = useWallet();
 
@@ -179,12 +179,15 @@ const Vault = () => {
       </div>
     );
   }
-  
-  if (!user) {
-    return null;
-  }
 
   const handleOpenRandomBox = async (type: "free" | "paid", boxCost?: number) => {
+    // 실제 민팅이 필요한 경우 지갑 연결 필요
+    if (!isConnected && type === 'paid') {
+      toast.error('블록체인 저장을 위해 지갑을 연결하세요');
+      navigate('/auth');
+      return;
+    }
+
     // Random box opening logic
     if (type === 'free' && !dailyFreeStatus.canClaim) {
       if (dailyFreeStatus.userHasClaimedToday) {
@@ -199,11 +202,6 @@ const Vault = () => {
     const currentBalance = parseFloat(balance);
     if (type !== 'free' && currentBalance < cost) {
       toast.error(`Insufficient SUI coins. Need ${cost} SUI, have ${balance} SUI`);
-      return;
-    }
-
-    if (!isConnected) {
-      toast.error('Please connect your wallet first!');
       return;
     }
 
@@ -326,9 +324,29 @@ const Vault = () => {
           <p className="text-xl text-muted-foreground">
             {selectedIdol ? `Photocard collection journey with ${selectedIdol.name}` : 'Photocard collection journey'}
           </p>
+          {isGuest && (
+            <Card className="max-w-2xl mx-auto mt-4 border-primary/50 bg-primary/5">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="font-medium">게스트 모드</p>
+                      <p className="text-sm text-muted-foreground">
+                        지갑을 연결하면 블록체인 저장, NFT 민팅, 마켓플레이스를 이용할 수 있습니다
+                      </p>
+                    </div>
+                  </div>
+                  <Button onClick={() => navigate('/auth')} variant="default">
+                    지갑 연결
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
           <div className="flex items-center justify-center gap-4">
             <Badge variant="outline" className="px-4 py-2">
-              🔗 {walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(38)}` : 'Connecting wallet...'}
+              🔗 {walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(38)}` : isGuest ? '게스트 모드' : 'Connecting wallet...'}
             </Badge>
             <Badge variant="secondary" className="px-4 py-2">
               💰 {balance} SUI

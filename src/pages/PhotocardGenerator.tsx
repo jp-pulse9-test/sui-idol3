@@ -13,8 +13,8 @@ import { ArrowLeft, Camera, Key, Lock, Unlock, Zap, Image, Upload, Palette, Down
 
 const PhotocardGenerator = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { isAuthenticated, loading: authLoading } = useAuthGuard();
+  const { user, isGuest } = useAuth();
+  const { loading: authLoading } = useAuthGuard();
   
   const [hasAccess, setHasAccess] = useState(false);
   const [activeKey, setActiveKey] = useState<PhotocardKey | null>(null);
@@ -22,10 +22,10 @@ const PhotocardGenerator = () => {
   const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (user?.wallet_address) {
       checkAccess();
     }
-  }, [isAuthenticated, user]);
+  }, [user]);
 
   const checkAccess = async () => {
     if (!user?.wallet_address) return;
@@ -73,28 +73,7 @@ const PhotocardGenerator = () => {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5" />
-              접근 권한 필요
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground">
-              포토카드 생성 기능을 사용하려면 지갑 연결이 필요합니다.
-            </p>
-            <Button onClick={() => navigate('/auth')} className="w-full">
-              지갑 연결하기
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // 게스트는 미리보기 모드로 접근 가능
 
   return (
     <div className="min-h-screen bg-gradient-background">
@@ -121,33 +100,69 @@ const PhotocardGenerator = () => {
               </div>
             </div>
             
-            {hasAccess && activeKey && (
-              <div className="flex items-center gap-2">
-                <Badge variant="default" className="flex items-center gap-1">
-                  <Unlock className="w-3 h-3" />
-                  접근 허용
+            <div className="flex items-center gap-2">
+              {isGuest ? (
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <Lock className="w-3 h-3" />
+                  미리보기 모드
                 </Badge>
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  {activeKey.is_unlimited ? (
-                    <>
-                      <Key className="w-3 h-3" />
-                      무제한
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-3 h-3" />
-                      {activeKey.remaining_credits} 크레딧
-                    </>
-                  )}
-                </Badge>
-              </div>
-            )}
+              ) : hasAccess && activeKey ? (
+                <>
+                  <Badge variant="default" className="flex items-center gap-1">
+                    <Unlock className="w-3 h-3" />
+                    접근 허용
+                  </Badge>
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    {activeKey.is_unlimited ? (
+                      <>
+                        <Key className="w-3 h-3" />
+                        무제한
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-3 h-3" />
+                        {activeKey.remaining_credits} 크레딧
+                      </>
+                    )}
+                  </Badge>
+                </>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {!hasAccess ? (
+        {isGuest ? (
+          // 게스트 모드 - 미리보기
+          <div className="space-y-6">
+            <Card className="border-primary/50 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lock className="w-5 h-5" />
+                  미리보기 모드
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  포토카드 생성 기능을 체험해보세요. 실제로 생성하려면 지갑을 연결하고 시리얼 키를 활성화해야 합니다.
+                </p>
+                <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+                  <p className="font-medium">지갑 연결 시 혜택:</p>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    <li>✅ NFT 포토카드 실제 생성</li>
+                    <li>✅ 블록체인 저장 및 소유권 증명</li>
+                    <li>✅ 마켓플레이스 거래 가능</li>
+                    <li>✅ 크로스 디바이스 동기화</li>
+                  </ul>
+                </div>
+                <Button onClick={() => navigate('/auth')} className="w-full">
+                  지갑 연결하기
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        ) : !hasAccess ? (
           // 권한 없음 - 키 관리 화면
           <div className="space-y-6">
             <Card className="border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800">
