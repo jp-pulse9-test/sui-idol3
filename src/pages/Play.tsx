@@ -11,7 +11,7 @@ import { BRANCHES } from "@/data/branches";
 import { getMissionsByBranch } from "@/data/salvationMissions";
 import { branchService } from "@/services/branchService";
 import type { Branch, SalvationMission, BranchProgress, VRI } from "@/types/branch";
-import StoryGameModalEnhanced from "@/components/StoryGameModalEnhanced";
+import EpisodeGameModal from "@/components/EpisodeGameModal";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getScenesByMissionId } from '@/data/missionScenes';
 
@@ -468,18 +468,18 @@ const Play = () => {
         </div>
       </div>
 
-      {/* Story Game Modal */}
+      {/* Episode Game Modal */}
       {currentEpisode && selectedIdolForStory && (
-        <StoryGameModalEnhanced
+        <EpisodeGameModal
           episode={currentEpisode}
-          selectedIdol={selectedIdolForStory}
+          idol={selectedIdolForStory}
           isOpen={true}
           onClose={() => {
             setCurrentEpisode(null);
             setSelectedIdolForStory(null);
           }}
-          onComplete={(memoryCard) => {
-            console.log('Mission completed!', memoryCard);
+          onComplete={(result) => {
+            console.log('Episode completed!', result);
             
             // Update VRI
             const vriReward = selectedMission?.vriReward || 0;
@@ -529,7 +529,7 @@ const Play = () => {
                 }
               }
 
-              toast.success(`Mission completed! +${vriReward} VRI earned`);
+              toast.success(`Episode completed! +${vriReward} VRI earned. ${result.memoryCards} memory cards created!`);
             }
 
             setCurrentEpisode(null);

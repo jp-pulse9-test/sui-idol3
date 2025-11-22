@@ -23,3 +23,9 @@ verify_jwt = false
 
 [functions.generate-profile-cards]
 verify_jwt = false
+
+[functions.episode-story-chat]
+verify_jwt = false
+
+[functions.generate-scene-image]
+verify_jwt = false
