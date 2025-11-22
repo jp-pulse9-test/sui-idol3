@@ -499,17 +499,26 @@ export const PlayChatInterface = () => {
                 {/* 선택지 버튼 */}
                 {parsed && parsed.choices.length > 0 && !isTypingEffect && (
                   <div className="mt-4 space-y-2">
-                    <p className="text-emerald-600/70 font-mono text-xs mb-2">[선택지]</p>
+                    <p className="text-emerald-600/70 font-mono text-xs mb-2 animate-fade-in">[선택지]</p>
                     {parsed.choices.map((choice, choiceIdx) => (
                       <button
                         key={choiceIdx}
                         onClick={() => handleChoiceSelect(choice, choiceIdx + 1)}
                         disabled={isEpisodeLoading}
                         className="w-full text-left px-4 py-3 border border-emerald-600/30 
-                                 hover:border-emerald-600 hover:bg-emerald-900/30 
-                                 transition-all font-mono text-sm
-                                 disabled:opacity-50 disabled:cursor-not-allowed"
-                        style={{ color: 'var(--terminal-green)' }}
+                                 hover:border-emerald-600 hover:bg-emerald-900/30 hover:scale-[1.02]
+                                 hover:shadow-lg hover:shadow-emerald-600/20
+                                 transition-all duration-300 font-mono text-sm
+                                 disabled:opacity-50 disabled:cursor-not-allowed
+                                 animate-fade-in relative overflow-hidden
+                                 before:absolute before:inset-0 before:bg-gradient-to-r 
+                                 before:from-transparent before:via-emerald-500/10 before:to-transparent
+                                 before:translate-x-[-100%] hover:before:translate-x-[100%]
+                                 before:transition-transform before:duration-700"
+                        style={{ 
+                          color: 'var(--terminal-green)',
+                          animationDelay: `${choiceIdx * 0.1}s`
+                        }}
                       >
                         <span className="text-emerald-600">{choiceIdx + 1}️⃣</span> {choice}
                       </button>
@@ -520,9 +529,18 @@ export const PlayChatInterface = () => {
                       onClick={handleUseFreeInputTicket}
                       disabled={isEpisodeLoading || tickets === 0 || isFreeInputMode}
                       className="w-full px-4 py-2 border border-purple-600/50 
-                               hover:border-purple-600 hover:bg-purple-900/20
-                               text-purple-400 font-mono text-sm transition-all
-                               disabled:opacity-50 disabled:cursor-not-allowed"
+                               hover:border-purple-600 hover:bg-purple-900/20 hover:scale-[1.02]
+                               hover:shadow-lg hover:shadow-purple-600/20
+                               text-purple-400 font-mono text-sm transition-all duration-300
+                               disabled:opacity-50 disabled:cursor-not-allowed
+                               animate-fade-in relative overflow-hidden
+                               before:absolute before:inset-0 before:bg-gradient-to-r 
+                               before:from-transparent before:via-purple-500/10 before:to-transparent
+                               before:translate-x-[-100%] hover:before:translate-x-[100%]
+                               before:transition-transform before:duration-700"
+                      style={{ 
+                        animationDelay: `${parsed.choices.length * 0.1}s`
+                      }}
                     >
                       🎫 자유 입력권 사용 ({tickets}개 보유)
                     </button>
