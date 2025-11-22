@@ -14,7 +14,7 @@ export const LanguageSelector = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
+        <Button variant="outline" size="icon" className="relative border-white/50 hover:border-white text-white hover:bg-white/10">
           <Globe className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
