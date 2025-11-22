@@ -491,6 +491,208 @@ export type Database = {
           },
         ]
       }
+      pool_participants: {
+        Row: {
+          boxes_purchased: number | null
+          created_at: string | null
+          hearts_given: number | null
+          hearts_purchased: number | null
+          id: string
+          missions_completed: number | null
+          participation_score: number | null
+          pool_id: string
+          rank: number | null
+          reward_claim_tx: string | null
+          reward_claimed: boolean | null
+          reward_earned: number | null
+          total_purchases: number | null
+          updated_at: string | null
+          user_id: string
+          vri_contributed: number | null
+        }
+        Insert: {
+          boxes_purchased?: number | null
+          created_at?: string | null
+          hearts_given?: number | null
+          hearts_purchased?: number | null
+          id?: string
+          missions_completed?: number | null
+          participation_score?: number | null
+          pool_id: string
+          rank?: number | null
+          reward_claim_tx?: string | null
+          reward_claimed?: boolean | null
+          reward_earned?: number | null
+          total_purchases?: number | null
+          updated_at?: string | null
+          user_id: string
+          vri_contributed?: number | null
+        }
+        Update: {
+          boxes_purchased?: number | null
+          created_at?: string | null
+          hearts_given?: number | null
+          hearts_purchased?: number | null
+          id?: string
+          missions_completed?: number | null
+          participation_score?: number | null
+          pool_id?: string
+          rank?: number | null
+          reward_claim_tx?: string | null
+          reward_claimed?: boolean | null
+          reward_earned?: number | null
+          total_purchases?: number | null
+          updated_at?: string | null
+          user_id?: string
+          vri_contributed?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pool_participants_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "reward_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_history: {
+        Row: {
+          amount_sui: number
+          created_at: string | null
+          id: string
+          item_name: string
+          metadata: Json | null
+          purchase_type: string
+          quantity: number | null
+          transaction_hash: string | null
+          user_id: string
+          user_wallet: string
+        }
+        Insert: {
+          amount_sui: number
+          created_at?: string | null
+          id?: string
+          item_name: string
+          metadata?: Json | null
+          purchase_type: string
+          quantity?: number | null
+          transaction_hash?: string | null
+          user_id: string
+          user_wallet: string
+        }
+        Update: {
+          amount_sui?: number
+          created_at?: string | null
+          id?: string
+          item_name?: string
+          metadata?: Json | null
+          purchase_type?: string
+          quantity?: number | null
+          transaction_hash?: string | null
+          user_id?: string
+          user_wallet?: string
+        }
+        Relationships: []
+      }
+      reward_distributions: {
+        Row: {
+          distributed_at: string | null
+          distribution_tx: string | null
+          id: string
+          pool_id: string
+          reward_amount: number | null
+          reward_metadata: Json | null
+          reward_type: string
+          user_id: string
+        }
+        Insert: {
+          distributed_at?: string | null
+          distribution_tx?: string | null
+          id?: string
+          pool_id: string
+          reward_amount?: number | null
+          reward_metadata?: Json | null
+          reward_type: string
+          user_id: string
+        }
+        Update: {
+          distributed_at?: string | null
+          distribution_tx?: string | null
+          id?: string
+          pool_id?: string
+          reward_amount?: number | null
+          reward_metadata?: Json | null
+          reward_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_distributions_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "reward_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reward_pools: {
+        Row: {
+          created_at: string | null
+          current_value: number | null
+          end_date: string
+          id: string
+          min_participation_score: number | null
+          min_purchase_amount: number | null
+          pool_name: string
+          pool_type: string
+          reward_metadata: Json | null
+          reward_type: string
+          start_date: string
+          status: string
+          target_metric: string | null
+          target_value: number | null
+          total_reward_amount: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_value?: number | null
+          end_date: string
+          id?: string
+          min_participation_score?: number | null
+          min_purchase_amount?: number | null
+          pool_name: string
+          pool_type: string
+          reward_metadata?: Json | null
+          reward_type: string
+          start_date: string
+          status?: string
+          target_metric?: string | null
+          target_value?: number | null
+          total_reward_amount?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_value?: number | null
+          end_date?: string
+          id?: string
+          min_participation_score?: number | null
+          min_purchase_amount?: number | null
+          pool_name?: string
+          pool_type?: string
+          reward_metadata?: Json | null
+          reward_type?: string
+          start_date?: string
+          status?: string
+          target_metric?: string | null
+          target_value?: number | null
+          total_reward_amount?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       story_sessions: {
         Row: {
           choices_made: Json | null

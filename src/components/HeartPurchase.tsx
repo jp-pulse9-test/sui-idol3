@@ -5,15 +5,28 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Coins, Crown } from "lucide-react";
 import { useHeartSystem } from "@/hooks/useHeartSystem";
 import { useWallet } from "@/hooks/useWallet";
+import { purchaseHistoryService } from "@/services/purchaseHistoryService";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const HeartPurchase = () => {
   const { fanHearts, purchaseHearts } = useHeartSystem();
   const { walletAddress } = useWallet();
+  const { user } = useAuth();
   const [suiCoins, setSuiCoins] = useState(() => parseFloat(localStorage.getItem('suiCoins') || '0'));
 
-  const handlePurchaseHearts = () => {
+  const handlePurchaseHearts = async () => {
     if (purchaseHearts(10)) {
       setSuiCoins(parseFloat(localStorage.getItem('suiCoins') || '0'));
+      
+      // Track purchase in database
+      if (user) {
+        await purchaseHistoryService.recordPurchase({
+          purchase_type: 'fan_hearts',
+          item_name: '10 Fan Hearts',
+          amount_sui: 0.15,
+          quantity: 10
+        });
+      }
     }
   };
 
