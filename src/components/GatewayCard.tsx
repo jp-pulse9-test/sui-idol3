@@ -2,7 +2,7 @@ import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface GatewayCardProps {
-  icon: LucideIcon;
+  icon: LucideIcon | string;
   gatewayName: string;
   title: string;
   subtitle?: string;
@@ -12,7 +12,7 @@ interface GatewayCardProps {
 }
 
 export const GatewayCard = ({
-  icon: Icon,
+  icon,
   gatewayName,
   title,
   subtitle,
@@ -20,6 +20,7 @@ export const GatewayCard = ({
   onClick,
   className,
 }: GatewayCardProps) => {
+  const isStringIcon = typeof icon === 'string';
   return (
     <button
       onClick={onClick}
@@ -40,7 +41,16 @@ export const GatewayCard = ({
       
       {/* Icon */}
       <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full border border-accent/30 group-hover:border-accent/60 group-hover:bg-accent/10 transition-all duration-300">
-        <Icon className="w-7 h-7 md:w-8 md:h-8 text-muted-foreground group-hover:text-accent transition-colors" />
+        {isStringIcon ? (
+          <span className="text-3xl md:text-4xl text-muted-foreground group-hover:text-accent transition-colors">
+            {icon}
+          </span>
+        ) : (
+          (() => {
+            const IconComponent = icon as LucideIcon;
+            return <IconComponent className="w-7 h-7 md:w-8 md:h-8 text-muted-foreground group-hover:text-accent transition-colors" />;
+          })()
+        )}
       </div>
       
       {/* Content */}
