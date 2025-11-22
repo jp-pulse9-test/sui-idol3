@@ -88,6 +88,45 @@ export type Database = {
         }
         Relationships: []
       }
+      branch_progress: {
+        Row: {
+          branch_id: string
+          completed_missions: Json
+          created_at: string
+          current_vri: number
+          first_cleared_at: string | null
+          id: string
+          is_cleared: boolean
+          last_played_at: string
+          max_vri: number
+          user_id: string
+        }
+        Insert: {
+          branch_id: string
+          completed_missions?: Json
+          created_at?: string
+          current_vri?: number
+          first_cleared_at?: string | null
+          id?: string
+          is_cleared?: boolean
+          last_played_at?: string
+          max_vri: number
+          user_id: string
+        }
+        Update: {
+          branch_id?: string
+          completed_missions?: Json
+          created_at?: string
+          current_vri?: number
+          first_cleared_at?: string | null
+          id?: string
+          is_cleared?: boolean
+          last_played_at?: string
+          max_vri?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_logs: {
         Row: {
           created_at: string | null
@@ -321,6 +360,8 @@ export type Database = {
       }
       memory_cards: {
         Row: {
+          branch_id: string | null
+          branch_year: number | null
           caption: string | null
           choice_hash: string
           created_at: string | null
@@ -331,9 +372,13 @@ export type Database = {
           scene_id: number
           token_id: string | null
           tx_digest: string | null
+          value_type: string | null
           vault_id: string | null
+          vri_value: number | null
         }
         Insert: {
+          branch_id?: string | null
+          branch_year?: number | null
           caption?: string | null
           choice_hash: string
           created_at?: string | null
@@ -344,9 +389,13 @@ export type Database = {
           scene_id: number
           token_id?: string | null
           tx_digest?: string | null
+          value_type?: string | null
           vault_id?: string | null
+          vri_value?: number | null
         }
         Update: {
+          branch_id?: string | null
+          branch_year?: number | null
           caption?: string | null
           choice_hash?: string
           created_at?: string | null
@@ -357,7 +406,9 @@ export type Database = {
           scene_id?: number
           token_id?: string | null
           tx_digest?: string | null
+          value_type?: string | null
           vault_id?: string | null
+          vri_value?: number | null
         }
         Relationships: [
           {
@@ -540,6 +591,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_vri: {
+        Row: {
+          created_at: string
+          empathy_vri: number
+          global_rank: number | null
+          id: string
+          last_updated: string
+          love_vri: number
+          total_vri: number
+          trust_vri: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empathy_vri?: number
+          global_rank?: number | null
+          id?: string
+          last_updated?: string
+          love_vri?: number
+          total_vri?: number
+          trust_vri?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          empathy_vri?: number
+          global_rank?: number | null
+          id?: string
+          last_updated?: string
+          love_vri?: number
+          total_vri?: number
+          trust_vri?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string | null
@@ -611,7 +698,20 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      vri_leaderboard: {
+        Row: {
+          cleared_branches: number | null
+          empathy_vri: number | null
+          global_rank: number | null
+          last_updated: string | null
+          love_vri: number | null
+          total_vri: number | null
+          trust_vri: number | null
+          user_id: string | null
+          wallet_address: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_idol_access_rate: { Args: never; Returns: boolean }
