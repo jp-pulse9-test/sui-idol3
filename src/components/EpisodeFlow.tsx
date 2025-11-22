@@ -8,6 +8,7 @@ import { EmotionTracker } from './EmotionTracker';
 import { PhotoCardReward } from './PhotoCardReward';
 import { useEpisodeState } from '@/hooks/useEpisodeState';
 import { Episode, StoryScene, Choice, HybridProfile, PhotoCard } from '@/types/episode';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface EpisodeFlowProps {
   episode: Episode;
@@ -196,6 +197,7 @@ export const EpisodeFlow: React.FC<EpisodeFlowProps> = ({
   onExit,
   className = '',
 }) => {
+  const { language, t } = useLanguage();
   const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes
   const [showReward, setShowReward] = useState(false);
   const [finalPhotoCard, setFinalPhotoCard] = useState<PhotoCard | null>(null);
@@ -303,9 +305,9 @@ export const EpisodeFlow: React.FC<EpisodeFlowProps> = ({
   if (!currentScene) {
     return (
       <Card className="p-6 text-center">
-        <p>에피소드를 불러올 수 없습니다.</p>
+        <p>{t('episode.cannotLoad')}</p>
         <Button onClick={onExit} className="mt-4">
-          돌아가기
+          {t('episode.goBack')}
         </Button>
       </Card>
     );
@@ -326,7 +328,7 @@ export const EpisodeFlow: React.FC<EpisodeFlowProps> = ({
               <span>{formatTime(timeRemaining)}</span>
             </div>
             <Badge variant="outline">
-              {episodeState.turnCount}/8턴
+              {t('episode.turns').replace('{{count}}', episodeState.turnCount.toString())}
             </Badge>
           </div>
         </div>
@@ -341,7 +343,7 @@ export const EpisodeFlow: React.FC<EpisodeFlowProps> = ({
             <div className="space-y-6">
               {/* Beat indicator */}
               <Badge variant="secondary" className="capitalize">
-                {currentScene.beat} - Turn {currentScene.turnNumber}
+                {currentScene.beat} - {t('episode.turn').replace('{{number}}', currentScene.turnNumber.toString())}
               </Badge>
 
               {/* Idol Dialogue */}
@@ -353,10 +355,7 @@ export const EpisodeFlow: React.FC<EpisodeFlowProps> = ({
                   <div className="flex-1 space-y-2">
                     <div className="bg-secondary/50 rounded-lg p-4">
                       <p className="text-sm leading-relaxed">
-                        {currentScene.idolDialogue.korean}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-2 italic">
-                        {currentScene.idolDialogue.english}
+                        {language === 'en' ? currentScene.idolDialogue.english : currentScene.idolDialogue.korean}
                       </p>
                     </div>
                   </div>
@@ -368,7 +367,7 @@ export const EpisodeFlow: React.FC<EpisodeFlowProps> = ({
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <MessageCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">선택해주세요:</span>
+                    <span className="text-sm font-medium">{t('episode.pleaseChoose')}</span>
                   </div>
                   <div className="space-y-2">
                     {currentScene.choices.map((choice) => (
@@ -379,10 +378,10 @@ export const EpisodeFlow: React.FC<EpisodeFlowProps> = ({
                         className="w-full justify-start text-left h-auto p-4 hover:bg-primary/10"
                       >
                         <div className="space-y-1">
-                          <div>{choice.text}</div>
+                          <div>{language === 'en' && choice.textEn ? choice.textEn : choice.text}</div>
                           <div className="text-xs text-muted-foreground">
-                            친밀도 {choice.affinityBonus > 0 ? '+' : ''}{choice.affinityBonus} | 
-                            감정: {choice.emotionImpact.type} ({choice.emotionImpact.weight > 0 ? '+' : ''}{choice.emotionImpact.weight})
+                            {t('episode.affinity')} {choice.affinityBonus > 0 ? '+' : ''}{choice.affinityBonus} | 
+                            {t('episode.emotion')}: {choice.emotionImpact.type} ({choice.emotionImpact.weight > 0 ? '+' : ''}{choice.emotionImpact.weight})
                           </div>
                         </div>
                       </Button>
@@ -394,19 +393,19 @@ export const EpisodeFlow: React.FC<EpisodeFlowProps> = ({
               {/* Episode Complete */}
               {episodeState.isCompleted && (
                 <div className="text-center space-y-4 py-6">
-                  <div className="text-lg font-semibold">에피소드 완료!</div>
+                  <div className="text-lg font-semibold">{t('episode.completed')}</div>
                   <p className="text-muted-foreground">
-                    특별한 순간이 포토카드로 저장되었습니다.
+                    {t('episode.savedAsPhotocard')}
                   </p>
                   <div className="flex space-x-2 justify-center">
                     <Button onClick={() => setShowReward(true)}>
-                      포토카드 보기
+                      {t('episode.viewPhotocard')}
                     </Button>
                     <Button variant="outline" onClick={resetEpisode}>
-                      다시 플레이
+                      {t('episode.replay')}
                     </Button>
                     <Button variant="ghost" onClick={onExit}>
-                      나가기
+                      {t('episode.exit')}
                     </Button>
                   </div>
                 </div>

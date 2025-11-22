@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { EpisodeFlow } from "@/components/EpisodeFlow";
 import { Scene, HybridProfile, EpisodeState, PhotoCard as EpisodePhotoCard } from "@/types/episode";
 import { Heart, Clock, Star, Target } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface StoryEpisode {
   id: string;
@@ -52,6 +53,7 @@ const StoryGameModalEnhanced = ({
   onClose, 
   onComplete 
 }: StoryGameModalProps) => {
+  const { language, t } = useLanguage();
   const [gamePhase, setGamePhase] = useState<'intro' | 'playing' | 'completing'>('intro');
   const [episodeProgress, setEpisodeProgress] = useState(0);
 
@@ -127,15 +129,15 @@ const StoryGameModalEnhanced = ({
   const getDifficultyInfo = (difficulty: string) => {
     switch (difficulty) {
       case 'Easy':
-        return { color: 'text-green-400', icon: '⭐', description: '쉬운 대화' };
+        return { color: 'text-green-400', icon: '⭐', description: t('story.difficulty.easy') };
       case 'Normal':
-        return { color: 'text-blue-400', icon: '⭐⭐', description: '일반적인 상호작용' };
+        return { color: 'text-blue-400', icon: '⭐⭐', description: t('story.difficulty.normal') };
       case 'Hard':
-        return { color: 'text-purple-400', icon: '⭐⭐⭐', description: '깊은 감정 교류' };
+        return { color: 'text-purple-400', icon: '⭐⭐⭐', description: t('story.difficulty.hard') };
       case 'Expert':
-        return { color: 'text-red-400', icon: '⭐⭐⭐⭐', description: '특별한 순간' };
+        return { color: 'text-red-400', icon: '⭐⭐⭐⭐', description: t('story.difficulty.expert') };
       default:
-        return { color: 'text-gray-400', icon: '⭐', description: '알 수 없음' };
+        return { color: 'text-gray-400', icon: '⭐', description: t('story.difficulty.unknown') };
     }
   };
 
@@ -189,7 +191,7 @@ const StoryGameModalEnhanced = ({
         <DialogContent className="max-w-lg bg-card/95 backdrop-blur-md border-border">
           <DialogHeader>
             <DialogTitle className="text-center gradient-text">
-              ✨ 추억 생성 중...
+              {t('story.completing.title')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 p-6">
@@ -201,9 +203,9 @@ const StoryGameModalEnhanced = ({
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-xl font-bold">{selectedIdol.name}와의 특별한 순간</h3>
+              <h3 className="text-xl font-bold">{t('story.completing.withIdol').replace('{{name}}', selectedIdol.name)}</h3>
               <p className="text-muted-foreground">
-                소중한 추억이 MemoryCard로 변환되고 있습니다...
+                {t('story.completing.converting')}
               </p>
               <Progress value={episodeProgress} className="w-full" />
             </div>
@@ -235,7 +237,7 @@ const StoryGameModalEnhanced = ({
                   />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold">{selectedIdol.name}와의 특별한 시간</h3>
+                  <h3 className="text-lg font-bold">{t('story.intro.specialTime').replace('{{name}}', selectedIdol.name)}</h3>
                   <p className="text-sm text-muted-foreground">{episode.description}</p>
                 </div>
               </div>
@@ -244,9 +246,9 @@ const StoryGameModalEnhanced = ({
                 <div className="text-center space-y-1">
                   <div className="flex items-center justify-center gap-1">
                     <Clock className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-semibold">{episode.turns}턴</span>
+                    <span className="text-sm font-semibold">{t('story.intro.turns').replace('{{count}}', episode.turns.toString())}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">예상 소요시간</p>
+                  <p className="text-xs text-muted-foreground">{t('story.intro.estimatedTime')}</p>
                 </div>
                 
                 <div className="text-center space-y-1">
@@ -264,7 +266,7 @@ const StoryGameModalEnhanced = ({
                     <Target className="w-4 h-4 text-accent" />
                     <span className="text-sm font-semibold text-accent">{episode.category}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">카테고리</p>
+                  <p className="text-xs text-muted-foreground">{t('story.intro.category')}</p>
                 </div>
               </div>
             </div>
@@ -275,22 +277,22 @@ const StoryGameModalEnhanced = ({
             <div className="space-y-3">
               <h4 className="font-semibold text-primary flex items-center gap-2">
                 <Heart className="w-4 h-4" />
-                예상 보상
+                {t('story.intro.expectedRewards')}
               </h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="space-y-1">
-                  <div className="font-semibold">MemoryCard NFT</div>
-                  <div className="text-muted-foreground">친밀도에 따른 레어도</div>
+                  <div className="font-semibold">{t('story.intro.memoryCard')}</div>
+                  <div className="text-muted-foreground">{t('story.intro.rarityByAffinity')}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="font-semibold">경험치 & 친밀도</div>
-                  <div className="text-muted-foreground">선택에 따른 성장</div>
+                  <div className="font-semibold">{t('story.intro.expAndAffinity')}</div>
+                  <div className="text-muted-foreground">{t('story.intro.growthByChoice')}</div>
                 </div>
               </div>
               <div className="pt-2 border-t border-primary/20">
-                <p className="text-xs text-muted-foreground">
-                  💡 <strong>팁:</strong> 감정적으로 깊이 교감할수록 더 희귀한 카드를 얻을 수 있어요
-                </p>
+                <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ 
+                  __html: t('story.intro.tip')
+                }} />
               </div>
             </div>
           </Card>
@@ -302,13 +304,13 @@ const StoryGameModalEnhanced = ({
               onClick={onClose}
               className="flex-1"
             >
-              나중에 하기
+              {t('story.intro.later')}
             </Button>
             <Button
               onClick={() => setGamePhase('playing')}
               className="flex-1 bg-gradient-primary hover:bg-gradient-secondary"
             >
-              🎮 에피소드 시작
+              {t('story.intro.start')}
             </Button>
           </div>
         </div>
