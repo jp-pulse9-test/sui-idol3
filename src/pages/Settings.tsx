@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ApiKeyManager } from '@/components/ApiKeyManager';
+import { GeminiKeyManager } from '@/components/GeminiKeyManager';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Settings as SettingsIcon, Key, Shield, Info } from 'lucide-react';
+import { ArrowLeft, Settings as SettingsIcon, Key, Shield, Info, Image } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { toast } from 'sonner';
 
@@ -64,6 +65,15 @@ const Settings = () => {
             <h2 className="text-xl font-semibold text-white">API Configuration</h2>
           </div>
           <ApiKeyManager walletAddress={walletAddress} />
+        </div>
+
+        {/* Gemini Image Generation Key */}
+        <div className="space-y-4">
+          <div className="flex items-center space-x-3">
+            <Image className="h-5 w-5 text-purple-400" />
+            <h2 className="text-xl font-semibold text-white">Image Generation</h2>
+          </div>
+          <GeminiKeyManager walletAddress={walletAddress} />
         </div>
 
         {/* Info Card */}

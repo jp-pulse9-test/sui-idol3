@@ -740,6 +740,30 @@ export type Database = {
           },
         ]
       }
+      user_gemini_keys: {
+        Row: {
+          api_key: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_wallet: string
+        }
+        Insert: {
+          api_key: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_wallet: string
+        }
+        Update: {
+          api_key?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_wallet?: string
+        }
+        Relationships: []
+      }
       user_photocard_keys: {
         Row: {
           activated_at: string
