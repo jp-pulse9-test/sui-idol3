@@ -16,6 +16,7 @@ const navItems = [
   { path: '/vault', icon: Archive, label: 'VAULT', labelKo: 'VAULT', requiresAuth: false },
   { path: '/rise', icon: TrendingUp, label: 'RISE', labelKo: 'RISE', requiresAuth: false },
   { path: '/my', icon: User, label: 'MY', labelKo: 'MY', requiresAuth: false },
+  { path: '/settings', icon: Settings, label: 'Settings', labelKo: '설정', requiresAuth: false },
 ];
 
 export function AppHeader() {
@@ -37,74 +38,46 @@ export function AppHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Left: Logo */}
-        <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="text-2xl font-bold gradient-text">SIMKUNG</div>
-        </NavLink>
-
-        {/* Center: Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
-                  'text-muted-foreground hover:text-foreground hover:bg-muted/50',
-                  isActive && 'bg-primary/10 text-primary font-medium'
-                )
-              }
-              end={item.path === '/'}
-            >
-              <item.icon className="w-4 h-4" />
-              <span>{getLabel(item)}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Right: Actions */}
-        <div className="flex items-center gap-2">
-          {/* Search Button (Desktop) */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden md:flex text-muted-foreground hover:text-foreground"
-            onClick={() => setSearchOpen(!searchOpen)}
-          >
-            <Search className="w-5 h-5" />
-          </Button>
-
-          {/* Language Selector */}
-          <LanguageSelector />
-
-          {/* Wallet Connect */}
-          <div className="hidden md:block">
-            <WalletConnectButton />
-          </div>
-
-          {/* Settings */}
-          <NavLink to="/settings">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-              <Settings className="w-5 h-5" />
-            </Button>
+        {/* Left: Logo & Home */}
+        <div className="flex items-center gap-4">
+          <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <div className="text-2xl font-bold gradient-text">SIMKUNG</div>
           </NavLink>
+          
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              cn(
+                'hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200',
+                'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                isActive && 'bg-primary/10 text-primary font-medium'
+              )
+            }
+            end
+          >
+            <Home className="w-4 h-4" />
+            <span>{language === 'ko' ? '홈' : 'Home'}</span>
+          </NavLink>
+        </div>
 
+        {/* Right: Hamburger Menu */}
+        <div className="flex items-center gap-2">
           {/* Mobile Menu Toggle */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              <Button variant="ghost" size="icon">
+                <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
               <div className="flex flex-col gap-6 pt-8">
-                {/* Mobile Wallet */}
-                <div className="mb-4">
+                {/* Language & Wallet */}
+                <div className="flex items-center gap-2 mb-4">
+                  <LanguageSelector />
                   <WalletConnectButton />
                 </div>
 
-                {/* Mobile Navigation */}
+                {/* Navigation */}
                 <nav className="flex flex-col gap-2">
                   {navItems.map((item) => (
                     <NavLink
@@ -140,19 +113,6 @@ export function AppHeader() {
         </div>
       </div>
 
-      {/* Search Bar (when open) */}
-      {searchOpen && (
-        <div className="border-t border-border bg-background/95 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            <input
-              type="text"
-              placeholder={language === 'ko' ? '아이돌, 미션, 포토카드 검색...' : 'Search idols, missions, photocards...'}
-              className="w-full px-4 py-2 bg-muted/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              autoFocus
-            />
-          </div>
-        </div>
-      )}
     </header>
   );
 }
