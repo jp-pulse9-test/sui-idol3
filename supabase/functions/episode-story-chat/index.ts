@@ -21,62 +21,14 @@ serve(async (req) => {
       language 
     });
 
-    // Extract user's wallet address from JWT
-    const authHeader = req.headers.get('authorization');
-    let userWallet: string | null = null;
-    
-    if (authHeader) {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-      const supabase = createClient(supabaseUrl, supabaseKey, {
-        global: { headers: { Authorization: authHeader } }
-      });
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('wallet_address')
-          .eq('id', user.id)
-          .single();
-        
-        userWallet = userData?.wallet_address;
-        console.log("User wallet found:", userWallet);
-      }
+    // Get service-wide Gemini API key
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+    if (!GEMINI_API_KEY) {
+      console.error("Service Gemini API key not configured");
+      throw new Error("Service Gemini API key not configured");
     }
 
-    // Try to get user's personal Gemini API key
-    let personalGeminiKey: string | null = null;
-    
-    if (userWallet && authHeader) {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-      const supabase = createClient(supabaseUrl, supabaseKey, {
-        global: { headers: { Authorization: authHeader } }
-      });
-      
-      const { data: keyData } = await supabase
-        .from('user_gemini_keys')
-        .select('api_key')
-        .eq('user_wallet', userWallet)
-        .single();
-      
-      if (keyData?.api_key) {
-        personalGeminiKey = keyData.api_key;
-        console.log("Using user's personal Gemini API key");
-      }
-    }
-
-    // If no personal key, return error (no fallback to Lovable AI)
-    if (!personalGeminiKey) {
-      console.error("No personal Gemini API key found");
-      return new Response(
-        JSON.stringify({ 
-          error: "Personal Gemini API key required. Please add your Gemini API key in Settings > Image Generation." 
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    console.log("Using service Gemini API key");
 
     // Detect if this is the first message (auto-start)
     const isFirstMessage = messages.length <= 1;
@@ -170,8 +122,8 @@ For highlight moments:
 
 Stay immersive, emotional, and engaging. Make the user feel like they're in a real story with you.`;
 
-    // Use Google Generative AI API directly with user's personal key
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=" + personalGeminiKey, {
+    // Use Google Generative AI API with service key
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=" + GEMINI_API_KEY, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

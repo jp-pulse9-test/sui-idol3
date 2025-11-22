@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ApiKeyManager } from '@/components/ApiKeyManager';
-import { GeminiKeyManager } from '@/components/GeminiKeyManager';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Settings as SettingsIcon, Key, Shield, Info, Image } from 'lucide-react';
+import { ArrowLeft, Settings as SettingsIcon, Key, Shield, Info } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { toast } from 'sonner';
 
@@ -67,34 +66,16 @@ const Settings = () => {
           <ApiKeyManager walletAddress={walletAddress} />
         </div>
 
-        {/* Gemini Image Generation Key */}
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3">
-            <Image className="h-5 w-5 text-purple-400" />
-            <h2 className="text-xl font-semibold text-white">Image Generation</h2>
-          </div>
-          <GeminiKeyManager walletAddress={walletAddress} />
-        </div>
-
         {/* Info Card */}
         <Card className="glass-dark p-6 border-purple-500/20">
           <div className="flex items-start space-x-3">
             <Info className="h-5 w-5 text-blue-400 mt-0.5" />
             <div className="space-y-2 flex-1">
-              <h3 className="font-semibold text-white">About Gemini API Key</h3>
+              <h3 className="font-semibold text-white">About AI Features</h3>
               <p className="text-sm text-gray-400 leading-relaxed">
-                Your Gemini API key enables AI-powered features in Sui:AIdol³.
-                The key is securely stored in Supabase and encrypted for your protection.
+                Text and image generation are provided free of charge through our service.
+                All AI-powered features are ready to use immediately after connecting your wallet.
               </p>
-              <div className="pt-2">
-                <p className="text-sm text-gray-400 mb-2">How to get your API key:</p>
-                <ol className="text-sm text-gray-400 space-y-1 ml-4">
-                  <li>1. Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 underline">Google AI Studio</a></li>
-                  <li>2. Sign in with your Google account</li>
-                  <li>3. Click "Create API Key"</li>
-                  <li>4. Copy and paste the key above</li>
-                </ol>
-              </div>
             </div>
           </div>
         </Card>

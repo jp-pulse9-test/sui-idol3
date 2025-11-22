@@ -112,24 +112,6 @@ export const useEpisodeStory = (
       if (!response.ok || !response.body) {
         const errorData = await response.json().catch(() => ({}));
         
-        // Handle 400 Bad Request (missing Gemini key)
-        if (response.status === 400) {
-          toast.error('🔑 Gemini API Key 필요', {
-            description: 'Settings > Image Generation에서 개인 Gemini API key를 추가해주세요.',
-            duration: 6000,
-          });
-          throw new Error('Personal Gemini API key required');
-        }
-        
-        // Handle 402 Payment Required error
-        if (response.status === 402) {
-          toast.error('💳 Lovable AI 크레딧 부족', {
-            description: 'Lovable AI 워크스페이스에 크레딧을 추가해주세요. Settings에서 확인할 수 있습니다.',
-            duration: 6000,
-          });
-          throw new Error('Payment required. Please add credits to your Lovable AI workspace.');
-        }
-        
         // Handle 429 Rate Limit error
         if (response.status === 429) {
           toast.error('⏱️ 요청 한도 초과', {
@@ -137,6 +119,15 @@ export const useEpisodeStory = (
             duration: 5000,
           });
           throw new Error('Rate limit exceeded. Please try again later.');
+        }
+        
+        // Handle 500 Server Error (service configuration issue)
+        if (response.status === 500) {
+          toast.error('⚙️ 서비스 일시 중단', {
+            description: '시스템 점검 중입니다. 잠시 후 다시 시도해주세요.',
+            duration: 6000,
+          });
+          throw new Error('Service temporarily unavailable');
         }
         
         throw new Error(errorData.error || 'Failed to start stream');
@@ -230,8 +221,8 @@ export const useEpisodeStory = (
       }
       console.error('Story chat error:', error);
       
-      // Don't add error message to chat if it's a payment/rate limit error (already shown via toast)
-      if (!error.message.includes('Payment required') && !error.message.includes('Rate limit')) {
+      // Don't add error message to chat if it's a rate limit/service error (already shown via toast)
+      if (!error.message.includes('Rate limit') && !error.message.includes('Service temporarily unavailable')) {
         setMessages(prev => [
           ...prev,
           {
