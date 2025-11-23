@@ -14,6 +14,7 @@ import { JourneySection } from "@/components/JourneySection";
 import { GatewaySection } from "@/components/GatewaySection";
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import { EnterGameDialog } from "@/components/EnterGameDialog";
 const Index = () => {
   const navigate = useNavigate();
   const {
@@ -32,6 +33,9 @@ const Index = () => {
 
   // Idol data state for background
   const [idols, setIdols] = useState<any[]>([]);
+  
+  // Enter game dialog state
+  const [showEnterDialog, setShowEnterDialog] = useState(false);
 
   // Fetch idols for background
   useEffect(() => {
@@ -53,8 +57,8 @@ const Index = () => {
     fetchIdols();
   }, []);
   const handleEnter = () => {
-    // Navigate directly to simplified pick (tournament)
-    navigate('/pick');
+    // Open the EnterGameDialog
+    setShowEnterDialog(true);
   };
   return <div className="min-h-screen bg-background relative overflow-x-hidden">
       {/* Subtle background decoration */}
@@ -96,6 +100,20 @@ const Index = () => {
       
       {/* Scroll to Top Button */}
       <ScrollToTopButton />
+      
+      {/* Enter Game Dialog */}
+      <EnterGameDialog
+        open={showEnterDialog}
+        onOpenChange={setShowEnterDialog}
+        onQuickStart={() => {
+          setShowEnterDialog(false);
+          navigate('/pick');
+        }}
+        onSelectIdol={() => {
+          setShowEnterDialog(false);
+          navigate('/intro');
+        }}
+      />
     </div>;
 };
 export default Index;
