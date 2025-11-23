@@ -14,8 +14,9 @@ const translations = {
   ko: {
     'nav.settings': '설정',
     'nav.photocardGenerator': '포토카드 생성기',
-    'hero.tagline': 'Sui:Idol³ - SIMKUNG ALLY',
+    'hero.tagline': 'AIDOL 101 - SIMKUNG ALLY',
     'hero.title': 'SIMKUNG',
+    'hero.secondaryTitle': 'OLD EARTH SIMULATOR',
     'hero.subtitle': '당신의 선택이 두 세계를 구원한다',
     'hero.enter': 'ENTER',
     'language.korean': '한국어',
@@ -122,8 +123,9 @@ const translations = {
   en: {
     'nav.settings': 'Settings',
     'nav.photocardGenerator': 'Photocard Generator',
-    'hero.tagline': 'Sui:Idol³ - SIMKUNG ALLY',
+    'hero.tagline': 'AIDOL 101 - SIMKUNG ALLY',
     'hero.title': 'SIMKUNG',
+    'hero.secondaryTitle': 'OLD EARTH SIMULATOR',
     'hero.subtitle': 'Your choices save two worlds',
     'hero.enter': 'ENTER',
     'language.korean': '한국어',

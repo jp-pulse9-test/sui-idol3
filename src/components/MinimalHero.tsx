@@ -41,7 +41,11 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
           {t('hero.title')}
         </h1>
         
-        <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-orbitron tracking-wide max-w-2xl mx-auto px-4">
+        <p className="text-xl sm:text-2xl md:text-3xl text-primary/80 font-orbitron tracking-widest uppercase mt-4">
+          {t('hero.secondaryTitle')}
+        </p>
+        
+        <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-orbitron tracking-wide max-w-2xl mx-auto px-4 mt-6">
           {t('hero.subtitle')}
         </p>
         
@@ -62,8 +66,8 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
       <EnterGameDialog
         open={showEnterDialog}
         onOpenChange={setShowEnterDialog}
-        onQuickStart={() => navigate('/play')}
-        onSelectIdol={() => navigate('/pick')}
+        onQuickStart={() => navigate('/intro')}
+        onSelectIdol={() => navigate('/intro')}
       />
     </section>
   );
