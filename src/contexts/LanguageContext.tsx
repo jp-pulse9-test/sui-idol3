@@ -24,7 +24,7 @@ const translations = {
     'journey.subtitle': 'DATA ALLY에서 LEGEND로',
     'journey.awaken.dimension': 'Dimension: AWAKEN',
     'journey.awaken.title': 'AIDOL을 만나다',
-    'journey.awaken.description': 'DATA ALLY가 되어 AIDOL과 함께하는 첫 순간',
+    'journey.awaken.description': 'SIMKUNG ALLY가 되어 AIDOL과 함께하는 첫 순간',
     'journey.mission.dimension': 'Dimension: SALVATION',
     'journey.mission.title': '세계를 구원하라',
     'journey.mission.description': 'DATA ALLY로서 무너진 세계를 복원하는 미션',
