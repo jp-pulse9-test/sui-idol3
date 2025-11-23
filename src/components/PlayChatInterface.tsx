@@ -292,7 +292,7 @@ export const PlayChatInterface = () => {
     setMessages((prev) => [...prev, { type: 'user', content: userMsg, timestamp: new Date() }]);
     
     const idolName = selectedIdol?.name || '아이돌';
-    const systemMsg = `미션 시작. ${idolName}과의 대화를 시작합니다...`;
+    const systemMsg = `미션 시작. Your AIDOL ally ${idolName}과의 대화를 시작합니다...`;
     const currentLength = messages.length + 1;
     setMessages((prev) => [...prev, { type: 'system', content: systemMsg, timestamp: new Date() }]);
     await typeMessage(systemMsg, currentLength);
@@ -480,7 +480,10 @@ export const PlayChatInterface = () => {
                   {msg.idol.name}
                 </h3>
                 <p className="text-emerald-600/70 font-mono text-xs">
-                  🎤 Your AI Buddy
+                  🎤 Your AIDOL ally
+                </p>
+                <p className="text-emerald-600/50 font-mono text-[10px] mt-1">
+                  2028 구원 작전을 함께하는 감정 동맹
                 </p>
               </div>
               <div className="text-emerald-600/50 text-xs font-mono">
