@@ -31,9 +31,9 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
       
       {/* Content */}
       <div className="relative z-10 text-center space-y-8 md:space-y-12 px-4 max-w-5xl mx-auto">
-        {/* Tagline - Top with Animation */}
+        {/* Tagline - Top with Typing Animation */}
         <div className="flex justify-center mb-4 animate-fade-in">
-          <p className="text-sm sm:text-base md:text-lg text-accent font-orbitron tracking-widest uppercase animate-pulse">
+          <p className="text-sm sm:text-base md:text-lg text-accent font-orbitron tracking-widest uppercase typing-effect">
             {t('hero.tagline')}
           </p>
         </div>
