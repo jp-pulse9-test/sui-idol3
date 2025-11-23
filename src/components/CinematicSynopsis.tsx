@@ -235,7 +235,11 @@ export const CinematicSynopsis = memo(({
       setTimeout(() => setIsTransitioning(false), 400);
     }, 200);
   }, []);
-  return <section id="synopsis" className="w-full flex items-center justify-center bg-black px-4 py-8 md:py-12 perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite" style={{ transform: `translateY(${scrollY * 0.15}px)` }}>
+  // Extract first photo and text-only lines
+  const firstPhoto = currentChapterData.lines.find(line => line.photo)?.photo || null;
+  const textLines = currentChapterData.lines.filter(line => !line.photo);
+
+  return <section id="synopsis" className="w-full min-h-screen flex items-center justify-center bg-black perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite" style={{ transform: `translateY(${scrollY * 0.15}px)` }}>
       {/* Noise filter overlay */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
         style={{
@@ -257,8 +261,8 @@ export const CinematicSynopsis = memo(({
       />
       
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container z-10">
-        {/* Unified Timeline Container */}
-        <div className="absolute -top-12 md:-top-10 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-10 border border-gray-700/50 bg-gray-900/80 backdrop-blur-md rounded-sm px-4 md:px-6 py-2 md:py-3 mb-8">
+        {/* Unified Timeline Container - Fixed Position */}
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] md:w-3/5 z-50 border border-gray-700/50 bg-gray-900/80 backdrop-blur-md rounded-sm px-4 md:px-6 py-2 md:py-3">
           {/* Header */}
           <div className="flex justify-between items-center mb-4 md:mb-5">
             <span className="text-gray-400 text-[8px] md:text-[10px] tracking-[0.15em] font-mono uppercase">
@@ -313,24 +317,21 @@ export const CinematicSynopsis = memo(({
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className={`w-full flex items-center justify-center px-4 md:px-8 lg:px-16 py-8 md:py-12 mt-16 md:mt-20 transition-opacity duration-400 ${
-          isTransitioning ? 'opacity-0' : 'opacity-100'
-        }`}>
-          <div className="text-center space-y-3 md:space-y-2 max-w-5xl w-full font-orbitron">
-            {currentChapterData.lines.map((line, index) => {
-            if (line.spacing) {
-              return <div key={index} className="h-2" />;
-            }
+        {/* Main Content - Split Layout */}
+        <div className="w-full h-screen flex flex-col">
+          {/* Text Area (60%) */}
+          <div className={`flex-[60] flex items-center justify-center pt-24 px-4 transition-opacity duration-400 ${
+            isTransitioning ? 'opacity-0' : 'opacity-100'
+          }`}>
+            <div className="text-center space-y-3 md:space-y-2 max-w-4xl w-full font-orbitron">
+              {textLines.map((line, index) => {
+                if (line.spacing) {
+                  return <div key={index} className="h-2" />;
+                }
 
-            // Render historical photo if present
-            if (line.photo) {
-              return <ArchivePhoto key={`ch${currentChapter}-photo${index}`} photo={line.photo} delay={index * 400} parallaxOffset={isMobile ? 0 : scrollY * 0.02} index={index} />;
-            }
-
-            // Special rendering for Chapter 14 stats (was Chapter 8)
-            if (currentChapter === 14 && index === 3) {
-              return <div key={index} className="space-y-2 mt-4">
+                // Special rendering for Chapter 14 stats
+                if (currentChapter === 14 && index === 3) {
+                  return <div key={index} className="space-y-2 mt-4">
                     <div className="flex justify-center items-center gap-4 text-gray-300">
                       <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.activeAllies')}:</span>
                       <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
@@ -356,20 +357,50 @@ export const CinematicSynopsis = memo(({
                       </span>
                     </div>
                   </div>;
-            }
-            const displayText = language === 'ko' && line.textKo ? line.textKo : line.text || '';
-            return <ParallaxText key={`ch${currentChapter}-line${index}`} text={displayText} className={`
+                }
+
+                const displayText = language === 'ko' && line.textKo ? line.textKo : line.text || '';
+                return <ParallaxText 
+                  key={`ch${currentChapter}-line${index}`} 
+                  text={displayText} 
+                  className={`
                     text-sm md:text-base lg:text-lg
                     ${getColorClass(line.color, line.emphasis)}
                     ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
                     animate-line-reveal
                     leading-relaxed md:leading-normal tracking-wide
                     parallax-text
-                  `} style={{
-              animationDelay: `${index * 0.4}s`,
-              transform: isMobile ? 'none' : `translateY(${scrollY * 0.02}px) translateZ(${index * 2}px)`
-            }} />;
-          })}
+                  `} 
+                  style={{
+                    animationDelay: `${index * 0.4}s`,
+                    transform: isMobile ? 'none' : `translateY(${scrollY * 0.02}px) translateZ(${index * 2}px)`
+                  }} 
+                />;
+              })}
+            </div>
+          </div>
+
+          {/* Photo Area (40%) */}
+          <div className={`flex-[40] flex items-center justify-center pb-8 px-4 transition-opacity duration-400 ${
+            isTransitioning ? 'opacity-0' : 'opacity-100'
+          }`}>
+            {firstPhoto && (
+              <div className="relative max-w-2xl max-h-80">
+                <img 
+                  src={firstPhoto.src}
+                  alt={firstPhoto.alt}
+                  className="w-full h-full object-contain rounded-lg shadow-2xl"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-2 rounded-b-lg">
+                  <p className="text-gray-400 text-xs font-mono">
+                    {firstPhoto.archiveId} | {firstPhoto.date}
+                  </p>
+                  <p className="text-gray-300 text-sm">
+                    {language === 'ko' && firstPhoto.captionKo ? firstPhoto.captionKo : firstPhoto.caption}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
