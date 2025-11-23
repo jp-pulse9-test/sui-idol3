@@ -175,10 +175,15 @@ export const useEpisodeStory = (
       let textBuffer = '';
       let assistantContent = '';
       let isHighlight = false;
+      let streamDone = false;
+      let wasTokenLimit = false;
 
-      while (true) {
+      while (!streamDone) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) {
+          streamDone = true;
+          break;
+        }
 
         textBuffer += decoder.decode(value, { stream: true });
 
@@ -192,7 +197,10 @@ export const useEpisodeStory = (
           if (!line.startsWith('data: ')) continue;
 
           const jsonStr = line.slice(6).trim();
-          if (jsonStr === '[DONE]') break;
+          if (jsonStr === '[DONE]') {
+            streamDone = true;
+            break;
+          }
 
           try {
             const parsed = JSON.parse(jsonStr);
@@ -232,6 +240,69 @@ export const useEpisodeStory = (
             break;
           }
         }
+      }
+
+      // Final buffer flush for any remaining content
+      if (textBuffer.trim()) {
+        const remainingLines = textBuffer.split('\n');
+        for (let raw of remainingLines) {
+          if (!raw || raw.endsWith('\r')) raw = raw.slice(0, -1);
+          if (raw.startsWith(':') || raw.trim() === '') continue;
+          if (!raw.startsWith('data: ')) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              if (assistantContent.includes('🎬 HIGHLIGHT:')) {
+                isHighlight = true;
+              }
+            }
+          } catch { /* ignore partial leftovers */ }
+        }
+      }
+
+      // Check if stream ended abnormally (likely token limit)
+      if (!streamDone && assistantContent) {
+        console.warn('Stream ended without [DONE] marker - possible token limit');
+        wasTokenLimit = true;
+      }
+
+      // Update final message
+      if (assistantContent.trim()) {
+        setMessages(prev => {
+          const lastMsg = prev[prev.length - 1];
+          if (lastMsg?.role === 'assistant') {
+            return prev.map((msg, i) => 
+              i === prev.length - 1 
+                ? { ...msg, content: assistantContent, isHighlight }
+                : msg
+            );
+          }
+          return [
+            ...prev,
+            {
+              role: 'assistant',
+              content: assistantContent,
+              timestamp: new Date(),
+              isHighlight
+            }
+          ];
+        });
+      }
+
+      // Show token limit warning if detected
+      if (wasTokenLimit) {
+        toast.error('💬 대화가 너무 길어졌습니다', {
+          description: '새로운 대화를 시작해주세요.',
+          duration: 6000,
+          action: {
+            label: '새 대화 시작',
+            onClick: () => resetStory()
+          }
+        });
       }
 
       // If it's a highlight moment, generate image

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { GeminiKeyManager } from '../_shared/apiKeyRotation.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,14 +24,9 @@ serve(async (req) => {
       currentTurn 
     });
 
-    // Get service-wide Gemini API key
-    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-    if (!GEMINI_API_KEY) {
-      console.error("Service Gemini API key not configured");
-      throw new Error("Service Gemini API key not configured");
-    }
-
-    console.log("Using service Gemini API key");
+    // Initialize Gemini Key Manager with fallback support
+    const keyManager = new GeminiKeyManager();
+    console.log("Using Gemini API with multi-key fallback");
 
     // Detect if this is the first message (auto-start)
     const isFirstMessage = messages.length <= 1;
@@ -169,20 +165,17 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
       });
     }
 
-    // Use Google Generative AI API with service key
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=" + GEMINI_API_KEY, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    // Use Google Generative AI API with multi-key fallback
+    const response = await keyManager.callGeminiWithFallback(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=",
+      {
         contents: conversationContents,
         generationConfig: {
           temperature: 0.9,
           maxOutputTokens: dynamicTokens,
         }
-      }),
-    });
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -230,11 +223,15 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
     const stream = new ReadableStream({
       async start(controller) {
         let totalChunks = 0;
+        let lastFinishReason: string | undefined;
+        let streamDone = false;
+        
         try {
-          while (true) {
+          while (!streamDone) {
             const { done, value } = await reader.read();
             if (done) {
-              console.log(`Stream completed. Total chunks: ${totalChunks}`);
+              streamDone = true;
+              console.log(`Stream completed. Total chunks: ${totalChunks}, finishReason: ${lastFinishReason ?? 'STOP'}`);
               controller.enqueue(encoder.encode("data: [DONE]\n\n"));
               controller.close();
               break;
@@ -251,14 +248,12 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
                   
                   // Check for finish reason (token limit, safety, etc.)
                   const finishReason = jsonData.candidates?.[0]?.finishReason;
-                  if (finishReason && finishReason !== 'STOP') {
-                    console.warn(`Unexpected finish reason: ${finishReason}`);
-                    if (finishReason === 'MAX_TOKENS') {
-                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-                        choices: [{
-                          delta: { content: "\n\n[대화가 너무 길어졌어요. 새 대화를 시작해주세요.]" }
-                        }]
-                      })}\n\n`));
+                  if (finishReason) {
+                    lastFinishReason = finishReason;
+                    if (finishReason !== 'STOP') {
+                      console.warn(`Stream ending with reason: ${finishReason}`);
+                      // Let frontend handle this via stream termination
+                      streamDone = true;
                     }
                   }
                   
@@ -282,14 +277,11 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
           }
         } catch (error) {
           console.error("Stream error:", error);
-          // Send error to client
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-            choices: [{
-              delta: { content: "\n\n[연결이 끊겼습니다. 다시 시도해주세요.]" }
-            }]
-          })}\n\n`));
+          // Just close the stream - frontend will handle the error
           controller.close();
         }
+      }
+    });
       }
     });
 
