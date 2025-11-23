@@ -32,7 +32,6 @@ import Auth from "./pages/Auth";
 import SettingsPage from "./pages/Settings";
 import PhotocardGenerator from "./pages/PhotocardGenerator";
 import My from "./pages/My";
-import Intro from "./pages/Intro";
 const DemoChat = lazy(() => import("./pages/DemoChat"));
 const IdolDetail = lazy(() => import("./pages/IdolDetail"));
 
@@ -84,7 +83,6 @@ const App = () => (
                   <main className="flex-1 pt-16 pb-20 md:pb-4">
                     <Routes>
                       <Route path="/" element={<Index />} />
-                      <Route path="/intro" element={<Intro />} />
                       <Route path="/auth" element={<Auth />} />
                       <Route path="/my" element={<My />} />
                       <Route path="/demo-chat" element={<DemoChat />} />

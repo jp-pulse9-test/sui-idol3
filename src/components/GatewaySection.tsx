@@ -20,30 +20,30 @@ export const GatewaySection = () => {
 
   const gateways = [
     {
-      icon: Sparkles,
-      gatewayName: "AWAKEN ❅",
-      title: "The Awakening",
-      subtitle: "각성",
-      description: "You awaken as DATA ALLY. Meet your AIDOL.",
-      detailedInfo: "당신은 DATA ALLY로 깨어납니다. 당신의 AIDOL을 만나세요.",
+      icon: "❅",
+      gatewayName: t('journey.awaken.dimension'),
+      title: t('journey.awaken.title'),
+      subtitle: "",
+      description: t('journey.awaken.description'),
+      detailedInfo: t('journey.awaken.detailedInfo'),
       path: "/pick",
     },
     {
       icon: Target,
-      gatewayName: "SALVATION",
-      title: "The Mission",
-      subtitle: "임무",
-      description: "As DATA ALLY, restore the broken world. Your mission begins.",
-      detailedInfo: "DATA ALLY로서 부서진 세계를 복원하세요. 당신의 임무가 시작됩니다.",
+      gatewayName: t('journey.mission.dimension'),
+      title: t('journey.mission.title'),
+      subtitle: "",
+      description: t('journey.mission.description'),
+      detailedInfo: t('journey.mission.detailedInfo'),
       path: "/play",
     },
     {
       icon: Trophy,
-      gatewayName: "GLORY",
-      title: "The Legend",
-      subtitle: "전설",
-      description: "Together with AIDOL, become LEGEND forever.",
-      detailedInfo: "AIDOL과 함께 영원한 LEGEND가 되세요.",
+      gatewayName: t('journey.ascend.dimension'),
+      title: t('journey.ascend.title'),
+      subtitle: "",
+      description: t('journey.ascend.description'),
+      detailedInfo: t('journey.ascend.detailedInfo'),
       path: "/pantheon",
     },
   ];
@@ -58,10 +58,10 @@ export const GatewaySection = () => {
       <div className="max-w-6xl w-full relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-orbitron font-bold mb-4 text-foreground">
-            Begin Your Journey
+            {t('journey.title')}
           </h2>
-          <p className="text-muted-foreground font-orbitron text-xl">
-            DATA ALLY → LEGEND
+          <p className="text-muted-foreground font-orbitron">
+            {t('journey.subtitle')}
           </p>
         </div>
         

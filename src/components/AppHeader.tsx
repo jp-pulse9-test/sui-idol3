@@ -43,7 +43,7 @@ export function AppHeader() {
           to="/" 
           className="flex items-center gap-2 transition-opacity hover:opacity-80"
         >
-          <div className="text-2xl font-blacksword font-bold text-white">AIDOL101</div>
+          <div className="text-2xl font-bold text-white">AIDOL101</div>
         </NavLink>
 
         {/* Right: Hamburger Menu */}
