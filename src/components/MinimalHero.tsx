@@ -31,6 +31,13 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
       
       {/* Content */}
       <div className="relative z-10 text-center space-y-8 md:space-y-12 px-4 max-w-5xl mx-auto">
+        {/* Tagline - Top with Animation */}
+        <div className="flex justify-center mb-4 animate-fade-in">
+          <p className="text-sm sm:text-base md:text-lg text-accent font-orbitron tracking-widest uppercase animate-pulse">
+            {t('hero.tagline')}
+          </p>
+        </div>
+        
         {/* Main Title - Primary Focus */}
         <div className="space-y-4">
           <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-orbitron font-bold tracking-wider text-foreground drop-shadow-[0_0_30px_hsl(var(--primary)/0.5)]">
@@ -60,9 +67,6 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
           >
             {t('hero.enter')}
           </Button>
-          <p className="text-xs text-muted-foreground/60 font-orbitron mt-4 tracking-wider uppercase">
-            {t('hero.tagline')}
-          </p>
         </div>
       </div>
       
