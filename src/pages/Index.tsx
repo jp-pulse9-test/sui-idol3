@@ -10,6 +10,7 @@ import { Settings } from "lucide-react";
 import { CinematicSynopsis } from "@/components/CinematicSynopsis";
 import { MinimalHero } from "@/components/MinimalHero";
 import { ServiceIntro } from "@/components/ServiceIntro";
+import { JourneySection } from "@/components/JourneySection";
 import { GatewaySection } from "@/components/GatewaySection";
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
@@ -74,8 +75,8 @@ const Index = () => {
         {/* Hero Section */}
         <MinimalHero onEnter={handleEnter} />
 
-        {/* Service Introduction */}
-        
+        {/* Journey Section - AWAKEN/SALVATION/GLORY */}
+        <JourneySection />
 
         {/* Cinematic Synopsis - Sticky */}
         <div className="sticky top-0 z-40">
