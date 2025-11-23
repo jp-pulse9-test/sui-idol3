@@ -11,6 +11,7 @@ type ChatMessage =
   | { type: 'system'; content: string; timestamp: Date }
   | { type: 'branch-select'; branches: Branch[]; timestamp: Date }
   | { type: 'mission-select'; missions: SalvationMission[]; timestamp: Date }
+  | { type: 'idol-profile'; idol: { name: string; image: string; personality?: string; persona_prompt?: string }; timestamp: Date }
   | { type: 'user'; content: string; timestamp: Date }
   | { type: 'idol'; content: string; timestamp: Date; isHighlight?: boolean; imageUrl?: string }
   | { type: 'completion'; vriReward: number; timestamp: Date };
@@ -296,23 +297,21 @@ export const PlayChatInterface = () => {
     setMessages((prev) => [...prev, { type: 'system', content: systemMsg, timestamp: new Date() }]);
     await typeMessage(systemMsg, currentLength);
     
+    // Add idol profile card
+    setMessages((prev) => [...prev, { 
+      type: 'idol-profile', 
+      idol: selectedIdol || { name: '아이돌', image: '', personality: '', persona_prompt: '' },
+      timestamp: new Date() 
+    } as any]);
+    
     setCurrentMode('episode');
     resetStory();
     
-    // 자동으로 첫 Scene 시작 - 미션의 첫 번째 Scene 데이터 활용
-    const scenes = getScenesByMissionId(mission.id);
-    const firstScene = scenes[0];
-    
+    // Start conversation after a delay to ensure proper context
     setTimeout(() => {
-      if (firstScene) {
-        // Scene 데이터를 기반으로 자동 시작 메시지 전송
-        const startMessage = `미션을 시작합니다. Scene: ${firstScene.beatType}`;
-        sendEpisodeMessage(startMessage);
-      } else {
-        // Scene 데이터가 없으면 기본 시작 메시지
-        sendEpisodeMessage('미션을 시작합니다.');
-      }
-    }, 800);
+      // Send initial greeting request to AI
+      sendEpisodeMessage('[SYSTEM: Start conversation and greet the user]');
+    }, 1000);
   };
 
   const handleSendMessage = () => {
@@ -459,6 +458,35 @@ export const PlayChatInterface = () => {
             >
               ← 타임라인 선택으로
             </button>
+          </div>
+        );
+
+      case 'idol-profile':
+        return (
+          <div key={index} className="retro-terminal-box border-emerald-600/50 bg-gradient-to-br from-emerald-900/20 to-teal-900/10 mb-4 animate-fade-in">
+            <div className="flex items-center gap-4 p-2">
+              {msg.idol.image && (
+                <div className="relative">
+                  <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full animate-pulse" />
+                  <img
+                    src={msg.idol.image}
+                    alt={msg.idol.name}
+                    className="relative w-20 h-20 rounded-full border-2 border-emerald-600/70 object-cover"
+                  />
+                </div>
+              )}
+              <div className="flex-1">
+                <h3 className="text-emerald-500 font-mono text-lg font-bold mb-1 retro-text-glow">
+                  {msg.idol.name}
+                </h3>
+                <p className="text-emerald-600/70 font-mono text-xs">
+                  🎤 Your AI Buddy
+                </p>
+              </div>
+              <div className="text-emerald-600/50 text-xs font-mono">
+                READY
+              </div>
+            </div>
           </div>
         );
 
