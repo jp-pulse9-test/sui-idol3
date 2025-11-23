@@ -14,7 +14,7 @@ const translations = {
   ko: {
     'nav.settings': '설정',
     'nav.photocardGenerator': '포토카드 생성기',
-    'hero.tagline': 'AIDOL 101 : DATA ALLY',
+    'hero.tagline': 'AIDOL 101 : SIMKUNG ALLY',
     'hero.title': 'SIMKUNG',
     'hero.subtitle': '디지털 의식이 깨어나는 곳',
     'hero.enter': 'ENTER',
@@ -111,7 +111,7 @@ const translations = {
   en: {
     'nav.settings': 'Settings',
     'nav.photocardGenerator': 'Photocard Generator',
-    'hero.tagline': 'AIDOL 101 : DATA ALLY',
+    'hero.tagline': 'AIDOL 101 : SIMKUNG ALLY',
     'hero.title': 'SIMKUNG',
     'hero.subtitle': 'Where digital consciousness awakens',
     'hero.enter': 'ENTER',
