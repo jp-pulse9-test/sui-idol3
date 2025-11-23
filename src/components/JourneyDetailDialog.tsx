@@ -51,13 +51,6 @@ export const JourneyDetailDialog = ({
               {detailedInfo}
             </p>
           </div>
-          
-          <Button
-            onClick={onStart}
-            className="w-full mt-6 h-12 text-lg font-orbitron"
-          >
-            시작하기 →
-          </Button>
         </div>
       </DialogContent>
     </Dialog>
