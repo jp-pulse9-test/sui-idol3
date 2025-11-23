@@ -21,7 +21,7 @@ const translations = {
     'language.korean': '한국어',
     'language.english': 'English',
     'journey.title': 'Begin Your Journey',
-    'journey.subtitle': 'DATA ALLY에서 LEGEND로',
+    'journey.subtitle': '수만번의 시뮬레이션으로 최상의 결과를 찾고 전설이 되어라',
     'journey.awaken.dimension': 'Dimension: AWAKEN',
     'journey.awaken.title': 'AIDOL을 만나다',
     'journey.awaken.description': 'SIMKUNG ALLY가 되어 AIDOL과 함께하는 첫 순간',
