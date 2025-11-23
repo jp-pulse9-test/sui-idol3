@@ -21,29 +21,29 @@ export const GatewaySection = () => {
   const gateways = [
     {
       icon: Sparkles,
-      gatewayName: "PICK",
-      title: t('service.pick.title'),
-      subtitle: t('service.pick.subtitle'),
-      description: t('service.pick.description'),
-      detailedInfo: t('journey.awaken.detailedInfo'),
+      gatewayName: "AWAKEN ❅",
+      title: "The Awakening",
+      subtitle: "각성",
+      description: "You awaken as DATA ALLY. Meet your AIDOL.",
+      detailedInfo: "당신은 DATA ALLY로 깨어납니다. 당신의 AIDOL을 만나세요.",
       path: "/pick",
     },
     {
       icon: Target,
-      gatewayName: "RISE",
-      title: t('service.rise.title'),
-      subtitle: t('service.rise.subtitle'),
-      description: t('service.rise.description'),
-      detailedInfo: t('journey.mission.detailedInfo'),
+      gatewayName: "SALVATION",
+      title: "The Mission",
+      subtitle: "임무",
+      description: "As DATA ALLY, restore the broken world. Your mission begins.",
+      detailedInfo: "DATA ALLY로서 부서진 세계를 복원하세요. 당신의 임무가 시작됩니다.",
       path: "/play",
     },
     {
       icon: Trophy,
-      gatewayName: "VAULT",
-      title: t('service.vault.title'),
-      subtitle: t('service.vault.subtitle'),
-      description: t('service.vault.description'),
-      detailedInfo: t('journey.ascend.detailedInfo'),
+      gatewayName: "GLORY",
+      title: "The Legend",
+      subtitle: "전설",
+      description: "Together with AIDOL, become LEGEND forever.",
+      detailedInfo: "AIDOL과 함께 영원한 LEGEND가 되세요.",
       path: "/pantheon",
     },
   ];
@@ -58,10 +58,10 @@ export const GatewaySection = () => {
       <div className="max-w-6xl w-full relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-orbitron font-bold mb-4 text-foreground">
-            {t('journey.title')}
+            Begin Your Journey
           </h2>
-          <p className="text-muted-foreground font-orbitron">
-            {t('journey.subtitle')}
+          <p className="text-muted-foreground font-orbitron text-xl">
+            DATA ALLY → LEGEND
           </p>
         </div>
         
