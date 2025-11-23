@@ -19,7 +19,8 @@ interface HistoricalPhoto {
   captionKo?: string;
 }
 interface Line {
-  text: string;
+  text?: string;
+  textKo?: string;
   emphasis?: boolean;
   color?: 'red' | 'cyan' | 'purple' | 'green';
   spacing?: boolean;
@@ -28,6 +29,11 @@ interface Line {
 interface Chapter {
   id: number;
   lines: Line[];
+}
+
+interface Scene {
+  lines: Line[];
+  isPhotoScene: boolean;
 }
 export const CinematicSynopsis = memo(({
   activeAllyCount,
@@ -41,6 +47,7 @@ export const CinematicSynopsis = memo(({
     t
   } = useLanguage();
   const [currentChapter, setCurrentChapter] = useState(1);
+  const [currentScene, setCurrentScene] = useState(0);
   const [showSkip, setShowSkip] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [scrollY, setScrollY] = useState(0);
@@ -61,10 +68,50 @@ export const CinematicSynopsis = memo(({
   }, []);
   const chapters = useMemo(() => getChapters(), []);
 
-  // Auto-advance chapters with progress tracking
+  // Split chapter lines into scenes (text scenes vs photo scenes)
+  const splitIntoScenes = useCallback((lines: Line[]): Scene[] => {
+    const scenes: Scene[] = [];
+    let currentSceneLines: Line[] = [];
+    let lastWasPhoto = false;
+
+    lines.forEach(line => {
+      if (line.spacing) return; // Skip spacing lines
+      
+      const isPhoto = !!line.photo;
+      
+      // Start new scene when content type changes
+      if (currentSceneLines.length > 0 && isPhoto !== lastWasPhoto) {
+        scenes.push({
+          lines: [...currentSceneLines],
+          isPhotoScene: lastWasPhoto
+        });
+        currentSceneLines = [];
+      }
+      
+      currentSceneLines.push(line);
+      lastWasPhoto = isPhoto;
+    });
+    
+    // Push remaining lines
+    if (currentSceneLines.length > 0) {
+      scenes.push({
+        lines: currentSceneLines,
+        isPhotoScene: lastWasPhoto
+      });
+    }
+    
+    return scenes;
+  }, []);
+
+  const currentChapterData = chapters.find(c => c.id === currentChapter) || chapters[0];
+  const scenes = useMemo(() => splitIntoScenes(currentChapterData.lines), [currentChapterData, splitIntoScenes]);
+  const activeScene = scenes[currentScene] || scenes[0];
+  const isPhotoScene = activeScene?.isPhotoScene || false;
+
+  // Auto-advance scenes with progress tracking
   useEffect(() => {
     if (isPaused) return;
-    const duration = 8000; // 8초 per chapter: ~88s total (느리게 조정)
+    const duration = 8000; // 8초 per scene
     const interval = 50;
     let elapsed = 0;
     const progressTimer = setInterval(() => {
@@ -73,7 +120,14 @@ export const CinematicSynopsis = memo(({
       if (elapsed >= duration) {
         setIsTransitioning(true);
         setTimeout(() => {
-          setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
+          if (currentScene < scenes.length - 1) {
+            // Move to next scene
+            setCurrentScene(prev => prev + 1);
+          } else {
+            // Move to next chapter and reset scene
+            setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
+            setCurrentScene(0);
+          }
           elapsed = 0;
           setAutoProgress(0);
           setTimeout(() => setIsTransitioning(false), 400);
@@ -81,7 +135,12 @@ export const CinematicSynopsis = memo(({
       }
     }, interval);
     return () => clearInterval(progressTimer);
-  }, [isPaused, currentChapter]);
+  }, [isPaused, currentScene, scenes.length]);
+
+  // Reset scene when chapter changes
+  useEffect(() => {
+    setCurrentScene(0);
+  }, [currentChapter]);
 
   // Show skip button after 1 second
   useEffect(() => {
@@ -94,18 +153,33 @@ export const CinematicSynopsis = memo(({
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
+        if (currentScene < scenes.length - 1) {
+          setCurrentScene(prev => prev + 1);
+        } else {
+          setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
+          setCurrentScene(0);
+        }
       } else if (e.key === 'Escape') {
         handleSkip();
       } else if (e.key === 'ArrowRight') {
-        setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
+        if (currentScene < scenes.length - 1) {
+          setCurrentScene(prev => prev + 1);
+        } else {
+          setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
+          setCurrentScene(0);
+        }
       } else if (e.key === 'ArrowLeft') {
-        setCurrentChapter(prev => prev > 1 ? prev - 1 : 20);
+        if (currentScene > 0) {
+          setCurrentScene(prev => prev - 1);
+        } else {
+          setCurrentChapter(prev => prev > 1 ? prev - 1 : 20);
+          setCurrentScene(0);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
+  }, [currentScene, scenes.length]);
 
   // Parallax scroll tracking (debounced)
   useEffect(() => {
@@ -141,9 +215,19 @@ export const CinematicSynopsis = memo(({
       const isLeftSwipe = distance > minSwipeDistance;
       const isRightSwipe = distance < -minSwipeDistance;
       if (isLeftSwipe) {
-        setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
+        if (currentScene < scenes.length - 1) {
+          setCurrentScene(prev => prev + 1);
+        } else {
+          setCurrentChapter(prev => prev < 20 ? prev + 1 : 1);
+          setCurrentScene(0);
+        }
       } else if (isRightSwipe) {
-        setCurrentChapter(prev => prev > 1 ? prev - 1 : 20);
+        if (currentScene > 0) {
+          setCurrentScene(prev => prev - 1);
+        } else {
+          setCurrentChapter(prev => prev > 1 ? prev - 1 : 20);
+          setCurrentScene(0);
+        }
       }
     };
     const synopsisSection = document.getElementById('synopsis');
@@ -159,7 +243,7 @@ export const CinematicSynopsis = memo(({
         synopsisSection.removeEventListener('touchend', handleTouchEnd);
       }
     };
-  }, [touchStart, touchEnd]);
+  }, [touchStart, touchEnd, currentScene, scenes.length]);
   const handleSkip = useCallback(() => {
     const gatewaySection = document.querySelector('.gateway-section');
     if (gatewaySection) {
@@ -184,7 +268,6 @@ export const CinematicSynopsis = memo(({
     };
     return baseClasses[color as keyof typeof baseClasses] || 'text-gray-300';
   };
-  const currentChapterData = chapters.find(c => c.id === currentChapter) || chapters[0];
 
   // Timeline points configuration - 20 chronological markers (simplified)
   const timelinePoints = useMemo(() => [{
@@ -232,14 +315,12 @@ export const CinematicSynopsis = memo(({
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentChapter(chapter);
+      setCurrentScene(0);
       setAutoProgress(0);
       setIsPaused(true);
       setTimeout(() => setIsTransitioning(false), 400);
     }, 200);
   }, []);
-  // Extract first photo and text-only lines
-  const firstPhoto = currentChapterData.lines.find(line => line.photo)?.photo || null;
-  const textLines = currentChapterData.lines.filter(line => !line.photo);
   return <section id="synopsis" className="w-full min-h-screen flex items-center justify-center bg-black perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite" style={{
     transform: `translateY(${scrollY * 0.15}px)`
   }}>
@@ -272,7 +353,7 @@ export const CinematicSynopsis = memo(({
           {/* Progress Bar */}
           <div className="relative h-[2px] bg-gray-700/40 mb-1">
             <div className="absolute top-0 left-0 h-full bg-gray-400/70 transition-all duration-200 ease-linear" style={{
-            width: `${(currentChapter - 1) / 20 * 100 + autoProgress / 20}%`
+            width: `${((currentChapter - 1) / 20 * 100) + ((currentScene + autoProgress / 100) / scenes.length / 20 * 100)}%`
           }} />
             
             {/* Timeline Points */}
@@ -295,63 +376,81 @@ export const CinematicSynopsis = memo(({
           </div>
         </div>
 
-        {/* Main Content - Split Layout */}
-        <div className="w-full h-screen flex flex-col">
-          {/* Text Area (60%) */}
-          <div className={`flex-[60] flex items-center justify-center pt-24 px-4 transition-opacity duration-400 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-            <div className="text-center space-y-3 md:space-y-2 max-w-4xl w-full font-orbitron">
-              {textLines.map((line, index) => {
-              if (line.spacing) {
-                return <div key={index} className="h-2" />;
-              }
+        {/* Main Content - Scene-based rendering */}
+        <div className="w-full min-h-screen flex items-center justify-center">
+          {/* Text Scene */}
+          {!isPhotoScene && (
+            <div className={`min-h-screen flex items-center justify-center pt-28 pb-12 px-4 transition-opacity duration-400 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+              <div className="text-center space-y-6 max-w-4xl w-full font-orbitron">
+                {activeScene.lines.map((line, index) => {
+                  // Special rendering for Chapter 14 stats
+                  if (currentChapter === 14 && line.text?.includes('Active')) {
+                    return <div key={index} className="space-y-2 mt-4">
+                      <div className="flex justify-center items-center gap-4 text-gray-300">
+                        <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.activeAllies')}:</span>
+                        <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
+                          {activeAllyCount.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-center items-center gap-4 text-gray-300">
+                        <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.onlineIdols')}:</span>
+                        <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
+                          {onlineEchoEntities} entities
+                        </span>
+                      </div>
+                      <div className="flex justify-center items-center gap-4 text-gray-300">
+                        <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.collectedFragments')}:</span>
+                        <span className="text-base md:text-lg font-semibold tabular-nums text-gray-300 font-mono">
+                          {collectedFragments.toLocaleString()} / {totalFragments.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-center items-center gap-4 text-gray-300">
+                        <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.systemStability')}:</span>
+                        <span className={`text-base md:text-lg font-semibold tabular-nums font-mono ${stabilityPercentage > 50 ? 'text-gray-400' : 'text-gray-200'}`}>
+                          {stabilityPercentage}%
+                        </span>
+                      </div>
+                    </div>;
+                  }
 
-              // Special rendering for Chapter 14 stats
-              if (currentChapter === 14 && index === 3) {
-                return <div key={index} className="space-y-2 mt-4">
-                    <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.activeAllies')}:</span>
-                      <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
-                        {activeAllyCount.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.onlineIdols')}:</span>
-                      <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
-                        {onlineEchoEntities} entities
-                      </span>
-                    </div>
-                    <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.collectedFragments')}:</span>
-                      <span className="text-base md:text-lg font-semibold tabular-nums text-gray-300 font-mono">
-                        {collectedFragments.toLocaleString()} / {totalFragments.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-center items-center gap-4 text-gray-300">
-                      <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.systemStability')}:</span>
-                      <span className={`text-base md:text-lg font-semibold tabular-nums font-mono ${stabilityPercentage > 50 ? 'text-gray-400' : 'text-gray-200'}`}>
-                        {stabilityPercentage}%
-                      </span>
-                    </div>
-                  </div>;
-              }
-              const displayText = language === 'ko' && line.textKo ? line.textKo : line.text || '';
-              return <ParallaxText key={`ch${currentChapter}-line${index}`} text={displayText} className={`
-                    text-sm md:text-base lg:text-lg
-                    ${getColorClass(line.color, line.emphasis)}
-                    ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
-                    animate-line-reveal
-                    leading-relaxed md:leading-normal tracking-wide
-                    parallax-text
-                  `} style={{
-                animationDelay: `${index * 0.4}s`,
-                transform: isMobile ? 'none' : `translateY(${scrollY * 0.02}px) translateZ(${index * 2}px)`
-              }} />;
-            })}
+                  const displayText = language === 'ko' && line.textKo ? line.textKo : line.text || '';
+                  return <ParallaxText 
+                    key={`scene${currentScene}-line${index}`} 
+                    text={displayText} 
+                    className={`
+                      text-sm md:text-base lg:text-lg
+                      ${getColorClass(line.color, line.emphasis)}
+                      ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
+                      animate-fade-in
+                      leading-relaxed md:leading-normal tracking-wide
+                    `} 
+                    style={{
+                      animationDelay: `${index * 0.4}s`
+                    }} 
+                  />;
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Photo Area (40%) */}
-          
+          {/* Photo Scene */}
+          {isPhotoScene && (
+            <div className={`min-h-screen flex items-center justify-center pt-28 pb-12 px-4 transition-opacity duration-400 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+              <div className="max-w-4xl w-full">
+                {activeScene.lines.map((line, index) => (
+                  line.photo && (
+                    <ArchivePhoto
+                      key={`scene${currentScene}-photo${index}`}
+                      photo={line.photo}
+                      delay={index * 0.4}
+                      parallaxOffset={0}
+                      index={index}
+                    />
+                  )
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Timeline Navigation */}
