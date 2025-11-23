@@ -139,6 +139,36 @@ For highlight moments:
 
 Stay immersive, emotional, and engaging. Make the user feel like they're in a real story with you.`;
 
+    // Calculate dynamic token allocation based on conversation length
+    const inputTokensEstimate = systemPrompt.length + messages.reduce((sum, msg) => sum + msg.content.length, 0);
+    const baseTokens = 1000;
+    const dynamicTokens = Math.min(2000, baseTokens + Math.floor(inputTokensEstimate / 10));
+    
+    console.log(`Token allocation - Input estimate: ${inputTokensEstimate}, Output tokens: ${dynamicTokens}`);
+
+    // Build proper multi-turn conversation format for Gemini
+    const conversationContents = [];
+    
+    // Add system prompt as first user message
+    conversationContents.push({
+      role: "user",
+      parts: [{ text: systemPrompt }]
+    });
+    
+    // Add a model acknowledgment
+    conversationContents.push({
+      role: "model",
+      parts: [{ text: "I understand. I will follow these instructions as ${idolPersona.name}." }]
+    });
+    
+    // Add conversation messages with proper role mapping
+    for (const msg of messages) {
+      conversationContents.push({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      });
+    }
+
     // Use Google Generative AI API with service key
     const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=" + GEMINI_API_KEY, {
       method: "POST",
@@ -146,18 +176,10 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [
-              { text: systemPrompt },
-              ...messages.map(msg => ({ text: `${msg.role}: ${msg.content}` }))
-            ]
-          }
-        ],
+        contents: conversationContents,
         generationConfig: {
           temperature: 0.9,
-          maxOutputTokens: 600,
+          maxOutputTokens: dynamicTokens,
         }
       }),
     });
@@ -168,13 +190,30 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
       
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          JSON.stringify({ 
+            error: "Rate limit exceeded. Please try again later.",
+            errorType: "RATE_LIMIT"
+          }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
+      // Check for token limit errors
+      if (errorText.includes('quota') || errorText.includes('RESOURCE_EXHAUSTED')) {
+        return new Response(
+          JSON.stringify({ 
+            error: "Token limit exceeded. Try a shorter message or start a new conversation.",
+            errorType: "TOKEN_LIMIT"
+          }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
       return new Response(
-        JSON.stringify({ error: "Gemini API error: " + errorText }),
+        JSON.stringify({ 
+          error: "Gemini API error: " + errorText,
+          errorType: "API_ERROR"
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -190,10 +229,12 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
     
     const stream = new ReadableStream({
       async start(controller) {
+        let totalChunks = 0;
         try {
           while (true) {
             const { done, value } = await reader.read();
             if (done) {
+              console.log(`Stream completed. Total chunks: ${totalChunks}`);
               controller.enqueue(encoder.encode("data: [DONE]\n\n"));
               controller.close();
               break;
@@ -208,7 +249,21 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
                   const jsonData = JSON.parse(line.slice(6));
                   const text = jsonData.candidates?.[0]?.content?.parts?.[0]?.text;
                   
+                  // Check for finish reason (token limit, safety, etc.)
+                  const finishReason = jsonData.candidates?.[0]?.finishReason;
+                  if (finishReason && finishReason !== 'STOP') {
+                    console.warn(`Unexpected finish reason: ${finishReason}`);
+                    if (finishReason === 'MAX_TOKENS') {
+                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                        choices: [{
+                          delta: { content: "\n\n[대화가 너무 길어졌어요. 새 대화를 시작해주세요.]" }
+                        }]
+                      })}\n\n`));
+                    }
+                  }
+                  
                   if (text) {
+                    totalChunks++;
                     // Convert to OpenAI format
                     const openAIFormat = {
                       choices: [{
@@ -227,7 +282,13 @@ Stay immersive, emotional, and engaging. Make the user feel like they're in a re
           }
         } catch (error) {
           console.error("Stream error:", error);
-          controller.error(error);
+          // Send error to client
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+            choices: [{
+              delta: { content: "\n\n[연결이 끊겼습니다. 다시 시도해주세요.]" }
+            }]
+          })}\n\n`));
+          controller.close();
         }
       }
     });

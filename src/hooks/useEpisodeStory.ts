@@ -145,6 +145,19 @@ export const useEpisodeStory = (
           throw new Error('Rate limit exceeded. Please try again later.');
         }
         
+        // Handle 400 Token Limit error
+        if (response.status === 400 && errorData.errorType === 'TOKEN_LIMIT') {
+          toast.error('💬 대화가 너무 길어졌습니다', {
+            description: '새로운 대화를 시작해주세요.',
+            duration: 6000,
+            action: {
+              label: '새 대화 시작',
+              onClick: () => resetStory()
+            }
+          });
+          throw new Error('Token limit exceeded');
+        }
+        
         // Handle 500 Server Error (service configuration issue)
         if (response.status === 500) {
           toast.error('⚙️ 서비스 일시 중단', {
@@ -245,8 +258,10 @@ export const useEpisodeStory = (
       }
       console.error('Story chat error:', error);
       
-      // Don't add error message to chat if it's a rate limit/service error (already shown via toast)
-      if (!error.message.includes('Rate limit') && !error.message.includes('Service temporarily unavailable')) {
+      // Don't add error message to chat if it's a rate limit/service/token error (already shown via toast)
+      if (!error.message.includes('Rate limit') && 
+          !error.message.includes('Service temporarily unavailable') &&
+          !error.message.includes('Token limit')) {
         setMessages(prev => [
           ...prev,
           {
@@ -255,6 +270,16 @@ export const useEpisodeStory = (
             timestamp: new Date()
           }
         ]);
+        
+        // Show retry option for general errors
+        toast.error('오류가 발생했습니다', {
+          description: '다시 시도해주세요.',
+          duration: 5000,
+          action: {
+            label: '재시도',
+            onClick: () => sendMessage(userMessage)
+          }
+        });
       }
     } finally {
       setIsLoading(false);
