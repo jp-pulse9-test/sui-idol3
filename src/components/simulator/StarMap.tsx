@@ -75,12 +75,13 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
             onClick={() => onNodeClick(node)}
           >
             <div 
-              className={`rounded-full transition-all duration-300 ${baseColor} ${shadowColor} ${isHovered ? 'scale-[3] opacity-100' : 'opacity-90 hover:opacity-100'} hover:scale-[3] active:scale-[3.5]`}
+              className={`rounded-full transition-all duration-300 ${baseColor} ${shadowColor} ${isHovered ? 'scale-[3] opacity-100' : 'opacity-100 hover:opacity-100'} hover:scale-[3] active:scale-[3.5]`}
               style={{
                 width: `${diameter}px`,
                 height: `${diameter}px`,
-                minWidth: '12px',
-                minHeight: '12px',
+                minWidth: '14px',
+                minHeight: '14px',
+                filter: 'brightness(1.2)',
               }}
             />
 

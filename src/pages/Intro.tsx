@@ -94,6 +94,8 @@ const Intro: React.FC = () => {
     }
   }, [chatHistory, state.nodes, futureNodes, viewMode]);
   const handleNodeClick = (node: HistoryNode) => {
+    console.log('⭐ Star clicked:', node.eventName, node.year);
+    
     // Show chat terminal on first interaction
     if (!showChatTerminal) {
       setShowChatTerminal(true);
