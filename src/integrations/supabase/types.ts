@@ -257,6 +257,51 @@ export type Database = {
           },
         ]
       }
+      episode_progress: {
+        Row: {
+          branch_id: string
+          choices_made: Json | null
+          completed_at: string | null
+          created_at: string | null
+          current_beat: string
+          current_turn: number
+          episode_id: string
+          id: string
+          is_completed: boolean | null
+          mission_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          branch_id: string
+          choices_made?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_beat?: string
+          current_turn?: number
+          episode_id: string
+          id?: string
+          is_completed?: boolean | null
+          mission_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          branch_id?: string
+          choices_made?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_beat?: string
+          current_turn?: number
+          episode_id?: string
+          id?: string
+          is_completed?: boolean | null
+          mission_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       idol_cards: {
         Row: {
           id: string
