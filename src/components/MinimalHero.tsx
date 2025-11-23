@@ -30,36 +30,40 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
       <div className="absolute inset-0 bg-background/70" />
       
       {/* Content */}
-      <div className="relative z-10 text-center space-y-6 md:space-y-8 px-4">
-        <div className="flex justify-center">
-          <p className="text-xs sm:text-sm md:text-base text-accent font-orbitron tracking-widest uppercase typing-effect">
-            {t('hero.tagline')}
+      <div className="relative z-10 text-center space-y-8 md:space-y-12 px-4 max-w-5xl mx-auto">
+        {/* Main Title - Primary Focus */}
+        <div className="space-y-4">
+          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-orbitron font-bold tracking-wider text-foreground drop-shadow-[0_0_30px_hsl(var(--primary)/0.5)]">
+            {t('hero.title')}
+          </h1>
+          <p className="text-2xl sm:text-3xl md:text-4xl text-primary font-orbitron tracking-widest uppercase">
+            {t('hero.secondaryTitle')}
           </p>
         </div>
         
-        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-bold tracking-wider text-foreground">
-          {t('hero.title')}
-        </h1>
+        {/* Description - Secondary Focus */}
+        <div className="space-y-3 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-foreground/90 font-orbitron tracking-wide leading-relaxed">
+            {t('hero.description')}
+          </p>
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-orbitron tracking-wide">
+            {t('hero.subtitle')}
+          </p>
+        </div>
         
-        <p className="text-xl sm:text-2xl md:text-3xl text-primary/80 font-orbitron tracking-widest uppercase mt-4">
-          {t('hero.secondaryTitle')}
-        </p>
-        
-        <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-orbitron italic tracking-wide mt-4">
-          {t('hero.description')}
-        </p>
-        
-        <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-orbitron tracking-wide max-w-2xl mx-auto px-4 mt-6">
-          {t('hero.subtitle')}
-        </p>
-        
-        <Button
-          onClick={() => setShowEnterDialog(true)}
-          size="lg"
-          className="mt-6 md:mt-8 px-10 py-5 md:px-12 md:py-6 text-base md:text-lg font-orbitron tracking-widest hover:scale-105 transition-transform touch-action-manipulation"
-        >
-          {t('hero.enter')}
-        </Button>
+        {/* CTA Button - Action Focus */}
+        <div className="pt-4">
+          <Button
+            onClick={() => setShowEnterDialog(true)}
+            size="lg"
+            className="mt-2 px-12 py-6 md:px-16 md:py-8 text-lg md:text-xl font-orbitron font-bold tracking-widest hover:scale-110 transition-all duration-300 shadow-[0_0_30px_hsl(var(--primary)/0.6)] hover:shadow-[0_0_50px_hsl(var(--primary)/0.8)] touch-action-manipulation"
+          >
+            {t('hero.enter')}
+          </Button>
+          <p className="text-xs text-muted-foreground/60 font-orbitron mt-4 tracking-wider uppercase">
+            {t('hero.tagline')}
+          </p>
+        </div>
       </div>
       
       {/* Subtle corner decorations - hidden on very small screens */}
