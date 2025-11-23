@@ -8,7 +8,7 @@ interface MissionOverlayProps {
 
 export const MissionOverlay: React.FC<MissionOverlayProps> = ({ onClose }) => {
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-md animate-fade-in">
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-lg animate-fade-in">
       <div className="max-w-2xl mx-auto p-8 text-center space-y-6">
         <div className="space-y-2">
           <h2 className="text-4xl font-bold tracking-tight text-primary font-orbitron">
@@ -37,7 +37,7 @@ export const MissionOverlay: React.FC<MissionOverlayProps> = ({ onClose }) => {
           <Button 
             onClick={onClose}
             size="lg"
-            className="font-orbitron tracking-wider"
+            className="font-orbitron tracking-wider text-xl px-12 py-6 animate-pulse shadow-[0_0_30px_hsl(var(--primary)/0.6)] hover:shadow-[0_0_50px_hsl(var(--primary)/0.8)] transition-all duration-300"
           >
             BEGIN EXPLORATION
           </Button>
