@@ -143,20 +143,32 @@ export const PlayChatInterface = () => {
     if (currentMode === 'episode' && episodeMessages.length > 0) {
       const lastEpisodeMsg = episodeMessages[episodeMessages.length - 1];
       setMessages((prev) => {
-        // 중복 방지: 마지막 메시지가 같은 타임스탬프면 무시
+        const mappedType: ChatMessage['type'] = lastEpisodeMsg.role === 'assistant' ? 'idol' : 'user';
         const lastChatMsg = prev[prev.length - 1];
+
+        // 이미 같은 타임스탬프/타입의 메시지가 있으면, 새 내용으로 업데이트 (스트리밍 보정)
         if (
           lastChatMsg &&
-          lastChatMsg.type === (lastEpisodeMsg.role === 'assistant' ? 'idol' : 'user') &&
+          lastChatMsg.type === mappedType &&
           lastChatMsg.timestamp.getTime() === lastEpisodeMsg.timestamp.getTime()
         ) {
-          return prev;
+          return prev.map((msg, i) =>
+            i === prev.length - 1
+              ? {
+                  ...msg,
+                  content: lastEpisodeMsg.content,
+                  isHighlight: lastEpisodeMsg.isHighlight,
+                  imageUrl: lastEpisodeMsg.imageUrl,
+                }
+              : msg
+          );
         }
 
+        // 새로운 턴이면 새 메시지 추가
         return [
           ...prev,
           {
-            type: lastEpisodeMsg.role === 'assistant' ? 'idol' : 'user',
+            type: mappedType,
             content: lastEpisodeMsg.content,
             timestamp: lastEpisodeMsg.timestamp,
             isHighlight: lastEpisodeMsg.isHighlight,
