@@ -380,8 +380,8 @@ export const CinematicSynopsis = memo(({
         <div className="w-full min-h-screen flex items-center justify-center">
           {/* Text Scene */}
           {!isPhotoScene && (
-            <div className={`min-h-screen flex items-center justify-center pt-28 pb-12 px-4 transition-opacity duration-400 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-              <div className="text-center space-y-6 max-w-4xl w-full font-orbitron">
+            <div className={`min-h-screen flex items-center justify-center pt-28 pb-12 px-6 md:px-12 lg:px-16 py-16 transition-opacity duration-400 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+              <div className="text-center space-y-6 max-w-3xl w-full font-orbitron">
                 {activeScene.lines.map((line, index) => {
                   // Special rendering for Chapter 14 stats
                   if (currentChapter === 14 && line.text?.includes('Active')) {
@@ -418,12 +418,12 @@ export const CinematicSynopsis = memo(({
                     key={`scene${currentScene}-line${index}`} 
                     text={displayText} 
                     className={`
-                      text-sm md:text-base lg:text-lg
+                      text-base md:text-lg lg:text-xl
                       ${getColorClass(line.color, line.emphasis)}
-                      ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
+                      ${line.emphasis ? 'font-semibold text-xl md:text-2xl lg:text-3xl xl:text-4xl' : 'font-normal'}
                       animate-fade-in
                       leading-relaxed md:leading-normal tracking-wide
-                    `} 
+                    `}
                     style={{
                       animationDelay: `${index * 0.4}s`
                     }} 
@@ -435,7 +435,7 @@ export const CinematicSynopsis = memo(({
 
           {/* Photo Scene */}
           {isPhotoScene && (
-            <div className={`min-h-screen flex items-center justify-center pt-28 pb-12 px-4 transition-opacity duration-400 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+            <div className={`min-h-screen flex items-center justify-center pt-28 pb-12 px-6 md:px-12 lg:px-16 py-16 transition-opacity duration-400 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
               <div className="max-w-4xl w-full">
                 {activeScene.lines.map((line, index) => (
                   line.photo && (

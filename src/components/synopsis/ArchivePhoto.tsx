@@ -47,14 +47,14 @@ export const ArchivePhoto = memo(({ photo, delay = 0, parallaxOffset = 0, index 
           
           rafId = requestAnimationFrame(() => {
             // Calculate opacity based on intersection ratio
-            // Fade starts when 20% visible, fully visible at 50%
+            // Fade starts when 10% visible, fully visible at 30%
             const ratio = entry.intersectionRatio;
             
-            if (ratio > 0.5) {
+            if (ratio > 0.3) {
               setScrollOpacity(1);
-            } else if (ratio > 0.2) {
-              // Smooth fade-in from 20% to 50% visibility
-              const fadeProgress = (ratio - 0.2) / 0.3;
+            } else if (ratio > 0.1) {
+              // Smooth fade-in from 10% to 30% visibility
+              const fadeProgress = (ratio - 0.1) / 0.2;
               setScrollOpacity(fadeProgress);
             } else {
               setScrollOpacity(0);
@@ -63,8 +63,8 @@ export const ArchivePhoto = memo(({ photo, delay = 0, parallaxOffset = 0, index 
         });
       },
       {
-        threshold: [0, 0.2, 0.5, 0.8, 1.0],
-        rootMargin: '-10% 0px -10% 0px'
+        threshold: [0, 0.1, 0.3, 0.6, 1.0],
+        rootMargin: '0px'
       }
     );
 
