@@ -45,6 +45,10 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
           {t('hero.secondaryTitle')}
         </p>
         
+        <p className="text-base sm:text-lg md:text-xl text-accent/90 font-orbitron italic tracking-wide mt-4">
+          {t('hero.description')}
+        </p>
+        
         <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-orbitron tracking-wide max-w-2xl mx-auto px-4 mt-6">
           {t('hero.subtitle')}
         </p>
