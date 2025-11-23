@@ -128,15 +128,34 @@ const Intro: React.FC = () => {
           {/* Mission Overlay */}
           {showMissionOverlay && <MissionOverlay onClose={() => setShowMissionOverlay(false)} />}
 
-          {state.status === 'initializing' ? <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
-              <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              <div className="text-xs text-primary animate-pulse tracking-widest">INITIALIZING...</div>
+          {state.status === 'initializing' ? <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 z-20">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+              <div className="text-sm text-primary animate-pulse tracking-widest">
+                LOADING HISTORICAL DATA...
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {state.nodes.length} events loaded
+              </div>
+            </div> : state.status === 'error' ? <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 z-20">
+              <div className="text-destructive text-lg">⚠️ Error loading data</div>
+              <Button onClick={() => window.location.reload()}>
+                Retry
+              </Button>
             </div> : <>
               <StarMap nodes={viewMode === 'past' ? state.nodes : futureNodes} onNodeClick={handleNodeClick} mode={viewMode} />
               
-              {/* Hint overlay when no interaction yet */}
-              {!showChatTerminal && !showMissionOverlay && <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-primary/20 border border-primary/50 backdrop-blur-md px-4 py-2 rounded-full text-xs text-primary font-bold animate-pulse pointer-events-none">
-                  Click any star to begin
+              {/* Interactive hint overlay */}
+              {!showChatTerminal && !showMissionOverlay && <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                  <div className="text-center space-y-4 animate-pulse">
+                    <div className="text-2xl font-bold text-primary">
+                      👆 Click any star to explore
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      <div className="w-4 h-4 rounded-full bg-primary animate-ping" />
+                      <div className="w-4 h-4 rounded-full bg-primary animate-ping" style={{animationDelay: '100ms'}} />
+                      <div className="w-4 h-4 rounded-full bg-primary animate-ping" style={{animationDelay: '200ms'}} />
+                    </div>
+                  </div>
                 </div>}
             </>}
         </section>
