@@ -11,7 +11,8 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
   const [hoveredNode, setHoveredNode] = useState<HistoryNode | null>(null);
 
   const getVisualDiameter = (influence: number) => {
-    const baseSize = Math.max(0.5, (influence / 100) * 1.6); 
+    // Larger nodes for better visibility and clickability
+    const baseSize = Math.max(1.2, (influence / 100) * 2.5); 
     return baseSize * 2;
   };
 
@@ -26,8 +27,8 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
         }}
       />
       
-      {/* Constellation Lines */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-10">
+      {/* Constellation Lines - Very subtle */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-5">
         {nodes.map((node, i) => {
           const target = nodes[i + 1];
           if (!target) return null;
@@ -40,7 +41,7 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
               x2={`${target.x}%`}
               y2={`${target.y}%`}
               stroke={mode === 'future' ? "hsl(var(--accent))" : "hsl(var(--primary))"}
-              strokeWidth="0.1"
+              strokeWidth="0.5"
             />
           );
         })}
@@ -95,26 +96,27 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
         );
       })}
 
-      {/* Info HUD */}
+      {/* Expanded Info Card on Hover */}
       {hoveredNode && (
         <div 
-          className="absolute z-50 p-3 bg-background/95 border border-border backdrop-blur-md text-xs font-orbitron max-w-[200px] pointer-events-none"
+          className="absolute z-50 p-4 bg-background/98 border-2 border-border backdrop-blur-md text-xs font-orbitron max-w-[280px] shadow-2xl rounded-lg animate-scale-in"
           style={{
-            left: `${Math.min(hoveredNode.x + 2, 75)}%`,
-            top: `${Math.min(hoveredNode.y + 2, 80)}%`,
+            left: `${Math.min(hoveredNode.x + 3, 70)}%`,
+            top: `${Math.min(hoveredNode.y + 3, 75)}%`,
             boxShadow: mode === 'future' 
-              ? '0 0 15px hsl(var(--accent) / 0.1)' 
-              : '0 0 15px hsl(var(--primary) / 0.1)'
+              ? '0 0 25px hsl(var(--accent) / 0.3)' 
+              : '0 0 25px hsl(var(--primary) / 0.3)'
           }}
         >
-          <div className="flex justify-between items-center mb-2 border-b border-border pb-1">
-            <span className={`${mode === 'future' ? 'text-accent' : 'text-primary'} font-bold`}>
-              [{hoveredNode.year}]
+          <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
+            <span className={`text-sm font-bold ${mode === 'future' ? 'text-accent' : 'text-primary'}`}>
+              {hoveredNode.year}
             </span>
-            <span className="text-muted-foreground">INF:{hoveredNode.influence}</span>
+            <span className="text-xs text-muted-foreground">INFLUENCE: {hoveredNode.influence}</span>
           </div>
-          <div className="text-foreground font-bold mb-1">{hoveredNode.eventName}</div>
-          <div className="text-muted-foreground leading-tight text-[10px]">{hoveredNode.description}</div>
+          <div className="text-foreground font-bold mb-2 text-sm">{hoveredNode.eventName}</div>
+          <div className="text-muted-foreground leading-relaxed text-[11px] mb-3">{hoveredNode.description}</div>
+          <div className="text-[9px] text-accent uppercase tracking-wider">Click to explore details</div>
         </div>
       )}
       
