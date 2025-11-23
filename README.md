@@ -107,6 +107,163 @@
 
 ---
 
+## 🌊 Impact on Sui Ecosystem
+
+### Strategic Significance on Sui Network
+
+**AIDOL101 represents a breakthrough use case that bridges Sui's technical excellence with global K-POP fandom culture.**
+
+#### 1. **Mass Consumer Entertainment Application**
+- Leverages Sui's core strengths (parallel execution, low gas fees, instant finality) for **mainstream entertainment**
+- Moves beyond DeFi/GameFi to connect **global entertainment industry** with Web3
+- Serves as a **gateway** to onboard **1 billion+ K-POP fans** into the Sui ecosystem
+
+#### 2. **Move Language Best Practices Showcase**
+
+**sui_idol::photocard Module** - K-POP photocard implementation using Sui Object Model:
+```move
+struct PhotoCard has key, store {
+    id: UID,
+    idol_id: u64,
+    rarity: u8,
+    concept: String,
+    season: u64,
+    serial_no: u64,
+    image_url: String,
+}
+
+struct IdolCard has key, store {
+    id: UID,
+    name: String,
+    persona_prompt: String,  // AI-generated personality
+    profile_image: String,
+}
+```
+
+**cross_chain_storage Module** - Walrus storage proof on-chain registry:
+```move
+struct StorageProof has key, store {
+    id: UID,
+    blob_id: String,
+    stored_epoch: u64,
+    file_size: u64,
+    source_chain: String,
+    vaa_signature: vector<u8>,  // Wormhole VAA verification
+}
+```
+
+#### 3. **Full-Stack Sui Infrastructure Demonstration**
+
+```
+Frontend (Sui dApp Kit)
+    ↓
+Smart Contracts (Move)
+    ├── photocard.move (NFT minting)
+    └── cross_chain_storage.move (Storage proof registry)
+    ↓
+Walrus Protocol (Decentralized Storage)
+    ├── Photocard images
+    └── AI-generated content
+    ↓
+Wormhole Bridge (Cross-chain interoperability)
+    └── Sui ↔ EVM ↔ Solana asset bridging
+```
+
+**Integrated Technologies:**
+- **Sui dApp Kit**: Wallet connection, transaction signing, real-time chain state queries
+- **Walrus Protocol**: Decentralized storage for photocard images and AI-generated content
+- **Wormhole**: Cross-chain asset transfer enabling users from other chains to join Sui ecosystem
+
+---
+
+### 🚀 Expected Impact
+
+#### 1. **User Acquisition**
+
+**K-POP Fandom Web3 Onboarding**
+- Only a small fraction of 1B+ K-POP fans have Web3 experience
+- AIDOL101 positioned as their **"first Web3 experience"**
+- Natural user journey: Sui Wallet installation → SUI token acquisition → Sui ecosystem engagement
+
+**Monthly Active Users (MAU) Contribution**
+- Target: **100,000+ MAU** within 6 months post-launch
+- Daily transactions: photocard minting, idol card issuance, story rewards
+- Significant contribution to Sui network's total transaction volume
+
+#### 2. **Ecosystem Growth**
+
+**NFT Market Diversification**
+- Current Sui NFTs: PFP projects, gaming items
+- AIDOL101: Pioneering **entertainment IP-based collectible NFTs**
+- Brings K-POP fandom to Sui NFT marketplaces (BlueMove, Clutchy, etc.)
+
+**Walrus Protocol Adoption Acceleration**
+- Mass storage of AI-generated images and photocards
+- Projected: **1TB+ monthly storage** (100K MAU × 10MB average per user)
+- Increased incentives for Walrus storage node operators
+
+**Wormhole Bridge Volume Growth**
+- Provides entry path for EVM/Solana users to Sui
+- Cross-chain photocard transfers → increased Wormhole bridge transaction volume
+
+#### 3. **Technical Validation**
+
+**Sui Performance Verification**
+- End-to-end latency testing: Real-time AI generation → on-chain minting → Walrus storage
+- Large-scale concurrent access scenarios (e.g., new idol launch events)
+
+**Move Developer Community Expansion**
+- Open-source AIDOL101 codebase → Move learning reference
+- Entertainment DApp development guidelines
+
+#### 4. **Business Model Diversification**
+
+**Revenue Model Validation within Sui Ecosystem**
+- Premium photocard minting fees (SUI/WAL payments)
+- Cross-chain transfer fees
+- Premium story episode content sales
+
+**IP Licensing Opportunities**
+- Potential collaboration with actual K-POP entertainment companies upon success
+- Expansion into official idol photocard platform on Sui
+
+#### 5. **Global Marketing Impact**
+
+**Sui Foundation Partnership Case Study**
+- Reference case for Entertainment × Web3 collaboration
+- Featured Sui use case at conferences and hackathons
+
+**Media Exposure**
+- K-POP + Web3 combination appeals to **both tech and entertainment media**
+- Increases Sui network awareness
+
+---
+
+### 📊 Key Impact Metrics
+
+| Metric | 6-Month Target | Sui Ecosystem Contribution |
+|--------|---------------|---------------------------|
+| **MAU** | 100,000+ | New Sui Wallet user growth |
+| **Photocard Minting** | 500,000+ NFTs | Sui Object creation volume increase |
+| **Walrus Storage** | 1TB+ | Walrus network usage growth |
+| **Wormhole Bridge** | $500K+ TVL | Cross-chain liquidity expansion |
+| **Daily Transactions** | 50,000+ txs | Sui network activity increase |
+
+---
+
+### 🎯 Long-term Vision
+
+**"Making Sui the Web3 Hub for K-POP Fandom"**
+
+1. **Season 2, 3 Expansion**: New idols, extended storylines
+2. **DAO Governance**: Fan voting determines idol comeback concepts
+3. **Real-world Integration**: Exclusive offline events for Sui NFT holders
+4. **IP Extension**: Webtoons, animation, metaverse concerts
+
+**AIDOL101 is not just a DApp—it's a strategic project connecting the Sui ecosystem with the global entertainment industry.**
+
+---
+
 ## 🏗️ 시스템 아키텍처 / System Architecture
 
 ```
