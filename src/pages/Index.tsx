@@ -56,6 +56,19 @@ const Index = () => {
     };
     fetchIdols();
   }, []);
+
+  // Enter key handler for quick start
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && showEnterDialog) {
+        setShowEnterDialog(false);
+        navigate('/pick');
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [showEnterDialog, navigate]);
   const handleEnter = () => {
     // Open the EnterGameDialog
     setShowEnterDialog(true);
