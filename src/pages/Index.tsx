@@ -76,7 +76,7 @@ const Index = () => {
         <MinimalHero onEnter={handleEnter} />
 
         {/* Journey Section - AWAKEN/SALVATION/GLORY */}
-        <JourneySection />
+        
 
         {/* Cinematic Synopsis - Sticky */}
         <div className="sticky top-0 z-40">
