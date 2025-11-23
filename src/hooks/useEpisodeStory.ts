@@ -85,18 +85,23 @@ export const useEpisodeStory = (
   const sendMessage = async (userMessage: string) => {
     if (!userMessage.trim() || isLoading) return;
 
-    // Add user message
+    // Don't add system messages to visible chat
+    const isSystemMessage = userMessage.startsWith('[SYSTEM:');
+    
+    // Add user message only if it's not a system message
     const newUserMessage: Message = {
       role: 'user',
       content: userMessage,
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, newUserMessage]);
+    if (!isSystemMessage) {
+      setMessages(prev => [...prev, newUserMessage]);
+    }
     setIsLoading(true);
     
-    // Update turn and beat
-    const nextTurn = currentTurn + 1;
+    // Update turn and beat (only for non-system messages)
+    const nextTurn = isSystemMessage ? 1 : currentTurn + 1;
     setCurrentTurn(nextTurn);
     const nextBeat = calculateBeat(nextTurn);
     setCurrentBeat(nextBeat);
@@ -104,10 +109,9 @@ export const useEpisodeStory = (
     console.log(`Turn ${nextTurn}, Beat: ${nextBeat}`);
 
     // Prepare messages for API
-    const apiMessages = [...messages, newUserMessage].map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
+    const apiMessages = isSystemMessage 
+      ? [newUserMessage].map(msg => ({ role: msg.role, content: msg.content }))
+      : [...messages, newUserMessage].map(msg => ({ role: msg.role, content: msg.content }));
 
     try {
       abortControllerRef.current = new AbortController();
