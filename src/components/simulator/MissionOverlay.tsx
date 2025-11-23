@@ -8,8 +8,8 @@ interface MissionOverlayProps {
 
 export const MissionOverlay: React.FC<MissionOverlayProps> = ({ onClose }) => {
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-lg animate-fade-in">
-      <div className="max-w-2xl mx-auto p-8 text-center space-y-6">
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-lg animate-fade-in pointer-events-none">
+      <div className="max-w-2xl mx-auto p-8 text-center space-y-6 pointer-events-auto">
         <div className="space-y-2">
           <h2 className="text-4xl font-bold tracking-tight text-primary font-orbitron">
             THE OLD EARTH SIMULATOR
