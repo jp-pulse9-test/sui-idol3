@@ -1,6 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { GeminiKeyManager } from '../_shared/apiKeyRotation.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,83 +16,75 @@ serve(async (req) => {
     console.log("Generating scene image:", { 
       idol: idolName, 
       episode: episodeTitle,
-      scene: sceneDescription.substring(0, 100) 
+      scene: sceneDescription.substring(0, 200) 
     });
 
-    // Initialize Gemini Key Manager with fallback support
-    const keyManager = new GeminiKeyManager();
-    console.log("Using Gemini API with multi-key fallback for image generation");
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY not configured');
+    }
 
-    const imagePrompt = `Create a beautiful, emotional anime-style illustration of this moment:
+    // Create a concise, focused prompt for image generation
+    const imagePrompt = `K-pop idol ${idolName} in an anime style scene from "${episodeTitle}": ${sceneDescription.substring(0, 300)}. 
 
-Scene: ${sceneDescription}
-Character: ${idolName} (K-pop idol character)
-Episode: ${episodeTitle}
+Style: High-quality anime art, emotional K-pop idol aesthetic, detailed character with expressive face, cinematic lighting, vibrant colors, professional illustration quality, 16:9 widescreen composition.`;
 
-Style: High-quality anime art, emotional expression, detailed background, cinematic lighting, vibrant colors, professional illustration quality, 16:9 aspect ratio.
-
-The image should capture the emotion and atmosphere of this highlight moment in the story. Make it look like a premium photocard or memory card from a K-pop idol game.`;
-
-    console.log('Calling Gemini for text-to-image generation...');
+    console.log('Calling Lovable AI image generation model...');
     
-    // Use Gemini 2.5 Flash for text-based image description (since direct image generation isn't available)
-    // We'll return a placeholder or use a different approach
-    const geminiResponse = await keyManager.callGeminiWithFallback(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=',
-      {
-        contents: [{
-          parts: [{ 
-            text: `Generate a detailed visual description for this scene that could be used to create an image:
-
-${imagePrompt}
-
-Provide a vivid, detailed description focusing on:
-- Character appearance and expression
-- Background setting and atmosphere  
-- Lighting and color palette
-- Emotional tone
-- Composition and framing
-
-Keep it under 100 words but highly descriptive.`
-          }]
+    // Use Lovable AI Gateway with Nano banana (image generation model)
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash-image-preview',
+        messages: [{
+          role: 'user',
+          content: imagePrompt
         }],
-        generationConfig: {
-          temperature: 0.9,
-          maxOutputTokens: 200
-        }
-      }
-    );
+        modalities: ['image', 'text']
+      })
+    });
 
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text();
-      console.error("Gemini error:", geminiResponse.status, errorText);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Image generation error:", response.status, errorText);
       
-      if (geminiResponse.status === 429) {
+      if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
-      throw new Error(`Gemini API failed: ${geminiResponse.status}`);
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Payment required. Please add credits to your Lovable AI workspace." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      throw new Error(`Image generation failed: ${response.status}`);
     }
 
-    const geminiData = await geminiResponse.json();
-    console.log('Gemini response received');
+    const data = await response.json();
+    console.log('Image generation response received');
 
-    // Extract the generated description
-    const description = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || sceneDescription;
+    // Extract the generated image from the response
+    const imageData = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     
-    // For now, return a placeholder image URL with the description
-    // In the future, this could call an actual image generation API
-    const imageUrl = `https://via.placeholder.com/800x450/1a1a1a/10b981?text=${encodeURIComponent(idolName + ' - ' + episodeTitle.substring(0, 20))}`;
+    if (!imageData) {
+      throw new Error('No image data returned from API');
+    }
 
-    console.log('Scene description generated successfully');
+    console.log('Scene image generated successfully');
 
     return new Response(
       JSON.stringify({ 
-        imageUrl,
-        sceneDescription: description
+        imageUrl: imageData, // This will be a base64 data URL
+        sceneDescription
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
