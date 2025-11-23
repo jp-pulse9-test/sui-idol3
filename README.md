@@ -1,76 +1,237 @@
-# 🌟 Sui:Idol³ — Pick · Vault · Rise  
+# 🌟 Sui:Idol³ — Pick · Vault · Rise
 
-> **"최애 아이돌을 고르고, 스토리 에피소드를 통해 추억이 담긴 포토카드를 모아 데뷔와 성장을 체감하는 특별한 경험."**  
-> **SEASON 1, 당신의 픽으로 탄생하는 K-POP 아이돌. 최애의 성장과 추억을 만드는 특별한 여정 ✨**  
+> **English** | [한국어](./README.ko.md)
 
-> **"Pick your favorite idol, collect memory-filled photocards through story episodes, and experience their debut and growth."**  
-> **SEASON 1: A K-POP idol born from your choice. A special journey of growth and memories. ✨**
+**"Pick your favorite idol, collect memory-filled photocards through story episodes, and experience their debut and growth."**
 
----
-
-## 🚀 서비스 개요 / Overview
-**Sui:Idol³**는 K-POP 팬덤 문화를 Web3와 AI 기술로 재해석한 **인터랙티브 아이돌 스토리 플랫폼**입니다.  
-**Sui:Idol³** is an **interactive idol story platform** that reimagines K-POP fandom culture through Web3 and AI technology.  
-
-- **Pick / 픽**: 101명의 소년 & 101명의 소녀 프리셋 아이돌 중 최애 선택  
-  → Choose your favorite from 101 preset boys & 101 preset girls.  
-- **Vault / 볼트**: 스토리·대화 속에서 획득한 포토카드를 모아 추억 보관  
-  → Collect photocards earned through stories and conversations.  
-- **Rise / 라이즈**: 데뷔 스포트라이트와 팬 상호작용으로 최애의 성장 실감  
-  → Experience your idol’s growth through debut spotlight & fan interaction.  
-
-팬은 소비자가 아니라 **참여자·큐레이터·공동 제작자**가 됩니다.  
-Fans are not just consumers, but **participants, curators, and co-creators**.  
+**SEASON 1: A K-POP idol born from your choice. A special journey of growth and memories. ✨**
 
 ---
 
-## ✨ 핵심 기능 / Key Features
-- 🎭 **아이돌 픽 (Idol Pick)**: 속성(동물상, 체형 등) 기반 하이브리드 선택 시스템  
-  → Hybrid selection system based on attributes (animal face, body type, etc.)  
-- 📖 **스토리 플레이 (Story Play)**: 일상부터 데뷔까지 몰입형 텍스트 스토리  
-  → Immersive text stories, from daily life to debut episodes  
-- 🖼️ **포토카드 보상 (Photocard Rewards)**: 스토리 진행 및 활동으로 카드 수집  
-  → Collect digital photocards as story & activity rewards  
-- 🗨️ **Q&A 대화 (Interactive Q&A)**: 팬-아이돌 몰입감을 강화하는 질의응답  
-  → Interactive Q&A to deepen immersion with idols  
-- 🌐 **온체인 생태계 (On-chain Ecosystem)**: 후원·투표·보상이 연결된 Web3 경험  
-  → Web3 experience with support, voting, and reward linkage  
+## 🌌 The Story Behind Sui:Idol³
+
+### Timeline: Two Worlds, One Destiny
+
+**Year 2847 — The Digital World**
+- After humanity's extinction, a complete digital consciousness society exists
+- **Crisis**: Emotional data depletion threatens the collapse of the digital world
+- **Solution**: Send AIDOLs back in time to collect emotional data
+
+**Year 2021~2025 — Old Earth (Your Time)**
+- 202 AIDOLs (101 boys, 101 girls) arrive
+- You are a **DATA ALLY**: The emotional bridge between two worlds
+- Mission: Connect with AIDOLs and transmit emotional data to the future
+
+**Why This Matters**
+- If Earth perishes → The digital world also disappears
+- Emotions can **only be created by humans**
+- Your choices = The fate of two worlds
+
+### Historical Archives (1889~2025)
+- **1889**: Industrial Revolution — The beginning of technological advancement vs human disconnection
+- **1945**: War — Extreme emotions (love and hate) data
+- **1962**: Space Age — Harmony between technology and humanity
+- **1967**: Digital Revolution — Digitalization of love
+- **2021**: Pandemic — First AIDOL transmission
+- **2025**: **Now** — Your mission begins
 
 ---
 
-## 🏆 차별 포인트 / Differentiators
-- **K-POP 특수성 / K-POP Uniqueness**: 글로벌 팬덤의 강력한 결속력과 소비력  
-- **스토리+수집 / Story + Collection**: NFT가 아닌, **추억 기반 포토카드**  
-- **글로벌 검증 / Global Validation**: Eternity(IITERNITI) 사례 –  
-  스위스 *AI For Good*, 영국 *V&A Museum*, 독일 *Universum Museum* 전시 및 공연 경험  
-  → Showcased at *AI For Good (Switzerland)*, *V&A Museum (UK)*, *Universum Museum (Germany)*  
-- **참여형 성장 / Participatory Growth**: 팬의 선택이 최애 성장에 직접 반영  
+## 🚀 Service Overview
+
+**Sui:Idol³** is an **interactive idol story platform** that reimagines K-POP fandom culture through Web3 and AI technology.
+
+- **Pick**: Choose your favorite from 101 preset boys & 101 preset girls
+- **Vault**: Collect photocards earned through stories and conversations
+- **Rise**: Experience your idol's growth through debut spotlight & fan interaction
+
+Fans are not just consumers, but **participants, curators, and co-creators**.
 
 ---
 
-## 🛠️ 기술 스택 / Tech Stack
-- **Frontend**: Next.js, TailwindCSS  
-- **Backend**: Node.js, Express  
-- **Blockchain**: Sui Network (NFT issuance, support/reward protocol)  
-- **Database**: Walrus (story & social data storage)  
-- **AI**: LLM-based story generation & conversation  
+## 💎 Core Concept
+
+### You Are Not Just a Fan — You Are DATA ALLY
+
+Traditional fandom: Fans are **consumers**.
+
+In Sui:Idol³, you are:
+- 🤝 **Emotional Ally** — AIDOL's emotional partner
+- 🌍 **World Savior** — Co-savior of two worlds
+- 📊 **Data Curator** — Data curator creating the future
+
+### "Your AIDOL Ally" Philosophy
+- Every conversation = Emotional data
+- Every choice = Reality branch
+- Every photocard = Memory preserved forever
+- Your love = Salvation of two worlds
 
 ---
 
-## 📦 설치 및 실행 / Installation
-```bash
-# 리포지토리 클론 / Clone repository
-git clone https://github.com/your-org/suiidol3.git
-cd suiidol3
+## ✨ Key Features
 
-# 패키지 설치 / Install dependencies
-npm install
+- 🎭 **Idol Pick**: Hybrid selection system based on attributes (animal face, body type, etc.)
+- 📖 **Story Play**: Immersive text stories from daily life to debut episodes
+- 🖼️ **Photocard Rewards**: Collect digital photocards as story & activity rewards
+- 🗨️ **Interactive Q&A**: Interactive Q&A to deepen immersion with idols
+- 🌐 **On-chain Ecosystem**: Web3 experience with support, voting, and reward linkage
 
-# 개발 서버 실행 / Run dev server
-npm run dev
+---
+
+## 🏆 Differentiators
+
+- **K-POP Uniqueness**: Strong cohesion and purchasing power of global fandom
+- **Story + Collection**: **Memory-based photocards**, not just NFTs
+- **Global Validation**: Eternity(IITERNITI) case — Showcased at *AI For Good (Switzerland)*, *V&A Museum (UK)*, *Universum Museum (Germany)*
+- **Participatory Growth**: Fans' choices directly reflected in idol's growth
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework**: React 18 + Vite + TypeScript
+- **Styling**: TailwindCSS + shadcn/ui
+- **State Management**: TanStack Query, React Context
+- **Routing**: React Router v6
+
+### Backend & Infrastructure
+- **Serverless**: Supabase Edge Functions (Deno runtime)
+- **Database**: Supabase (PostgreSQL) + Row Level Security
+- **Decentralized Storage**: Walrus (Sui Network)
+- **Authentication**: Supabase Auth (Email, Google SSO)
+
+### Blockchain & Web3
+- **Primary Chain**: Sui Network (NFT minting, photocard storage)
+- **Cross-chain**: Solana, EVM chains (Ethereum, Polygon)
+- **Bridge Protocol**: Wormhole (cross-chain NFT migration)
+- **Wallet Integration**: Sui Wallet, Phantom, MetaMask
+
+### AI & Personalization
+- **Model**: Google Gemini 2.5 Flash
+- **Fallback System**: Multi-key rotation (4+ API keys)
+- **Streaming**: Server-Sent Events (SSE) for real-time chat
+- **Use Cases**: Story generation, character dialogue, image description
+
+### Deployment
+- **Platform**: Lovable Cloud (Supabase-powered)
+- **CDN**: Edge deployment for global performance
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    A[User / DATA ALLY] --> B[React Frontend]
+    B --> C[Supabase Edge Functions]
+    C --> D[Google Gemini API]
+    C --> E[Supabase PostgreSQL]
+    B --> F[Sui Wallet]
+    F --> G[Sui Network]
+    G --> H[Walrus Storage]
+    G --> I[Wormhole Bridge]
+    I --> J[Solana/EVM Chains]
 ```
 
-🌐 팀 & 연락처 / Team & Contact
-🧑‍💻 Team Sui:Idol³ by Pulse9 Inc
-📧 Contact: contact@pulse9.net
-🐦 X (Twitter): @suiidol3
+---
+
+## 🚀 Getting Started
+
+### For Users (Play the Experience)
+1. Visit: [Sui:Idol³ Live App](https://suiidol3.lovable.app)
+2. Connect your wallet (Sui Wallet recommended)
+3. Pick your AIDOL ally and start your mission!
+
+### For Developers (Fork & Customize)
+
+This project is built on **Lovable**, a full-stack AI-powered development platform.
+
+#### Option 1: Remix on Lovable (Recommended)
+1. Visit the project on Lovable
+2. Click "Remix this project"
+3. Start customizing with AI assistance
+
+#### Option 2: Self-Hosting
+1. **Connect GitHub**: Link your GitHub account in Lovable
+2. **Export Code**: Push to your repository
+3. **Deploy Anywhere**: 
+   ```bash
+   npm install
+   npm run dev  # Local development
+   npm run build  # Production build
+   ```
+4. **Setup Environment**: Copy `.env.example` to `.env` and configure:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - `GEMINI_API_KEY` (for Supabase Edge Functions)
+
+📖 **Full Setup Guide**: [Self-Hosting Documentation](https://docs.lovable.dev/tips-tricks/self-hosting)
+
+---
+
+## 🗺️ Roadmap
+
+### 2025 Q1 ✅
+- [x] 202 AIDOL preset creation
+- [x] Story episode system
+- [x] Walrus-based photocard storage
+- [x] Google Gemini AI integration
+
+### 2025 Q2 🚧
+- [ ] Cross-chain NFT migration (Wormhole)
+- [ ] Community Goal Pool
+- [ ] Real-time multiplayer events
+- [ ] Mobile app (React Native)
+
+### 2025 Q3-Q4 💡
+- [ ] DAO governance (AIDOL growth voting)
+- [ ] Secondary creation marketplace
+- [ ] VR/AR performance experience
+- [ ] Global language expansion (Japanese, Chinese)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributors! Here's how you can help:
+
+### 🐛 Bug Reports
+Found a bug? [Open an issue](https://github.com/your-org/suiidol3/issues)
+
+### 💡 Feature Requests
+Have an idea? Share it in our [Discord community](https://discord.gg/suiidol3)
+
+### 🎨 Fan Art (2차 창작)
+- Create AIDOL fan art and tag `#SuiIdol3`
+- Best works featured in official gallery!
+
+### 🧑‍💻 Code Contributions
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 🌐 Community & Contact
+
+- 🐦 **X (Twitter)**: [@suiidol3](https://x.com/suiidol3)
+- 💬 **Discord**: Join our community server
+- 📧 **Contact**: contact@pulse9.net
+- 🏢 **Company**: Pulse9 Inc
+
+---
+
+## 📜 License
+
+Copyright © 2025 Pulse9 Inc. All rights reserved.
+
+This project is proprietary software. Unauthorized copying, distribution, or modification is prohibited without explicit permission.
+
+For licensing inquiries: contact@pulse9.net
+
+---
+
+**🌟 Your journey as DATA ALLY begins now. Pick your AIDOL and save two worlds. ✨**
