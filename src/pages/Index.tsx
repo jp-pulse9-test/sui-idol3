@@ -13,19 +13,22 @@ import { ServiceIntro } from "@/components/ServiceIntro";
 import { GatewaySection } from "@/components/GatewaySection";
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
-
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { t } = useLanguage();
-  
+  const {
+    user
+  } = useAuth();
+  const {
+    t
+  } = useLanguage();
+
   // Ally Status Data for CinematicSynopsis
   const [collectedFragments] = useState(1247);
   const [totalFragments] = useState(487634);
   const [stabilityPercentage] = useState(12.4);
   const [activeAllyCount] = useState(8942);
   const [onlineEchoEntities] = useState(143);
-  
+
   // Idol data state for background
   const [idols, setIdols] = useState<any[]>([]);
 
@@ -33,11 +36,11 @@ const Index = () => {
   useEffect(() => {
     const fetchIdols = async () => {
       try {
-        const { data, error } = await supabase
-          .rpc('get_public_idol_data');
-        
+        const {
+          data,
+          error
+        } = await supabase.rpc('get_public_idol_data');
         if (error) throw error;
-        
         if (data) {
           const shuffled = [...data].sort(() => Math.random() - 0.5);
           setIdols(shuffled.slice(0, 12));
@@ -46,17 +49,13 @@ const Index = () => {
         console.error('Error fetching idols:', error);
       }
     };
-    
     fetchIdols();
   }, []);
-
   const handleEnter = () => {
     // Navigate directly to simplified pick (tournament)
     navigate('/pick');
   };
-
-  return (
-    <div className="min-h-screen bg-background relative overflow-x-hidden">
+  return <div className="min-h-screen bg-background relative overflow-x-hidden">
       {/* Subtle background decoration */}
       <FragmentedPlanetGrid side="left" idols={idols} />
       <FragmentedPlanetGrid side="right" idols={idols} />
@@ -66,38 +65,21 @@ const Index = () => {
         {/* Minimal Top Bar */}
         <div className="fixed top-4 right-4 z-50 flex gap-2">
           <LanguageSelector />
-          <WalletConnectButton 
-            variant="outline" 
-            className="border-primary text-primary hover:bg-primary/10 shadow-lg backdrop-blur-sm"
-          />
-          {user && (
-            <Button
-              onClick={() => navigate('/settings')}
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground backdrop-blur-sm"
-              title={t('nav.settings')}
-            >
+          <WalletConnectButton variant="outline" className="border-primary text-primary hover:bg-primary/10 shadow-lg backdrop-blur-sm" />
+          {user && <Button onClick={() => navigate('/settings')} variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground backdrop-blur-sm" title={t('nav.settings')}>
               <Settings className="h-4 w-4" />
-            </Button>
-          )}
+            </Button>}
         </div>
 
         {/* Hero Section */}
         <MinimalHero onEnter={handleEnter} />
 
         {/* Service Introduction */}
-        <ServiceIntro />
+        
 
         {/* Cinematic Synopsis - Sticky */}
         <div className="sticky top-0 z-40">
-          <CinematicSynopsis
-            activeAllyCount={activeAllyCount}
-            onlineEchoEntities={onlineEchoEntities}
-            collectedFragments={collectedFragments}
-            totalFragments={totalFragments}
-            stabilityPercentage={stabilityPercentage}
-          />
+          <CinematicSynopsis activeAllyCount={activeAllyCount} onlineEchoEntities={onlineEchoEntities} collectedFragments={collectedFragments} totalFragments={totalFragments} stabilityPercentage={stabilityPercentage} />
         </div>
 
         {/* Gateway Section */}
@@ -113,8 +95,6 @@ const Index = () => {
       
       {/* Scroll to Top Button */}
       <ScrollToTopButton />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
