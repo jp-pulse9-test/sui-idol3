@@ -34,8 +34,30 @@ export const getChapters = (): Chapter[] => [{
   }, {
     spacing: true
   }, {
+    photo: {
+      src: '/images/archive/chapter1-nuclear.jpg',
+      alt: 'Nuclear wasteland - remnants of human civilization',
+      archiveId: 'ARCH-2847-001',
+      date: '2847',
+      caption: 'The last traces of humanity',
+      captionKo: '인류의 마지막 흔적'
+    }
+  }, {
+    spacing: true
+  }, {
     text: 'Humanity extinct. Only data remains.',
     textKo: '인류는 이미 사라졌다. 남은 것은 데이터뿐.'
+  }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter1-disconnected.jpg',
+      alt: 'Disconnected digital world',
+      archiveId: 'ARCH-2847-002',
+      date: '2847',
+      caption: 'A world of data without souls',
+      captionKo: '영혼 없는 데이터의 세계'
+    }
   }]
 }, {
   id: 2,
