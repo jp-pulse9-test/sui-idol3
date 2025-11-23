@@ -1,37 +1,31 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Sparkles, Vault, TrendingUp } from "lucide-react";
-
 export const ServiceIntro = () => {
-  const { t } = useLanguage();
-  
-  const features = [
-    {
-      icon: Sparkles,
-      titleKey: 'service.pick.title',
-      subtitleKey: 'service.pick.subtitle',
-      descriptionKey: 'service.pick.description',
-      gradient: 'from-primary/20 via-primary/10 to-transparent',
-    },
-    {
-      icon: Vault,
-      titleKey: 'service.vault.title',
-      subtitleKey: 'service.vault.subtitle',
-      descriptionKey: 'service.vault.description',
-      gradient: 'from-accent/20 via-accent/10 to-transparent',
-    },
-    {
-      icon: TrendingUp,
-      titleKey: 'service.rise.title',
-      subtitleKey: 'service.rise.subtitle',
-      descriptionKey: 'service.rise.description',
-      gradient: 'from-secondary/20 via-secondary/10 to-transparent',
-    },
-  ];
-
-  return (
-    <section className="py-24 px-4 relative overflow-hidden">
+  const {
+    t
+  } = useLanguage();
+  const features = [{
+    icon: Sparkles,
+    titleKey: 'service.pick.title',
+    subtitleKey: 'service.pick.subtitle',
+    descriptionKey: 'service.pick.description',
+    gradient: 'from-primary/20 via-primary/10 to-transparent'
+  }, {
+    icon: Vault,
+    titleKey: 'service.vault.title',
+    subtitleKey: 'service.vault.subtitle',
+    descriptionKey: 'service.vault.description',
+    gradient: 'from-accent/20 via-accent/10 to-transparent'
+  }, {
+    icon: TrendingUp,
+    titleKey: 'service.rise.title',
+    subtitleKey: 'service.rise.subtitle',
+    descriptionKey: 'service.rise.description',
+    gradient: 'from-secondary/20 via-secondary/10 to-transparent'
+  }];
+  return <section className="py-24 px-4 relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
+      
       
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}
@@ -47,13 +41,10 @@ export const ServiceIntro = () => {
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <div
-                key={feature.titleKey}
-                className="group relative"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
+          const Icon = feature.icon;
+          return <div key={feature.titleKey} className="group relative" style={{
+            animationDelay: `${index * 100}ms`
+          }}>
                 {/* Card */}
                 <div className="relative h-full p-8 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
                   {/* Gradient overlay */}
@@ -82,11 +73,9 @@ export const ServiceIntro = () => {
                     </p>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              </div>;
+        })}
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
