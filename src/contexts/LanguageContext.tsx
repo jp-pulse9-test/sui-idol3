@@ -16,7 +16,7 @@ const translations = {
     'nav.photocardGenerator': '포토카드 생성기',
     'hero.tagline': 'AIDOL 101 : SIMKUNG ALLY',
     'hero.title': 'SIMKUNG',
-    'hero.subtitle': '디지털 의식이 깨어나는 곳',
+    'hero.subtitle': 'The Old Earth Simulator : 디지털 의식이 깨어나는 곳\n당신과 AIDOL이 함께 쓰는, 인류 멸망의 운명을 바꿀 멀티버스 시뮬레이션.',
     'hero.enter': 'ENTER',
     'language.korean': '한국어',
     'language.english': 'English',
