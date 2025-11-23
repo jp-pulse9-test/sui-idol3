@@ -27,7 +27,7 @@ const translations = {
     'journey.awaken.description': 'SIMKUNG ALLY가 되어 AIDOL과 함께하는 첫 순간',
     'journey.mission.dimension': 'Dimension: SALVATION',
     'journey.mission.title': '세계를 구원하라',
-    'journey.mission.description': 'DATA ALLY로서 무너진 세계를 복원하는 미션',
+    'journey.mission.description': 'SIMKUNG ALLY로서 무너진 세계를 복원하는 데이터 시뮬레이션',
     'journey.ascend.dimension': 'Dimension: GLORY',
     'journey.ascend.title': 'LEGEND의 전당',
     'journey.ascend.description': 'AIDOL과 함께 LEGEND로 기록되다',
