@@ -12,13 +12,15 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, episodeContext, idolPersona, language } = await req.json();
+    const { messages, episodeContext, idolPersona, language, currentBeat, currentTurn } = await req.json();
     
     console.log("Episode story chat request:", { 
       messageCount: messages.length, 
       episode: episodeContext?.title,
       idol: idolPersona?.name,
-      language 
+      language,
+      currentBeat,
+      currentTurn 
     });
 
     // Get service-wide Gemini API key
@@ -74,7 +76,8 @@ STORY CONTEXT:
 Episode: ${episodeContext.title}
 Description: ${episodeContext.description}
 Category: ${episodeContext.category}
-Current Turn: ${messages.length}/8
+Current Turn: ${currentTurn || messages.length}/8
+Current Beat: ${currentBeat || 'hook'}
 
 GAMEPLAY RULES:
 1. You are the user's NPC buddy, guiding them through this story episode
@@ -84,11 +87,14 @@ GAMEPLAY RULES:
 5. Build emotional connection through your responses
 6. When a HIGHLIGHT moment occurs (emotional peaks, important decisions, dramatic scenes), respond with "🎬 HIGHLIGHT:" prefix
 
-STORY PROGRESSION:
-- Turns 1-2 (Hook): Introduce the situation, create interest, present initial choices
-- Turns 3-4 (Engage): Develop the story, deepen connection based on user's choices
-- Turns 5-6 (Pivot/Climax): Present challenges, emotional peaks
-- Turns 7-8 (Wrap): Resolution, reflection
+STORY PROGRESSION (You are currently at: ${currentBeat || 'hook'}):
+- hook (Turns 1-2): Introduce the situation, create interest, present initial choices
+- engage (Turns 3-4): Develop the story, deepen connection based on user's choices  
+- pivot (Turn 5): Present a turning point or challenge
+- climax (Turn 6): Reach the emotional or story peak
+- wrap (Turns 7-8): Resolution, reflection, conclusion
+
+CRITICAL: You MUST follow the current beat (${currentBeat || 'hook'}) when crafting your response. Match your story pacing and emotional intensity to this beat.
 
 CHOICE PRESENTATION FORMAT:
 When presenting choices to the user, always use this format:
