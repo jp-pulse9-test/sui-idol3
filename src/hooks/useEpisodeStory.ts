@@ -25,6 +25,16 @@ interface IdolPersona {
   image: string;
 }
 
+type BeatType = 'hook' | 'engage' | 'pivot' | 'climax' | 'wrap';
+
+const calculateBeat = (turn: number): BeatType => {
+  if (turn <= 2) return 'hook';
+  if (turn <= 4) return 'engage';
+  if (turn === 5) return 'pivot';
+  if (turn === 6) return 'climax';
+  return 'wrap';
+};
+
 export const useEpisodeStory = (
   episodeContext: EpisodeContext,
   idolPersona: IdolPersona
@@ -33,6 +43,7 @@ export const useEpisodeStory = (
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [currentTurn, setCurrentTurn] = useState(0);
+  const [currentBeat, setCurrentBeat] = useState<BeatType>('hook');
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/episode-story-chat`;
@@ -83,7 +94,14 @@ export const useEpisodeStory = (
 
     setMessages(prev => [...prev, newUserMessage]);
     setIsLoading(true);
-    setCurrentTurn(prev => prev + 1);
+    
+    // Update turn and beat
+    const nextTurn = currentTurn + 1;
+    setCurrentTurn(nextTurn);
+    const nextBeat = calculateBeat(nextTurn);
+    setCurrentBeat(nextBeat);
+    
+    console.log(`Turn ${nextTurn}, Beat: ${nextBeat}`);
 
     // Prepare messages for API
     const apiMessages = [...messages, newUserMessage].map(msg => ({
@@ -104,7 +122,9 @@ export const useEpisodeStory = (
           messages: apiMessages,
           episodeContext,
           idolPersona,
-          language: 'ko' // Add language support
+          language: 'ko',
+          currentBeat: nextBeat,
+          currentTurn: nextTurn
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -241,6 +261,7 @@ export const useEpisodeStory = (
   const resetStory = () => {
     setMessages([]);
     setCurrentTurn(0);
+    setCurrentBeat('hook');
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -254,11 +275,41 @@ export const useEpisodeStory = (
     };
   }, []);
 
+  // Save episode progress to database
+  useEffect(() => {
+    const saveProgress = async () => {
+      if (!episodeContext.id || currentTurn === 0) return;
+      
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        await supabase.from('episode_progress').upsert({
+          user_id: user.id,
+          episode_id: episodeContext.id,
+          mission_id: episodeContext.id,
+          branch_id: episodeContext.category,
+          current_turn: currentTurn,
+          current_beat: currentBeat,
+          choices_made: messages.filter(m => m.role === 'user').map(m => m.content),
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,episode_id,mission_id'
+        });
+      } catch (error) {
+        console.error('Failed to save episode progress:', error);
+      }
+    };
+
+    saveProgress();
+  }, [currentTurn, currentBeat, episodeContext, messages]);
+
   return {
     messages,
     isLoading,
     isGeneratingImage,
     currentTurn,
+    currentBeat,
     sendMessage,
     resetStory
   };
