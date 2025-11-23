@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { usePhotocardStorage } from '@/hooks/usePhotocardStorage';
 import { useWallet } from '@/hooks/useWallet';
+import { PhotocardVideoGenerator } from '@/components/PhotocardVideoGenerator';
 import { 
   Database, 
   Search, 
@@ -421,6 +422,14 @@ export function WalrusPhotocardGallery({ className }: WalrusPhotocardGalleryProp
                         다운로드
                       </Button>
                     </div>
+                    
+                    <PhotocardVideoGenerator
+                      photocardId={selectedCard.id}
+                      photocardImageUrl={cardImageData || selectedCard.imageUrl}
+                      idolName={selectedCard.idolName}
+                      concept={selectedCard.concept}
+                      rarity={selectedCard.rarity}
+                    />
                   </div>
 
                   <div className="space-y-4">
