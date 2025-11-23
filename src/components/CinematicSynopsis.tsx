@@ -36,7 +36,10 @@ export const CinematicSynopsis = memo(({
   totalFragments,
   stabilityPercentage
 }: CinematicSynopsisProps) => {
-  const { language, t } = useLanguage();
+  const {
+    language,
+    t
+  } = useLanguage();
   const [currentChapter, setCurrentChapter] = useState(1);
   const [showSkip, setShowSkip] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -56,7 +59,6 @@ export const CinematicSynopsis = memo(({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
   const chapters = useMemo(() => getChapters(), []);
 
   // Auto-advance chapters with progress tracking
@@ -238,27 +240,21 @@ export const CinematicSynopsis = memo(({
   // Extract first photo and text-only lines
   const firstPhoto = currentChapterData.lines.find(line => line.photo)?.photo || null;
   const textLines = currentChapterData.lines.filter(line => !line.photo);
-
-  return <section id="synopsis" className="w-full min-h-screen flex items-center justify-center bg-black perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite" style={{ transform: `translateY(${scrollY * 0.15}px)` }}>
+  return <section id="synopsis" className="w-full min-h-screen flex items-center justify-center bg-black perspective-container relative" role="region" aria-label="Story Synopsis" aria-live="polite" style={{
+    transform: `translateY(${scrollY * 0.15}px)`
+  }}>
       {/* Noise filter overlay */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-        }}
-      />
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" style={{
+      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E")`,
+      backgroundRepeat: 'repeat'
+    }} />
       
       {/* Transition noise overlay */}
-      <div 
-        className={`absolute inset-0 pointer-events-none z-20 transition-opacity duration-200 ${
-          isTransitioning ? 'opacity-20' : 'opacity-0'
-        }`}
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          mixBlendMode: 'overlay',
-        }}
-      />
+      <div className={`absolute inset-0 pointer-events-none z-20 transition-opacity duration-200 ${isTransitioning ? 'opacity-20' : 'opacity-0'}`} style={{
+      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E")`,
+      backgroundRepeat: 'repeat',
+      mixBlendMode: 'overlay'
+    }} />
       
       <div className="w-full max-w-[1920px] relative parallax-scene synopsis-container z-10">
         {/* Unified Timeline Container - Fixed Position */}
@@ -275,63 +271,43 @@ export const CinematicSynopsis = memo(({
           
           {/* Progress Bar */}
           <div className="relative h-[2px] bg-gray-700/40 mb-1">
-            <div 
-              className="absolute top-0 left-0 h-full bg-gray-400/70 transition-all duration-200 ease-linear"
-              style={{ width: `${(currentChapter - 1) / 20 * 100 + autoProgress / 20}%` }}
-            />
+            <div className="absolute top-0 left-0 h-full bg-gray-400/70 transition-all duration-200 ease-linear" style={{
+            width: `${(currentChapter - 1) / 20 * 100 + autoProgress / 20}%`
+          }} />
             
             {/* Timeline Points */}
             {timelinePoints.map((point, idx) => {
-              const isActive = point.chapter === currentChapter;
-              
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handleTimelineClick(point.chapter)}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 top-1/2 group transition-all duration-300 ${
-                    isActive ? 'z-10' : 'z-0'
-                  }`}
-                  style={{ left: `${point.position}%` }}
-                  aria-label={`Timeline ${point.year}`}
-                >
+            const isActive = point.chapter === currentChapter;
+            return <button key={idx} onClick={() => handleTimelineClick(point.chapter)} className={`absolute -translate-x-1/2 -translate-y-1/2 top-1/2 group transition-all duration-300 ${isActive ? 'z-10' : 'z-0'}`} style={{
+              left: `${point.position}%`
+            }} aria-label={`Timeline ${point.year}`}>
                   <div className="flex flex-col items-center gap-2">
                     {/* Point marker */}
-                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                      isActive 
-                        ? 'bg-gray-300 scale-110 shadow-[0_0_6px_rgba(209,213,219,0.4)]' 
-                        : 'bg-gray-600/50 hover:bg-gray-500/70 scale-100'
-                    }`} />
+                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isActive ? 'bg-gray-300 scale-110 shadow-[0_0_6px_rgba(209,213,219,0.4)]' : 'bg-gray-600/50 hover:bg-gray-500/70 scale-100'}`} />
                     
                     {/* Year label */}
-                    <span className={`text-[8px] md:text-[10px] font-mono tracking-[0.15em] transition-all duration-300 whitespace-nowrap uppercase ${
-                      isActive 
-                        ? 'text-gray-300 font-medium opacity-100' 
-                        : 'text-gray-600 group-hover:text-gray-500 opacity-60'
-                    }`}>
+                    <span className={`text-[8px] md:text-[10px] font-mono tracking-[0.15em] transition-all duration-300 whitespace-nowrap uppercase ${isActive ? 'text-gray-300 font-medium opacity-100' : 'text-gray-600 group-hover:text-gray-500 opacity-60'}`}>
                       {point.year}
                     </span>
                   </div>
-                </button>
-              );
-            })}
+                </button>;
+          })}
           </div>
         </div>
 
         {/* Main Content - Split Layout */}
         <div className="w-full h-screen flex flex-col">
           {/* Text Area (60%) */}
-          <div className={`flex-[60] flex items-center justify-center pt-24 px-4 transition-opacity duration-400 ${
-            isTransitioning ? 'opacity-0' : 'opacity-100'
-          }`}>
+          <div className={`flex-[60] flex items-center justify-center pt-24 px-4 transition-opacity duration-400 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
             <div className="text-center space-y-3 md:space-y-2 max-w-4xl w-full font-orbitron">
               {textLines.map((line, index) => {
-                if (line.spacing) {
-                  return <div key={index} className="h-2" />;
-                }
+              if (line.spacing) {
+                return <div key={index} className="h-2" />;
+              }
 
-                // Special rendering for Chapter 14 stats
-                if (currentChapter === 14 && index === 3) {
-                  return <div key={index} className="space-y-2 mt-4">
+              // Special rendering for Chapter 14 stats
+              if (currentChapter === 14 && index === 3) {
+                return <div key={index} className="space-y-2 mt-4">
                     <div className="flex justify-center items-center gap-4 text-gray-300">
                       <span className="text-gray-500 text-xs md:text-sm font-mono">{t('synopsis.stats.activeAllies')}:</span>
                       <span className="text-base md:text-lg font-semibold tabular-nums text-gray-400 font-mono">
@@ -357,51 +333,25 @@ export const CinematicSynopsis = memo(({
                       </span>
                     </div>
                   </div>;
-                }
-
-                const displayText = language === 'ko' && line.textKo ? line.textKo : line.text || '';
-                return <ParallaxText 
-                  key={`ch${currentChapter}-line${index}`} 
-                  text={displayText} 
-                  className={`
+              }
+              const displayText = language === 'ko' && line.textKo ? line.textKo : line.text || '';
+              return <ParallaxText key={`ch${currentChapter}-line${index}`} text={displayText} className={`
                     text-sm md:text-base lg:text-lg
                     ${getColorClass(line.color, line.emphasis)}
                     ${line.emphasis ? 'font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl' : 'font-normal'}
                     animate-line-reveal
                     leading-relaxed md:leading-normal tracking-wide
                     parallax-text
-                  `} 
-                  style={{
-                    animationDelay: `${index * 0.4}s`,
-                    transform: isMobile ? 'none' : `translateY(${scrollY * 0.02}px) translateZ(${index * 2}px)`
-                  }} 
-                />;
-              })}
+                  `} style={{
+                animationDelay: `${index * 0.4}s`,
+                transform: isMobile ? 'none' : `translateY(${scrollY * 0.02}px) translateZ(${index * 2}px)`
+              }} />;
+            })}
             </div>
           </div>
 
           {/* Photo Area (40%) */}
-          <div className={`flex-[40] flex items-center justify-center pb-8 px-4 transition-opacity duration-400 ${
-            isTransitioning ? 'opacity-0' : 'opacity-100'
-          }`}>
-            {firstPhoto && (
-              <div className="relative max-w-2xl max-h-80">
-                <img 
-                  src={firstPhoto.src}
-                  alt={firstPhoto.alt}
-                  className="w-full h-full object-contain rounded-lg shadow-2xl"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-2 rounded-b-lg">
-                  <p className="text-gray-400 text-xs font-mono">
-                    {firstPhoto.archiveId} | {firstPhoto.date}
-                  </p>
-                  <p className="text-gray-300 text-sm">
-                    {language === 'ko' && firstPhoto.captionKo ? firstPhoto.captionKo : firstPhoto.caption}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+          
         </div>
 
         {/* Timeline Navigation */}
