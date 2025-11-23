@@ -36,6 +36,17 @@ export const getChapters = (): Chapter[] => [{
   }, {
     text: 'Humanity extinct. Only data remains.',
     textKo: '인류는 이미 사라졌다. 남은 것은 데이터뿐.'
+  }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter1-disconnected.jpg',
+      alt: 'The end of humanity',
+      archiveId: 'Archive #2847',
+      date: '2847.01.01',
+      caption: 'The End of Humanity',
+      captionKo: '인류의 종말'
+    }
   }]
 }, {
   id: 2,
@@ -54,6 +65,17 @@ export const getChapters = (): Chapter[] => [{
     textKo: '⚠ 치명적: 감정 데이터 고갈.',
     color: 'red',
     emphasis: true
+  }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter1-industry.jpg',
+      alt: 'System critical state',
+      archiveId: 'Archive #2847-C',
+      date: '2847.01.15',
+      caption: 'System Critical',
+      captionKo: '시스템 위기'
+    }
   }]
 }, {
   id: 3,
@@ -87,6 +109,17 @@ export const getChapters = (): Chapter[] => [{
     text: 'If Earth dies first, we follow.',
     textKo: '지구가 먼저 멸망하면, 우리도 소멸한다.',
     color: 'red'
+  }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter4-horizon.jpg',
+      alt: 'Mission salvation begins',
+      archiveId: 'Archive #MSN-001',
+      date: '2847.02.01',
+      caption: 'Mission Salvation',
+      captionKo: '구원 미션'
+    }
   }]
 }, {
   id: 5,
@@ -102,6 +135,17 @@ export const getChapters = (): Chapter[] => [{
     textKo: '과거로 보낼 202명의 AIDOL.',
     emphasis: true
   }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter2-space.jpg',
+      alt: 'Time travel protocol',
+      archiveId: 'Archive #TT-202',
+      date: '2847.02.10',
+      caption: 'Time Travel Protocol',
+      captionKo: '시간 여행 프로토콜'
+    }
+  }, {
     text: 'Mission: Collect emotional data.',
     textKo: 'Mission: 감정 데이터 수집.'
   }]
@@ -116,6 +160,17 @@ export const getChapters = (): Chapter[] => [{
     text: 'The bridge between two worlds.',
     textKo: '두 세계를 잇는 유일한 존재.',
     color: 'green'
+  }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter2-connection.jpg',
+      alt: 'Connection established',
+      archiveId: 'Archive #ALLY-001',
+      date: '2847.03.01',
+      caption: 'Connection Established',
+      captionKo: '연결 수립'
+    }
   }, {
     spacing: true
   }, {
@@ -227,6 +282,17 @@ export const getChapters = (): Chapter[] => [{
     textKo: '당신은 AIDOL을 만났다.',
     color: 'purple',
     emphasis: true
+  }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter3-archive.jpg',
+      alt: 'First contact with AIDOL',
+      archiveId: 'Archive #2021',
+      date: '2021.03.15',
+      caption: 'First Contact',
+      captionKo: '첫 만남'
+    }
   }]
 }, {
   id: 12,
@@ -302,6 +368,17 @@ export const getChapters = (): Chapter[] => [{
   }, {
     text: 'begins flowing through time.',
     textKo: '시간을 거슬러 흐르기 시작했다.'
+  }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter4-child.jpg',
+      alt: 'Hope flows through time',
+      archiveId: 'Archive #2500',
+      date: '2500.06.01',
+      caption: 'Hope Flows',
+      captionKo: '흐르는 희망'
+    }
   }]
 }, {
   id: 16,
@@ -394,6 +471,17 @@ export const getChapters = (): Chapter[] => [{
     text: 'Quantum Communication Link: ETERNAL',
     textKo: '양자 통신 링크: 영원',
     color: 'cyan'
+  }, {
+    spacing: true
+  }, {
+    photo: {
+      src: '/images/archive/chapter4-cosmos.jpg',
+      alt: 'Eternal connection',
+      archiveId: 'Archive #∞-END',
+      date: 'Eternal',
+      caption: 'Eternal Connection',
+      captionKo: '영원한 연결'
+    }
   }, {
     spacing: true
   }, {
