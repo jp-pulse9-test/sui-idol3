@@ -8,12 +8,14 @@ interface ChatTerminalProps {
   messages: ChatMessage[];
   onSendMessage: (text: string) => void;
   isLoading: boolean;
+  suggestedQuestions?: string[];
 }
 
 export const ChatTerminal: React.FC<ChatTerminalProps> = ({ 
   messages, 
   onSendMessage, 
-  isLoading 
+  isLoading,
+  suggestedQuestions = []
 }) => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -73,6 +75,25 @@ export const ChatTerminal: React.FC<ChatTerminalProps> = ({
         )}
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Suggested Questions */}
+      {suggestedQuestions.length > 0 && messages.length <= 1 && (
+        <div className="border-t border-border p-3 space-y-2">
+          <div className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Suggested Queries</div>
+          <div className="flex flex-wrap gap-2">
+            {suggestedQuestions.map((question, idx) => (
+              <button
+                key={idx}
+                onClick={() => onSendMessage(question)}
+                disabled={isLoading}
+                className="text-[10px] px-3 py-1.5 bg-muted/50 hover:bg-muted border border-border rounded-md text-foreground hover:text-primary transition-colors font-orbitron"
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Input */}
       <form onSubmit={handleSubmit} className="border-t border-border p-3 flex gap-2">

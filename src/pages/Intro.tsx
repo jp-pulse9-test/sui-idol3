@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { StarMap } from '@/components/simulator/StarMap';
 import { ChatTerminal } from '@/components/simulator/ChatTerminal';
 import { FragmentLibrary } from '@/components/simulator/FragmentLibrary';
+import { MissionOverlay } from '@/components/simulator/MissionOverlay';
 import { HistoryNode, ChatMessage, Fragment, SimulatorState } from '@/types/simulator';
 import { initializeHistory, sendSimulatorMessage, getFutureScenarios } from '@/services/simulatorService';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MessageSquare, Sparkles } from 'lucide-react';
 
 type ViewMode = 'past' | 'future';
 
@@ -22,6 +23,12 @@ const Intro: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('past');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoadingChat, setIsLoadingChat] = useState(false);
+  
+  // Progressive disclosure states
+  const [showMissionOverlay, setShowMissionOverlay] = useState(true);
+  const [showChatTerminal, setShowChatTerminal] = useState(false);
+  const [futureUnlocked, setFutureUnlocked] = useState(false);
+  const [explorationCount, setExplorationCount] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -40,7 +47,7 @@ const Intro: React.FC = () => {
         setChatHistory([{
           id: 'init',
           role: 'model',
-          text: 'AIDOL101 CORE ONLINE.\nConnecting to Old Earth Archives...\n' + initialNodes.length + ' Historical Nodes loaded.\n\nSelect [FUTURE] tab to view calculated probability tracks (2026-2080).',
+          text: 'System ready. Select a star to begin exploration.',
           timestamp: new Date()
         }]);
       } catch (err) {
@@ -97,53 +104,67 @@ const Intro: React.FC = () => {
   }, [chatHistory, state.nodes, futureNodes, viewMode]);
 
   const handleNodeClick = (node: HistoryNode) => {
+    // Show chat terminal on first interaction
+    if (!showChatTerminal) {
+      setShowChatTerminal(true);
+    }
+    
+    setExplorationCount(prev => prev + 1);
+    
+    // Unlock future mode after 3 explorations
+    if (explorationCount >= 2 && !futureUnlocked) {
+      setFutureUnlocked(true);
+      setTimeout(() => {
+        setChatHistory(prev => [...prev, {
+          id: 'future-unlock',
+          role: 'model',
+          text: '⚡ FUTURE SIMULATION UNLOCKED!\nYou can now access predicted timeline scenarios (2026-2080).',
+          timestamp: new Date()
+        }]);
+      }, 1000);
+    }
+    
     const context = viewMode === 'future' ? 'predicted event' : 'archived event';
     handleSendMessage(`Access data on ${context}: "${node.eventName}" (${node.year}).`);
   };
 
+  const suggestedQuestions = [
+    "What caused this event?",
+    "Show related events",
+    "Impact on future"
+  ];
+
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 md:p-6 lg:p-8 flex flex-col font-orbitron overflow-hidden">
-      {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-end mb-6 border-b border-border pb-4 gap-4">
+    <div className="min-h-screen bg-background text-foreground p-2 md:p-4 lg:p-6 flex flex-col font-orbitron overflow-hidden">
+      {/* Simplified Header */}
+      <header className="flex justify-between items-center mb-4 pb-3 border-b border-border/50">
         <div>
-          <h1 className="text-3xl font-bold tracking-tighter">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tighter">
             AIDOL<span className="text-primary">101</span>
           </h1>
-          <p className="text-[10px] text-accent mt-1 tracking-[0.3em] uppercase">
-            Old Earth Simulator // Ver 2.5
+          <p className="text-[9px] text-muted-foreground mt-1 tracking-widest uppercase">
+            Old Earth Simulator
           </p>
         </div>
         
-        <div className="flex items-center gap-4">
-          {/* Mode Switch */}
-          <div className="flex bg-muted/50 border border-border rounded-md p-1 gap-1">
+        <div className="flex items-center gap-3">
+          {/* Future Mode - Only show when unlocked */}
+          {futureUnlocked && (
             <button 
-              onClick={() => setViewMode('past')}
-              className={`px-4 py-1.5 text-xs font-bold rounded transition-all duration-300 ${
-                viewMode === 'past' 
-                ? 'bg-primary text-primary-foreground shadow-[0_0_15px_hsl(var(--primary)/0.4)]' 
-                : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              PAST ARCHIVE
-            </button>
-            <button 
-              onClick={() => setViewMode('future')}
-              className={`px-4 py-1.5 text-xs font-bold rounded transition-all duration-300 ${
+              onClick={() => setViewMode(viewMode === 'past' ? 'future' : 'past')}
+              className={`px-3 py-1.5 text-xs font-bold rounded transition-all duration-300 border ${
                 viewMode === 'future' 
-                ? 'bg-accent text-accent-foreground shadow-[0_0_15px_hsl(var(--accent)/0.4)]' 
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-accent text-accent-foreground border-accent shadow-[0_0_15px_hsl(var(--accent)/0.4)]' 
+                : 'bg-muted/50 text-muted-foreground border-border hover:border-accent'
               }`}
             >
-              FUTURE SIM [2026+]
+              {viewMode === 'future' ? '⚡ FUTURE' : 'PAST'}
             </button>
-          </div>
+          )}
 
-          <div className="hidden lg:block text-right">
-            <div className="text-[9px] text-muted-foreground uppercase">Status</div>
-            <div className={`text-xs font-bold ${state.status === 'ready' ? 'text-accent' : 'text-yellow-500'} animate-pulse`}>
-              {state.status === 'ready' ? 'SYSTEM ONLINE' : state.status.toUpperCase()}
-            </div>
+          {/* Progress indicator */}
+          <div className="hidden md:flex items-center gap-2 text-[10px] text-muted-foreground">
+            <span>{explorationCount}/{state.nodes.length} explored</span>
           </div>
 
           <Button
@@ -156,39 +177,73 @@ const Intro: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Interface */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
+      {/* Main Interface - Mobile First, Progressive Layout */}
+      <main className="flex-1 flex flex-col lg:flex-row gap-3 md:gap-4 h-[calc(100vh-120px)] md:h-[calc(100vh-140px)]">
         
-        {/* Star Map Section */}
-        <section className="lg:col-span-7 h-[400px] lg:h-full relative border border-border rounded-lg bg-background">
+        {/* Star Map - Full width on mobile, 70% on desktop */}
+        <section className={`relative border border-border rounded-lg bg-background overflow-hidden ${
+          showChatTerminal ? 'h-[60%] lg:h-full lg:flex-[7]' : 'h-full flex-1'
+        }`}>
+          {/* Mission Overlay */}
+          {showMissionOverlay && (
+            <MissionOverlay onClose={() => setShowMissionOverlay(false)} />
+          )}
+
           {state.status === 'initializing' ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
               <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin"/>
-              <div className="text-xs text-primary animate-pulse tracking-widest">SCANNING ARCHIVES...</div>
+              <div className="text-xs text-primary animate-pulse tracking-widest">INITIALIZING...</div>
             </div>
           ) : (
-            <StarMap 
-              nodes={viewMode === 'past' ? state.nodes : futureNodes} 
-              onNodeClick={handleNodeClick} 
-              mode={viewMode}
-            />
+            <>
+              <StarMap 
+                nodes={viewMode === 'past' ? state.nodes : futureNodes} 
+                onNodeClick={handleNodeClick} 
+                mode={viewMode}
+              />
+              
+              {/* Hint overlay when no interaction yet */}
+              {!showChatTerminal && !showMissionOverlay && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-primary/20 border border-primary/50 backdrop-blur-md px-4 py-2 rounded-full text-xs text-primary font-bold animate-pulse pointer-events-none">
+                  Click any star to begin
+                </div>
+              )}
+            </>
           )}
         </section>
 
-        {/* Right Panel: Terminal & Fragments */}
-        <section className="lg:col-span-5 flex flex-col gap-4 h-full overflow-hidden">
-          <div className="flex-1 min-h-0 border border-border rounded-lg bg-background/50 backdrop-blur-sm">
-            <ChatTerminal 
-              messages={chatHistory} 
-              onSendMessage={handleSendMessage}
-              isLoading={isLoadingChat} 
-            />
-          </div>
-          <div className="h-1/3 min-h-[180px] border border-border rounded-lg">
-            <FragmentLibrary fragments={state.fragments} />
-          </div>
-        </section>
+        {/* Chat Terminal - Slides up on mobile, right panel on desktop */}
+        {showChatTerminal && (
+          <section className={`flex flex-col gap-3 overflow-hidden ${
+            'h-[40%] lg:h-full lg:flex-[3]'
+          } animate-slide-in-right`}>
+            <div className="flex-1 min-h-0 border border-border rounded-lg bg-background/95 backdrop-blur-sm overflow-hidden">
+              <ChatTerminal 
+                messages={chatHistory} 
+                onSendMessage={handleSendMessage}
+                isLoading={isLoadingChat}
+                suggestedQuestions={suggestedQuestions}
+              />
+            </div>
+            
+            {/* Fragment Library - Only show when fragments exist */}
+            {state.fragments.length > 0 && (
+              <div className="h-1/3 min-h-[140px] border border-border rounded-lg overflow-hidden animate-fade-in">
+                <FragmentLibrary fragments={state.fragments} />
+              </div>
+            )}
+          </section>
+        )}
 
+        {/* Toggle Chat Button - Mobile only, when chat is hidden */}
+        {!showChatTerminal && (
+          <button
+            onClick={() => setShowChatTerminal(true)}
+            className="lg:hidden fixed bottom-4 right-4 p-4 bg-primary text-primary-foreground rounded-full shadow-lg border-2 border-primary/50 animate-pulse z-40"
+          >
+            <MessageSquare className="w-5 h-5" />
+          </button>
+        )}
       </main>
     </div>
   );

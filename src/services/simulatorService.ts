@@ -7,26 +7,24 @@ import { HistoryNode, ChatMessage, Fragment } from '@/types/simulator';
 
 export const initializeHistory = async (): Promise<HistoryNode[]> => {
   // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise(resolve => setTimeout(resolve, 1500));
   
-  const mockEvents = [
+  // Show only 6-8 high-influence events initially (90+)
+  const coreEvents = [
     { year: '1945', eventName: 'Trinity Test', description: 'First nuclear detonation in New Mexico.', influence: 99 },
     { year: '1969', eventName: 'Apollo 11', description: 'First human moon landing.', influence: 95 },
-    { year: '1989', eventName: 'Fall of Berlin Wall', description: 'End of Cold War division.', influence: 88 },
-    { year: '2007', eventName: 'iPhone Launch', description: 'Beginning of smartphone era.', influence: 92 },
     { year: '1914', eventName: 'WWI Begins', description: 'The Great War starts in Europe.', influence: 94 },
-    { year: '1929', eventName: 'Stock Market Crash', description: 'Great Depression begins.', influence: 87 },
-    { year: '1945', eventName: 'UN Founded', description: 'United Nations established.', influence: 85 },
     { year: '1991', eventName: 'World Wide Web', description: 'Internet becomes public.', influence: 96 },
     { year: '2001', eventName: '9/11 Attacks', description: 'Terrorist attacks on USA.', influence: 93 },
     { year: '2020', eventName: 'COVID-19 Pandemic', description: 'Global health crisis.', influence: 97 },
+    { year: '2007', eventName: 'iPhone Launch', description: 'Beginning of smartphone era.', influence: 92 },
   ];
 
-  return mockEvents.map((item, index) => ({
+  return coreEvents.map((item, index) => ({
     ...item,
     id: `archive-node-${index}`,
-    x: Math.random() * 90 + 5,
-    y: Math.random() * 90 + 5,
+    x: 15 + (index % 3) * 30 + Math.random() * 15,
+    y: 20 + Math.floor(index / 3) * 30 + Math.random() * 15,
   }));
 };
 
