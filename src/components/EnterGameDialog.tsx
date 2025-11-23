@@ -20,7 +20,7 @@ export const EnterGameDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-background/95 backdrop-blur-lg border-primary/30">
+      <DialogContent className="max-w-2xl bg-background/95 backdrop-blur-lg border-primary/30 animate-in fade-in-0 zoom-in-95">
         <DialogHeader>
           <DialogTitle className="text-2xl md:text-3xl font-orbitron text-center text-white">
             {t('enterDialog.title')}
