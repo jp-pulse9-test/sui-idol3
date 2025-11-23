@@ -109,7 +109,13 @@ export const PlayChatInterface = () => {
           category: selectedMission.valueType,
           difficulty: selectedMission.difficulty,
         }
-      : { id: '', title: '', description: '', category: '', difficulty: '' },
+      : { 
+          id: 'default-mission', 
+          title: '자유 대화', 
+          description: '아이돌과 자유롭게 대화하세요', 
+          category: 'casual', 
+          difficulty: 'easy' 
+        },
     selectedIdol || { name: '아이돌', personality: '', persona_prompt: '', image: '' }
   );
 
@@ -284,7 +290,8 @@ export const PlayChatInterface = () => {
     const userMsg = `> [${mission.title}] 선택`;
     setMessages((prev) => [...prev, { type: 'user', content: userMsg, timestamp: new Date() }]);
     
-    const systemMsg = '미션 시작. 아이돌과의 대화를 시작합니다...';
+    const idolName = selectedIdol?.name || '아이돌';
+    const systemMsg = `미션 시작. ${idolName}과의 대화를 시작합니다...`;
     const currentLength = messages.length + 1;
     setMessages((prev) => [...prev, { type: 'system', content: systemMsg, timestamp: new Date() }]);
     await typeMessage(systemMsg, currentLength);
