@@ -30,7 +30,7 @@ const translations = {
     'journey.mission.description': 'SIMKUNG ALLY로서 무너진 세계를 복원하는 데이터 시뮬레이션',
     'journey.ascend.dimension': 'Dimension: GLORY',
     'journey.ascend.title': 'LEGEND의 전당',
-    'journey.ascend.description': 'AIDOL과 함께 LEGEND로 기록되다',
+    'journey.ascend.description': '결과는 LEGEND로 기록되다',
     'journey.awaken.detailedInfo': '토너먼트를 통해 당신의 이상형 AIDOL을 찾으세요. 16명의 후보 중 최종 1명을 선택하며, 선택한 AIDOL과 함께 2028년 붕괴를 막기 위한 여정을 시작합니다.',
     'journey.mission.detailedInfo': 'DATA ALLY로서 타임라인에 걸쳐 무너진 세계를 복원하는 미션에 참여하세요. 각 미션은 잃어버린 가치(사랑, 신뢰, 공감)를 복원하며 VRI를 높여갑니다.',
     'journey.ascend.detailedInfo': 'AIDOL과 함께 쌓은 업적을 확인하고, LEGEND의 전당에서 당신의 기록을 영원히 남기세요. 최고의 DATA ALLY들과 경쟁하며 역사에 이름을 새깁니다.',
