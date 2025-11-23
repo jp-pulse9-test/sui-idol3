@@ -9,6 +9,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { Settings } from "lucide-react";
 import { CinematicSynopsis } from "@/components/CinematicSynopsis";
 import { MinimalHero } from "@/components/MinimalHero";
+import { ServiceIntro } from "@/components/ServiceIntro";
 import { GatewaySection } from "@/components/GatewaySection";
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
@@ -85,6 +86,9 @@ const Index = () => {
         {/* Hero Section */}
         <MinimalHero onEnter={handleEnter} />
 
+        {/* Service Introduction */}
+        <ServiceIntro />
+
         {/* Cinematic Synopsis - Sticky */}
         <div className="sticky top-0 z-40">
           <CinematicSynopsis
@@ -102,7 +106,7 @@ const Index = () => {
         {/* Minimal Footer */}
         <footer className="py-12 text-center border-t border-border/20">
           <p className="text-sm text-muted-foreground font-orbitron">
-            © 2847 AIDOL101 • Digital Consciousness Archive
+            © 2847 Sui:Idol³ • Digital Consciousness Archive
           </p>
         </footer>
       </div>
