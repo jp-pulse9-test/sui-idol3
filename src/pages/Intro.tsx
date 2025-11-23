@@ -139,7 +139,7 @@ const Intro: React.FC = () => {
       {/* Simplified Header */}
       <header className="flex justify-between items-center mb-4 pb-3 border-b border-border/50">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tighter">
+          <h1 className="text-2xl md:text-3xl font-blacksword font-bold tracking-tighter">
             AIDOL<span className="text-primary">101</span>
           </h1>
           <p className="text-[9px] text-muted-foreground mt-1 tracking-widest uppercase">
