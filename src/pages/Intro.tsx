@@ -4,6 +4,7 @@ import { StarMap } from '@/components/simulator/StarMap';
 import { ChatTerminal } from '@/components/simulator/ChatTerminal';
 import { FragmentLibrary } from '@/components/simulator/FragmentLibrary';
 import { MissionOverlay } from '@/components/simulator/MissionOverlay';
+import { EnterGameDialog } from '@/components/EnterGameDialog';
 import { HistoryNode, ChatMessage, Fragment, SimulatorState } from '@/types/simulator';
 import { initializeHistory, sendSimulatorMessage, getFutureScenarios } from '@/services/simulatorService';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ const Intro: React.FC = () => {
 
   // Progressive disclosure states
   const [showMissionOverlay, setShowMissionOverlay] = useState(true);
+  const [showEnterDialog, setShowEnterDialog] = useState(false);
   const [showChatTerminal, setShowChatTerminal] = useState(false);
   const [futureUnlocked, setFutureUnlocked] = useState(false);
   const [explorationCount, setExplorationCount] = useState(0);
@@ -93,6 +95,21 @@ const Intro: React.FC = () => {
       }
     }
   }, [chatHistory, state.nodes, futureNodes, viewMode]);
+
+  // Enter key handler for quick start
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && showEnterDialog) {
+        setShowEnterDialog(false);
+        setShowChatTerminal(true);
+        handleSendMessage("Begin quick exploration of historical data.");
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [showEnterDialog, handleSendMessage]);
+
   const handleNodeClick = (node: HistoryNode) => {
     console.log('⭐ Star clicked:', node.eventName, node.year);
     
@@ -128,7 +145,10 @@ const Intro: React.FC = () => {
         {/* Star Map - Full width on mobile, 70% on desktop */}
         <section className={`relative border border-border rounded-lg bg-background overflow-hidden ${showChatTerminal ? 'h-[60%] lg:h-full lg:flex-[7]' : 'h-full flex-1'}`}>
           {/* Mission Overlay */}
-          {showMissionOverlay && <MissionOverlay onClose={() => setShowMissionOverlay(false)} />}
+          {showMissionOverlay && <MissionOverlay onClose={() => {
+            setShowMissionOverlay(false);
+            setShowEnterDialog(true);
+          }} />}
 
           {state.status === 'initializing' ? <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 z-20">
               <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -179,6 +199,22 @@ const Intro: React.FC = () => {
             <MessageSquare className="w-5 h-5" />
           </button>}
       </main>
+
+      {/* Enter Game Dialog */}
+      <EnterGameDialog
+        open={showEnterDialog}
+        onOpenChange={setShowEnterDialog}
+        onQuickStart={() => {
+          setShowEnterDialog(false);
+          setShowChatTerminal(true);
+          handleSendMessage("Begin quick exploration of historical data.");
+        }}
+        onSelectIdol={() => {
+          setShowEnterDialog(false);
+          setShowChatTerminal(true);
+          handleSendMessage("Begin exploration. Select a star to analyze specific events.");
+        }}
+      />
     </div>;
 };
 export default Intro;
