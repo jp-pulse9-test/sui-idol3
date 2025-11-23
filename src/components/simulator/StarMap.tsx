@@ -11,13 +11,13 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
   const [hoveredNode, setHoveredNode] = useState<HistoryNode | null>(null);
 
   const getVisualDiameter = (influence: number) => {
-    // Larger nodes for better visibility and clickability
-    const baseSize = Math.max(1.2, (influence / 100) * 2.5); 
+    // Much larger nodes for clear visibility and easy clicking
+    const baseSize = Math.max(4, (influence / 100) * 8); 
     return baseSize * 2;
   };
 
   return (
-    <div className="relative w-full h-full bg-background overflow-hidden border border-border rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.8)_inset]">
+    <div className="relative w-full h-full bg-black/90 overflow-hidden border-2 border-primary/30 rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.9)_inset]">
       {/* Subtle Grid Background */}
       <div 
         className="absolute inset-0 opacity-10 pointer-events-none"
@@ -28,7 +28,7 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
       />
       
       {/* Constellation Lines - Very subtle */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-5">
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-15">
         {nodes.map((node, i) => {
           const target = nodes[i + 1];
           if (!target) return null;
@@ -64,8 +64,8 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
             style={{
               left: `${node.x}%`,
               top: `${node.y}%`,
-              width: '24px',
-              height: '24px',
+              width: '40px',
+              height: '40px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -75,10 +75,12 @@ export const StarMap: React.FC<StarMapProps> = ({ nodes, onNodeClick, mode }) =>
             onClick={() => onNodeClick(node)}
           >
             <div 
-              className={`rounded-full transition-all duration-300 ${baseColor} ${shadowColor} ${isHovered ? 'scale-[4] opacity-100' : 'opacity-80'}`}
+              className={`rounded-full transition-all duration-300 ${baseColor} ${shadowColor} ${isHovered ? 'scale-[3] opacity-100' : 'opacity-90 hover:opacity-100'} hover:scale-[3] active:scale-[3.5]`}
               style={{
                 width: `${diameter}px`,
                 height: `${diameter}px`,
+                minWidth: '12px',
+                minHeight: '12px',
               }}
             />
 
