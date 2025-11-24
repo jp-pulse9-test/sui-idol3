@@ -20,7 +20,7 @@ type ChatMessage =
 type GameMode = 'branch' | 'mission' | 'episode';
 
 export const PlayChatInterface = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMode, setCurrentMode] = useState<GameMode>('branch');
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
@@ -28,6 +28,10 @@ export const PlayChatInterface = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isFreeInputMode, setIsFreeInputMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // 언어별 텍스트 가져오기 헬퍼 함수
+  const getBranchName = (branch: Branch) => language === 'en' ? branch.nameEn : branch.name;
+  const getMissionTitle = (mission: SalvationMission) => language === 'en' ? mission.titleEn : mission.title;
   
   const { tickets, useTicket } = useFreeInputTickets();
   
@@ -275,7 +279,7 @@ export const PlayChatInterface = () => {
     playClickSound();
     
     if (!branch.isUnlocked) {
-      const warningMsg = t('play.branch.locked', { name: branch.name, vri: branch.requiredVRI });
+      const warningMsg = t('play.branch.locked', { name: getBranchName(branch), vri: branch.requiredVRI });
       const currentLength = messages.length;
       setMessages((prev) => [...prev, { type: 'system', content: warningMsg, timestamp: new Date() }]);
       await typeMessage(warningMsg, currentLength);
@@ -285,7 +289,7 @@ export const PlayChatInterface = () => {
     setSelectedBranch(branch);
     const missions = getMissionsByBranch(branch.id);
     
-    const userMsg = t('play.branch.userSelected', { name: branch.name });
+    const userMsg = t('play.branch.userSelected', { name: getBranchName(branch) });
     setMessages((prev) => [...prev, { type: 'user', content: userMsg, timestamp: new Date() }]);
     
     const systemMsg = t('play.branch.timelineLoaded', { year: branch.year });
@@ -302,7 +306,7 @@ export const PlayChatInterface = () => {
     
     setSelectedMission(mission);
     
-    const userMsg = t('play.mission.selected', { title: mission.title });
+    const userMsg = t('play.mission.selected', { title: getMissionTitle(mission) });
     setMessages((prev) => [...prev, { type: 'user', content: userMsg, timestamp: new Date() }]);
     
     const idolName = selectedIdol?.name || t('play.idol.defaultName');
@@ -427,7 +431,7 @@ export const PlayChatInterface = () => {
                 >
                   <div className="flex items-center justify-between">
                     <span>
-                      <span className="text-emerald-600">▶</span> [{branch.year}] {branch.name}
+                      <span className="text-emerald-600">▶</span> [{branch.year}] {getBranchName(branch)}
                     </span>
                     {!branch.isUnlocked && (
                       <span className="text-xs text-gray-500">🔒 VRI {branch.requiredVRI}</span>
@@ -455,7 +459,7 @@ export const PlayChatInterface = () => {
                 >
                   <div className="flex items-center justify-between">
                     <span>
-                      <span className="text-emerald-600">▶</span> {mission.title}
+                      <span className="text-emerald-600">▶</span> {getMissionTitle(mission)}
                     </span>
                     <div className="flex gap-2 items-center">
                       <span className="text-emerald-500/50 text-xs">{mission.difficulty}</span>
