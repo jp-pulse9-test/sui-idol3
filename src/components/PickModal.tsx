@@ -225,22 +225,22 @@ export function PickModal({ open, onOpenChange }: PickModalProps) {
               </p>
             </div>
 
-            {/* Mobile: Single column */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+            {/* Mobile & Desktop: Two columns side by side */}
+            <div className="grid grid-cols-2 gap-3 md:gap-4 relative">
               {/* Left Idol */}
               <Card 
-                className={`relative p-4 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-500 ${
+                className={`relative p-2 md:p-4 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-500 ${
                   heartEffect === 'left' ? 'scale-105 border-pink-500/50 shadow-pink-500/25 shadow-xl' : ''
                 }`}
                 onClick={() => handleChoice(currentPair[0], 'left')}
               >
                 {heartEffect === 'left' && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                    <Heart className="w-12 h-12 text-pink-500 animate-bounce fill-current" />
+                    <Heart className="w-8 md:w-12 h-8 md:h-12 text-pink-500 animate-bounce fill-current" />
                   </div>
                 )}
                 
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   <div className="aspect-square rounded-lg overflow-hidden bg-gradient-primary/20">
                     <img 
                       src={currentPair[0].profile_image}
@@ -250,13 +250,13 @@ export function PickModal({ open, onOpenChange }: PickModalProps) {
                   </div>
                   
                   <div className="text-center">
-                    <h3 className="text-lg md:text-xl font-bold gradient-text">{currentPair[0].name}</h3>
+                    <h3 className="text-sm md:text-lg lg:text-xl font-bold gradient-text truncate">{currentPair[0].name}</h3>
                   </div>
                   
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="w-full border-pink-500/50 text-pink-400 hover:bg-pink-500/20"
+                    className="w-full text-xs md:text-sm border-pink-500/50 text-pink-400 hover:bg-pink-500/20 py-1 md:py-2"
                   >
                     💕 Choose
                   </Button>
@@ -272,18 +272,18 @@ export function PickModal({ open, onOpenChange }: PickModalProps) {
 
               {/* Right Idol */}
               <Card 
-                className={`relative p-4 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-500 ${
+                className={`relative p-2 md:p-4 glass-dark border-white/10 card-hover cursor-pointer transition-all duration-500 ${
                   heartEffect === 'right' ? 'scale-105 border-pink-500/50 shadow-pink-500/25 shadow-xl' : ''
                 }`}
                 onClick={() => handleChoice(currentPair[1], 'right')}
               >
                 {heartEffect === 'right' && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                    <Heart className="w-12 h-12 text-pink-500 animate-bounce fill-current" />
+                    <Heart className="w-8 md:w-12 h-8 md:h-12 text-pink-500 animate-bounce fill-current" />
                   </div>
                 )}
                 
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   <div className="aspect-square rounded-lg overflow-hidden bg-gradient-primary/20">
                     <img 
                       src={currentPair[1].profile_image}
@@ -293,13 +293,13 @@ export function PickModal({ open, onOpenChange }: PickModalProps) {
                   </div>
                   
                   <div className="text-center">
-                    <h3 className="text-lg md:text-xl font-bold gradient-text">{currentPair[1].name}</h3>
+                    <h3 className="text-sm md:text-lg lg:text-xl font-bold gradient-text truncate">{currentPair[1].name}</h3>
                   </div>
                   
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="w-full border-pink-500/50 text-pink-400 hover:bg-pink-500/20"
+                    className="w-full text-xs md:text-sm border-pink-500/50 text-pink-400 hover:bg-pink-500/20 py-1 md:py-2"
                   >
                     💕 Choose
                   </Button>
