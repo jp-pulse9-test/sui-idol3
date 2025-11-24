@@ -6,12 +6,22 @@ import { useNavigate } from "react-router-dom";
 
 interface MinimalHeroProps {
   onEnter: () => void;
+  onSelectIdol?: () => void;
 }
 
-export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
+export const MinimalHero = ({ onEnter, onSelectIdol }: MinimalHeroProps) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [showEnterDialog, setShowEnterDialog] = useState(false);
+  
+  const handleSelectIdol = () => {
+    setShowEnterDialog(false);
+    if (onSelectIdol) {
+      onSelectIdol();
+    } else {
+      navigate('/pick');
+    }
+  };
   
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
@@ -63,7 +73,7 @@ export const MinimalHero = ({ onEnter }: MinimalHeroProps) => {
         open={showEnterDialog}
         onOpenChange={setShowEnterDialog}
         onQuickStart={() => navigate('/play')}
-        onSelectIdol={() => navigate('/pick')}
+        onSelectIdol={handleSelectIdol}
       />
     </section>
   );
