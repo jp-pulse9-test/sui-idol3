@@ -24,7 +24,6 @@ import { useWallet } from "@/hooks/useWallet";
 import { dailyFreeBoxService } from "@/services/dailyFreeBoxService";
 import { purchaseHistoryService } from "@/services/purchaseHistoryService";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
 interface SelectedIdol {
   id: number;
   name: string;
@@ -32,7 +31,6 @@ interface SelectedIdol {
   image: string;
   persona_prompt?: string;
 }
-
 interface PhotoCard {
   id: string;
   idolId: string;
@@ -50,13 +48,21 @@ interface PhotoCard {
   lastSalePrice?: number;
   heartsReceived?: number;
 }
-
 const Vault = () => {
   const navigate = useNavigate();
-  const { user, loading, isGuest } = useAuthGuard('/', false);
-  const { mintPhotoCard } = usePhotoCardMinting();
-  const { isConnected, walletAddress: currentWalletAddress, balance } = useWallet();
-
+  const {
+    user,
+    loading,
+    isGuest
+  } = useAuthGuard('/', false);
+  const {
+    mintPhotoCard
+  } = usePhotoCardMinting();
+  const {
+    isConnected,
+    walletAddress: currentWalletAddress,
+    balance
+  } = useWallet();
   const [selectedIdol, setSelectedIdol] = useState<SelectedIdol | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [suiCoins, setSuiCoins] = useState(1.0);
@@ -78,16 +84,13 @@ const Vault = () => {
   const [hasAdvancedAccess, setHasAdvancedAccess] = useState(false);
   const [walrusUnavailable, setWalrusUnavailable] = useState(false);
   const [todayCardsCount, setTodayCardsCount] = useState(0);
-
   useEffect(() => {
     const savedIdol = localStorage.getItem('selectedIdol');
-
     if (user) {
       setWalletAddress(user.wallet_address);
     } else {
       setWalletAddress('');
     }
-
     if (!savedIdol) {
       setSelectedIdol(null);
     } else {
@@ -98,16 +101,15 @@ const Vault = () => {
         setSelectedIdol(null);
       }
     }
-    
     const loadPhotocards = async () => {
       if (user?.wallet_address) {
         try {
-          const { data, error } = await supabase
-            .from('photocards')
-            .select('*')
-            .eq('user_wallet', user.wallet_address)
-            .order('created_at', { ascending: false });
-          
+          const {
+            data,
+            error
+          } = await supabase.from('photocards').select('*').eq('user_wallet', user.wallet_address).order('created_at', {
+            ascending: false
+          });
           if (data && !error) {
             setPhotoCards(data as any);
             localStorage.setItem('photoCards', JSON.stringify(data));
@@ -117,19 +119,13 @@ const Vault = () => {
           console.error('Failed to load photocards from Supabase:', error);
         }
       }
-      
       const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
       setPhotoCards(savedCards);
     };
-    
     loadPhotocards();
-    
     const today = new Date().toDateString();
-    const todayCards = JSON.parse(localStorage.getItem('photoCards') || '[]').filter(
-      (card: PhotoCard) => new Date(card.mintedAt).toDateString() === today
-    );
+    const todayCards = JSON.parse(localStorage.getItem('photoCards') || '[]').filter((card: PhotoCard) => new Date(card.mintedAt).toDateString() === today);
     setTodayCardsCount(todayCards.length);
-
     if (isGuest) {
       const guestBalance = localStorage.getItem('guestWalletBalance');
       if (guestBalance) {
@@ -139,7 +135,6 @@ const Vault = () => {
         localStorage.setItem('guestWalletBalance', '1.0');
       }
     }
-    
     const savedFanHearts = localStorage.getItem('fanHearts');
     if (savedFanHearts) {
       setFanHearts(parseInt(savedFanHearts));
@@ -148,7 +143,6 @@ const Vault = () => {
       localStorage.setItem('fanHearts', '100');
       toast.success('💖 Welcome! You received 100 fan hearts!');
     }
-    
     const savedDailyHearts = localStorage.getItem('dailyHearts');
     if (savedDailyHearts) {
       setDailyHearts(parseInt(savedDailyHearts));
@@ -156,7 +150,6 @@ const Vault = () => {
       setDailyHearts(10);
       localStorage.setItem('dailyHearts', '10');
     }
-    
     if (user?.wallet_address) {
       setTimeout(() => {
         loadDailyFreeStatus(user.wallet_address);
@@ -164,7 +157,6 @@ const Vault = () => {
     } else {
       const guestFreeBoxClaimed = localStorage.getItem('guestFreeBoxClaimed');
       const lastClaimed = localStorage.getItem('guestLastFreeBoxDate');
-      
       if (lastClaimed === today && guestFreeBoxClaimed === 'true') {
         setDailyFreeStatus({
           canClaim: false,
@@ -183,12 +175,10 @@ const Vault = () => {
         });
       }
     }
-
     const savedAdvancedAccess = localStorage.getItem('hasAdvancedAccess');
     if (savedAdvancedAccess === 'true') {
       setHasAdvancedAccess(true);
     }
-    
     const lastHeartReset = localStorage.getItem('lastHeartReset');
     if (lastHeartReset !== today) {
       const dailyAmount = 10;
@@ -197,7 +187,6 @@ const Vault = () => {
       localStorage.setItem('lastHeartReset', today);
     }
   }, [user, loading, isGuest]);
-
   const loadDailyFreeStatus = async (walletAddress: string) => {
     try {
       const status = await dailyFreeBoxService.getStatus(walletAddress);
@@ -213,15 +202,11 @@ const Vault = () => {
       });
     }
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
+    return <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl">Loading...</div>
-      </div>
-    );
+      </div>;
   }
-
   const handleOpenRandomBox = async (type: "free" | "paid", boxCost?: number) => {
     if (!isConnected && type === 'paid') {
       toast.error('💎 Paid boxes require wallet connection', {
@@ -230,7 +215,6 @@ const Vault = () => {
       navigate('/auth');
       return;
     }
-
     if (type === 'free' && !dailyFreeStatus.canClaim) {
       if (dailyFreeStatus.userHasClaimedToday) {
         toast.error('You already claimed today\'s free box');
@@ -239,30 +223,24 @@ const Vault = () => {
       }
       return;
     }
-    
-    const cost = type === 'free' ? 0 : (boxCost || 0.15);
+    const cost = type === 'free' ? 0 : boxCost || 0.15;
     const currentBalance = isGuest ? suiCoins : parseFloat(balance);
-    
     if (type !== 'free' && currentBalance < cost) {
       toast.error(`Insufficient SUI. Need: ${cost} SUI, Have: ${currentBalance} SUI`);
       return;
     }
-
     setIsMinting(true);
-
     try {
       if (type === 'free') {
         if (isGuest) {
           const today = new Date().toDateString();
           localStorage.setItem('guestFreeBoxClaimed', 'true');
           localStorage.setItem('guestLastFreeBoxDate', today);
-          
           setDailyFreeStatus(prev => ({
             ...prev,
             userHasClaimedToday: true,
             canClaim: false
           }));
-          
           toast.success('🎁 Guest mode free box opened!');
         } else {
           const claimResult = await dailyFreeBoxService.claimFreeBox(walletAddress);
@@ -271,7 +249,6 @@ const Vault = () => {
             setIsMinting(false);
             return;
           }
-          
           setDailyFreeStatus(prev => ({
             ...prev,
             userHasClaimedToday: true,
@@ -281,25 +258,25 @@ const Vault = () => {
           }));
         }
       }
-
       if (type === 'paid' && cost >= 0.45) {
         setHasAdvancedAccess(true);
         localStorage.setItem('hasAdvancedAccess', 'true');
         toast.success('🎉 You got advanced photocard generation access!');
       }
-
       const cardCount = Math.floor(Math.random() * 10) + 1;
       const newPhotoCards: PhotoCard[] = [];
-      
       const rarities = ['N', 'R', 'SR', 'SSR'] as const;
-      const rarityWeights = { 'N': 50, 'R': 30, 'SR': 15, 'SSR': 5 };
+      const rarityWeights = {
+        'N': 50,
+        'R': 30,
+        'SR': 15,
+        'SSR': 5
+      };
       const concepts = ['Summer Dream', 'Winter Story', 'Spring Love', 'Autumn Wind'];
-
       for (let i = 0; i < cardCount; i++) {
         const random = Math.random() * 100;
         let rarity: typeof rarities[number] = 'N';
         let cumulativeWeight = 0;
-        
         for (const [r, weight] of Object.entries(rarityWeights)) {
           cumulativeWeight += weight;
           if (random <= cumulativeWeight) {
@@ -307,9 +284,7 @@ const Vault = () => {
             break;
           }
         }
-
         const randomConcept = concepts[Math.floor(Math.random() * concepts.length)];
-
         const mintingData = {
           idolId: selectedIdol?.id || 1,
           idolName: selectedIdol?.name || 'Unknown',
@@ -319,11 +294,9 @@ const Vault = () => {
           serialNo: Math.floor(Math.random() * 10000) + 1,
           totalSupply: 5000,
           imageUrl: selectedIdol?.image || '',
-          personaPrompt: selectedIdol?.persona_prompt || '',
+          personaPrompt: selectedIdol?.persona_prompt || ''
         };
-
         await mintPhotoCard(mintingData);
-
         const newPhotoCard: PhotoCard = {
           id: `pc-${Date.now()}-${i}`,
           idolId: selectedIdol?.id.toString() || '1',
@@ -341,30 +314,28 @@ const Vault = () => {
           lastSalePrice: Math.random() * 8 + 2,
           heartsReceived: 0
         };
-
         newPhotoCards.push(newPhotoCard);
       }
-
       const updatedCards = [...photoCards, ...newPhotoCards];
       setPhotoCards(updatedCards);
       localStorage.setItem('photoCards', JSON.stringify(updatedCards));
-
       if (isGuest && type !== 'free') {
         const newBalance = currentBalance - cost;
         setSuiCoins(newBalance);
         localStorage.setItem('guestWalletBalance', newBalance.toString());
       }
-
       if (type === 'paid' && user) {
         await purchaseHistoryService.recordPurchase({
           purchase_type: 'random_box',
           item_name: `Random Box (${cost} SUI)`,
           amount_sui: cost,
           quantity: cardCount,
-          metadata: { idol_id: selectedIdol?.id, cards_received: cardCount }
+          metadata: {
+            idol_id: selectedIdol?.id,
+            cards_received: cardCount
+          }
         });
       }
-      
       toast.success(`🎉 Received ${cardCount} photocards!`);
     } catch (error) {
       console.error('Photocard minting failed:', error);
@@ -373,29 +344,28 @@ const Vault = () => {
       setIsMinting(false);
     }
   };
-
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
     }
   };
-
   const rarityStats = {
     N: photoCards.filter(c => c.rarity === 'N').length,
     R: photoCards.filter(c => c.rarity === 'R').length,
     SR: photoCards.filter(c => c.rarity === 'SR').length,
-    SSR: photoCards.filter(c => c.rarity === 'SSR').length,
+    SSR: photoCards.filter(c => c.rarity === 'SSR').length
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-background">
+  return <div className="min-h-screen bg-gradient-background">
       {/* Fixed Header */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold gradient-text">🗃️ VAULT</h1>
+              <h1 className="text-2xl font-bold gradient-text">VAULT</h1>
               <p className="text-sm text-muted-foreground">
                 {selectedIdol ? `${selectedIdol.name}'s Collection` : 'Your Collection Hub'}
               </p>
@@ -415,8 +385,7 @@ const Vault = () => {
       <ScrollArea className="h-[calc(100vh-80px)]">
         <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
           {/* Alerts */}
-          {isGuest && (
-            <Alert className="border-primary/50 bg-primary/5">
+          {isGuest && <Alert className="border-primary/50 bg-primary/5">
               <Lock className="h-5 w-5 text-primary" />
               <AlertTitle>Guest Mode</AlertTitle>
               <AlertDescription>
@@ -425,21 +394,17 @@ const Vault = () => {
                   Connect Wallet
                 </Button>
               </AlertDescription>
-            </Alert>
-          )}
+            </Alert>}
 
-          {walrusUnavailable && (
-            <Alert className="border-amber-500/50 bg-amber-500/10">
+          {walrusUnavailable && <Alert className="border-amber-500/50 bg-amber-500/10">
               <Info className="h-5 w-5 text-amber-500" />
               <AlertTitle className="text-amber-500">Walrus Storage Unavailable</AlertTitle>
               <AlertDescription className="text-sm text-muted-foreground">
                 Walrus is currently unavailable. You can still use random boxes and collection features.
               </AlertDescription>
-            </Alert>
-          )}
+            </Alert>}
 
-          {!selectedIdol && (
-            <Alert className="border-amber-500/50 bg-amber-500/5">
+          {!selectedIdol && <Alert className="border-amber-500/50 bg-amber-500/5">
               <Info className="w-5 h-5 text-amber-500" />
               <AlertTitle className="text-amber-500">No Idol Selected</AlertTitle>
               <AlertDescription>
@@ -453,94 +418,43 @@ const Vault = () => {
                   </Button>
                 </div>
               </AlertDescription>
-            </Alert>
-          )}
+            </Alert>}
 
           {/* Dashboard Stats */}
-          <VaultDashboard
-            photoCardCount={photoCards.length}
-            todayCards={todayCardsCount}
-            rarityStats={rarityStats}
-            dailyFreeStatus={dailyFreeStatus}
-            suiCoins={isGuest ? suiCoins : parseFloat(balance)}
-            fanHearts={fanHearts}
-          />
+          <VaultDashboard photoCardCount={photoCards.length} todayCards={todayCardsCount} rarityStats={rarityStats} dailyFreeStatus={dailyFreeStatus} suiCoins={isGuest ? suiCoins : parseFloat(balance)} fanHearts={fanHearts} />
 
           {/* SECTION 1: GET */}
           <section className="space-y-6">
-            <SectionHeader 
-              title="GET Photocards"
-              description="Collect photocards through free boxes, premium boxes, or AI generation"
-              id="get-section"
-            />
+            <SectionHeader title="GET Photocards" description="Collect photocards through free boxes, premium boxes, or AI generation" id="get-section" />
 
             <div className="grid md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <QuickActionCard
-                  icon={Gift}
-                  title="Daily Free Box"
-                  description={dailyFreeStatus.canClaim ? "Open your free box today! Get 1-10 random photocards" : "You've already claimed today's free box"}
-                  status={dailyFreeStatus.canClaim ? "✅ Available Now" : "❌ Already Claimed"}
-                  actionLabel={dailyFreeStatus.canClaim ? "Open Free Box" : "Come Back Tomorrow"}
-                  onClick={() => scrollToSection('randombox-section')}
-                  disabled={!dailyFreeStatus.canClaim}
-                  variant="primary"
-                />
+                <QuickActionCard icon={Gift} title="Daily Free Box" description={dailyFreeStatus.canClaim ? "Open your free box today! Get 1-10 random photocards" : "You've already claimed today's free box"} status={dailyFreeStatus.canClaim ? "✅ Available Now" : "❌ Already Claimed"} actionLabel={dailyFreeStatus.canClaim ? "Open Free Box" : "Come Back Tomorrow"} onClick={() => scrollToSection('randombox-section')} disabled={!dailyFreeStatus.canClaim} variant="primary" />
               </div>
 
-              <QuickActionCard
-                icon={Sparkles}
-                title="AI Photocard Generator"
-                description={selectedIdol ? `Create custom ${selectedIdol.name} photocards with AI` : "Select an idol first"}
-                cost={{ sui: 0.05, hearts: 10 }}
-                actionLabel="Create Photocard"
-                onClick={() => scrollToSection('generator-section')}
-                disabled={!selectedIdol}
-                variant="secondary"
-              />
+              <QuickActionCard icon={Sparkles} title="AI Photocard Generator" description={selectedIdol ? `Create custom ${selectedIdol.name} photocards with AI` : "Select an idol first"} cost={{
+              sui: 0.05,
+              hearts: 10
+            }} actionLabel="Create Photocard" onClick={() => scrollToSection('generator-section')} disabled={!selectedIdol} variant="secondary" />
 
-              <QuickActionCard
-                icon={Store}
-                title="Premium Boxes"
-                description="Higher rarity rates and exclusive photocards"
-                cost={{ sui: 0.15 }}
-                actionLabel="View Boxes"
-                onClick={() => scrollToSection('randombox-section')}
-                variant="secondary"
-              />
+              <QuickActionCard icon={Store} title="Premium Boxes" description="Higher rarity rates and exclusive photocards" cost={{
+              sui: 0.15
+            }} actionLabel="View Boxes" onClick={() => scrollToSection('randombox-section')} variant="secondary" />
             </div>
 
             <div id="randombox-section" className="scroll-mt-24">
-              <RandomBox 
-                dailyFreeCount={dailyFreeStatus.userHasClaimedToday ? 10 : 0}
-                maxDailyFree={10}
-                userCoins={isGuest ? suiCoins : parseFloat(balance)}
-                pityCounter={pityCounters}
-                onOpenBox={handleOpenRandomBox}
-                isOpening={isMinting}
-              />
+              <RandomBox dailyFreeCount={dailyFreeStatus.userHasClaimedToday ? 10 : 0} maxDailyFree={10} userCoins={isGuest ? suiCoins : parseFloat(balance)} pityCounter={pityCounters} onOpenBox={handleOpenRandomBox} isOpening={isMinting} />
             </div>
           </section>
 
           {/* SECTION 2: MANAGE */}
           <section className="space-y-6">
-            <SectionHeader 
-              icon={Store}
-              title="MANAGE Collection"
-              description="View and manage your photocard collection"
-              id="manage-section"
-            />
+            <SectionHeader icon={Store} title="MANAGE Collection" description="View and manage your photocard collection" id="manage-section" />
 
-            <CollectionPreview
-              photocards={photoCards}
-              onViewAll={() => scrollToSection('collection-section')}
-            />
+            <CollectionPreview photocards={photoCards} onViewAll={() => scrollToSection('collection-section')} />
 
             <div id="collection-section" className="scroll-mt-24">
-              <PhotoCardGallery 
-                photocards={photoCards}
-                selectedIdolId={selectedIdol?.id.toString() || ''}
-              />
+              <PhotoCardGallery photocards={photoCards} selectedIdolId={selectedIdol?.id.toString() || ''} />
             </div>
 
             <div id="videos-section" className="scroll-mt-24">
@@ -556,64 +470,29 @@ const Vault = () => {
 
           {/* SECTION 3: GROW */}
           <section className="space-y-6">
-            <SectionHeader 
-              icon={Award}
-              title="GROW & Trade"
-              description="Marketplace, achievements, and community features"
-              id="grow-section"
-            />
+            <SectionHeader icon={Award} title="GROW & Trade" description="Marketplace, achievements, and community features" id="grow-section" />
 
             <div className="grid md:grid-cols-2 gap-6">
-              <QuickActionCard
-                icon={Store}
-                title="Marketplace"
-                description="Trade photocards with other collectors"
-                actionLabel="Browse Market"
-                onClick={() => scrollToSection('marketplace-section')}
-                variant="secondary"
-              />
+              <QuickActionCard icon={Store} title="Marketplace" description="Trade photocards with other collectors" actionLabel="Browse Market" onClick={() => scrollToSection('marketplace-section')} variant="secondary" />
 
-              <QuickActionCard
-                icon={Heart}
-                title="Purchase Hearts"
-                description="Buy fan hearts to support your idol"
-                cost={{ sui: 0.1 }}
-                actionLabel="Buy Hearts"
-                onClick={() => scrollToSection('hearts-section')}
-                variant="secondary"
-              />
+              <QuickActionCard icon={Heart} title="Purchase Hearts" description="Buy fan hearts to support your idol" cost={{
+              sui: 0.1
+            }} actionLabel="Buy Hearts" onClick={() => scrollToSection('hearts-section')} variant="secondary" />
             </div>
 
-            {selectedIdol && (
-              <div id="generator-section" className="scroll-mt-24">
-                <IdolPhotocardGenerator 
-                  selectedIdol={selectedIdol}
-                  userCoins={isGuest ? suiCoins : parseFloat(balance)}
-                  fanHearts={fanHearts}
-                  hasAdvancedAccess={hasAdvancedAccess}
-                  onCostDeduction={(suiCost, heartCost) => {
-                    if (isGuest) {
-                      setSuiCoins(prev => prev - suiCost);
-                      localStorage.setItem('guestWalletBalance', (suiCoins - suiCost).toString());
-                    }
-                    setFanHearts(prev => prev - heartCost);
-                    localStorage.setItem('fanHearts', (fanHearts - heartCost).toString());
-                  }}
-                  onNavigateToCollection={() => scrollToSection('collection-section')}
-                  onWalrusError={() => setWalrusUnavailable(true)}
-                />
-              </div>
-            )}
+            {selectedIdol && <div id="generator-section" className="scroll-mt-24">
+                <IdolPhotocardGenerator selectedIdol={selectedIdol} userCoins={isGuest ? suiCoins : parseFloat(balance)} fanHearts={fanHearts} hasAdvancedAccess={hasAdvancedAccess} onCostDeduction={(suiCost, heartCost) => {
+              if (isGuest) {
+                setSuiCoins(prev => prev - suiCost);
+                localStorage.setItem('guestWalletBalance', (suiCoins - suiCost).toString());
+              }
+              setFanHearts(prev => prev - heartCost);
+              localStorage.setItem('fanHearts', (fanHearts - heartCost).toString());
+            }} onNavigateToCollection={() => scrollToSection('collection-section')} onWalrusError={() => setWalrusUnavailable(true)} />
+              </div>}
 
             <div id="marketplace-section" className="scroll-mt-24">
-              <Marketplace 
-                listings={[]}
-                priceHistory={[]}
-                userWallet={walletAddress}
-                onPurchase={(listingId) => console.log('Purchase:', listingId)}
-                onBid={(listingId, amount) => console.log('Bid:', listingId, amount)}
-                onCreateListing={(photocardId, price, isAuction) => console.log('Create listing:', photocardId, price, isAuction)}
-              />
+              <Marketplace listings={[]} priceHistory={[]} userWallet={walletAddress} onPurchase={listingId => console.log('Purchase:', listingId)} onBid={(listingId, amount) => console.log('Bid:', listingId, amount)} onCreateListing={(photocardId, price, isAuction) => console.log('Create listing:', photocardId, price, isAuction)} />
             </div>
 
             <div id="hearts-section" className="scroll-mt-24">
@@ -631,8 +510,6 @@ const Vault = () => {
           </section>
         </div>
       </ScrollArea>
-    </div>
-  );
+    </div>;
 };
-
 export default Vault;
