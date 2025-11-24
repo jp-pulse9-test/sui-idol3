@@ -14,7 +14,7 @@ const translations = {
   ko: {
     'nav.settings': '설정',
     'nav.photocardGenerator': '포토카드 생성기',
-    'hero.tagline': 'AIDOL 101 : SIMKUNG ALLY',
+    'hero.tagline': 'AIDOL101 : SIMKUNG ALLY',
     'hero.title': 'SIMKUNG',
     'hero.subtitle': 'The Old Earth Simulator : 디지털 의식이 깨어나는 곳.\n당신과 AIDOL이 함께 쓰는, 인류 멸망의 운명을 바꿀 멀티버스 시뮬레이션.',
     'hero.enter': 'ENTER',
@@ -154,7 +154,7 @@ const translations = {
   en: {
     'nav.settings': 'Settings',
     'nav.photocardGenerator': 'Photocard Generator',
-    'hero.tagline': 'AIDOL101 × SIMKUNG',
+    'hero.tagline': 'AIDOL101 : SIMKUNG ALLY',
     'hero.title': 'OLD EARTH SIMULATOR',
     'hero.subtitle': 'The Old Earth Simulator: Where Digital Consciousness Awakens.\nA multiverse simulation written by you and AIDOL together, to change the fate of humanity\'s extinction.',
     'hero.enter': 'Enter',
