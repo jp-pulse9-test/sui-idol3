@@ -126,7 +126,7 @@ export const useEpisodeStory = (
           messages: apiMessages,
           episodeContext,
           idolPersona,
-          language: 'ko',
+          language: 'en',
           currentBeat: nextBeat,
           currentTurn: nextTurn
         }),

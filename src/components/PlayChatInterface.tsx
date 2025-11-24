@@ -114,8 +114,8 @@ export const PlayChatInterface = () => {
     selectedMission
       ? {
           id: selectedMission.id,
-          title: selectedMission.title,
-          description: selectedMission.description,
+          title: selectedMission.titleEn,
+          description: selectedMission.descriptionEn,
           category: selectedMission.valueType,
           difficulty: selectedMission.difficulty,
         }
