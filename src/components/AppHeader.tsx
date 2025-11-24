@@ -4,6 +4,7 @@ import { Home, Target, Gamepad2, Archive, TrendingUp, User, Settings, Wallet, Me
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { PickModal } from '@/components/PickModal';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { WalletConnectButton } from '@/components/WalletConnectButton';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
@@ -12,7 +13,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { path: '/', icon: Home, label: 'Home', labelKo: '홈' },
-  { path: '/pick', icon: Target, label: 'PICK', labelKo: 'PICK', requiresAuth: false },
+  { path: '/pick', icon: Target, label: 'PICK', labelKo: 'PICK', requiresAuth: false, isModal: true },
   { path: '/play', icon: Gamepad2, label: 'PLAY', labelKo: 'PLAY', requiresAuth: false },
   { path: '/vault', icon: Archive, label: 'VAULT', labelKo: 'VAULT', requiresAuth: false },
   { path: '/simulator', icon: TrendingUp, label: 'The Legend & Old Earth Simulator', labelKo: 'The Legend & Old Earth Simulator', requiresAuth: false, isExternal: true, externalUrl: 'https://aidol101-old-earth-simulator-1034785841986.us-west1.run.app/' },
@@ -24,6 +25,7 @@ export function AppHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [simulatorOpen, setSimulatorOpen] = useState(false);
+  const [pickModalOpen, setPickModalOpen] = useState(false);
   const { isGuest } = useAuthGuard('/', false);
   const { language } = useLanguage();
   const navigate = useNavigate();
@@ -36,6 +38,8 @@ export function AppHeader() {
     setMobileMenuOpen(false);
     if (item.isExternal) {
       setSimulatorOpen(true);
+    } else if (item.isModal) {
+      setPickModalOpen(true);
     } else {
       navigate(item.path);
     }
@@ -76,35 +80,35 @@ export function AppHeader() {
 
                   {/* Navigation */}
                   <nav className="flex flex-col gap-2">
-                    {navItems.map((item) => (
-                      item.isExternal ? (
-                        <button
-                          key={item.path}
-                          onClick={() => handleNavClick(item)}
-                          className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-foreground hover:bg-muted text-left"
-                        >
-                          <item.icon className="w-5 h-5" />
-                          <span className="text-base">{getLabel(item)}</span>
-                        </button>
-                      ) : (
-                        <NavLink
-                          key={item.path}
-                          to={item.path}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={({ isActive }) =>
-                            cn(
-                              'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
-                              'text-foreground hover:bg-muted',
-                              isActive && 'bg-primary/10 text-primary font-medium'
-                            )
-                          }
-                          end={item.path === '/'}
-                        >
-                          <item.icon className="w-5 h-5" />
-                          <span className="text-base">{getLabel(item)}</span>
-                        </NavLink>
-                      )
-                    ))}
+                  {navItems.map((item) => (
+                    item.isExternal || item.isModal ? (
+                      <button
+                        key={item.path}
+                        onClick={() => handleNavClick(item)}
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-foreground hover:bg-muted text-left"
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className="text-base">{getLabel(item)}</span>
+                      </button>
+                    ) : (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={({ isActive }) =>
+                          cn(
+                            'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
+                            'text-foreground hover:bg-muted',
+                            isActive && 'bg-primary/10 text-primary font-medium'
+                          )
+                        }
+                        end={item.path === '/'}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className="text-base">{getLabel(item)}</span>
+                      </NavLink>
+                    )
+                  ))}
                   </nav>
 
                   {/* Guest Mode Badge */}
@@ -121,6 +125,9 @@ export function AppHeader() {
           </div>
         </div>
       </header>
+
+      {/* Pick Modal */}
+      <PickModal open={pickModalOpen} onOpenChange={setPickModalOpen} />
 
       {/* Simulator Modal */}
       <Dialog open={simulatorOpen} onOpenChange={setSimulatorOpen}>
