@@ -46,6 +46,8 @@ export function PhotocardVideoGenerator({
     setShowDialog(true);
 
     try {
+      const walletAddress = localStorage.getItem('walletAddress');
+      
       // Call edge function to generate video
       const { data, error } = await supabase.functions.invoke('generate-photocard-video', {
         body: {
@@ -63,10 +65,26 @@ export function PhotocardVideoGenerator({
       }
 
       setGeneratedVideoUrl(data.videoUrl);
-      toast.success('🎬 비디오가 생성되었습니다!');
-
-      // TODO: Record purchase in database (optional)
-      // TODO: Deduct SUI from wallet (blockchain transaction)
+      
+      // Save generated video to database
+      if (walletAddress) {
+        const { error: saveError } = await supabase
+          .from('photocard_videos')
+          .insert({
+            photocard_id: photocardId,
+            user_wallet: walletAddress,
+            video_url: data.videoUrl,
+            prompt_used: data.prompt || null,
+          });
+        
+        if (saveError) {
+          console.error('Failed to save video to database:', saveError);
+        } else {
+          toast.success('🎬 비디오가 생성되고 컬렉션에 저장되었습니다!');
+        }
+      } else {
+        toast.success('🎬 비디오가 생성되었습니다!');
+      }
 
     } catch (error) {
       console.error('Video generation error:', error);

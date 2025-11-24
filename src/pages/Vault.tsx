@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,6 +13,7 @@ import { PhotoCardGallery } from "@/components/ui/photocard-gallery";
 import { Marketplace } from "@/components/ui/marketplace";
 import { HeartPurchase } from "@/components/HeartPurchase";
 import { IdolPhotocardGenerator } from "@/components/IdolPhotocardGenerator";
+import { PhotocardVideoGallery } from "@/components/PhotocardVideoGallery";
 import { CommunityGoalPool } from "@/components/CommunityGoalPool";
 import { Heart, Lock, Info } from "lucide-react";
 import { usePhotoCardMinting } from "@/services/photocardMintingSimple";
@@ -69,7 +71,7 @@ const Vault = () => {
     ssr: 0
   });
   const [photoCards, setPhotoCards] = useState<PhotoCard[]>([]);
-  const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection' | 'generator' | 'marketplace'>('storage');
+  const [activeTab, setActiveTab] = useState<'storage' | 'randombox' | 'collection' | 'generator' | 'marketplace' | 'videos'>('storage');
   const [isMinting, setIsMinting] = useState(false);
   const [hasAdvancedAccess, setHasAdvancedAccess] = useState(false);
   const [walrusUnavailable, setWalrusUnavailable] = useState(false);
@@ -78,7 +80,7 @@ const Vault = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
-    if (tabParam && ['storage', 'randombox', 'collection', 'generator', 'marketplace'].includes(tabParam)) {
+    if (tabParam && ['storage', 'randombox', 'collection', 'generator', 'marketplace', 'videos'].includes(tabParam)) {
       setActiveTab(tabParam as any);
     }
   }, []);
@@ -111,9 +113,33 @@ const Vault = () => {
       }
     }
     
-    // Load photocards from local storage (works for both guest and authenticated)
-    const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
-    setPhotoCards(savedCards);
+    // Load photocards - prioritize Supabase for authenticated users
+    const loadPhotocards = async () => {
+      if (user?.wallet_address) {
+        try {
+          const { data, error } = await supabase
+            .from('photocards')
+            .select('*')
+            .eq('user_wallet', user.wallet_address)
+            .order('created_at', { ascending: false });
+          
+          if (data && !error) {
+            setPhotoCards(data as any);
+            // Sync to localStorage
+            localStorage.setItem('photoCards', JSON.stringify(data));
+            return;
+          }
+        } catch (error) {
+          console.error('Failed to load photocards from Supabase:', error);
+        }
+      }
+      
+      // Fallback to localStorage for guests or if Supabase fails
+      const savedCards = JSON.parse(localStorage.getItem('photoCards') || '[]');
+      setPhotoCards(savedCards);
+    };
+    
+    loadPhotocards();
 
     // Load SUI balance from localStorage for guest mode, or use blockchain balance for authenticated users
     if (isGuest) {
@@ -697,6 +723,10 @@ const Vault = () => {
               onBid={(listingId, amount) => console.log('Bid:', listingId, amount)}
               onCreateListing={(photocardId, price, isAuction) => console.log('Create listing:', photocardId, price, isAuction)}
             />
+          </TabsContent>
+
+          <TabsContent value="videos" className="mt-8">
+            <PhotocardVideoGallery />
           </TabsContent>
         </Tabs>
 
