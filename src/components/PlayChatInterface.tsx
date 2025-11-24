@@ -20,7 +20,10 @@ type ChatMessage =
 type GameMode = 'branch' | 'mission' | 'episode';
 
 export const PlayChatInterface = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
+  // Play 페이지는 영어 전용
+  const language = 'en';
+  
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMode, setCurrentMode] = useState<GameMode>('branch');
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
@@ -29,9 +32,9 @@ export const PlayChatInterface = () => {
   const [isFreeInputMode, setIsFreeInputMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // 언어별 텍스트 가져오기 헬퍼 함수
-  const getBranchName = (branch: Branch) => language === 'en' ? branch.nameEn : branch.name;
-  const getMissionTitle = (mission: SalvationMission) => language === 'en' ? mission.titleEn : mission.title;
+  // 영어 전용 - 항상 En 버전 사용
+  const getBranchName = (branch: Branch) => branch.nameEn;
+  const getMissionTitle = (mission: SalvationMission) => mission.titleEn;
   
   const { tickets, useTicket } = useFreeInputTickets();
   
@@ -362,9 +365,9 @@ export const PlayChatInterface = () => {
     ]);
   };
 
-  // 선택지 파싱 함수
+  // 선택지 파싱 함수 - 영어 전용
   const parseChoices = (content: string): { text: string; choices: string[] } | null => {
-    const choiceMarker = t('play.choices.marker'); // [선택지] or [Choices]
+    const choiceMarker = '[Choices]'; // 영어 전용
     if (!content.includes(choiceMarker)) return null;
     
     const [mainText, choicesText] = content.split(choiceMarker);
