@@ -24,14 +24,16 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
+    console.log('Using Lovable AI for image generation');
+
     // Create a concise, focused prompt for image generation
     const imagePrompt = `K-pop idol ${idolName} in an anime style scene from "${episodeTitle}": ${sceneDescription.substring(0, 300)}. 
 
 Style: High-quality anime art, emotional K-pop idol aesthetic, detailed character with expressive face, cinematic lighting, vibrant colors, professional illustration quality, 16:9 widescreen composition.`;
 
-    console.log('Calling Lovable AI image generation model...');
+    console.log('Calling Lovable AI Nano banana image generation...');
     
-    // Use Lovable AI Gateway with Nano banana (image generation model)
+    // Use Lovable AI Gateway with Nano banana (google/gemini-2.5-flash-image-preview)
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
