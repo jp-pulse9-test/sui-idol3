@@ -18,7 +18,7 @@ export const LanguageSelector = () => {
           <Globe className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-sm border-border/50">
+      <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-sm border-border/50 text-foreground">
         <DropdownMenuItem
           onClick={() => setLanguage('ko')}
           className={language === 'ko' ? 'bg-accent' : ''}
