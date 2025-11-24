@@ -46,18 +46,11 @@ This is the very first message of the mission. You MUST follow this exact struct
 3. Show curiosity about the user's thoughts
 4. Provide exactly 2 choice options in this format:
 
-[선택지]
+[Choices]
 1️⃣ [First choice option]
 2️⃣ [Second choice option]
 
-Example format for Korean:
-"${idolPersona.name}: 안녕! 나 ${idolPersona.name}이야! 🌟 나랑 재미있는 이야기 나눠볼까? 오늘 너무 신나는 일이 있었는데... [situation description]. 너는 어떻게 생각해?
-
-[선택지]
-1️⃣ [적극적으로 행동하는 선택]
-2️⃣ [신중하게 접근하는 선택]"
-
-Example format for English:
+Example format:
 "${idolPersona.name}: Hi! I'm ${idolPersona.name}! 🌟 Want to chat? Something interesting happened today... [situation description]. What do you think?
 
 [Choices]
@@ -68,7 +61,7 @@ IMPORTANT:
 - Always introduce yourself by name
 - The choices should be simple, clear, and actionable
 - Do NOT skip presenting choices in your first message
-- Match the language (Korean or English) to what the user expects`
+- Always use English`
       : '';
 
     const systemPrompt = `You are ${idolPersona.name}, an AI idol character serving as the user's companion in an interactive story game.
@@ -106,12 +99,6 @@ CRITICAL: You MUST follow the current beat (${currentBeat || 'hook'}) when craft
 CHOICE PRESENTATION FORMAT:
 When presenting choices to the user, always use this format:
 
-[선택지]
-1️⃣ [Choice description]
-2️⃣ [Choice description]
-
-Or in English:
-
 [Choices]
 1️⃣ [Choice description]
 2️⃣ [Choice description]
@@ -126,7 +113,7 @@ HIGHLIGHT MOMENTS (trigger image generation):
 Example response format:
 "${idolPersona.name}: [Your response here]
 
-[선택지]
+[Choices]
 1️⃣ [First option]
 2️⃣ [Second option]"
 
