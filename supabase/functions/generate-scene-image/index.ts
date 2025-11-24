@@ -16,24 +16,24 @@ serve(async (req) => {
     console.log("Generating scene image:", { 
       idol: idolName, 
       episode: episodeTitle,
-      scene: sceneDescription.substring(0, 200) 
+      scene: sceneDescription.substring(0, 100) 
     });
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+      console.error('LOVABLE_API_KEY is not configured');
+      throw new Error('Image generation service not configured');
     }
 
-    console.log('Using Lovable AI for image generation');
+    console.log('Using Lovable AI Gateway for image generation');
 
     // Create a concise, focused prompt for image generation
-    const imagePrompt = `K-pop idol ${idolName} in an anime style scene from "${episodeTitle}": ${sceneDescription.substring(0, 300)}. 
+    const imagePrompt = `Anime-style K-pop idol scene: ${idolName} from "${episodeTitle}". ${sceneDescription.substring(0, 250)}. 
+High-quality anime art, emotional K-pop aesthetic, detailed expressive face, cinematic lighting, vibrant colors, 16:9 composition.`;
 
-Style: High-quality anime art, emotional K-pop idol aesthetic, detailed character with expressive face, cinematic lighting, vibrant colors, professional illustration quality, 16:9 widescreen composition.`;
-
-    console.log('Calling Lovable AI Nano banana image generation...');
+    console.log('Calling Lovable AI with google/gemini-2.5-flash-image-preview model...');
     
-    // Use Lovable AI Gateway with Nano banana (google/gemini-2.5-flash-image-preview)
+    // Use Lovable AI Gateway with Nano banana image generation model
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -52,7 +52,7 @@ Style: High-quality anime art, emotional K-pop idol aesthetic, detailed characte
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Image generation error:", response.status, errorText);
+      console.error("Lovable AI Gateway error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -63,29 +63,30 @@ Style: High-quality anime art, emotional K-pop idol aesthetic, detailed characte
       
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: "Payment required. Please add credits to your Lovable AI workspace." }),
+          JSON.stringify({ error: "Payment required. Please add credits to your Lovable workspace." }),
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
-      throw new Error(`Image generation failed: ${response.status}`);
+      throw new Error(`Lovable AI Gateway failed: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('Image generation response received');
+    console.log('Image generation response received successfully');
 
     // Extract the generated image from the response
     const imageData = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     
     if (!imageData) {
-      throw new Error('No image data returned from API');
+      console.error('No image data in response:', JSON.stringify(data));
+      throw new Error('No image data returned from Lovable AI');
     }
 
     console.log('Scene image generated successfully');
 
     return new Response(
       JSON.stringify({ 
-        imageUrl: imageData, // This will be a base64 data URL
+        imageUrl: imageData, // Base64 data URL
         sceneDescription
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -93,7 +94,9 @@ Style: High-quality anime art, emotional K-pop idol aesthetic, detailed characte
   } catch (error) {
     console.error("Scene image generation error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : "Unknown error occurred during image generation" 
+      }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
