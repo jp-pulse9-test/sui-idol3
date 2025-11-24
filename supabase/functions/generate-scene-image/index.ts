@@ -16,24 +16,24 @@ serve(async (req) => {
     console.log("Generating scene image:", { 
       idol: idolName, 
       episode: episodeTitle,
-      scene: sceneDescription.substring(0, 100) 
+      scene: sceneDescription.substring(0, 200) 
     });
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      console.error('LOVABLE_API_KEY is not configured');
-      throw new Error('Image generation service not configured');
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    console.log('Using Lovable AI Gateway for image generation');
+    console.log('Using Lovable AI for image generation');
 
     // Create a concise, focused prompt for image generation
-    const imagePrompt = `Anime-style K-pop idol scene: ${idolName} from "${episodeTitle}". ${sceneDescription.substring(0, 250)}. 
-High-quality anime art, emotional K-pop aesthetic, detailed expressive face, cinematic lighting, vibrant colors, 16:9 composition.`;
+    const imagePrompt = `K-pop idol ${idolName} in an anime style scene from "${episodeTitle}": ${sceneDescription.substring(0, 300)}. 
 
-    console.log('Calling Lovable AI with google/gemini-2.5-flash-image-preview model...');
+Style: High-quality anime art, emotional K-pop idol aesthetic, detailed character with expressive face, cinematic lighting, vibrant colors, professional illustration quality, 16:9 widescreen composition.`;
+
+    console.log('Calling Lovable AI Nano banana image generation...');
     
-    // Use Lovable AI Gateway with Nano banana image generation model
+    // Use Lovable AI Gateway with Nano banana (google/gemini-2.5-flash-image-preview)
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -52,7 +52,7 @@ High-quality anime art, emotional K-pop aesthetic, detailed expressive face, cin
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Lovable AI Gateway error:", response.status, errorText);
+      console.error("Image generation error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -63,30 +63,29 @@ High-quality anime art, emotional K-pop aesthetic, detailed expressive face, cin
       
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: "Payment required. Please add credits to your Lovable workspace." }),
+          JSON.stringify({ error: "Payment required. Please add credits to your Lovable AI workspace." }),
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
-      throw new Error(`Lovable AI Gateway failed: ${response.status} - ${errorText}`);
+      throw new Error(`Image generation failed: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('Image generation response received successfully');
+    console.log('Image generation response received');
 
     // Extract the generated image from the response
     const imageData = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     
     if (!imageData) {
-      console.error('No image data in response:', JSON.stringify(data));
-      throw new Error('No image data returned from Lovable AI');
+      throw new Error('No image data returned from API');
     }
 
     console.log('Scene image generated successfully');
 
     return new Response(
       JSON.stringify({ 
-        imageUrl: imageData, // Base64 data URL
+        imageUrl: imageData, // This will be a base64 data URL
         sceneDescription
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -94,9 +93,7 @@ High-quality anime art, emotional K-pop aesthetic, detailed expressive face, cin
   } catch (error) {
     console.error("Scene image generation error:", error);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error occurred during image generation" 
-      }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

@@ -371,19 +371,9 @@ export const PlayChatInterface = () => {
     if (!content.includes(choiceMarker)) return null;
     
     const [mainText, choicesText] = content.split(choiceMarker);
-    
-    // 각 줄을 개별적으로 처리하여 중복 방지
-    const lines = choicesText.split('\n');
-    const choices: string[] = [];
-    
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      // 이모지 숫자(1️⃣, 2️⃣ 등)로 시작하는 줄만 선택지로 인식
-      const match = trimmedLine.match(/^[1-9]️⃣\s*(.+)$/);
-      if (match && match[1]) {
-        choices.push(match[1].trim());
-      }
-    }
+    const choicePattern = /[1-9]️⃣\s*(.+?)(?=\n[1-9]️⃣|$)/gs;
+    const matches = [...choicesText.matchAll(choicePattern)];
+    const choices = matches.map(m => m[1].trim());
     
     return choices.length > 0 ? { text: mainText.trim(), choices } : null;
   };
