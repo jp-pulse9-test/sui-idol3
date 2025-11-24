@@ -469,7 +469,6 @@ const Vault = () => {
           {/* SECTION 1: GET */}
           <section className="space-y-6">
             <SectionHeader 
-              emoji="🎁"
               title="GET Photocards"
               description="Collect photocards through free boxes, premium boxes, or AI generation"
               id="get-section"
