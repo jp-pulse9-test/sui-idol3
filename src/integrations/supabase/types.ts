@@ -536,6 +536,113 @@ export type Database = {
           },
         ]
       }
+      photocard_videos: {
+        Row: {
+          created_at: string | null
+          duration_seconds: number | null
+          generation_cost_sui: number | null
+          id: string
+          photocard_id: string | null
+          prompt_used: string | null
+          user_wallet: string
+          video_blob_id: string | null
+          video_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          generation_cost_sui?: number | null
+          id?: string
+          photocard_id?: string | null
+          prompt_used?: string | null
+          user_wallet: string
+          video_blob_id?: string | null
+          video_url: string
+        }
+        Update: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          generation_cost_sui?: number | null
+          id?: string
+          photocard_id?: string | null
+          prompt_used?: string | null
+          user_wallet?: string
+          video_blob_id?: string | null
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photocard_videos_photocard_id_fkey"
+            columns: ["photocard_id"]
+            isOneToOne: false
+            referencedRelation: "photocards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photocards: {
+        Row: {
+          concept: string
+          created_at: string | null
+          floor_price: number | null
+          hearts_received: number | null
+          id: string
+          idol_id: number
+          idol_name: string
+          image_url: string
+          is_public: boolean | null
+          last_sale_price: number | null
+          persona_prompt: string | null
+          rarity: string
+          season: string
+          serial_no: number
+          total_supply: number
+          updated_at: string | null
+          user_wallet: string
+          walrus_blob_id: string | null
+        }
+        Insert: {
+          concept: string
+          created_at?: string | null
+          floor_price?: number | null
+          hearts_received?: number | null
+          id?: string
+          idol_id: number
+          idol_name: string
+          image_url: string
+          is_public?: boolean | null
+          last_sale_price?: number | null
+          persona_prompt?: string | null
+          rarity: string
+          season: string
+          serial_no: number
+          total_supply: number
+          updated_at?: string | null
+          user_wallet: string
+          walrus_blob_id?: string | null
+        }
+        Update: {
+          concept?: string
+          created_at?: string | null
+          floor_price?: number | null
+          hearts_received?: number | null
+          id?: string
+          idol_id?: number
+          idol_name?: string
+          image_url?: string
+          is_public?: boolean | null
+          last_sale_price?: number | null
+          persona_prompt?: string | null
+          rarity?: string
+          season?: string
+          serial_no?: number
+          total_supply?: number
+          updated_at?: string | null
+          user_wallet?: string
+          walrus_blob_id?: string | null
+        }
+        Relationships: []
+      }
       pool_participants: {
         Row: {
           boxes_purchased: number | null
