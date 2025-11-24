@@ -78,13 +78,14 @@ export function AppHeader() {
                     <WalletConnectButton />
                   </div>
 
-                  {/* Navigation */}
-                  <nav className="flex flex-col gap-2">
+                {/* Navigation */}
+                <nav className="flex flex-col gap-2">
                   {navItems.map((item) => (
                     item.isExternal || item.isModal ? (
                       <button
                         key={item.path}
                         onClick={() => handleNavClick(item)}
+                        data-pick-trigger={item.isModal ? 'true' : undefined}
                         className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-foreground hover:bg-muted text-left"
                       >
                         <item.icon className="w-5 h-5" />
@@ -109,7 +110,7 @@ export function AppHeader() {
                       </NavLink>
                     )
                   ))}
-                  </nav>
+                </nav>
 
                   {/* Guest Mode Badge */}
                   {isGuest && (

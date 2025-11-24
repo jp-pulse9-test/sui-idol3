@@ -16,7 +16,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { MobileNavBar } from "@/components/MobileNavBar";
 import { CommandPalette } from "@/components/CommandPalette";
 import Index from "./pages/Index";
-import PickSimplified from "./pages/PickSimplified";
+import PickRedirect from "./pages/PickRedirect";
 import IdolGallery from "./pages/IdolGallery";
 const Vault = lazy(() => import("./pages/Vault"));
 import Rise from "./pages/Rise";
@@ -89,8 +89,8 @@ const App = () => (
                       <Route path="/idol-detail" element={<IdolDetail />} />
                       <Route path="/gallery" element={<IdolGallery />} />
                       
-                      {/* 간소화된 플로우: Pick → Vault → Rise */}
-                      <Route path="/pick" element={<PickSimplified />} />
+                      {/* PICK은 모달로만 작동, 페이지 접근 시 홈으로 리다이렉트 */}
+                      <Route path="/pick" element={<PickRedirect />} />
                       <Route path="/vault" element={<Vault />} />
                       <Route path="/rise" element={<Rise />} />
                       
