@@ -4,6 +4,7 @@ import { getMissionsByBranch } from '@/data/salvationMissions';
 import { getScenesByMissionId } from '@/data/missionScenes';
 import { useEpisodeStory } from '@/hooks/useEpisodeStory';
 import { useFreeInputTickets } from '@/hooks/useFreeInputTickets';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Branch, SalvationMission } from '@/types/branch';
 import { toast } from 'sonner';
 
@@ -19,6 +20,7 @@ type ChatMessage =
 type GameMode = 'branch' | 'mission' | 'episode';
 
 export const PlayChatInterface = () => {
+  const { t } = useLanguage();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMode, setCurrentMode] = useState<GameMode>('branch');
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
@@ -112,19 +114,19 @@ export const PlayChatInterface = () => {
         }
       : { 
           id: 'default-mission', 
-          title: '자유 대화', 
-          description: '아이돌과 자유롭게 대화하세요', 
+          title: t('play.mission.freeTalk'), 
+          description: t('play.mission.freeTalkDesc'), 
           category: 'casual', 
           difficulty: 'easy' 
         },
-    selectedIdol || { name: '아이돌', personality: '', persona_prompt: '', image: '' }
+    selectedIdol || { name: t('play.idol.defaultName'), personality: '', persona_prompt: '', image: '' }
   );
 
   // 초기 메시지 로드 (타이핑 효과 적용)
   useEffect(() => {
     const initMessages = async () => {
-      const msg1 = '⚡ 2028 구원 작전 시스템 부팅 완료';
-      const msg2 = '지구를 구할 타임라인을 선택하세요:';
+      const msg1 = t('play.system.bootComplete');
+      const msg2 = t('play.system.selectTimeline');
       
       setMessages([{ type: 'system', content: msg1, timestamp: new Date() }]);
       await typeMessage(msg1, 0);
@@ -251,7 +253,7 @@ export const PlayChatInterface = () => {
     const handleTouchEnd = () => {
       if (isPulling && pullDistance > 80) {
         setSkipTyping(true);
-        toast.info("⚡ 빠른 모드 활성화");
+        toast.info(t('play.system.fastModeActivated'));
       }
       setIsPulling(false);
       setPullDistance(0);
@@ -273,7 +275,7 @@ export const PlayChatInterface = () => {
     playClickSound();
     
     if (!branch.isUnlocked) {
-      const warningMsg = `⚠️ ${branch.name}은(는) 아직 잠겨있습니다. VRI ${branch.requiredVRI}가 필요합니다.`;
+      const warningMsg = t('play.branch.locked', { name: branch.name, vri: branch.requiredVRI });
       const currentLength = messages.length;
       setMessages((prev) => [...prev, { type: 'system', content: warningMsg, timestamp: new Date() }]);
       await typeMessage(warningMsg, currentLength);
@@ -283,10 +285,10 @@ export const PlayChatInterface = () => {
     setSelectedBranch(branch);
     const missions = getMissionsByBranch(branch.id);
     
-    const userMsg = `> ${branch.name} 선택`;
+    const userMsg = t('play.branch.userSelected', { name: branch.name });
     setMessages((prev) => [...prev, { type: 'user', content: userMsg, timestamp: new Date() }]);
     
-    const systemMsg = `${branch.year}년 타임라인 로드 완료. 미션을 선택하세요:`;
+    const systemMsg = t('play.branch.timelineLoaded', { year: branch.year });
     const currentLength = messages.length + 1;
     setMessages((prev) => [...prev, { type: 'system', content: systemMsg, timestamp: new Date() }]);
     await typeMessage(systemMsg, currentLength);
@@ -300,11 +302,11 @@ export const PlayChatInterface = () => {
     
     setSelectedMission(mission);
     
-    const userMsg = `> [${mission.title}] 선택`;
+    const userMsg = t('play.mission.selected', { title: mission.title });
     setMessages((prev) => [...prev, { type: 'user', content: userMsg, timestamp: new Date() }]);
     
-    const idolName = selectedIdol?.name || '아이돌';
-    const systemMsg = `미션 시작. Your AIDOL ally ${idolName}과의 대화를 시작합니다...`;
+    const idolName = selectedIdol?.name || t('play.idol.defaultName');
+    const systemMsg = t('play.mission.startWithIdol', { name: idolName });
     const currentLength = messages.length + 1;
     setMessages((prev) => [...prev, { type: 'system', content: systemMsg, timestamp: new Date() }]);
     await typeMessage(systemMsg, currentLength);
@@ -312,7 +314,7 @@ export const PlayChatInterface = () => {
     // Add idol profile card
     setMessages((prev) => [...prev, { 
       type: 'idol-profile', 
-      idol: selectedIdol || { name: '아이돌', image: '', personality: '', persona_prompt: '' },
+      idol: selectedIdol || { name: t('play.idol.defaultName'), image: '', personality: '', persona_prompt: '' },
       timestamp: new Date() 
     } as any]);
     
@@ -339,7 +341,7 @@ export const PlayChatInterface = () => {
     setSelectedBranch(null);
     setSelectedMission(null);
     setMessages([
-      { type: 'system', content: '⚡ 타임라인 선택 화면으로 돌아갑니다', timestamp: new Date() },
+      { type: 'system', content: t('play.mission.backToTimeline'), timestamp: new Date() },
       { type: 'branch-select', branches: BRANCHES, timestamp: new Date() },
     ]);
   };
@@ -351,7 +353,7 @@ export const PlayChatInterface = () => {
     const missions = getMissionsByBranch(selectedBranch.id);
     setMessages((prev) => [
       ...prev,
-      { type: 'system', content: '미션 선택 화면으로 돌아갑니다', timestamp: new Date() },
+      { type: 'system', content: t('play.mission.backToMissionSelect'), timestamp: new Date() },
       { type: 'mission-select', missions, timestamp: new Date() },
     ]);
   };
@@ -373,7 +375,7 @@ export const PlayChatInterface = () => {
     playClickSound();
     if (isEpisodeLoading) return;
     
-    const message = `${choiceNumber}번 선택: ${choice}`;
+    const message = t('play.choice.selected', { number: choiceNumber, choice });
     sendEpisodeMessage(message);
     setIsFreeInputMode(false);
   };
@@ -383,9 +385,9 @@ export const PlayChatInterface = () => {
     if (useTicket()) {
       setIsFreeInputMode(true);
       playClickSound();
-      toast.success("🎫 자유 입력권 사용! 원하는 답변을 입력하세요.");
+      toast.success(t('play.freeInput.success'));
     } else {
-      toast.error("자유 입력권이 부족합니다. Settings에서 구매하세요.");
+      toast.error(t('play.freeInput.error'));
     }
   };
 
@@ -407,7 +409,7 @@ export const PlayChatInterface = () => {
       case 'branch-select':
         return (
           <div key={index} className="retro-terminal-box mb-3">
-            <p className="font-mono text-sm mb-3" style={{ color: 'var(--terminal-green)' }}>타임라인 선택:</p>
+            <p className="font-mono text-sm mb-3" style={{ color: 'var(--terminal-green)' }}>{t('play.mission.selectTimeline')}</p>
             <div className="space-y-2">
               {msg.branches.map((branch) => (
                 <button
@@ -439,7 +441,7 @@ export const PlayChatInterface = () => {
       case 'mission-select':
         return (
           <div key={index} className="retro-terminal-box mb-3">
-            <p className="font-mono text-sm mb-3" style={{ color: 'var(--terminal-green)' }}>미션 선택:</p>
+            <p className="font-mono text-sm mb-3" style={{ color: 'var(--terminal-green)' }}>{t('play.mission.selectMission')}</p>
             <div className="space-y-2">
               {msg.missions.map((mission) => (
                 <button
@@ -468,7 +470,7 @@ export const PlayChatInterface = () => {
                        hover:border-emerald-600 font-mono text-xs"
               style={{ color: 'var(--terminal-green)' }}
             >
-              ← 타임라인 선택으로
+              {t('play.mission.backButton')}
             </button>
           </div>
         );
@@ -492,14 +494,14 @@ export const PlayChatInterface = () => {
                   {msg.idol.name}
                 </h3>
                 <p className="text-emerald-600/70 font-mono text-xs">
-                  🎤 Your AIDOL ally
+                  {t('play.idol.allyLabel')}
                 </p>
                 <p className="text-emerald-600/50 font-mono text-[10px] mt-1">
-                  2028 구원 작전을 함께하는 감정 동맹
+                  {t('play.idol.allyDescription')}
                 </p>
               </div>
               <div className="text-emerald-600/50 text-xs font-mono">
-                READY
+                {t('play.idol.ready')}
               </div>
             </div>
           </div>
@@ -527,7 +529,7 @@ export const PlayChatInterface = () => {
                 />
               )}
               <div className="flex-1">
-                <p className="text-emerald-600 font-mono text-xs mb-1">{selectedIdol?.name || '아이돌'}</p>
+                <p className="text-emerald-600 font-mono text-xs mb-1">{selectedIdol?.name || t('play.idol.defaultName')}</p>
                 
                 {/* 본문 텍스트 */}
                 <p className="font-mono text-sm leading-relaxed" style={{ color: 'var(--terminal-green)' }}>
@@ -549,7 +551,7 @@ export const PlayChatInterface = () => {
                 {/* 선택지 버튼 */}
                 {parsed && parsed.choices.length > 0 && !isTypingEffect && (
                   <div className="mt-4 space-y-2">
-                    <p className="text-emerald-600/70 font-mono text-xs mb-2 animate-fade-in">[선택지]</p>
+                    <p className="text-emerald-600/70 font-mono text-xs mb-2 animate-fade-in">{t('play.choices.label')}</p>
                     {parsed.choices.map((choice, choiceIdx) => (
                       <button
                         key={choiceIdx}
@@ -592,7 +594,7 @@ export const PlayChatInterface = () => {
                         animationDelay: `${parsed.choices.length * 0.1}s`
                       }}
                     >
-                      🎫 자유 입력권 사용 ({tickets}개 보유)
+                      {t('play.freeInput.use', { count: tickets })}
                     </button>
                   </div>
                 )}
@@ -605,16 +607,16 @@ export const PlayChatInterface = () => {
         return (
           <div key={index} className="retro-terminal-box border-emerald-600 bg-emerald-900/30 mb-3">
             <div className="text-center">
-              <p className="text-emerald-600 font-mono text-lg mb-2">✓ 미션 완료!</p>
+              <p className="text-emerald-600 font-mono text-lg mb-2">{t('play.completion.title')}</p>
               <div className="space-y-1 text-teal-600 font-mono text-sm">
-                <p>VRI 보상: +{msg.vriReward}</p>
+                <p>{t('play.completion.vriReward', { reward: msg.vriReward })}</p>
               </div>
               <button
                 onClick={handleBackToMission}
                 className="mt-4 px-6 py-2 border border-emerald-600 text-green-600 
                          hover:bg-emerald-900/40 hover:text-emerald-500 font-mono text-sm"
               >
-                다른 미션 선택
+                {t('play.completion.selectOther')}
               </button>
             </div>
           </div>
@@ -631,12 +633,12 @@ export const PlayChatInterface = () => {
       <div className="retro-terminal-box m-4 mb-2">
         <div className="flex items-center justify-between">
           <h1 className="text-teal-600 font-mono text-lg retro-text-glow">
-            <span className="text-emerald-600">{'>'}</span> 2028 구원 작전
+            <span className="text-emerald-600">{'>'}</span> {t('play.header.title')}
           </h1>
           <div className="text-xs font-mono text-emerald-500/70">
-            {currentMode === 'branch' && 'TIMELINE SELECT'}
-            {currentMode === 'mission' && `${selectedBranch?.year} / MISSION SELECT`}
-            {currentMode === 'episode' && 'EPISODE PLAY'}
+            {currentMode === 'branch' && t('play.header.timelineSelect')}
+            {currentMode === 'mission' && t('play.header.missionSelect', { year: selectedBranch?.year || '' })}
+            {currentMode === 'episode' && t('play.header.episodePlay')}
           </div>
         </div>
       </div>
@@ -644,7 +646,7 @@ export const PlayChatInterface = () => {
       {/* Pull-to-Refresh 표시 */}
       {isPulling && pullDistance > 50 && (
         <div className="text-center py-2 text-emerald-500 font-mono text-sm retro-text-glow animate-pulse">
-          {pullDistance > 80 ? '↓ 놓아서 빠른 모드 활성화' : '↓ 당겨서 새로고침'}
+          {pullDistance > 80 ? t('play.pullRefresh.release') : t('play.pullRefresh.pull')}
         </div>
       )}
 
@@ -654,7 +656,7 @@ export const PlayChatInterface = () => {
         {isEpisodeLoading && (
           <div className="retro-terminal-box mb-3 bg-emerald-900/10 animate-pulse">
             <p className="text-teal-600 font-mono text-sm retro-text-glow">
-              <span className="text-emerald-600">SYSTEM:</span> 응답 생성 중
+              <span className="text-emerald-600">SYSTEM:</span> {t('play.loading.response')}
               <span className="typing-cursor">▋</span>
             </p>
           </div>
@@ -675,7 +677,7 @@ export const PlayChatInterface = () => {
               if (hasChoices && !isFreeInputMode && !isEpisodeLoading) {
                 return (
                   <p className="text-center text-emerald-500/70 font-mono text-sm">
-                    ⬆️ 위 선택지를 클릭하거나 자유 입력권을 사용하세요
+                    {t('play.choices.selectAbove')}
                   </p>
                 );
               }
@@ -686,7 +688,7 @@ export const PlayChatInterface = () => {
                   {isFreeInputMode && (
                     <div className="absolute -top-8 left-0 right-0 text-center">
                       <span className="text-purple-400 font-mono text-xs bg-purple-900/30 px-3 py-1 rounded-full">
-                        🎫 자유 입력 모드
+                        {t('play.freeInput.mode')}
                       </span>
                     </div>
                   )}
@@ -696,7 +698,7 @@ export const PlayChatInterface = () => {
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                      placeholder={isFreeInputMode ? "자유롭게 입력하세요..." : "답변을 입력하세요..."}
+                      placeholder={isFreeInputMode ? t('play.input.placeholderFree') : t('play.input.placeholder')}
                       disabled={isEpisodeLoading}
                       className="flex-1 bg-black border border-emerald-600/30 text-emerald-500 
                                font-mono px-4 py-2 focus:border-emerald-600 focus:outline-none
@@ -709,14 +711,14 @@ export const PlayChatInterface = () => {
                                hover:bg-emerald-900/30 hover:text-emerald-500 font-mono
                                disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isEpisodeLoading ? '...' : 'SEND'}
+                      {isEpisodeLoading ? '...' : t('play.input.send')}
                     </button>
                     <button
                       onClick={handleBackToMission}
                       className="px-4 py-2 border border-gray-600 text-gray-400 
                                hover:border-emerald-600 hover:text-green-600 font-mono text-sm"
                     >
-                      ← 종료
+                      {t('play.input.exit')}
                     </button>
                   </div>
                 </div>
@@ -725,7 +727,7 @@ export const PlayChatInterface = () => {
           </>
         ) : (
           <p className="text-center text-emerald-500/50 font-mono text-sm">
-            위 버튼을 클릭하여 선택하세요
+            {t('play.input.selectButton')}
           </p>
         )}
       </div>

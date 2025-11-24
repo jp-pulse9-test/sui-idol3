@@ -5,7 +5,7 @@ type Language = 'ko' | 'en';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -107,6 +107,48 @@ const translations = {
     'episode.viewPhotocard': '포토카드 보기',
     'episode.replay': '다시 플레이',
     'episode.exit': '나가기',
+    // PlayChatInterface
+    'play.system.bootComplete': '⚡ 2028 구원 작전 시스템 부팅 완료',
+    'play.system.selectTimeline': '지구를 구할 타임라인을 선택하세요:',
+    'play.system.fastModeActivated': '⚡ 빠른 모드 활성화',
+    'play.branch.locked': '⚠️ {{name}}은(는) 아직 잠겨있습니다. VRI {{vri}}가 필요합니다.',
+    'play.branch.timelineLoaded': '{{year}}년 타임라인 로드 완료. 미션을 선택하세요:',
+    'play.mission.freeTalk': '자유 대화',
+    'play.mission.freeTalkDesc': '아이돌과 자유롭게 대화하세요',
+    'play.mission.selected': '> [{{title}}] 선택',
+    'play.mission.startWithIdol': '미션 시작. Your AIDOL ally {{name}}과의 대화를 시작합니다...',
+    'play.mission.backToTimeline': '⚡ 타임라인 선택 화면으로 돌아갑니다',
+    'play.mission.backToMissionSelect': '미션 선택 화면으로 돌아갑니다',
+    'play.mission.selectTimeline': '타임라인 선택:',
+    'play.mission.selectMission': '미션 선택:',
+    'play.mission.backButton': '← 타임라인 선택으로',
+    'play.idol.defaultName': '아이돌',
+    'play.idol.allyLabel': '🎤 Your AIDOL ally',
+    'play.idol.allyDescription': '2028 구원 작전을 함께하는 감정 동맹',
+    'play.idol.ready': 'READY',
+    'play.choices.label': '[선택지]',
+    'play.choices.selectAbove': '⬆️ 위 선택지를 클릭하거나 자유 입력권을 사용하세요',
+    'play.freeInput.use': '🎫 자유 입력권 사용 ({{count}}개 보유)',
+    'play.freeInput.mode': '🎫 자유 입력 모드',
+    'play.freeInput.success': '🎫 자유 입력권 사용! 원하는 답변을 입력하세요.',
+    'play.freeInput.error': '자유 입력권이 부족합니다. Settings에서 구매하세요.',
+    'play.input.placeholder': '답변을 입력하세요...',
+    'play.input.placeholderFree': '자유롭게 입력하세요...',
+    'play.input.send': 'SEND',
+    'play.input.exit': '← 종료',
+    'play.input.selectButton': '위 버튼을 클릭하여 선택하세요',
+    'play.completion.title': '✓ 미션 완료!',
+    'play.completion.vriReward': 'VRI 보상: +{{reward}}',
+    'play.completion.selectOther': '다른 미션 선택',
+    'play.loading.response': '응답 생성 중',
+    'play.header.title': '2028 구원 작전',
+    'play.header.timelineSelect': 'TIMELINE SELECT',
+    'play.header.missionSelect': '{{year}} / MISSION SELECT',
+    'play.header.episodePlay': 'EPISODE PLAY',
+    'play.pullRefresh.release': '↓ 놓아서 빠른 모드 활성화',
+    'play.pullRefresh.pull': '↓ 당겨서 새로고침',
+    'play.choice.selected': '{{number}}번 선택: {{choice}}',
+    'play.branch.userSelected': '> {{name}} 선택',
   },
   en: {
     'nav.settings': 'Settings',
@@ -204,6 +246,48 @@ const translations = {
     'episode.viewPhotocard': 'View Photocard',
     'episode.replay': 'Replay',
     'episode.exit': 'Exit',
+    // PlayChatInterface
+    'play.system.bootComplete': '⚡ 2028 Salvation Operation System Boot Complete',
+    'play.system.selectTimeline': 'Select a timeline to save Earth:',
+    'play.system.fastModeActivated': '⚡ Fast Mode Activated',
+    'play.branch.locked': '⚠️ {{name}} is locked. Requires {{vri}} VRI.',
+    'play.branch.timelineLoaded': '{{year}} Timeline loaded. Select your mission:',
+    'play.mission.freeTalk': 'Free Talk',
+    'play.mission.freeTalkDesc': 'Free conversation with AIDOL',
+    'play.mission.selected': '> [{{title}}] Selected',
+    'play.mission.startWithIdol': 'Mission start. Beginning conversation with your AIDOL ally {{name}}...',
+    'play.mission.backToTimeline': '⚡ Returning to timeline selection',
+    'play.mission.backToMissionSelect': 'Returning to mission selection',
+    'play.mission.selectTimeline': 'Select Timeline:',
+    'play.mission.selectMission': 'Select Mission:',
+    'play.mission.backButton': '← Back to Timelines',
+    'play.idol.defaultName': 'AIDOL',
+    'play.idol.allyLabel': '🎤 Your AIDOL ally',
+    'play.idol.allyDescription': 'Emotional ally in the 2028 Salvation Operation',
+    'play.idol.ready': 'READY',
+    'play.choices.label': '[Choices]',
+    'play.choices.selectAbove': '⬆️ Click a choice above or use Free Input Ticket',
+    'play.freeInput.use': '🎫 Use Free Input Ticket ({{count}} available)',
+    'play.freeInput.mode': '🎫 Free Input Mode',
+    'play.freeInput.success': '🎫 Free Input Ticket used! Enter your response.',
+    'play.freeInput.error': 'Not enough Free Input Tickets. Purchase in Settings.',
+    'play.input.placeholder': 'Enter your response...',
+    'play.input.placeholderFree': 'Enter freely...',
+    'play.input.send': 'SEND',
+    'play.input.exit': '← Exit',
+    'play.input.selectButton': 'Click buttons above to select',
+    'play.completion.title': '✓ Mission Complete!',
+    'play.completion.vriReward': 'VRI Reward: +{{reward}}',
+    'play.completion.selectOther': 'Select Another Mission',
+    'play.loading.response': 'Generating response',
+    'play.header.title': '2028 Salvation Operation',
+    'play.header.timelineSelect': 'TIMELINE SELECT',
+    'play.header.missionSelect': '{{year}} / MISSION SELECT',
+    'play.header.episodePlay': 'EPISODE PLAY',
+    'play.pullRefresh.release': '↓ Release to activate fast mode',
+    'play.pullRefresh.pull': '↓ Pull to refresh',
+    'play.choice.selected': 'Choice {{number}}: {{choice}}',
+    'play.branch.userSelected': '> {{name}} Selected',
   },
 };
 
@@ -221,8 +305,17 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguageState(lang);
   };
 
-  const t = (key: string): string => {
-    return translations[language][key] || key;
+  const t = (key: string, params?: Record<string, string | number>): string => {
+    let translation = translations[language][key] || key;
+    
+    // Replace placeholders like {{name}}, {{vri}}, etc.
+    if (params) {
+      Object.entries(params).forEach(([paramKey, value]) => {
+        translation = translation.replace(new RegExp(`\\{\\{${paramKey}\\}\\}`, 'g'), String(value));
+      });
+    }
+    
+    return translation;
   };
 
   return (
