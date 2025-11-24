@@ -360,9 +360,10 @@ export const PlayChatInterface = () => {
 
   // 선택지 파싱 함수
   const parseChoices = (content: string): { text: string; choices: string[] } | null => {
-    if (!content.includes('[선택지]')) return null;
+    const choiceMarker = t('play.choices.marker'); // [선택지] or [Choices]
+    if (!content.includes(choiceMarker)) return null;
     
-    const [mainText, choicesText] = content.split('[선택지]');
+    const [mainText, choicesText] = content.split(choiceMarker);
     const choicePattern = /[1-9]️⃣\s*(.+?)(?=\n[1-9]️⃣|$)/gs;
     const matches = [...choicesText.matchAll(choicePattern)];
     const choices = matches.map(m => m[1].trim());
