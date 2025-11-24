@@ -156,7 +156,7 @@ const translations = {
     'nav.photocardGenerator': 'Photocard Generator',
     'hero.tagline': 'AIDOL101 : SIMKUNG ALLY',
     'hero.title': 'SIMKUNG',
-    'hero.subtitle': 'The Old Earth Simulator: Where Digital Consciousness Awakens.\nA multiverse simulation written by you and AIDOL together, to change the fate of humanity\'s extinction.',
+    'hero.subtitle': 'Old Earth Simulator: \nWhere Digital Consciousness Awakens.\nA multiverse simulation written by you and AIDOL together, to change the fate of humanity\'s extinction.',
     'hero.enter': 'Enter',
     'language.korean': '한국어',
     'language.english': 'English',
