@@ -12,6 +12,7 @@ import { MinimalHero } from "@/components/MinimalHero";
 import { GatewaySection } from "@/components/GatewaySection";
 import { FragmentedPlanetGrid } from "@/components/FragmentedPlanetGrid";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import { PickModal } from "@/components/PickModal";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Index = () => {
   
   // Idol data state for background
   const [idols, setIdols] = useState<any[]>([]);
+  const [pickModalOpen, setPickModalOpen] = useState(false);
 
   // Fetch idols for background
   useEffect(() => {
@@ -50,8 +52,8 @@ const Index = () => {
   }, []);
 
   const handleEnter = () => {
-    // Navigate directly to simplified pick (tournament)
-    navigate('/pick');
+    // Open pick modal
+    setPickModalOpen(true);
   };
 
   return (
@@ -83,7 +85,7 @@ const Index = () => {
         </div>
 
         {/* Hero Section */}
-        <MinimalHero onEnter={handleEnter} />
+        <MinimalHero onEnter={handleEnter} onSelectIdol={() => setPickModalOpen(true)} />
 
         {/* Cinematic Synopsis - Sticky */}
         <div className="sticky top-0 z-40">
@@ -109,6 +111,9 @@ const Index = () => {
       
       {/* Scroll to Top Button */}
       <ScrollToTopButton />
+      
+      {/* Pick Modal */}
+      <PickModal open={pickModalOpen} onOpenChange={setPickModalOpen} />
     </div>
   );
 };
