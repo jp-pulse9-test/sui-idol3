@@ -2,6 +2,8 @@ import { toast } from "sonner";
 import { SupportedChain, CrossChainMintingData, CrossChainTransaction } from "../types/crosschain";
 import { evmProofService, EVMProofData } from "./evmProofService";
 import { solanaNFTService } from "./solanaNFTService";
+import { evmNftService } from "./evmNftService";
+import { metadataService } from "./metadataService";
 
 class CrossChainService {
   private transactions: Map<string, CrossChainTransaction> = new Map();
@@ -33,7 +35,43 @@ class CrossChainService {
           metadata: result.metadataUri
         });
       }
-      // EVM chains: Simulation for now (can be implemented later)
+      // EVM chains: Real minting using PhotocardNFT contract
+      else if (['ethereum', 'polygon', 'polygon-amoy', 'bsc', 'base', 'arbitrum', 'optimism'].includes(mintingData.targetChain.id)) {
+        console.log('🔗 Minting to EVM chain:', mintingData.targetChain.name);
+
+        // 1. Generate and upload metadata to Walrus
+        toast.info('📤 메타데이터 업로드 중...');
+        const metadataUri = await metadataService.generateAndUploadMetadata(
+          mintingData.idolName,
+          mintingData.imageUrl,
+          mintingData.rarity,
+          mintingData.concept,
+          mintingData.photocardId
+        );
+
+        console.log('✅ Metadata uploaded:', metadataUri);
+
+        // 2. Mint NFT on target EVM chain
+        toast.info('🎨 NFT 민팅 중...');
+        const evmTxHash = await evmNftService.mintPhotocard(
+          mintingData.targetChain.chainId,
+          mintingData.photocardId,
+          mintingData.recipientAddress,
+          metadataUri
+        );
+
+        if (!evmTxHash) {
+          throw new Error('Failed to mint NFT on EVM chain');
+        }
+
+        txHash = evmTxHash;
+        console.log('✅ EVM NFT minted:', {
+          chain: mintingData.targetChain.name,
+          tx: txHash,
+          metadata: metadataUri
+        });
+      }
+      // Other chains: Simulation fallback
       else {
         await new Promise(resolve => setTimeout(resolve, 2000));
         txHash = this.generateMockTxHash();
@@ -42,6 +80,10 @@ class CrossChainService {
       // 트랜잭션 ID 생성
       const txId = this.generateTransactionId();
 
+      // Determine if transaction is confirmed
+      const isEvmChain = ['ethereum', 'polygon', 'polygon-amoy', 'bsc', 'base', 'arbitrum', 'optimism'].includes(mintingData.targetChain.id);
+      const isConfirmed = mintingData.targetChain.id === 'solana' || isEvmChain;
+
       // 트랜잭션 기록
       const transaction: CrossChainTransaction = {
         id: txId,
@@ -49,18 +91,25 @@ class CrossChainService {
         sourceChain: 'sui',
         targetChain: mintingData.targetChain.id,
         txHash,
-        status: mintingData.targetChain.id === 'solana' ? 'confirmed' : 'pending',
+        status: isConfirmed ? 'confirmed' : 'pending',
         timestamp: Date.now()
       };
 
       this.transactions.set(txId, transaction);
 
-      // For Solana, immediately save since it's confirmed
-      if (mintingData.targetChain.id === 'solana') {
+      // For Solana and EVM chains, immediately save since it's confirmed
+      if (isConfirmed) {
         await this.saveCrossChainPhotocard(mintingData, txHash, mintAddress);
-        toast.success(`✅ Sui → ${mintingData.targetChain.name} 브릿지 완료!\nMint: ${mintAddress?.substring(0, 8)}...`);
+
+        const explorerUrl = `${mintingData.targetChain.explorerUrl}/tx/${txHash}`;
+        const successMessage = mintAddress
+          ? `✅ Sui → ${mintingData.targetChain.name} 브릿지 완료!\nMint: ${mintAddress.substring(0, 8)}...`
+          : `✅ Sui → ${mintingData.targetChain.name} 브릿지 완료!`;
+
+        toast.success(successMessage);
+        console.log('🔗 Explorer:', explorerUrl);
       }
-      // For EVM chains, simulate async confirmation
+      // For other chains, simulate async confirmation
       else {
         setTimeout(() => {
           const tx = this.transactions.get(txId);
@@ -85,10 +134,16 @@ class CrossChainService {
       // More specific error messages
       if (error.message?.includes('Phantom wallet not found')) {
         toast.error('❌ Phantom 지갑을 찾을 수 없습니다\n💡 https://phantom.app 에서 설치해주세요');
-      } else if (error.message?.includes('insufficient funds')) {
-        toast.error('❌ 잔액이 부족합니다');
+      } else if (error.message?.includes('MetaMask')) {
+        toast.error('❌ MetaMask 오류\n💡 https://metamask.io 에서 설치해주세요');
+      } else if (error.message?.includes('insufficient funds') || error.message?.includes('가스비가 부족')) {
+        toast.error('❌ 잔액이 부족합니다\n💡 지갑에 충분한 잔액이 있는지 확인해주세요');
+      } else if (error.message?.includes('already minted') || error.message?.includes('이미 이 체인에 민팅')) {
+        toast.error('❌ 이미 이 체인에 민팅된 포토카드입니다');
       } else if (error.message?.includes('failed to post funding tx')) {
         toast.error('❌ 메타데이터 스토리지 펀딩 실패\n💡 잠시 후 다시 시도해주세요');
+      } else if (error.message?.includes('User rejected') || error.message?.includes('사용자가 트랜잭션을 거부')) {
+        toast.error('❌ 트랜잭션이 거부되었습니다');
       } else if (!error.message?.includes('User rejected')) {
         // Don't show error toast if user cancelled
         toast.error('❌ 크로스체인 민팅 실패\n💡 콘솔에서 상세 정보를 확인하세요');
@@ -117,10 +172,11 @@ class CrossChainService {
   }
 
   async estimateGasFee(targetChain: SupportedChain): Promise<{ fee: string; currency: string }> {
-    // 가스비 추정 시뮬레이션
+    // 가스비 추정 시뮬레이션 (2025년 최신 기준)
     const baseFees = {
       ethereum: { min: 0.005, max: 0.02 },
-      polygon: { min: 0.001, max: 0.005 },
+      polygon: { min: 0.0001, max: 0.001 }, // POL (매우 저렴)
+      'polygon-amoy': { min: 0.00001, max: 0.0001 }, // 테스트넷
       bsc: { min: 0.002, max: 0.008 },
       base: { min: 0.001, max: 0.004 },
       arbitrum: { min: 0.0005, max: 0.003 },
@@ -215,7 +271,7 @@ class CrossChainService {
    */
   private getProofChainId(targetChainId: string): string | null {
     // For now, all EVM chains use Sepolia for proof storage
-    const evmChains = ['ethereum', 'polygon', 'bsc', 'base', 'arbitrum', 'optimism'];
+    const evmChains = ['ethereum', 'polygon', 'polygon-amoy', 'bsc', 'base', 'arbitrum', 'optimism'];
     if (evmChains.includes(targetChainId)) {
       return 'sepolia';
     }

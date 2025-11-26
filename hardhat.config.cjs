@@ -18,10 +18,10 @@ module.exports = {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111,
     },
-    mumbai: {
-      url: process.env.POLYGON_MUMBAI_RPC || "https://rpc-mumbai.maticvigil.com",
+    polygonAmoy: {
+      url: process.env.POLYGON_AMOY_RPC || "https://rpc-amoy.polygon.technology",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 80001,
+      chainId: 80002,
     },
     bscTestnet: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",
@@ -39,6 +39,7 @@ module.exports = {
       url: process.env.POLYGON_RPC || "https://polygon-rpc.com",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 137,
+      gasPrice: 50000000000, // 50 Gwei
     },
     bsc: {
       url: "https://bsc-dataseed1.binance.org",
@@ -66,7 +67,7 @@ module.exports = {
       mainnet: process.env.ETHERSCAN_API_KEY || "",
       sepolia: process.env.ETHERSCAN_API_KEY || "",
       polygon: process.env.POLYGONSCAN_API_KEY || "",
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
+      polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
       bsc: process.env.BSCSCAN_API_KEY || "",
       bscTestnet: process.env.BSCSCAN_API_KEY || "",
       base: process.env.BASESCAN_API_KEY || "",

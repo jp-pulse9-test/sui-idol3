@@ -48,13 +48,15 @@ class EVMProofService {
       let ethereumProvider = this.getMetaMaskProvider();
 
       if (!ethereumProvider) {
-        toast.error('MetaMask를 설치해주세요. (Phantom은 이더리움 체인에 사용할 수 없습니다)');
+        console.error('❌ MetaMask provider not found');
+        toast.error('❌ MetaMask 오류\n💡 https://metamask.io 에서 설치해주세요');
         return false;
       }
 
       this.provider = new ethers.BrowserProvider(ethereumProvider);
 
       // Request account access
+      console.log('📝 Requesting MetaMask account access...');
       await ethereumProvider.request({ method: 'eth_requestAccounts' });
 
       this.signer = await this.provider.getSigner();
@@ -63,9 +65,15 @@ class EVMProofService {
       console.log('✅ Connected to MetaMask:', address);
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect to MetaMask:', error);
-      toast.error('MetaMask 연결에 실패했습니다.');
+
+      // User rejected the request
+      if (error.code === 4001) {
+        toast.error('사용자가 MetaMask 연결을 거부했습니다.');
+      } else {
+        toast.error(`MetaMask 연결 실패: ${error.message || '알 수 없는 오류'}`);
+      }
       return false;
     }
   }

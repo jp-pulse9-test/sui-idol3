@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { SUPPORTED_CHAINS, SupportedChain, CrossChainMintingData } from '../types/crosschain';
 import { useCrossChain } from '../hooks/useCrossChain';
 import { evmProofService } from '../services/evmProofService';
+import { evmNftService } from '../services/evmNftService';
+import { metadataService } from '../services/metadataService';
 import { ExternalLink, Copy, Zap, ArrowRightLeft } from 'lucide-react';
 
 interface CrossChainMintingProps {
@@ -53,23 +55,91 @@ export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
     setIsConnecting(true);
 
     try {
-      // EVM chains (Ethereum, Polygon, BSC, Base, Arbitrum, Optimism) - use MetaMask
-      if (['ethereum', 'polygon', 'bsc', 'base', 'arbitrum', 'optimism'].includes(selectedChain.id)) {
+      // EVM chains (Ethereum, Polygon, BSC, Base, Arbitrum, Optimism) - use MetaMask ONLY
+      if (['ethereum', 'polygon', 'polygon-amoy', 'bsc', 'base', 'arbitrum', 'optimism'].includes(selectedChain.id)) {
         console.log('✅ Detected EVM chain, connecting to MetaMask...');
 
-        // Check if MetaMask is installed
+        // Find MetaMask specifically (not Phantom)
+        let provider = null;
+
+        // Check if window.ethereum exists
         if (typeof window.ethereum === 'undefined') {
           toast.error('MetaMask를 설치해주세요.');
           window.open('https://metamask.io/download/', '_blank');
           return;
         }
 
-        const address = await evmProofService.getAddress();
-        if (address) {
-          setConnectedAddress(address);
-          toast.success('MetaMask 지갑이 연결되었습니다!');
-        } else {
-          toast.error('MetaMask 연결에 실패했습니다.');
+        // Multiple wallets installed
+        if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
+          console.log('🔍 Multiple providers detected:', window.ethereum.providers.length);
+
+          // Find MetaMask (exclude Phantom)
+          provider = window.ethereum.providers.find((p: any) => {
+            console.log('Provider check:', { isMetaMask: p.isMetaMask, isPhantom: p.isPhantom });
+            return p.isMetaMask && !p.isPhantom;
+          });
+
+          if (provider) {
+            console.log('✅ Found MetaMask in providers array');
+          } else {
+            console.error('❌ MetaMask not found in providers array');
+          }
+        }
+        // Single provider
+        else {
+          console.log('🔍 Single provider detected:', {
+            isMetaMask: window.ethereum.isMetaMask,
+            isPhantom: window.ethereum.isPhantom
+          });
+
+          if (window.ethereum.isMetaMask && !window.ethereum.isPhantom) {
+            provider = window.ethereum;
+            console.log('✅ Using MetaMask as single provider');
+          } else {
+            console.error('❌ Single provider is not MetaMask or is Phantom');
+          }
+        }
+
+        // No MetaMask found
+        if (!provider) {
+          toast.error('MetaMask를 설치해주세요. (Phantom은 EVM 체인에 사용할 수 없습니다)');
+          window.open('https://metamask.io/download/', '_blank');
+          return;
+        }
+
+        try {
+          console.log('📞 Requesting accounts from MetaMask...');
+          console.log('Provider object:', provider);
+
+          // Force focus to bring popup to front
+          window.focus();
+
+          // Request accounts from MetaMask with explicit request
+          const accounts = await provider.request({
+            method: 'eth_requestAccounts',
+            params: []
+          });
+
+          console.log('📋 Accounts received:', accounts);
+
+          if (accounts && accounts.length > 0) {
+            setConnectedAddress(accounts[0]);
+            toast.success('MetaMask 지갑이 연결되었습니다!');
+          } else {
+            toast.error('MetaMask 계정을 가져올 수 없습니다.');
+          }
+        } catch (error: any) {
+          console.error('MetaMask connection error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+
+          if (error.code === 4001) {
+            toast.error('사용자가 MetaMask 연결을 거부했습니다.');
+          } else if (error.code === -32002) {
+            toast.error('이미 MetaMask 연결 요청이 진행 중입니다. MetaMask 팝업을 확인해주세요.');
+          } else {
+            toast.error('MetaMask 연결에 실패했습니다: ' + error.message);
+          }
         }
       }
       // Solana - use Phantom wallet
@@ -103,6 +173,45 @@ export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
       return;
     }
 
+    // EVM chains - direct minting
+    if (['ethereum', 'polygon', 'polygon-amoy', 'bsc', 'base', 'arbitrum', 'optimism'].includes(selectedChain.id)) {
+      try {
+        toast.info('📤 메타데이터 업로드 중...');
+
+        // 1. Generate and upload metadata
+        const metadataUri = await metadataService.generateAndUploadMetadata(
+          photocardData.idolName,
+          photocardData.imageUrl,
+          photocardData.rarity,
+          photocardData.concept,
+          photocardData.id
+        );
+
+        console.log('✅ Metadata uploaded:', metadataUri);
+
+        // 2. Mint NFT directly
+        toast.info('🎨 NFT 민팅 중...');
+        const txHash = await evmNftService.mintPhotocard(
+          selectedChain.chainId,
+          photocardData.id,
+          connectedAddress,
+          metadataUri
+        );
+
+        if (txHash) {
+          toast.success(`✅ NFT 민팅 성공!\nTX: ${txHash.slice(0, 10)}...`);
+          onClose();
+        } else {
+          toast.error('민팅에 실패했습니다.');
+        }
+      } catch (error: any) {
+        console.error('Minting failed:', error);
+        toast.error(`민팅 실패: ${error.message || '알 수 없는 오류'}`);
+      }
+      return;
+    }
+
+    // Other chains - use crossChainService
     const mintingData: CrossChainMintingData = {
       photocardId: photocardData.id,
       idolName: photocardData.idolName,
@@ -210,7 +319,7 @@ export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
               수신 지갑
               {selectedChain && (
                 <span className="text-xs text-muted-foreground ml-2">
-                  ({['ethereum', 'polygon', 'bsc', 'base', 'arbitrum', 'optimism'].includes(selectedChain.id) ? 'MetaMask' :
+                  ({['ethereum', 'polygon', 'polygon-amoy', 'bsc', 'base', 'arbitrum', 'optimism'].includes(selectedChain.id) ? 'MetaMask' :
                      selectedChain.id === 'solana' ? 'Phantom' : '지갑'} 필요)
                 </span>
               )}
@@ -239,7 +348,7 @@ export const CrossChainMinting: React.FC<CrossChainMintingProps> = ({
               >
                 {isConnecting ? '연결 중...' :
                  !selectedChain ? '먼저 체인을 선택하세요' :
-                 ['ethereum', 'polygon', 'bsc', 'base', 'arbitrum', 'optimism'].includes(selectedChain.id) ? '🦊 MetaMask 연결' :
+                 ['ethereum', 'polygon', 'polygon-amoy', 'bsc', 'base', 'arbitrum', 'optimism'].includes(selectedChain.id) ? '🦊 MetaMask 연결' :
                  selectedChain.id === 'solana' ? '👻 Phantom 연결' : '지갑 연결'}
               </Button>
             )}

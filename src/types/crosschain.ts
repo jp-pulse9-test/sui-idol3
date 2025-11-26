@@ -53,12 +53,22 @@ export const SUPPORTED_CHAINS: SupportedChain[] = [
   {
     id: 'polygon',
     name: 'Polygon',
-    symbol: 'MATIC',
+    symbol: 'POL',
     rpcUrl: 'https://polygon-rpc.com/',
     explorerUrl: 'https://polygonscan.com',
     chainId: 137,
     icon: '🟣',
     isTestnet: false
+  },
+  {
+    id: 'polygon-amoy',
+    name: 'Polygon Amoy',
+    symbol: 'POL',
+    rpcUrl: 'https://rpc-amoy.polygon.technology/',
+    explorerUrl: 'https://amoy.polygonscan.com',
+    chainId: 80002,
+    icon: '🟣',
+    isTestnet: true
   },
   {
     id: 'bsc',

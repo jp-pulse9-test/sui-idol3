@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, run } from "hardhat";
 
 /**
  * Deploy WalrusStorageProof contract to EVM chains
@@ -17,7 +17,7 @@ async function main() {
   const wormholeCoreAddresses: Record<string, string> = {
     // Testnets
     "11155111": "0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78", // Sepolia
-    "80001": "0x0CBE91CF822c73C2315FB05100C2F714765d5c20", // Mumbai
+    "80002": "0x0CBE91CF822c73C2315FB05100C2F714765d5c20", // Polygon Amoy (using same as Mumbai for now)
     "97": "0x68605AD7b15c732a30b1BbC62BE8F2A509D74b4D", // BSC Testnet
 
     // Mainnets
@@ -69,7 +69,7 @@ async function main() {
 
     console.log("🔍 Verifying contract on block explorer...");
     try {
-      await ethers.run("verify:verify", {
+      await run("verify:verify", {
         address,
         constructorArguments: [wormholeCore],
       });
